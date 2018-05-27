@@ -4,7 +4,7 @@ Topola is a Typescript/Javascript library for embedding genealogy tree visualiza
 
 Currently, only a simple ancestor graph is implemented.
 
-Have a look at the demo page *[TODO]* to see the current visualization possibilities.
+Have a look at the [demo page](https://pewu.github.io/topola/) to see the current visualization possibilities.
 
 ## Running
 To run the demo, run these commands:
@@ -12,6 +12,10 @@ To run the demo, run these commands:
 npm install
 npm start
 ```
+
+## Demo
+
+https://pewu.github.io/topola/
 
 # Future
 
