@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="topola.css"/>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="bundle.js"></script>
+    <script>
+      topola.render({
+        jsonUrl: 'data/data.json',
+        startId: 'I46464',
+        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}'
+      })
+    </script>
+  </head>
+  <body>
+    <svg class="graph"/>
+  </body>
+</html>

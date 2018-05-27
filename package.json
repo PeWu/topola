@@ -1,0 +1,28 @@
+{
+  "name": "topola",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "build": "browserify index.ts -p [ tsify ] -o dist/bundle.js --s topola",
+    "watch": "watchify index.ts -p [ tsify ] -o dist/bundle.js --s topola",
+    "server": "browser-sync start --server dist --files dist",
+    "start": "concurrently \"npm run watch\" \"npm run server\"",
+    "fix": "gts fix"
+  },
+  "author": "Przemek Wiech",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/d3": "^5.0.0",
+    "browser-sync": "^2.24.4",
+    "concurrently": "^3.5.1",
+    "ts-loader": "^4.3.0",
+    "tsify": "^4.0.0",
+    "typescript": "^2.8.3",
+    "gts": "^0.6.0"
+  },
+  "dependencies": {
+    "d3": "^5.4.0",
+    "d3-flextree": "^2.1.1"
+  }
+}

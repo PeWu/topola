@@ -1,0 +1,28 @@
+.node text {
+  font: 12px sans-serif;
+  font-weight: bold;
+}
+
+.link {
+  fill: none;
+  stroke: #777;
+  stroke-width: 1px;
+}
+
+rect {
+  fill: #fff;
+  stroke: black;
+}
+
+.node {
+  cursor: pointer;
+}
+
+svg {
+  border: solid #666 1px;
+  background: white;
+}
+
+body {
+  background: #ccc;
+}
