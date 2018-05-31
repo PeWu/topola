@@ -1,9 +1,24 @@
-/** Represents a node in the d3 graph structure. */
-export interface Node {
+/** Individual ID with dimensions. */
+export interface TreeIndi {
   id: string;
-  parentId?: string;
   width?: number;
   height?: number;
+}
+
+
+/** Represents a node in the d3 graph structure. */
+export interface TreeNode {
+  // Family ID when represents family, or
+  // indi ID when represents single individual.
+  id: string;
+  parentId?: string;
+
+  indi?: TreeIndi;
+  spouse?: TreeIndi;
+  family?: {id: string;};
+  // If true, the links to children of this family will be attached to
+  // the spouse box of the child node.
+  parentsOfSpouse?: boolean;
 }
 
 
@@ -36,9 +51,13 @@ export interface DataProvider<IndiT extends Indi, FamT extends Fam> {
 }
 
 
+/** D3 selection containing TreeNode data. */
+export type TreeNodeSelection =
+    d3.Selection<d3.BaseType, d3.HierarchyPointNode<TreeNode>, d3.BaseType, {}>;
+
+
 /** Interface for rendering data. */
 export interface Renderer {
   getPreferredSize(id: string): [number, number];
-  render(selection: d3.Selection<
-         d3.BaseType, d3.HierarchyPointNode<Node>, d3.BaseType, {}>): void;
+  render(selection: TreeNodeSelection): void;
 }

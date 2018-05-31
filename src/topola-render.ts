@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {DataProvider, Node, Renderer} from './topola-api';
+import {DataProvider, Renderer, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
 import {FamDetails, IndiDetails} from './topola-data';
 
 const BOX_HEIGHT = 30;
@@ -28,18 +28,30 @@ export class SimpleRenderer implements Renderer {
     return [width, BOX_HEIGHT];
   }
 
-  render(selection: d3.Selection<
-         d3.BaseType, d3.HierarchyPointNode<Node>, d3.BaseType, {}>): void {
+  render(selection: TreeNodeSelection): void {
+    this.renderIndi(selection, (node) => node.indi);
+    const spouseSelection =
+        selection.filter((d) => !!d.data.spouse)
+            .append('g')
+            .attr(
+                'transform',
+                (node) => `translate(0, ${node.data.indi.height})`);
+    this.renderIndi(spouseSelection, (node) => node.spouse);
+  }
+
+  private renderIndi(
+      selection: TreeNodeSelection,
+      indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
     const group = this.hrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.hrefFunc(node.data.id)) :
+            'href', (node) => this.hrefFunc(indiFunc(node.data).id)) :
         selection;
 
     // Box.
     group.append('rect')
-        .attr('width', (node) => node.data.width)
-        .attr('height', (node) => node.data.height);
+        .attr('width', (node) => indiFunc(node.data).width)
+        .attr('height', (node) => indiFunc(node.data).height);
 
     // Text.
     group.append('text')
@@ -47,7 +59,10 @@ export class SimpleRenderer implements Renderer {
         .attr('text-anchor', 'middle')
         .attr(
             'transform',
-            (d) => `translate(${d.data.width / 2}, ${d.data.height / 2})`)
-        .text((d) => this.dataProvider.getIndi(d.data.id).getName());
+            (node) => `translate(${indiFunc(node.data).width / 2}, ${
+                indiFunc(node.data).height / 2})`)
+        .text(
+            (node) =>
+                this.dataProvider.getIndi(indiFunc(node.data).id).getName());
   }
 }
