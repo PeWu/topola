@@ -19118,13 +19118,27 @@ Object.defineProperty(exports, "event", {get: function() { return d3Selection.ev
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var d3_flextree_1 = require("d3-flextree");
+/** Horizontal distance between boxes. */
 var DISTANCE_H = 30;
-var DISTANCE_V = 30;
-var MARGIN = 10;
+/** Vertical distance between boxes. */
+var DISTANCE_V = 15;
+/** Margin around the whole drawing. */
+var MARGIN = 15;
 /** Creates a path from parent to the child node. */
 function diagonal(s, d) {
-    var mid = (s.y - s.data.width / 2 + d.y + d.data.width / 2) / 2;
-    return "M " + s.y + " " + s.x + "\n          L " + mid + " " + s.x + ",\n            " + mid + " " + d.x + ",\n            " + d.y + " " + d.x;
+    var mid = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
+    var dy = d.data.spouse ?
+        (s.data.parentsOfSpouse ? d.x + d.data.spouse.height / 2 :
+            d.x - d.data.indi.height / 2) :
+        d.x;
+    return "M " + s.y + " " + s.x + "\n          L " + mid + " " + s.x + ",\n            " + mid + " " + dy + ",\n            " + d.y + " " + dy;
+}
+/**
+ * Returns the height of the whole tree node as the sum of the heights of both
+ * spouses.
+ */
+function getHeight(node) {
+    return node.indi.height + (node.spouse && node.spouse.height || 0);
 }
 /** Renders an ancestor chart. */
 var AncestorChart = /** @class */ (function () {
@@ -19139,54 +19153,69 @@ var AncestorChart = /** @class */ (function () {
         this.data = data;
         this.renderer = renderer;
         this.startId = startId;
-        this.treemap = d3_flextree_1.flextree()
-            .nodeSize(function (node) {
-            var w = 0;
-            if (node.children) {
-                node.children.forEach(function (child) {
-                    var childW = child.data.width;
-                    w = Math.max(w, childW);
-                });
-            }
-            var thisW = node.data.width;
-            return [DISTANCE_V, (w + thisW) / 2 + DISTANCE_H];
-        })
-            .spacing(function (a, b) {
-            if (a.parent.data.id === b.parent.data.id) {
-                return 0;
-            }
-            return DISTANCE_V;
-        });
+        this.treemap =
+            d3_flextree_1.flextree()
+                .nodeSize(function (node) {
+                var w = 0;
+                if (node.children) {
+                    node.children.forEach(function (child) {
+                        var childW = child.data.indi.width;
+                        w = Math.max(w, childW);
+                    });
+                }
+                var thisW = node.data.indi.width;
+                return [getHeight(node.data), (w + thisW) / 2 + DISTANCE_H];
+            })
+                .spacing(function (a, b) { return DISTANCE_V; });
     }
     /** Creates a d3 hierarchy from the input data. */
     AncestorChart.prototype.createHierarchy = function () {
         var parents = [];
-        parents.push({ id: this.startId });
-        var stack = [this.startId];
+        var indi = this.data.getIndi(this.startId);
+        var famc = indi.getFamilyAsChild();
+        parents.push({ id: this.startId, indi: { id: this.startId } });
+        var stack = [];
+        if (famc) {
+            stack.push({ id: famc, parentId: this.startId });
+        }
         while (stack.length) {
-            var id = stack.pop();
-            var indi = this.data.getIndi(id);
-            // Assume indi exists.
-            var famId = indi.getFamilyAsChild();
-            if (!famId) {
-                continue;
-            }
-            var fam = this.data.getFam(famId);
+            var entry = stack.pop();
+            var fam = this.data.getFam(entry.id);
             if (!fam) {
                 continue;
             }
             var father = fam.getFather();
             var mother = fam.getMother();
-            if (father) {
-                parents.push({ id: father, parentId: id });
-                stack.push(father);
+            if (!father && !mother) {
+                continue;
             }
             if (mother) {
-                parents.push({ id: mother, parentId: id });
-                stack.push(mother);
+                entry.spouse = { id: mother };
+                var indi_1 = this.data.getIndi(mother);
+                var famc_1 = indi_1.getFamilyAsChild();
+                if (famc_1) {
+                    stack.push({ id: famc_1, parentId: entry.id, parentsOfSpouse: true });
+                }
             }
+            if (father) {
+                entry.indi = { id: father };
+                var indi_2 = this.data.getIndi(father);
+                var famc_2 = indi_2.getFamilyAsChild();
+                if (famc_2) {
+                    stack.push({ id: famc_2, parentId: entry.id, parentsOfSpouse: false });
+                }
+            }
+            parents.push(entry);
         }
         return d3.stratify()(parents);
+    };
+    AncestorChart.prototype.setPreferredSize = function (indi) {
+        if (!indi) {
+            return;
+        }
+        var _a = this.renderer.getPreferredSize(indi.id), width = _a[0], height = _a[1];
+        indi.width = width;
+        indi.height = height;
     };
     /**
      * Renders the tree, calling the provided renderer to draw boxes for
@@ -19196,29 +19225,38 @@ var AncestorChart = /** @class */ (function () {
         var _this = this;
         var root = this.createHierarchy();
         d3.select('svg').append('g');
-        // Get preferred sizes.
+        // Set preferred sizes.
         root.each(function (node) {
-            var _a = _this.renderer.getPreferredSize(node.data.id), width = _a[0], height = _a[1];
-            node.data.width = width;
-            node.data.height = height;
+            _this.setPreferredSize(node.data.indi);
+            _this.setPreferredSize(node.data.spouse);
         });
         // Calculate width per depth.
         var widthPerDepth = new Map();
         root.each(function (node) {
             var depth = node.depth;
-            widthPerDepth.set(depth, Math.max(node.data.width, widthPerDepth.get(depth) || 0));
+            var maxWidth = Math.max(node.data.indi && node.data.indi.width || 0, node.data.spouse && node.data.spouse.width || 0, widthPerDepth.get(depth) || 0);
+            widthPerDepth.set(depth, maxWidth);
         });
         // Set same width for each depth.
         root.each(function (node) {
-            node.data.width = widthPerDepth.get(node.depth);
+            if (node.data.indi) {
+                node.data.indi.width = widthPerDepth.get(node.depth);
+            }
+            if (node.data.spouse) {
+                node.data.spouse.width = widthPerDepth.get(node.depth);
+            }
         });
-        // Assigns the x and y position for the nodes
-        var treeData = this.treemap(root);
-        var nodes = treeData.descendants();
-        var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.height / 2; }));
-        var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.width / 2; }));
-        var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.height / 2; }));
-        var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.width / 2; }));
+        // Assigns the x and y position for the nodes.
+        var nodes = this.treemap(root).descendants();
+        // Flip left-right.
+        nodes.forEach(function (node) {
+            node.y = -node.y;
+        });
+        // Calculate graph boundaries.
+        var x0 = d3.min(nodes.map(function (d) { return d.x - getHeight(d.data) / 2; }));
+        var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.indi.width / 2; }));
+        var x1 = d3.max(nodes.map(function (d) { return d.x + getHeight(d.data) / 2; }));
+        var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.indi.width / 2; }));
         d3.select('svg')
             .attr('width', y1 - y0 + 2 * MARGIN)
             .attr('height', x1 - x0 + 2 * MARGIN);
@@ -19230,7 +19268,7 @@ var AncestorChart = /** @class */ (function () {
             .enter()
             .append('g')
             .attr('class', 'node')
-            .attr('transform', function (d) { return "translate(" + (d.y - d.data.width / 2) + ", " + (d.x - d.data.height / 2) + ")"; });
+            .attr('transform', function (node) { return "translate(" + (node.y - node.data.indi.width / 2) + ", " + (node.x - getHeight(node.data) / 2) + ")"; });
         this.renderer.render(nodeEnter);
         // Render links.
         var links = nodes.slice(1);
@@ -19328,21 +19366,30 @@ var SimpleRenderer = /** @class */ (function () {
         return [width, BOX_HEIGHT];
     };
     SimpleRenderer.prototype.render = function (selection) {
+        this.renderIndi(selection, function (node) { return node.indi; });
+        var spouseSelection = selection.filter(function (d) { return !!d.data.spouse; })
+            .append('g')
+            .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
+        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
+    };
+    SimpleRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
         // Optionally add a link.
         var group = this.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.hrefFunc(node.data.id); }) :
+            selection.append('a').attr('href', function (node) { return _this.hrefFunc(indiFunc(node.data).id); }) :
             selection;
         // Box.
         group.append('rect')
-            .attr('width', function (node) { return node.data.width; })
-            .attr('height', function (node) { return node.data.height; });
+            .attr('width', function (node) { return indiFunc(node.data).width; })
+            .attr('height', function (node) { return indiFunc(node.data).height; });
         // Text.
         group.append('text')
             .attr('dy', '.35em')
             .attr('text-anchor', 'middle')
-            .attr('transform', function (d) { return "translate(" + d.data.width / 2 + ", " + d.data.height / 2 + ")"; })
-            .text(function (d) { return _this.dataProvider.getIndi(d.data.id).getName(); });
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", " + indiFunc(node.data).height / 2 + ")"; })
+            .text(function (node) {
+            return _this.dataProvider.getIndi(indiFunc(node.data).id).getName();
+        });
     };
     return SimpleRenderer;
 }());
