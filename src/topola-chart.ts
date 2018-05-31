@@ -14,7 +14,7 @@ const DEFAULT_SVG_SELECTOR = 'svg';
 
 
 /** Creates a path from parent to the child node. */
-function diagonal(
+function link(
     s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
   const mid = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
   const dy = d.data.spouse ?
@@ -37,6 +37,15 @@ function getHeight(node: TreeNode): number {
 }
 
 
+/** Returns the spouse of the given individual in the given family. */
+function getSpouse(indiId: string, fam: Fam): string {
+  if (fam.getFather() === indiId) {
+    return fam.getMother();
+  }
+  return fam.getFather();
+}
+
+
 export interface ChartOptions {
   // Input data.
   data: DataProvider<Indi, Fam>;
@@ -50,28 +59,119 @@ export interface ChartOptions {
 }
 
 
-/** Renders an ancestor chart. */
-export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
-  treemap: FlexTreeLayout<TreeNode>;
-  svgSelector: string;
-
-  constructor(readonly options: ChartOptions) {
-    this.treemap =
-        flextree<TreeNode>()
-            .nodeSize((node) => {
-              let w = 0;
-              if (node.children) {
-                node.children.forEach((child) => {
-                  const childW = child.data.indi.width;
-                  w = Math.max(w, childW);
-                });
-              }
-              const thisW = node.data.indi.width;
-              return [getHeight(node.data), (w + thisW) / 2 + DISTANCE_H];
-            })
-            .spacing((a, b) => DISTANCE_V);
-    this.svgSelector = options.svgSelector || DEFAULT_SVG_SELECTOR;
+function setPreferredSize(indi: TreeIndi|undefined, renderer: Renderer): void {
+  if (!indi) {
+    return;
   }
+  [indi.width, indi.height] = renderer.getPreferredSize(indi.id);
+}
+
+
+function renderChart(
+    root: d3.HierarchyNode<TreeNode>, options: ChartOptions,
+    flipHorizontally = false): void {
+  const svgSelector = options.svgSelector || DEFAULT_SVG_SELECTOR;
+  const treemap =
+      flextree<TreeNode>()
+          .nodeSize((node) => {
+            let w = 0;
+            if (node.children) {
+              node.children.forEach((child) => {
+                const childW = child.data.indi.width;
+                w = Math.max(w, childW);
+              });
+            }
+            const thisW = node.data.indi.width;
+            return [getHeight(node.data), (w + thisW) / 2 + DISTANCE_H];
+          })
+          .spacing((a, b) => DISTANCE_V);
+
+  d3.select(svgSelector).append('g');
+
+  // Set preferred sizes.
+  root.each((node) => {
+    setPreferredSize(node.data.indi, options.renderer);
+    setPreferredSize(node.data.spouse, options.renderer);
+  });
+
+  // Calculate width per depth.
+  const widthPerDepth = new Map<number, number>();
+  root.each((node) => {
+    const depth = node.depth;
+    const maxWidth = Math.max(
+        node.data.indi && node.data.indi.width || 0,
+        node.data.spouse && node.data.spouse.width || 0,
+        widthPerDepth.get(depth) || 0);
+    widthPerDepth.set(depth, maxWidth);
+  });
+
+  // Set same width for each depth.
+  root.each((node) => {
+    if (node.data.indi) {
+      node.data.indi.width = widthPerDepth.get(node.depth);
+    }
+    if (node.data.spouse) {
+      node.data.spouse.width = widthPerDepth.get(node.depth);
+    }
+  });
+
+  // Assigns the x and y position for the nodes.
+  const nodes = treemap(root).descendants();
+
+  // Flip left-right.
+  if (flipHorizontally) {
+    nodes.forEach((node) => {
+      node.y = -node.y;
+    });
+  }
+
+  // Calculate graph boundaries.
+  const x0 = d3.min(nodes.map((d) => d.x - getHeight(d.data) / 2));
+  const y0 = d3.min(nodes.map((d) => d.y - d.data.indi.width / 2));
+  const x1 = d3.max(nodes.map((d) => d.x + getHeight(d.data) / 2));
+  const y1 = d3.max(nodes.map((d) => d.y + d.data.indi.width / 2));
+
+  d3.select(svgSelector)
+      .attr('width', y1 - y0 + 2 * MARGIN)
+      .attr('height', x1 - x0 + 2 * MARGIN);
+  d3.select(svgSelector)
+      .select('g')
+      .attr('transform', `translate(${- y0 + MARGIN}, ${- x0 + MARGIN})`);
+
+  // Render nodes.
+  const nodeEnter =
+      d3.select(svgSelector)
+          .select('g')
+          .selectAll('g.node')
+          .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id)
+          .enter()
+          .append('g')
+          .attr('class', 'node')
+          .attr(
+              'transform',
+              (node) => `translate(${node.y - node.data.indi.width / 2}, ${
+                  node.x - getHeight(node.data) / 2})`);
+  options.renderer.render(nodeEnter);
+
+  // Render links.
+  const links = nodes.slice(1);
+  d3.select(svgSelector)
+      .select('g')
+      .selectAll('path.link')
+      .data(links, (d: d3.HierarchyPointNode<Node>) => d.id)
+      .enter()
+      .insert('path', 'g')
+      .attr('class', 'link')
+      .attr(
+          'd',
+          (node) => flipHorizontally ? link(node, node.parent) :
+                                       link(node.parent, node));
+}
+
+
+/** Renders an ancestors chart. */
+export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
+  constructor(readonly options: ChartOptions) {}
 
   /** Creates a d3 hierarchy from the input data. */
   private createHierarchy(): d3.HierarchyNode<TreeNode> {
@@ -79,7 +179,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
     const indi = this.options.data.getIndi(this.options.startId);
     const famc = indi.getFamilyAsChild();
     parents.push({id: this.options.startId, indi: {id: this.options.startId}});
-    const stack: Array<TreeNode> = [];
+    const stack: TreeNode[] = [];
     if (famc) {
       stack.push({id: famc, parentId: this.options.startId});
     }
@@ -115,13 +215,79 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
     return d3.stratify<TreeNode>()(parents);
   }
 
-  private setPreferredSize(indi: TreeIndi|undefined): void {
-    if (!indi) {
-      return;
+  /**
+   * Renders the tree, calling the provided renderer to draw boxes for
+   * individuals.
+   */
+  render(): void {
+    const root = this.createHierarchy();
+    renderChart(root, this.options, true);
+  }
+}
+
+
+/** Renders a descendants chart. */
+export class DescendantChart<IndiT extends Indi, FamT extends Fam> {
+  constructor(readonly options: ChartOptions) {}
+
+  private getNodes(id: string): TreeNode[] {
+    const indi = this.options.data.getIndi(id);
+    const famIds = indi.getFamiliesAsSpouse();
+    if (!famIds.length) {
+      // Single person.
+      return [{
+        id,
+        indi: {
+          id,
+        }
+      }];
     }
-    const [width, height] = this.options.renderer.getPreferredSize(indi.id);
-    indi.width = width;
-    indi.height = height;
+    // Marriages.
+    return famIds.map((famId) => {
+      const fam = this.options.data.getFam(famId);
+      return {
+        id: famId,
+        indi: {
+          id,
+        },
+        spouse: {
+          id: getSpouse(id, fam),
+        },
+        family: {
+          id: famId,
+        }
+      };
+    });
+  }
+
+  /** Creates a d3 hierarchy from the input data. */
+  private createHierarchy(): d3.HierarchyNode<TreeNode> {
+    const parents: TreeNode[] = [];
+    const nodes = this.getNodes(this.options.startId);
+    parents.push(...nodes);
+
+    const stack: string[] = [];
+    nodes.forEach((node) => {
+      if (node.family) {
+        stack.push(node.family.id);
+      }
+    });
+    while (stack.length) {
+      const famId = stack.pop();
+      const fam = this.options.data.getFam(famId);
+      const children = fam.getChildren();
+      children.forEach((childId) => {
+        const childNodes = this.getNodes(childId);
+        childNodes.forEach((node) => {
+          node.parentId = famId;
+          if (node.family) {
+            stack.push(node.family.id);
+          }
+        });
+        parents.push(...childNodes);
+      });
+    }
+    return d3.stratify<TreeNode>()(parents);
   }
 
   /**
@@ -130,79 +296,6 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
    */
   render(): void {
     const root = this.createHierarchy();
-    d3.select(this.svgSelector).append('g');
-
-    // Set preferred sizes.
-    root.each((node) => {
-      this.setPreferredSize(node.data.indi);
-      this.setPreferredSize(node.data.spouse);
-    });
-
-    // Calculate width per depth.
-    const widthPerDepth = new Map<number, number>();
-    root.each((node) => {
-      const depth = node.depth;
-      const maxWidth = Math.max(
-          node.data.indi && node.data.indi.width || 0,
-          node.data.spouse && node.data.spouse.width || 0,
-          widthPerDepth.get(depth) || 0);
-      widthPerDepth.set(depth, maxWidth);
-    });
-
-    // Set same width for each depth.
-    root.each((node) => {
-      if (node.data.indi) {
-        node.data.indi.width = widthPerDepth.get(node.depth);
-      }
-      if (node.data.spouse) {
-        node.data.spouse.width = widthPerDepth.get(node.depth);
-      }
-    });
-
-    // Assigns the x and y position for the nodes.
-    const nodes = this.treemap(root).descendants();
-
-    // Flip left-right.
-    nodes.forEach((node) => {
-      node.y = -node.y;
-    });
-
-    // Calculate graph boundaries.
-    const x0 = d3.min(nodes.map((d) => d.x - getHeight(d.data) / 2));
-    const y0 = d3.min(nodes.map((d) => d.y - d.data.indi.width / 2));
-    const x1 = d3.max(nodes.map((d) => d.x + getHeight(d.data) / 2));
-    const y1 = d3.max(nodes.map((d) => d.y + d.data.indi.width / 2));
-
-    d3.select(this.svgSelector)
-        .attr('width', y1 - y0 + 2 * MARGIN)
-        .attr('height', x1 - x0 + 2 * MARGIN);
-    d3.select(this.svgSelector).select('g').attr(
-        'transform', `translate(${- y0 + MARGIN}, ${- x0 + MARGIN})`);
-
-    // Render nodes.
-    const nodeEnter =
-        d3.select(this.svgSelector)
-            .select('g')
-            .selectAll('g.node')
-            .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id)
-            .enter()
-            .append('g')
-            .attr('class', 'node')
-            .attr(
-                'transform',
-                (node) => `translate(${node.y - node.data.indi.width / 2}, ${
-                    node.x - getHeight(node.data) / 2})`);
-    this.options.renderer.render(nodeEnter);
-
-    // Render links.
-    const links = nodes.slice(1);
-    d3.select(this.svgSelector)
-        .select('g')
-        .selectAll('path.link')
-        .data(links, (d: d3.HierarchyPointNode<Node>) => d.id)
-        .enter()
-        .insert('path', 'g')
-        .attr('class', 'link')
-        .attr('d', (d) => diagonal(d, d.parent));
+    renderChart(root, this.options);
   }
 }

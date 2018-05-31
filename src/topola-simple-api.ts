@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {AncestorChart} from './topola-chart';
+import {AncestorChart, ChartOptions, DescendantChart} from './topola-chart';
 import {JsonDataProvider, JsonGedcomData} from './topola-data';
 import {SimpleRenderer} from './topola-render';
 
@@ -12,19 +12,36 @@ export interface RenderOptions {
 }
 
 
+function createChartOptions(
+    json: JsonGedcomData, options: RenderOptions): ChartOptions {
+  const data = new JsonDataProvider(json);
+  const indiUrlFunction = options.indiUrl ?
+      (id: string) => options.indiUrl.replace('${id}', id) :
+      undefined;
+  return {
+    data,
+    renderer: new SimpleRenderer(data, indiUrlFunction),
+    startId: options.startId,
+    svgSelector: options.svgSelector,
+  };
+}
+
+
 /** A simplified API for rendering data based on the given RenderOptions. */
-export function render(options: RenderOptions): void {
+export function renderAncestors(options: RenderOptions): void {
   d3.json(options.jsonUrl).then((json) => {
-    const data = new JsonDataProvider(json as JsonGedcomData);
-    const indiUrlFunction = options.indiUrl ?
-        (id: string) => options.indiUrl.replace('${id}', id) :
-        undefined;
-    const chart = new AncestorChart({
-      data: data,
-      renderer: new SimpleRenderer(data, indiUrlFunction),
-      startId: options.startId,
-      svgSelector: options.svgSelector,
-    });
+    const chartOptions = createChartOptions(json as JsonGedcomData, options);
+    const chart = new AncestorChart(chartOptions);
+    chart.render();
+  });
+}
+
+
+/** A simplified API for rendering data based on the given RenderOptions. */
+export function renderDescendants(options: RenderOptions): void {
+  d3.json(options.jsonUrl).then((json) => {
+    const chartOptions = createChartOptions(json as JsonGedcomData, options);
+    const chart = new DescendantChart(chartOptions);
     chart.render();
   });
 }

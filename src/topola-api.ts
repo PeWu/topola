@@ -27,9 +27,9 @@ export interface TreeNode {
  * This interface is only used in the context of creating the layout.
  */
 export interface Indi {
+  getId(): string;
   getFamiliesAsSpouse(): string[];
   getFamilyAsChild(): string|null;
-  getId(): string;
 }
 
 
@@ -38,9 +38,10 @@ export interface Indi {
  * This interface is only used in the context of creating the layout.
  */
 export interface Fam {
+  getId(): string;
   getFather(): string|null;
   getMother(): string|null;
-  getId(): string;
+  getChildren(): string[];
 }
 
 

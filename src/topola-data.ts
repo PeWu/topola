@@ -59,6 +59,9 @@ class JsonFamDetails implements Fam {
   getMother() {
     return this.json.wife || null;
   }
+  getChildren() {
+    return this.json.children || [];
+  }
 }
 
 /** Implementation of the DataProvider interface based on Json input. */
