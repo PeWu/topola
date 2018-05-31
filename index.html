@@ -7,14 +7,24 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
-      topola.render({
+      topola.renderAncestors({
         jsonUrl: 'data/data.json',
         startId: 'I46464',
-        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}'
+        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+        svgSelector: '#ancestors',
+      })
+      topola.renderDescendants({
+        jsonUrl: 'data/data2.json',
+        startId: 'I68389',
+        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+        svgSelector: '#descendants',
       })
     </script>
   </head>
   <body>
-    <svg class="graph"/>
+    <h1>Ancestors</h1>
+    <svg class="graph" id="ancestors"/>
+    <h1>Descendants</h1>
+    <svg class="graph" id="descendants"/>
   </body>
 </html>
