@@ -10,11 +10,13 @@
       topola.render({
         jsonUrl: 'data/data.json',
         startId: 'I46464',
-        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}'
+        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+        svgSelector: '#ancestors',
       })
     </script>
   </head>
   <body>
-    <svg class="graph"/>
+    <h1>Ancestors</h1>
+    <svg class="graph" id="ancestors"/>
   </body>
 </html>

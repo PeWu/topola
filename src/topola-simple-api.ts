@@ -8,7 +8,9 @@ export interface RenderOptions {
   jsonUrl: string;
   startId: string;
   indiUrl?: string;
+  svgSelector?: string;
 }
+
 
 /** A simplified API for rendering data based on the given RenderOptions. */
 export function render(options: RenderOptions): void {
@@ -17,8 +19,12 @@ export function render(options: RenderOptions): void {
     const indiUrlFunction = options.indiUrl ?
         (id: string) => options.indiUrl.replace('${id}', id) :
         undefined;
-    const renderer = new SimpleRenderer(data, indiUrlFunction);
-    const chart = new AncestorChart(data, renderer, options.startId);
+    const chart = new AncestorChart({
+      data: data,
+      renderer: new SimpleRenderer(data, indiUrlFunction),
+      startId: options.startId,
+      svgSelector: options.svgSelector,
+    });
     chart.render();
   });
 }
