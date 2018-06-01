@@ -51,8 +51,9 @@ export interface ChartOptions {
   data: DataProvider<Indi, Fam>;
   // Renderer for individual data.
   renderer: Renderer;
-  // The root of the drawn tree for whom the ancestors will be drawn.
-  startId: string;
+  // The ID of the root individual or family. Set either startIndi or startFam.
+  startIndi?: string;
+  startFam?: string;
   // CSS selector of the SVG tag to draw in. If not provided, the chart will be
   // rendered in the first SVG tag.
   svgSelector?: string;
@@ -176,12 +177,17 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
   /** Creates a d3 hierarchy from the input data. */
   private createHierarchy(): d3.HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
-    const indi = this.options.data.getIndi(this.options.startId);
-    const famc = indi.getFamilyAsChild();
-    parents.push({id: this.options.startId, indi: {id: this.options.startId}});
     const stack: TreeNode[] = [];
-    if (famc) {
-      stack.push({id: famc, parentId: this.options.startId});
+    if (this.options.startIndi) {
+      const indi = this.options.data.getIndi(this.options.startIndi);
+      const famc = indi.getFamilyAsChild();
+      if (famc) {
+        stack.push({id: famc, parentId: this.options.startIndi});
+      }
+      parents.push(
+          {id: this.options.startIndi, indi: {id: this.options.startIndi}});
+    } else {
+      stack.push({id: this.options.startFam});
     }
     while (stack.length) {
       const entry = stack.pop();
@@ -260,10 +266,28 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> {
     });
   }
 
+  private getFamNode(famId: string): TreeNode {
+    const node: TreeNode = {id: famId, family: {id: famId}};
+    const fam = this.options.data.getFam(famId);
+    const father = fam.getFather();
+    if (father) {
+      node.indi = {id: father};
+    }
+    const mother = fam.getMother();
+    if (mother) {
+      node.spouse = {id: mother};
+    }
+    return node;
+  }
+
   /** Creates a d3 hierarchy from the input data. */
   private createHierarchy(): d3.HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
-    const nodes = this.getNodes(this.options.startId);
+
+    const nodes = this.options.startIndi ?
+        this.getNodes(this.options.startIndi) :
+        [this.getFamNode(this.options.startFam)];
+
     parents.push(...nodes);
 
     const stack: string[] = [];

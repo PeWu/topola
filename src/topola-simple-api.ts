@@ -4,9 +4,11 @@ import {AncestorChart, ChartOptions, DescendantChart} from './topola-chart';
 import {JsonDataProvider, JsonGedcomData} from './topola-data';
 import {SimpleRenderer} from './topola-render';
 
+
 export interface RenderOptions {
   jsonUrl: string;
-  startId: string;
+  startIndi?: string;
+  startFam?: string;
   indiUrl?: string;
   svgSelector?: string;
 }
@@ -21,7 +23,8 @@ function createChartOptions(
   return {
     data,
     renderer: new SimpleRenderer(data, indiUrlFunction),
-    startId: options.startId,
+    startIndi: options.startIndi,
+    startFam: options.startFam,
     svgSelector: options.svgSelector,
   };
 }
