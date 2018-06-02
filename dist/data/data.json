@@ -1,16 +1,14 @@
 {
   "fams": [
     {
-      "wife": "I68390",
-      "id": "F23172",
       "children": [
         "I46741"
       ],
-      "husb": "I68389"
+      "husb": "I68389",
+      "id": "F23172",
+      "wife": "I68390"
     },
     {
-      "wife": "I46742",
-      "id": "F15629",
       "children": [
         "I46743",
         "I12356",
@@ -19,21 +17,21 @@
         "I46746",
         "I46747"
       ],
-      "husb": "I46741"
+      "husb": "I46741",
+      "id": "F15629",
+      "wife": "I46742"
     },
     {
-      "wife": "I29773",
-      "id": "F9881",
       "children": [
         "I12570",
         "I10120",
         "I29774"
       ],
-      "husb": "I12356"
+      "husb": "I12356",
+      "id": "F9881",
+      "wife": "I29773"
     },
     {
-      "wife": "I12571",
-      "id": "F4185",
       "children": [
         "I12576",
         "I32617",
@@ -42,11 +40,11 @@
         "I40523",
         "I12583"
       ],
-      "husb": "I12570"
+      "husb": "I12570",
+      "id": "F4185",
+      "wife": "I12571"
     },
     {
-      "wife": "I12578",
-      "id": "F4189",
       "children": [
         "I12579",
         "I12580",
@@ -55,19 +53,19 @@
         "I34014",
         "I12582"
       ],
-      "husb": "I12576"
+      "husb": "I12576",
+      "id": "F4189",
+      "wife": "I12578"
     },
     {
-      "wife": "I32617",
-      "id": "F10891",
       "children": [
         "I32618"
       ],
-      "husb": "I32616"
+      "husb": "I32616",
+      "id": "F10891",
+      "wife": "I32617"
     },
     {
-      "wife": "I12569",
-      "id": "F4184",
       "children": [
         "I12574",
         "I12584",
@@ -79,33 +77,33 @@
         "I12567",
         "I34020"
       ],
-      "husb": "I12568"
+      "husb": "I12568",
+      "id": "F4184",
+      "wife": "I12569"
     },
     {
-      "wife": "I32537",
-      "id": "F10889",
       "children": [
         "I32614"
       ],
-      "husb": "I32613"
+      "husb": "I32613",
+      "id": "F10889",
+      "wife": "I32537"
     },
     {
-      "wife": "I40522",
-      "id": "F13054",
       "children": [
         "I41468"
       ],
-      "husb": "I40523"
+      "husb": "I40523",
+      "id": "F13054",
+      "wife": "I40522"
     },
     {
-      "wife": "I12868",
-      "id": "F4273",
       "children": [],
-      "husb": "I40523"
+      "husb": "I40523",
+      "id": "F4273",
+      "wife": "I12868"
     },
     {
-      "wife": "I12583",
-      "id": "F4224",
       "children": [
         "I12675",
         "I12870",
@@ -118,11 +116,11 @@
         "I56842",
         "I56841"
       ],
-      "husb": "I12677"
+      "husb": "I12677",
+      "id": "F4224",
+      "wife": "I12583"
     },
     {
-      "wife": "I10120",
-      "id": "F3453",
       "children": [
         "I29776",
         "I38030",
@@ -133,17 +131,17 @@
         "I29779",
         "I29780"
       ],
-      "husb": "I10119"
+      "husb": "I10119",
+      "id": "F3453",
+      "wife": "I10120"
     },
     {
-      "wife": "I14880",
-      "id": "F4911",
       "children": [],
-      "husb": "I14879"
+      "husb": "I14879",
+      "id": "F4911",
+      "wife": "I14880"
     },
     {
-      "wife": "I10099",
-      "id": "F3444",
       "children": [
         "I10121",
         "I38476",
@@ -156,31 +154,31 @@
         "I29765",
         "I29766"
       ],
-      "husb": "I10098"
+      "husb": "I10098",
+      "id": "F3444",
+      "wife": "I10099"
     },
     {
-      "wife": "I31972",
-      "id": "F10666",
       "children": [
         "I31985",
         "I31986",
         "I31987"
       ],
-      "husb": "I29779"
+      "husb": "I29779",
+      "id": "F10666",
+      "wife": "I31972"
     },
     {
-      "wife": "I31988",
-      "id": "F10670",
       "children": [
         "I31989",
         "I31990",
         "I31991"
       ],
-      "husb": "I29779"
+      "husb": "I29779",
+      "id": "F10670",
+      "wife": "I31988"
     },
     {
-      "wife": "I29780",
-      "id": "F10673",
       "children": [
         "I5321",
         "I32004",
@@ -190,11 +188,11 @@
         "I32010",
         "I32009"
       ],
-      "husb": "I31994"
+      "husb": "I31994",
+      "id": "F10673",
+      "wife": "I29780"
     },
     {
-      "wife": "I12290",
-      "id": "F4126",
       "children": [
         "I29775",
         "I46750",
@@ -204,19 +202,19 @@
         "I46757",
         "I32168"
       ],
-      "husb": "I12356"
+      "husb": "I12356",
+      "id": "F4126",
+      "wife": "I12290"
     },
     {
-      "wife": "I46759",
-      "id": "F15633",
       "children": [
         "I46762"
       ],
-      "husb": "I14876"
+      "husb": "I14876",
+      "id": "F15633",
+      "wife": "I46759"
     },
     {
-      "wife": "I14877",
-      "id": "F4910",
       "children": [
         "I9556",
         "I10257",
@@ -224,11 +222,11 @@
         "I46735",
         "I46734"
       ],
-      "husb": "I14876"
+      "husb": "I14876",
+      "id": "F4910",
+      "wife": "I14877"
     },
     {
-      "wife": "I9556",
-      "id": "F3047",
       "children": [
         "I14878",
         "I9554",
@@ -239,25 +237,25 @@
         "I34610",
         "I34611"
       ],
-      "husb": "I9555"
+      "husb": "I9555",
+      "id": "F3047",
+      "wife": "I9556"
     },
     {
-      "wife": "I10257",
-      "id": "F3488",
       "children": [
         "I10255"
       ],
-      "husb": "I10256"
+      "husb": "I10256",
+      "id": "F3488",
+      "wife": "I10257"
     },
     {
-      "wife": "I46731",
-      "id": "F15626",
       "children": [],
-      "husb": "I46730"
+      "husb": "I46730",
+      "id": "F15626",
+      "wife": "I46731"
     },
     {
-      "wife": "I32169",
-      "id": "F10745",
       "children": [
         "I33025",
         "I33027",
@@ -268,33 +266,33 @@
         "I46749",
         "I29750"
       ],
-      "husb": "I32168"
+      "husb": "I32168",
+      "id": "F10745",
+      "wife": "I32169"
     },
     {
-      "wife": "I37863",
-      "id": "F12675",
       "children": [],
-      "husb": "I33025"
+      "husb": "I33025",
+      "id": "F12675",
+      "wife": "I37863"
     },
     {
-      "wife": "I33027",
-      "id": "F12563",
       "children": [
         "I37589"
       ],
-      "husb": "I37590"
+      "husb": "I37590",
+      "id": "F12563",
+      "wife": "I33027"
     },
     {
-      "wife": "I32162",
-      "id": "F10742",
       "children": [
         "I61192"
       ],
-      "husb": "I32167"
+      "husb": "I32167",
+      "id": "F10742",
+      "wife": "I32162"
     },
     {
-      "wife": "I29751",
-      "id": "F9879",
       "children": [
         "I29755",
         "I29756",
@@ -305,38 +303,38 @@
         "I68294",
         "I68295"
       ],
-      "husb": "I29750"
+      "husb": "I29750",
+      "id": "F9879",
+      "wife": "I29751"
     },
     {
-      "wife": "I46751",
-      "id": "F15630",
       "children": [
         "I46754",
         "I46755",
         "I46756"
       ],
-      "husb": "I46745"
+      "husb": "I46745",
+      "id": "F15630",
+      "wife": "I46751"
     },
     {
-      "wife": "I46468",
-      "id": "F15526",
       "children": [],
-      "husb": "I46464"
+      "husb": "I46464",
+      "id": "F15526",
+      "wife": "I46468"
     },
     {
-      "wife": "I46463",
-      "id": "F15525",
       "children": [
         "I46464",
         "I46465",
         "I46466",
         "I46467"
       ],
-      "husb": "I45740"
+      "husb": "I45740",
+      "id": "F15525",
+      "wife": "I46463"
     },
     {
-      "wife": "I34609",
-      "id": "F11529",
       "children": [
         "I34613",
         "I34615",
@@ -345,11 +343,11 @@
         "I45740",
         "I45741"
       ],
-      "husb": "I34612"
+      "husb": "I34612",
+      "id": "F11529",
+      "wife": "I34609"
     },
     {
-      "wife": "I38028",
-      "id": "F12731",
       "children": [
         "I38023",
         "I34624",
@@ -357,11 +355,11 @@
         "I38469",
         "I34612"
       ],
-      "husb": "I38027"
+      "husb": "I38027",
+      "id": "F12731",
+      "wife": "I38028"
     },
     {
-      "wife": "I34801",
-      "id": "F11580",
       "children": [
         "I34790",
         "I34803",
@@ -371,37 +369,37 @@
         "I34802",
         "I46425"
       ],
-      "husb": "I34800"
+      "husb": "I34800",
+      "id": "F11580",
+      "wife": "I34801"
     },
     {
-      "wife": "I46427",
-      "id": "F15513",
       "children": [
         "I34800"
       ],
-      "husb": "I46426"
+      "husb": "I46426",
+      "id": "F15513",
+      "wife": "I46427"
     },
     {
-      "wife": "I34790",
+      "children": [],
+      "husb": "I34789",
       "id": "F11578",
-      "children": [],
-      "husb": "I34789"
+      "wife": "I34790"
     },
     {
-      "wife": "I34790",
+      "children": [],
+      "husb": "I46525",
       "id": "F15550",
-      "children": [],
-      "husb": "I46525"
+      "wife": "I34790"
     },
     {
-      "wife": "I46428",
+      "children": [],
+      "husb": "I38027",
       "id": "F15514",
-      "children": [],
-      "husb": "I38027"
+      "wife": "I46428"
     },
     {
-      "wife": "I29778",
-      "id": "F9882",
       "children": [
         "I14880",
         "I46430",
@@ -409,11 +407,11 @@
         "I38028",
         "I46434"
       ],
-      "husb": "I29777"
+      "husb": "I29777",
+      "id": "F9882",
+      "wife": "I29778"
     },
     {
-      "wife": "I46432",
-      "id": "F15516",
       "children": [
         "I29777",
         "I46443",
@@ -424,41 +422,41 @@
         "I46445",
         "I46444"
       ],
-      "husb": "I46431"
+      "husb": "I46431",
+      "id": "F15516",
+      "wife": "I46432"
     },
     {
-      "wife": "I46446",
+      "children": [],
+      "husb": "I46441",
       "id": "F15518",
-      "children": [],
-      "husb": "I46441"
+      "wife": "I46446"
     },
     {
-      "wife": "I37889",
+      "children": [],
+      "husb": "I46430",
       "id": "F15517",
-      "children": [],
-      "husb": "I46430"
+      "wife": "I37889"
     },
     {
-      "wife": "I38023",
+      "children": [],
+      "husb": "I29762",
       "id": "F12730",
-      "children": [],
-      "husb": "I29762"
+      "wife": "I38023"
     },
     {
-      "wife": "I34624",
+      "children": [],
+      "husb": "I34606",
       "id": "F11533",
-      "children": [],
-      "husb": "I34606"
+      "wife": "I34624"
     },
     {
-      "wife": "I38975",
+      "children": [],
+      "husb": "I38469",
       "id": "F13506",
-      "children": [],
-      "husb": "I38469"
+      "wife": "I38975"
     },
     {
-      "wife": "I11878",
-      "id": "F3978",
       "children": [
         "I35183",
         "I37236",
@@ -468,11 +466,11 @@
         "I9555",
         "I5724"
       ],
-      "husb": "I11877"
+      "husb": "I11877",
+      "id": "F3978",
+      "wife": "I11878"
     },
     {
-      "wife": "I11874",
-      "id": "F3977",
       "children": [
         "I11877",
         "I33639",
@@ -481,1809 +479,4396 @@
         "I11880",
         "I10117"
       ],
-      "husb": "I11873"
+      "husb": "I11873",
+      "id": "F3977",
+      "wife": "I11874"
     },
     {
-      "wife": "I11885",
-      "id": "F3981",
       "children": [
         "I33591",
         "I11873",
         "I32160",
         "I33592"
       ],
-      "husb": "I11884"
+      "husb": "I11884",
+      "id": "F3981",
+      "wife": "I11885"
     },
     {
-      "wife": "I11886",
+      "children": [],
+      "husb": "I11884",
       "id": "F3982",
-      "children": [],
-      "husb": "I11884"
+      "wife": "I11886"
     },
     {
-      "wife": "I33591",
+      "children": [],
+      "husb": "I35174",
       "id": "F11713",
-      "children": [],
-      "husb": "I35174"
+      "wife": "I33591"
     },
     {
-      "wife": "I32161",
+      "children": [],
+      "husb": "I32160",
       "id": "F10739",
-      "children": [],
-      "husb": "I32160"
+      "wife": "I32161"
     },
     {
-      "wife": "I11888",
-      "id": "F3983",
       "children": [
         "I11874",
         "I32170"
       ],
-      "husb": "I11887"
+      "husb": "I11887",
+      "id": "F3983",
+      "wife": "I11888"
     },
     {
-      "wife": "I33636",
+      "children": [],
+      "husb": "I33639",
       "id": "F11233",
-      "children": [],
-      "husb": "I33639"
+      "wife": "I33636"
     },
     {
-      "wife": "I11881",
+      "children": [],
+      "husb": "I11880",
       "id": "F3980",
-      "children": [],
-      "husb": "I11880"
+      "wife": "I11881"
     },
     {
-      "wife": "I37884",
+      "children": [],
+      "husb": "I11880",
       "id": "F12683",
-      "children": [],
-      "husb": "I11880"
+      "wife": "I37884"
     },
     {
-      "wife": "I11879",
+      "children": [],
+      "husb": "I11877",
       "id": "F3979",
-      "children": [],
-      "husb": "I11877"
+      "wife": "I11879"
     },
     {
-      "wife": "I32174",
+      "children": [],
+      "husb": "I32173",
       "id": "F10747",
-      "children": [],
-      "husb": "I32173"
+      "wife": "I32174"
     },
     {
-      "wife": "I5725",
+      "children": [],
+      "husb": "I5724",
       "id": "F1674",
-      "children": [],
-      "husb": "I5724"
+      "wife": "I5725"
     },
     {
-      "wife": "I12358",
-      "id": "F4127",
       "children": [
         "I12290"
       ],
-      "husb": "I12357"
+      "husb": "I12357",
+      "id": "F4127",
+      "wife": "I12358"
     },
     {
-      "wife": "I12290",
-      "id": "F4085",
       "children": [],
-      "husb": "I12225"
+      "husb": "I12225",
+      "id": "F4085",
+      "wife": "I12290"
     },
     {
-      "wife": "I46733",
-      "id": "F15627",
       "children": [
         "I14877"
       ],
-      "husb": "I46732"
+      "husb": "I46732",
+      "id": "F15627",
+      "wife": "I46733"
     },
     {
-      "wife": "I46818",
-      "id": "F15649",
       "children": [
         "I46733"
       ],
-      "husb": "I46817"
+      "husb": "I46817",
+      "id": "F15649",
+      "wife": "I46818"
     },
     {
-      "wife": "I14877",
+      "children": [],
+      "husb": "I46758",
       "id": "F15632",
-      "children": [],
-      "husb": "I46758"
+      "wife": "I14877"
     },
     {
-      "wife": "I31967",
+      "children": [],
+      "husb": "I14878",
       "id": "F10663",
-      "children": [],
-      "husb": "I14878"
+      "wife": "I31967"
     },
     {
-      "wife": "I9548",
+      "children": [],
+      "husb": "I9554",
       "id": "F3046",
-      "children": [],
-      "husb": "I9554"
+      "wife": "I9548"
     },
     {
-      "wife": "I34616",
+      "children": [],
+      "husb": "I34614",
       "id": "F11530",
-      "children": [],
-      "husb": "I34614"
+      "wife": "I34616"
     },
     {
-      "wife": "I46452",
+      "children": [],
+      "husb": "I46453",
       "id": "F15521",
-      "children": [],
-      "husb": "I46453"
+      "wife": "I46452"
     },
     {
-      "wife": "I45762",
+      "children": [],
+      "husb": "I45741",
       "id": "F15268",
-      "children": [],
-      "husb": "I45741"
+      "wife": "I45762"
     },
     {
-      "wife": "I46460",
-      "id": "F15524",
       "children": [],
-      "husb": "I45740"
+      "husb": "I45740",
+      "id": "F15524",
+      "wife": "I46460"
     }
   ],
   "indis": [
     {
-      "id": "I68389",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F23172"
       ],
+      "id": "I68389",
       "name": "Wojciech Wi\u0119ch"
     },
     {
-      "id": "I68390",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F23172"
       ],
+      "id": "I68390",
       "name": "Marianna"
     },
     {
+      "birth": {
+        "date": {
+          "day": 26,
+          "month": 10,
+          "year": 1716
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F23172",
-      "id": "I46741",
       "fams": [
         "F15629"
       ],
+      "id": "I46741",
       "name": "Szymon Wi\u0119ch"
     },
     {
-      "id": "I46742",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15629"
       ],
+      "id": "I46742",
       "name": "Marianna O\u0142dak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 10,
+          "month": 3,
+          "year": 1739
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15629",
-      "id": "I46743",
       "fams": [],
+      "id": "I46743",
       "name": "Marianna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 1,
+          "year": 1741
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 7,
+          "month": 9,
+          "year": 1809
+        }
+      },
       "famc": "F15629",
-      "id": "I12356",
       "fams": [
         "F9881",
         "F4126"
       ],
+      "id": "I12356",
       "name": "Sebastian Wi\u0119ch"
     },
     {
-      "id": "I29773",
+      "death": {
+        "confirmed": true,
+        "date": {
+          "qualifier": "abt",
+          "year": 1777
+        }
+      },
       "fams": [
         "F9881"
       ],
+      "id": "I29773",
       "name": "Ma\u0142gorzata Kacprzyk"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "abt",
+          "year": 1765
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 4,
+          "month": 12,
+          "year": 1840
+        }
+      },
       "famc": "F9881",
-      "id": "I12570",
       "fams": [
         "F4185"
       ],
+      "id": "I12570",
       "name": "Szczepan Wi\u0119ch"
     },
     {
-      "id": "I12571",
+      "birth": {
+        "date": {
+          "year": 1768
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 30,
+          "month": 8,
+          "year": 1847
+        }
+      },
       "fams": [
         "F4185"
       ],
+      "id": "I12571",
       "name": "Barbara Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1794
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 20,
+          "month": 3,
+          "year": 1875
+        }
+      },
       "famc": "F4185",
-      "id": "I12576",
       "fams": [
         "F4189"
       ],
+      "id": "I12576",
       "name": "Andrzej Wi\u0119ch"
     },
     {
-      "id": "I12578",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1795
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 4,
+          "year": 1865
+        }
+      },
       "fams": [
         "F4189"
       ],
+      "id": "I12578",
       "name": "Katarzyna J\u0119drzejak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 11,
+          "month": 11,
+          "year": 1815
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 25,
+          "month": 4,
+          "year": 1865
+        }
+      },
       "famc": "F4189",
-      "id": "I12579",
       "fams": [],
+      "id": "I12579",
       "name": "Marcin Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 23,
+          "month": 5,
+          "year": 1819
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 24,
+          "month": 5,
+          "year": 1819
+        }
+      },
       "famc": "F4189",
-      "id": "I12580",
       "fams": [],
+      "id": "I12580",
       "name": "Marianna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 18,
+          "month": 9,
+          "year": 1823
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 5,
+          "month": 11,
+          "year": 1825
+        }
+      },
       "famc": "F4189",
-      "id": "I12581",
       "fams": [],
+      "id": "I12581",
       "name": "Ambro\u017cy Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 24,
+          "month": 5,
+          "year": 1826
+        }
+      },
       "famc": "F4189",
-      "id": "I34013",
       "fams": [],
+      "id": "I34013",
       "name": "Franciszka Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 8,
+          "month": 11,
+          "year": 1828
+        }
+      },
       "famc": "F4189",
-      "id": "I34014",
       "fams": [],
+      "id": "I34014",
       "name": "Teodor Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1834
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4189",
-      "id": "I12582",
       "fams": [],
+      "id": "I12582",
       "name": "Kacper Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1799
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4185",
-      "id": "I32617",
       "fams": [
         "F10891"
       ],
+      "id": "I32617",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
-      "id": "I32616",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1796
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F10891"
       ],
+      "id": "I32616",
       "name": "Jakub O\u0142dak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 3,
+          "month": 11,
+          "year": 1821
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10891",
-      "id": "I32618",
       "fams": [],
+      "id": "I32618",
       "name": "Andrzej O\u0142dak"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1801
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1864
+        }
+      },
       "famc": "F4185",
-      "id": "I12568",
       "fams": [
         "F4184"
       ],
+      "id": "I12568",
       "name": "Ambro\u017cy Wi\u0119ch"
     },
     {
-      "id": "I12569",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1804
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1852
+        }
+      },
       "fams": [
         "F4184"
       ],
+      "id": "I12569",
       "name": "Magdalena Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1824
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1858
+        }
+      },
       "famc": "F4184",
-      "id": "I12574",
       "fams": [],
+      "id": "I12574",
       "name": "Jan Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "month": 10,
+          "year": 1826
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 2,
+          "month": 12,
+          "year": 1826
+        }
+      },
       "famc": "F4184",
-      "id": "I12584",
       "fams": [],
+      "id": "I12584",
       "name": "Anna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 12,
+          "year": 1827
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 11,
+          "month": 3,
+          "year": 1833
+        }
+      },
       "famc": "F4184",
-      "id": "I34016",
       "fams": [],
+      "id": "I34016",
       "name": "Tomasz Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 31,
+          "month": 7,
+          "year": 1830
+        }
+      },
       "famc": "F4184",
-      "id": "I34017",
       "fams": [],
+      "id": "I34017",
       "name": "Piotr Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1833
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1834
+        }
+      },
       "famc": "F4184",
-      "id": "I34018",
       "fams": [],
+      "id": "I34018",
       "name": "Bonifacy Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1835
+        }
+      },
       "famc": "F4184",
-      "id": "I34019",
       "fams": [],
+      "id": "I34019",
       "name": "Rozalia Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1838
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4184",
-      "id": "I40487",
       "fams": [],
+      "id": "I40487",
       "name": "Marianna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1843
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4184",
-      "id": "I12567",
       "fams": [],
+      "id": "I12567",
       "name": "J\u00f3zefa Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1845
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1848
+        }
+      },
       "famc": "F4184",
-      "id": "I34020",
       "fams": [],
+      "id": "I34020",
       "name": "Roch Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "abt",
+          "year": 1802
+        }
+      },
       "famc": "F4185",
-      "id": "I32537",
       "fams": [
         "F10889"
       ],
+      "id": "I32537",
       "name": "Teresa Wi\u0119ch"
     },
     {
-      "id": "I32613",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1796
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F10889"
       ],
+      "id": "I32613",
       "name": "J\u00f3zef Banaszek"
     },
     {
+      "birth": {
+        "date": {
+          "day": 3,
+          "month": 10,
+          "year": 1822
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10889",
-      "id": "I32614",
       "fams": [],
+      "id": "I32614",
       "name": "Marianna Banaszek"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1806
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 11,
+          "month": 10,
+          "year": 1876
+        }
+      },
       "famc": "F4185",
-      "id": "I40523",
       "fams": [
         "F13054",
         "F4273"
       ],
+      "id": "I40523",
       "name": "Jan Wi\u0119ch"
     },
     {
-      "id": "I40522",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F13054"
       ],
+      "id": "I40522",
       "name": "Marianna O\u0142dak"
     },
     {
+      "death": {
+        "confirmed": true
+      },
       "famc": "F13054",
-      "id": "I41468",
       "fams": [],
+      "id": "I41468",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
-      "id": "I12868",
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1876
+          }
+        }
+      },
       "fams": [
         "F4273"
       ],
+      "id": "I12868",
       "name": "Katarzyna Gajcy"
     },
     {
+      "birth": {
+        "date": {
+          "day": 2,
+          "month": 9,
+          "year": 1810
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 1,
+          "month": 12,
+          "year": 1861
+        }
+      },
       "famc": "F4185",
-      "id": "I12583",
       "fams": [
         "F4224"
       ],
+      "id": "I12583",
       "name": "Ewa Wi\u0119ch"
     },
     {
-      "id": "I12677",
+      "birth": {
+        "date": {
+          "day": 29,
+          "month": 7,
+          "year": 1811
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 13,
+          "month": 3,
+          "year": 1878
+        }
+      },
       "fams": [
         "F4224"
       ],
+      "id": "I12677",
       "name": "Piotr Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "day": 1,
+          "month": 9,
+          "year": 1832
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 28,
+          "month": 1,
+          "year": 1895
+        }
+      },
       "famc": "F4224",
-      "id": "I12675",
       "fams": [],
+      "id": "I12675",
       "name": "Jan Wojtera vel Wojtyra"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1835
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 12,
+          "month": 3,
+          "year": 1838
+        }
+      },
       "famc": "F4224",
-      "id": "I12870",
       "fams": [],
+      "id": "I12870",
       "name": "Marianna Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1838
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1893
+          }
+        }
+      },
       "famc": "F4224",
-      "id": "I56835",
       "fams": [],
+      "id": "I56835",
       "name": "Karolina Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1840
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1901
+          },
+          "to": {
+            "year": 1910
+          }
+        }
+      },
       "famc": "F4224",
-      "id": "I18384",
       "fams": [],
+      "id": "I18384",
       "name": "Franciszka Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1842
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1843
+        }
+      },
       "famc": "F4224",
-      "id": "I56843",
       "fams": [],
+      "id": "I56843",
       "name": "Katarzyna Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1844
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4224",
-      "id": "I56840",
       "fams": [],
+      "id": "I56840",
       "name": "J\u00f3zefa Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1847
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 4,
+          "month": 3,
+          "year": 1857
+        }
+      },
       "famc": "F4224",
-      "id": "I12678",
       "fams": [],
+      "id": "I12678",
       "name": "Marianna Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1849
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4224",
-      "id": "I12679",
       "fams": [],
+      "id": "I12679",
       "name": "J\u00f3zef Wojtera vel Wojtyra"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1851
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4224",
-      "id": "I56842",
       "fams": [],
+      "id": "I56842",
       "name": "Katarzyna Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1854
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4224",
-      "id": "I56841",
       "fams": [],
+      "id": "I56841",
       "name": "Grzegorz Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "day": 8,
+          "month": 10,
+          "year": 1769
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 9,
+          "year": 1835
+        }
+      },
       "famc": "F9881",
-      "id": "I10120",
       "fams": [
         "F3453"
       ],
+      "id": "I10120",
       "name": "Marianna Wi\u0119ch"
     },
     {
-      "id": "I10119",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1765
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 11,
+          "month": 2,
+          "year": 1835
+        }
+      },
       "fams": [
         "F3453"
       ],
+      "id": "I10119",
       "name": "Jacenty Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 25,
+          "month": 6,
+          "year": 1790
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1795
+        }
+      },
       "famc": "F3453",
-      "id": "I29776",
       "fams": [],
+      "id": "I29776",
       "name": "Piotr Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 13,
+          "month": 3,
+          "year": 1793
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3453",
-      "id": "I38030",
       "fams": [],
+      "id": "I38030",
       "name": "J\u00f3zef Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 29,
+          "month": 3,
+          "year": 1796
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1797
+        }
+      },
       "famc": "F3453",
-      "id": "I33298",
       "fams": [],
+      "id": "I33298",
       "name": "Jan Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 29,
+          "month": 3,
+          "year": 1796
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3453",
-      "id": "I38031",
       "fams": [],
+      "id": "I38031",
       "name": "Franciszka Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 9,
+          "month": 11,
+          "year": 1798
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "month": 2,
+            "year": 1855
+          }
+        }
+      },
       "famc": "F3453",
-      "id": "I14879",
       "fams": [
         "F4911"
       ],
+      "id": "I14879",
       "name": "Marcin Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1804
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9882",
-      "id": "I14880",
       "fams": [
         "F4911"
       ],
+      "id": "I14880",
       "name": "Marianna Radzka"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1803
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 8,
+          "year": 1856
+        }
+      },
       "famc": "F3453",
-      "id": "I10098",
       "fams": [
         "F3444"
       ],
+      "id": "I10098",
       "name": "Tomasz Stanis\u0142aw Sasin"
     },
     {
-      "id": "I10099",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1803
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 25,
+          "month": 2,
+          "year": 1871
+        }
+      },
       "fams": [
         "F3444"
       ],
+      "id": "I10099",
       "name": "Balbina Kubuj"
     },
     {
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 2,
+          "year": 1828
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3444",
-      "id": "I10121",
       "fams": [],
+      "id": "I10121",
       "name": "Franciszek Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1830
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 9,
+          "month": 4,
+          "year": 1861
+        }
+      },
       "famc": "F3444",
-      "id": "I38476",
       "fams": [],
+      "id": "I38476",
       "name": "Kazimierz Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1835
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1900
+          }
+        }
+      },
       "famc": "F3444",
-      "id": "I10097",
       "fams": [],
+      "id": "I10097",
       "name": "Baltazar vel Marcel Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 9,
+          "month": 9,
+          "year": 1832
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 4,
+          "month": 1,
+          "year": 1833
+        }
+      },
       "famc": "F3444",
-      "id": "I29758",
       "fams": [],
+      "id": "I29758",
       "name": "Micha\u0142 Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1833
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1858
+        }
+      },
       "famc": "F3444",
-      "id": "I29760",
       "fams": [],
+      "id": "I29760",
       "name": "Joanna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1837
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3444",
-      "id": "I29762",
       "fams": [
         "F12730"
       ],
+      "id": "I29762",
       "name": "Wojciech Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1838
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1841
+        }
+      },
       "famc": "F3444",
-      "id": "I29763",
       "fams": [],
+      "id": "I29763",
       "name": "Jan Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1842
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 23,
+          "month": 11,
+          "year": 1858
+        }
+      },
       "famc": "F3444",
-      "id": "I29764",
       "fams": [],
+      "id": "I29764",
       "name": "Antoni Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1844
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 23,
+          "month": 4,
+          "year": 1895
+        }
+      },
       "famc": "F3444",
-      "id": "I29765",
       "fams": [],
+      "id": "I29765",
       "name": "Teresa Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1850
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3444",
-      "id": "I29766",
       "fams": [],
+      "id": "I29766",
       "name": "Marianna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1807
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 20,
+          "month": 2,
+          "year": 1855
+        }
+      },
       "famc": "F3453",
-      "id": "I29779",
       "fams": [
         "F10666",
         "F10670"
       ],
+      "id": "I29779",
       "name": "Andrzej Sasin"
     },
     {
-      "id": "I31972",
+      "birth": {
+        "date": {
+          "day": 11,
+          "month": 11,
+          "year": 1810
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 12,
+          "month": 6,
+          "year": 1847
+        }
+      },
       "fams": [
         "F10666"
       ],
+      "id": "I31972",
       "name": "J\u00f3zefa Bereda"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1836
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10666",
-      "id": "I31985",
       "fams": [],
+      "id": "I31985",
       "name": "Ewa Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1842
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1843
+        }
+      },
       "famc": "F10666",
+      "fams": [],
       "id": "I31986",
-      "fams": [],
       "name": "Julianna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1844
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1846
+        }
+      },
       "famc": "F10666",
-      "id": "I31987",
       "fams": [],
+      "id": "I31987",
       "name": "Julianna Sasin"
     },
     {
-      "id": "I31988",
+      "birth": {
+        "date": {
+          "year": 1815
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 3,
+          "month": 3,
+          "year": 1855
+        }
+      },
       "fams": [
         "F10670"
       ],
+      "id": "I31988",
       "name": "Katarzyna Witkowska"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1848
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10670",
-      "id": "I31989",
       "fams": [],
+      "id": "I31989",
       "name": "Franciszka Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1850
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 18,
+          "month": 3,
+          "year": 1855
+        }
+      },
       "famc": "F10670",
-      "id": "I31990",
       "fams": [],
+      "id": "I31990",
       "name": "J\u00f3zefa Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1853
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10670",
-      "id": "I31991",
       "fams": [],
+      "id": "I31991",
       "name": "Wiktoria Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1810
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1875
+          }
+        }
+      },
       "famc": "F3453",
-      "id": "I29780",
       "fams": [
         "F10673"
       ],
+      "id": "I29780",
       "name": "Franciszka Sasin"
     },
     {
-      "id": "I31994",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1804
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1875
+          }
+        }
+      },
       "fams": [
         "F10673"
       ],
+      "id": "I31994",
       "name": "Jan Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 24,
+          "month": 12,
+          "year": 1830
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1887
+          }
+        }
+      },
       "famc": "F10673",
-      "id": "I5321",
       "fams": [],
+      "id": "I5321",
       "name": "Ewa Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1834
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10673",
-      "id": "I32004",
       "fams": [],
+      "id": "I32004",
       "name": "Agnieszka Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1836
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 20,
+          "month": 7,
+          "year": 1875
+        }
+      },
       "famc": "F10673",
-      "id": "I32005",
       "fams": [],
+      "id": "I32005",
       "name": "W\u0142adys\u0142aw Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1839
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 26,
+          "month": 5,
+          "year": 1903
+        }
+      },
       "famc": "F10673",
-      "id": "I32007",
       "fams": [],
+      "id": "I32007",
       "name": "Marcin Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1842
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10673",
-      "id": "I32008",
       "fams": [],
+      "id": "I32008",
       "name": "Piotr Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1845
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10673",
-      "id": "I32010",
       "fams": [],
+      "id": "I32010",
       "name": "J\u00f3zefa Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1848
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10673",
-      "id": "I32009",
       "fams": [],
+      "id": "I32009",
       "name": "Antoni Oleksiak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 1,
+          "year": 1773
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9881",
-      "id": "I29774",
       "fams": [],
+      "id": "I29774",
       "name": "Agnieszka Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1765
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4127",
-      "id": "I12290",
       "fams": [
         "F4126",
         "F4085"
       ],
+      "id": "I12290",
       "name": "Marcjanna Szewczak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 1,
+          "month": 11,
+          "year": 1779
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4126",
-      "id": "I29775",
       "fams": [],
+      "id": "I29775",
       "name": "Rozalia Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "month": 6,
+          "qualifier": "cal",
+          "year": 1781
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 11,
+          "month": 8,
+          "year": 1781
+        }
+      },
       "famc": "F4126",
-      "id": "I46750",
       "fams": [],
+      "id": "I46750",
       "name": "Adam Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1783
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 7,
+          "month": 4,
+          "year": 1854
+        }
+      },
       "famc": "F4126",
-      "id": "I14876",
       "fams": [
         "F15633",
         "F4910"
       ],
+      "id": "I14876",
       "name": "Maciej Wi\u0119ch"
     },
     {
-      "id": "I46759",
+      "birth": {
+        "date": {
+          "day": 11,
+          "month": 4,
+          "year": 1791
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 3,
+          "year": 1814
+        }
+      },
       "fams": [
         "F15633"
       ],
+      "id": "I46759",
       "name": "Marianna O\u0142dak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 1,
+          "year": 1814
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15633",
-      "id": "I46762",
       "fams": [],
+      "id": "I46762",
       "name": "Kacper Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 13,
+          "month": 2,
+          "year": 1788
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 3,
+          "month": 8,
+          "year": 1848
+        }
+      },
       "famc": "F15627",
-      "id": "I14877",
       "fams": [
         "F4910",
         "F15632"
       ],
+      "id": "I14877",
       "name": "Franciszka Przybysz"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "abt",
+          "year": 1816
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 20,
+          "month": 6,
+          "year": 1860
+        }
+      },
       "famc": "F4910",
-      "id": "I9556",
       "fams": [
         "F3047"
       ],
+      "id": "I9556",
       "name": "Franciszka Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 24,
+          "month": 6,
+          "year": 1812
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 7,
+          "month": 7,
+          "year": 1855
+        }
+      },
       "famc": "F3978",
-      "id": "I9555",
       "fams": [
         "F3047"
       ],
+      "id": "I9555",
       "name": "Piotr Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1834
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3047",
-      "id": "I14878",
       "fams": [
         "F10663"
       ],
+      "id": "I14878",
       "name": "Florian Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1836
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3047",
-      "id": "I9554",
       "fams": [
         "F3046"
       ],
+      "id": "I9554",
       "name": "Kazimierz Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1838
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 29,
+          "month": 6,
+          "year": 1896
+        }
+      },
       "famc": "F3047",
-      "id": "I34606",
       "fams": [
         "F11533"
       ],
+      "id": "I34606",
       "name": "Szymon Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1840
+        }
+      },
       "famc": "F3047",
-      "id": "I34607",
       "fams": [],
+      "id": "I34607",
       "name": "Pawe\u0142 Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1841
+        }
+      },
       "famc": "F3047",
-      "id": "I34608",
       "fams": [],
+      "id": "I34608",
       "name": "Jan Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1843
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 3,
+          "year": 1909
+        }
+      },
       "famc": "F3047",
-      "id": "I34609",
       "fams": [
         "F11529"
       ],
+      "id": "I34609",
       "name": "El\u017cbieta Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1847
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1848
+        }
+      },
       "famc": "F3047",
-      "id": "I34610",
       "fams": [],
+      "id": "I34610",
       "name": "Ewa Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1852
+        }
+      },
       "famc": "F3047",
-      "id": "I34611",
       "fams": [],
+      "id": "I34611",
       "name": "J\u00f3zefa Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 6,
+          "month": 1,
+          "year": 1821
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4910",
-      "id": "I10257",
       "fams": [
         "F3488"
       ],
+      "id": "I10257",
       "name": "Agnieszka Wi\u0119ch"
     },
     {
-      "id": "I10256",
+      "birth": {
+        "date": {
+          "day": 26,
+          "month": 9,
+          "year": 1819
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F3488"
       ],
+      "id": "I10256",
       "name": "Franciszek Wojtera vel Wojtyra"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1842
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1866
+        }
+      },
       "famc": "F3488",
-      "id": "I10255",
       "fams": [],
+      "id": "I10255",
       "name": "Apolonia Wojtera"
     },
     {
+      "birth": {
+        "date": {
+          "day": 22,
+          "month": 9,
+          "year": 1823
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4910",
-      "id": "I46730",
       "fams": [
         "F15626"
       ],
+      "id": "I46730",
       "name": "Tomasz Wi\u0119ch"
     },
     {
-      "id": "I46731",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1829
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15626"
       ],
+      "id": "I46731",
       "name": "Ewa Sycik"
     },
     {
+      "birth": {
+        "date": {
+          "day": 9,
+          "month": 12,
+          "year": 1826
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 19,
+          "month": 12,
+          "year": 1826
+        }
+      },
       "famc": "F4910",
-      "id": "I46735",
       "fams": [],
+      "id": "I46735",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 5,
+          "month": 7,
+          "year": 1828
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F4910",
-      "id": "I46734",
       "fams": [],
+      "id": "I46734",
       "name": "Agnieszka Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 29,
+          "month": 12,
+          "year": 1789
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 22,
+          "month": 8,
+          "year": 1790
+        }
+      },
       "famc": "F4126",
-      "id": "I35404",
       "fams": [],
+      "id": "I35404",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 6,
+          "year": 1791
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 17,
+          "month": 9,
+          "year": 1795
+        }
+      },
       "famc": "F4126",
-      "id": "I46737",
       "fams": [],
+      "id": "I46737",
       "name": "Magdalena Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1794
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 2,
+          "month": 3,
+          "year": 1797
+        }
+      },
       "famc": "F4126",
-      "id": "I46757",
       "fams": [],
+      "id": "I46757",
       "name": "Miko\u0142aj Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 9,
+          "year": 1797
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 3,
+          "month": 3,
+          "year": 1871
+        }
+      },
       "famc": "F4126",
-      "id": "I32168",
       "fams": [
         "F10745"
       ],
+      "id": "I32168",
       "name": "Micha\u0142 Wi\u0119ch"
     },
     {
-      "id": "I32169",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1801
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 7,
+          "month": 12,
+          "year": 1838
+        }
+      },
       "fams": [
         "F10745"
       ],
+      "id": "I32169",
       "name": "Anna Helena Kubuj"
     },
     {
+      "birth": {
+        "date": {
+          "day": 27,
+          "month": 9,
+          "year": 1819
+        }
+      },
       "famc": "F10745",
-      "id": "I33025",
       "fams": [
         "F12675"
       ],
+      "id": "I33025",
       "name": "Mateusz Wi\u0119ch"
     },
     {
-      "id": "I37863",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F12675"
       ],
+      "id": "I37863",
       "name": "Marianna Kowalczyk"
     },
     {
+      "birth": {
+        "date": {
+          "day": 20,
+          "month": 7,
+          "year": 1822
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1868
+          }
+        }
+      },
       "famc": "F10745",
-      "id": "I33027",
       "fams": [
         "F12563"
       ],
+      "id": "I33027",
       "name": "Marianna Wi\u0119ch"
     },
     {
-      "id": "I37590",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1820
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1868
+          }
+        }
+      },
       "fams": [
         "F12563"
       ],
+      "id": "I37590",
       "name": "Andrzej Kowalczyk"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1844
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F12563",
-      "id": "I37589",
       "fams": [],
+      "id": "I37589",
       "name": "Marek Kowalczyk"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 3,
+          "year": 1825
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10745",
-      "id": "I32167",
       "fams": [
         "F10742"
       ],
+      "id": "I32167",
       "name": "Benedykt Wi\u0119ch"
     },
     {
-      "id": "I32162",
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 10,
+          "year": 1824
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F10742"
       ],
+      "id": "I32162",
       "name": "Ludwika Banaszek"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1865
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10742",
-      "id": "I61192",
       "fams": [],
+      "id": "I61192",
       "name": "Piotr Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 9,
+          "month": 12,
+          "year": 1826
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10745",
-      "id": "I46748",
       "fams": [],
+      "id": "I46748",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 3,
+          "month": 3,
+          "year": 1828
+        }
+      },
       "famc": "F10745",
-      "id": "I33029",
       "fams": [],
+      "id": "I33029",
       "name": "Helena Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 28,
+          "month": 11,
+          "year": 1830
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 19,
+          "month": 1,
+          "year": 1832
+        }
+      },
       "famc": "F10745",
-      "id": "I33030",
       "fams": [],
+      "id": "I33030",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 11,
+          "year": 1832
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F10745",
-      "id": "I46749",
       "fams": [],
+      "id": "I46749",
       "name": "Marianna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1835
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 1,
+          "year": 1904
+        }
+      },
       "famc": "F10745",
-      "id": "I29750",
       "fams": [
         "F9879"
       ],
+      "id": "I29750",
       "name": "Ignacy Wi\u0119ch"
     },
     {
-      "id": "I29751",
+      "birth": {
+        "date": {
+          "year": 1840
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1904
+          }
+        }
+      },
       "fams": [
         "F9879"
       ],
+      "id": "I29751",
       "name": "Marcjanna vel Marianna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 2,
+          "year": 1864
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I29755",
       "fams": [],
+      "id": "I29755",
       "name": "Ignacy Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 6,
+          "month": 7,
+          "year": 1867
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I29756",
       "fams": [],
+      "id": "I29756",
       "name": "J\u00f3zef Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1869
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I29746",
       "fams": [],
+      "id": "I29746",
       "name": "Stanis\u0142aw Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1873
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I68291",
       "fams": [],
+      "id": "I68291",
       "name": "Eleonora Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 13,
+          "month": 3,
+          "year": 1876
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 12,
+          "month": 10,
+          "year": 1941
+        }
+      },
       "famc": "F9879",
-      "id": "I68292",
       "fams": [],
+      "id": "I68292",
       "name": "Grzegorz Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1879
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I68293",
       "fams": [],
+      "id": "I68293",
       "name": "Katarzyna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1885
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I68294",
       "fams": [],
+      "id": "I68294",
       "name": "Franciszka Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1888
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9879",
-      "id": "I68295",
       "fams": [],
+      "id": "I68295",
       "name": "Jan Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 15,
+          "month": 12,
+          "year": 1743
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15629",
-      "id": "I46744",
       "fams": [],
+      "id": "I46744",
       "name": "Marianna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 1,
+          "month": 10,
+          "year": 1747
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 5,
+          "month": 12,
+          "year": 1794
+        }
+      },
       "famc": "F15629",
-      "id": "I46745",
       "fams": [
         "F15630"
       ],
+      "id": "I46745",
       "name": "Micha\u0142 Wi\u0119ch"
     },
     {
-      "id": "I46751",
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1794
+          }
+        }
+      },
       "fams": [
         "F15630"
       ],
+      "id": "I46751",
       "name": "Dorota"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1777
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15630",
-      "id": "I46754",
       "fams": [],
+      "id": "I46754",
       "name": "Jadwiga Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1779
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15630",
-      "id": "I46755",
       "fams": [],
+      "id": "I46755",
       "name": "Marianna Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1789
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1794
+        }
+      },
       "famc": "F15630",
-      "id": "I46756",
       "fams": [],
+      "id": "I46756",
       "name": "Ma\u0142gorzata Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 8,
+          "month": 12,
+          "year": 1749
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15629",
-      "id": "I46746",
       "fams": [],
+      "id": "I46746",
       "name": "Barbara Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 4,
+          "month": 10,
+          "year": 1752
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15629",
-      "id": "I46747",
       "fams": [],
+      "id": "I46747",
       "name": "Kacper Wi\u0119ch"
     },
     {
+      "birth": {
+        "date": {
+          "day": 30,
+          "month": 3,
+          "year": 1910
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 20,
+          "month": 10,
+          "year": 1994
+        }
+      },
       "famc": "F15525",
-      "id": "I46464",
       "fams": [
         "F15526"
       ],
+      "id": "I46464",
       "name": "Stanis\u0142aw Wo\u017aniak"
     },
     {
-      "id": "I46468",
+      "birth": {
+        "date": {
+          "day": 15,
+          "month": 6,
+          "year": 1912
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 13,
+          "month": 5,
+          "year": 1983
+        }
+      },
       "fams": [
         "F15526"
       ],
+      "id": "I46468",
       "name": "Janina Maguza"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1879
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F11529",
-      "id": "I45740",
       "fams": [
         "F15524",
         "F15525"
       ],
+      "id": "I45740",
       "name": "Tomasz Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 6,
+          "month": 8,
+          "year": 1846
+        }
+      },
       "famc": "F12731",
-      "id": "I34612",
       "fams": [
         "F11529"
       ],
+      "id": "I34612",
       "name": "Stanis\u0142aw Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 28,
+          "month": 5,
+          "year": 1816
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 15,
+          "month": 10,
+          "year": 1887
+        }
+      },
       "famc": "F11580",
-      "id": "I38027",
       "fams": [
         "F12731",
         "F15514"
       ],
+      "id": "I38027",
       "name": "Pawe\u0142 Wo\u017aniak vel Wo\u017aniczak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 25,
+          "month": 11,
+          "year": 1783
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 1,
+          "month": 10,
+          "year": 1833
+        }
+      },
       "famc": "F15513",
-      "id": "I34800",
       "fams": [
         "F11580"
       ],
+      "id": "I34800",
       "name": "Jan Wo\u017aniak vel Wo\u017aniczak"
     },
     {
-      "id": "I46426",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15513"
       ],
+      "id": "I46426",
       "name": "Franciszek Wo\u017aniak vel Wo\u017aniczak"
     },
     {
-      "id": "I46427",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15513"
       ],
+      "id": "I46427",
       "name": "Marianna Jucha"
     },
     {
-      "id": "I34801",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1788
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 15,
+          "month": 7,
+          "year": 1850
+        }
+      },
       "fams": [
         "F11580"
       ],
+      "id": "I34801",
       "name": "Agnieszka Banaszek"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1808
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 26,
+          "month": 9,
+          "year": 1847
+        }
+      },
       "famc": "F11580",
-      "id": "I34790",
       "fams": [
         "F11578",
         "F15550"
       ],
+      "id": "I34790",
       "name": "Ewa Wo\u017aniczak"
     },
     {
-      "id": "I34789",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1802
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 24,
+          "month": 10,
+          "year": 1842
+        }
+      },
       "fams": [
         "F11578"
       ],
+      "id": "I34789",
       "name": "Andrzej Bereda"
     },
     {
-      "id": "I46525",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1803
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15550"
       ],
+      "id": "I46525",
       "name": "Piotr Groszek"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1813
+        }
+      },
       "famc": "F11580",
-      "id": "I34803",
       "fams": [],
+      "id": "I34803",
       "name": "Franciszka Wo\u017aniczak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1815
+        }
+      },
       "famc": "F11580",
-      "id": "I34805",
       "fams": [],
+      "id": "I34805",
       "name": "Ma\u0142gorzata Wo\u017aniczak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1820
+        }
+      },
       "famc": "F11580",
-      "id": "I34804",
       "fams": [],
+      "id": "I34804",
       "name": "Franciszka Wo\u017aniczak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1823
+        }
+      },
       "famc": "F11580",
-      "id": "I34802",
       "fams": [],
+      "id": "I34802",
       "name": "Apolonia Wo\u017aniczak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 23,
+          "month": 6,
+          "year": 1825
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F11580",
-      "id": "I46425",
       "fams": [],
+      "id": "I46425",
       "name": "W\u0142adys\u0142aw Wo\u017aniak vel Wo\u017aniczak"
     },
     {
-      "id": "I46428",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1827
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1887
+          }
+        }
+      },
       "fams": [
         "F15514"
       ],
+      "id": "I46428",
       "name": "Marianna Matusiak"
     },
     {
+      "birth": {
+        "date": {
+          "day": 25,
+          "month": 10,
+          "year": 1818
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 14,
+          "month": 12,
+          "year": 1854
+        }
+      },
       "famc": "F9882",
-      "id": "I38028",
       "fams": [
         "F12731"
       ],
+      "id": "I38028",
       "name": "Urszula Tekla Radzka"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 3,
+          "year": 1779
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 27,
+          "month": 4,
+          "year": 1826
+        }
+      },
       "famc": "F15516",
-      "id": "I29777",
       "fams": [
         "F9882"
       ],
+      "id": "I29777",
       "name": "J\u00f3zef Radzki"
     },
     {
-      "id": "I46431",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1742
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1830
+          }
+        }
+      },
       "fams": [
         "F15516"
       ],
+      "id": "I46431",
       "name": "Marcin Radzki"
     },
     {
-      "id": "I46432",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15516"
       ],
+      "id": "I46432",
       "name": "Jadwiga Kurek"
     },
     {
+      "birth": {
+        "date": {
+          "day": 29,
+          "month": 1,
+          "year": 1781
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15516",
-      "id": "I46443",
       "fams": [],
+      "id": "I46443",
       "name": "Walerian Radzki"
     },
     {
+      "birth": {
+        "date": {
+          "day": 28,
+          "month": 5,
+          "year": 1783
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 18,
+          "month": 7,
+          "year": 1791
+        }
+      },
       "famc": "F15516",
-      "id": "I46440",
       "fams": [],
+      "id": "I46440",
       "name": "Antoni Radzki"
     },
     {
+      "birth": {
+        "date": {
+          "day": 11,
+          "month": 4,
+          "year": 1785
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 6,
+          "month": 2,
+          "year": 1839
+        }
+      },
       "famc": "F15516",
-      "id": "I46441",
       "fams": [
         "F15518"
       ],
+      "id": "I46441",
       "name": "Leon Radzki"
     },
     {
-      "id": "I46446",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1792
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1839
+          }
+        }
+      },
       "fams": [
         "F15518"
       ],
+      "id": "I46446",
       "name": "Rozalia Jusi\u0144ska"
     },
     {
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 8,
+          "year": 1786
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15516",
-      "id": "I46439",
       "fams": [],
+      "id": "I46439",
       "name": "Marianna Radzka"
     },
     {
+      "birth": {
+        "date": {
+          "day": 7,
+          "month": 3,
+          "year": 1788
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 3,
+          "month": 7,
+          "year": 1788
+        }
+      },
       "famc": "F15516",
-      "id": "I46442",
       "fams": [],
+      "id": "I46442",
       "name": "Tomasz Radzki"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1789
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 3,
+          "month": 10,
+          "year": 1790
+        }
+      },
       "famc": "F15516",
-      "id": "I46445",
       "fams": [],
+      "id": "I46445",
       "name": "Franciszek Radzki"
     },
     {
+      "birth": {
+        "date": {
+          "month": 11,
+          "qualifier": "cal",
+          "year": 1795
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 12,
+          "month": 1,
+          "year": 1796
+        }
+      },
       "famc": "F15516",
-      "id": "I46444",
       "fams": [],
+      "id": "I46444",
       "name": "Tomasz Radzki"
     },
     {
-      "id": "I29778",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1786
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1830
+          }
+        }
+      },
       "fams": [
         "F9882"
       ],
+      "id": "I29778",
       "name": "Teresa Gajcy"
     },
     {
+      "birth": {
+        "date": {
+          "day": 1,
+          "month": 3,
+          "year": 1811
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F9882",
-      "id": "I46430",
       "fams": [
         "F15517"
       ],
+      "id": "I46430",
       "name": "Kazimierz Radzki"
     },
     {
-      "id": "I37889",
+      "birth": {
+        "date": {
+          "day": 4,
+          "month": 8,
+          "year": 1813
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15517"
       ],
+      "id": "I37889",
       "name": "Marianna Gajcy"
     },
     {
+      "birth": {
+        "date": {
+          "day": 20,
+          "month": 7,
+          "year": 1815
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 23,
+          "month": 2,
+          "year": 1819
+        }
+      },
       "famc": "F9882",
-      "id": "I46433",
       "fams": [],
+      "id": "I46433",
       "name": "Jakub Radzki"
     },
     {
+      "birth": {
+        "date": {
+          "day": 28,
+          "month": 11,
+          "year": 1821
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 18,
+          "month": 8,
+          "year": 1830
+        }
+      },
       "famc": "F9882",
-      "id": "I46434",
       "fams": [],
+      "id": "I46434",
       "name": "Andrzej Radzki"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1838
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F12731",
-      "id": "I38023",
       "fams": [
         "F12730"
       ],
+      "id": "I38023",
       "name": "Franciszka Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1840
+        }
+      },
       "famc": "F12731",
-      "id": "I34624",
       "fams": [
         "F11533"
       ],
+      "id": "I34624",
       "name": "El\u017cbieta Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1844
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1844
+        }
+      },
       "famc": "F12731",
-      "id": "I38471",
       "fams": [],
+      "id": "I38471",
       "name": "Julianna Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1845
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F12731",
-      "id": "I38469",
       "fams": [
         "F13506"
       ],
+      "id": "I38469",
       "name": "Kazimierz Wo\u017aniak"
     },
     {
-      "id": "I38975",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1863
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F13506"
       ],
+      "id": "I38975",
       "name": "Marianna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1783
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 21,
+          "month": 11,
+          "year": 1840
+        }
+      },
       "famc": "F3977",
-      "id": "I11877",
       "fams": [
         "F3978",
         "F3979"
       ],
+      "id": "I11877",
       "name": "Szymon Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1762
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 31,
+          "month": 8,
+          "year": 1832
+        }
+      },
       "famc": "F3981",
-      "id": "I11873",
       "fams": [
         "F3977"
       ],
+      "id": "I11873",
       "name": "Grzegorz Sasin"
     },
     {
-      "id": "I11884",
+      "birth": {
+        "date": {
+          "qualifier": "abt",
+          "year": 1730
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F3982",
         "F3981"
       ],
+      "id": "I11884",
       "name": "Antoni Sasin"
     },
     {
-      "id": "I11886",
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1756
+          }
+        }
+      },
       "fams": [
         "F3982"
       ],
+      "id": "I11886",
       "name": "Krystyna Banach"
     },
     {
-      "id": "I11885",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1721
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1781
+        }
+      },
       "fams": [
         "F3981"
       ],
+      "id": "I11885",
       "name": "Konstancja Ko\u017alik"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1761
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 9,
+          "month": 4,
+          "year": 1811
+        }
+      },
       "famc": "F3981",
-      "id": "I33591",
       "fams": [
         "F11713"
       ],
+      "id": "I33591",
       "name": "Marianna Sasin"
     },
     {
-      "id": "I35174",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1754
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 2,
+          "month": 2,
+          "year": 1814
+        }
+      },
       "fams": [
         "F11713"
       ],
+      "id": "I35174",
       "name": "Baltazar Gajcy"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1770
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 10,
+          "month": 2,
+          "year": 1838
+        }
+      },
       "famc": "F3981",
-      "id": "I32160",
       "fams": [
         "F10739"
       ],
+      "id": "I32160",
       "name": "Walenty Sasin"
     },
     {
-      "id": "I32161",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F10739"
       ],
+      "id": "I32161",
       "name": "El\u017cbieta O\u0142dak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1774
+        }
+      },
       "famc": "F3981",
-      "id": "I33592",
       "fams": [],
+      "id": "I33592",
       "name": "Anna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1762
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 9,
+          "month": 9,
+          "year": 1832
+        }
+      },
       "famc": "F3983",
-      "id": "I11874",
       "fams": [
         "F3977"
       ],
+      "id": "I11874",
       "name": "Ma\u0142gorzata Kubuj"
     },
     {
-      "id": "I11887",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F3983"
       ],
+      "id": "I11887",
       "name": "B\u0142a\u017cej Kubuj"
     },
     {
-      "id": "I11888",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F3983"
       ],
+      "id": "I11888",
       "name": "Marianna"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1769
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3983",
-      "id": "I32170",
       "fams": [],
+      "id": "I32170",
       "name": "Magdalena Kubuj"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1785
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 25,
+          "month": 1,
+          "year": 1818
+        }
+      },
       "famc": "F3977",
-      "id": "I33639",
       "fams": [
         "F11233"
       ],
+      "id": "I33639",
       "name": "Baltazar vel Balcer Sasin"
     },
     {
-      "id": "I33636",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1791
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 13,
+          "month": 3,
+          "year": 1861
+        }
+      },
       "fams": [
         "F11233"
       ],
+      "id": "I33636",
       "name": "Anna Ros\u0142on"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1788
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 12,
+          "month": 5,
+          "year": 1795
+        }
+      },
       "famc": "F3977",
-      "id": "I11890",
       "fams": [],
+      "id": "I11890",
       "name": "Adam Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1792
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 11,
+          "month": 9,
+          "year": 1793
+        }
+      },
       "famc": "F3977",
-      "id": "I11889",
       "fams": [],
+      "id": "I11889",
       "name": "Katarzyna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1796
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 17,
+          "month": 12,
+          "year": 1866
+        }
+      },
       "famc": "F3977",
-      "id": "I11880",
       "fams": [
         "F3980",
         "F12683"
       ],
+      "id": "I11880",
       "name": "Jan Sasin"
     },
     {
-      "id": "I11881",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1800
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 9,
+          "month": 8,
+          "year": 1841
+        }
+      },
       "fams": [
         "F3980"
       ],
+      "id": "I11881",
       "name": "Katarzyna Borucka vel Banaszek"
     },
     {
-      "id": "I37884",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1816
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1865
+          }
+        }
+      },
       "fams": [
         "F12683"
       ],
+      "id": "I37884",
       "name": "Anastazja Gajcy"
     },
     {
+      "birth": {
+        "date": {
+          "day": 4,
+          "month": 8,
+          "year": 1799
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3977",
-      "id": "I10117",
       "fams": [],
+      "id": "I10117",
       "name": "Wawrzyniec Sasin"
     },
     {
-      "id": "I11879",
+      "birth": {
+        "date": {
+          "month": 11,
+          "qualifier": "cal",
+          "year": 1796
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1840
+          }
+        }
+      },
       "fams": [
         "F3979"
       ],
+      "id": "I11879",
       "name": "Ewa Radzka"
     },
     {
-      "id": "I11878",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1781
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 20,
+          "month": 4,
+          "year": 1817
+        }
+      },
       "fams": [
         "F3978"
       ],
+      "id": "I11878",
       "name": "Anna Gajcy"
     },
     {
+      "birth": {
+        "date": {
+          "day": 3,
+          "month": 3,
+          "year": 1793
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 24,
+          "month": 8,
+          "year": 1793
+        }
+      },
       "famc": "F3978",
-      "id": "I35183",
       "fams": [],
+      "id": "I35183",
       "name": "Kazimierz Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "day": 21,
+          "month": 7,
+          "year": 1798
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F3978",
-      "id": "I37236",
       "fams": [],
+      "id": "I37236",
       "name": "Jakub Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1810
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 17,
+          "month": 3,
+          "year": 1816
+        }
+      },
       "famc": "F3978",
-      "id": "I11891",
       "fams": [],
+      "id": "I11891",
       "name": "J\u00f3zef Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1810
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 17,
+          "month": 9,
+          "year": 1865
+        }
+      },
       "famc": "F3978",
-      "id": "I32173",
       "fams": [
         "F10747"
       ],
+      "id": "I32173",
       "name": "B\u0142a\u017cej Sasin"
     },
     {
-      "id": "I32174",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1809
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 8,
+          "month": 10,
+          "year": 1877
+        }
+      },
       "fams": [
         "F10747"
       ],
+      "id": "I32174",
       "name": "Julianna Mo\u015bcicka"
     },
     {
+      "birth": {
+        "date": {
+          "day": 15,
+          "month": 5,
+          "year": 1811
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 9,
+          "month": 7,
+          "year": 1811
+        }
+      },
       "famc": "F3978",
-      "id": "I32289",
       "fams": [],
+      "id": "I32289",
       "name": "Helena Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1817
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1871
+        }
+      },
       "famc": "F3978",
-      "id": "I5724",
       "fams": [
         "F1674"
       ],
+      "id": "I5724",
       "name": "Wojciech Sasin"
     },
     {
-      "id": "I5725",
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 1,
+          "month": 6,
+          "year": 1888
+        }
+      },
       "fams": [
         "F1674"
       ],
+      "id": "I5725",
       "name": "Anastazja Gotowiec"
     },
     {
-      "id": "I12357",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F4127"
       ],
+      "id": "I12357",
       "name": "Antoni Szewczak"
     },
     {
-      "id": "I12358",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F4127"
       ],
+      "id": "I12358",
       "name": "Marianna Rosie\u0144ska"
     },
     {
-      "id": "I12225",
+      "birth": {
+        "date": {
+          "day": 4,
+          "month": 1,
+          "year": 1757
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F4085"
       ],
+      "id": "I12225",
       "name": "Jan Kostrzewa"
     },
     {
-      "id": "I46732",
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "to": {
+            "year": 1814
+          }
+        }
+      },
       "fams": [
         "F15627"
       ],
+      "id": "I46732",
       "name": "Marcin Przybysz"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1758
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 22,
+          "month": 2,
+          "year": 1814
+        }
+      },
       "famc": "F15649",
-      "id": "I46733",
       "fams": [
         "F15627"
       ],
+      "id": "I46733",
       "name": "Ewa Zacheja"
     },
     {
-      "id": "I46817",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15649"
       ],
+      "id": "I46817",
       "name": "Cyprian Zacheja"
     },
     {
-      "id": "I46818",
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15649"
       ],
+      "id": "I46818",
       "name": "Magdalena Owczarz"
     },
     {
-      "id": "I46758",
+      "death": {
+        "confirmed": true,
+        "date": {
+          "year": 1814
+        }
+      },
       "fams": [
         "F15632"
       ],
+      "id": "I46758",
       "name": "Wojciech Krystosiak"
     },
     {
-      "id": "I31967",
+      "birth": {
+        "date": {
+          "day": 14,
+          "month": 2,
+          "year": 1826
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F10663"
       ],
+      "id": "I31967",
       "name": "Franciszka Groszek"
     },
     {
-      "id": "I9548",
+      "birth": {
+        "date": {
+          "year": 1842
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F3046"
       ],
+      "id": "I9548",
       "name": "Marianna Marsza\u0142"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1866
+        }
+      },
       "famc": "F11529",
-      "id": "I34613",
       "fams": [],
+      "id": "I34613",
       "name": "Jan Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "year": 1868
+        }
+      },
       "famc": "F11529",
-      "id": "I34615",
       "fams": [],
+      "id": "I34615",
       "name": "Marianna Wo\u017aniak"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "abt",
+          "year": 1870
+        }
+      },
       "famc": "F11529",
-      "id": "I34614",
       "fams": [
         "F11530"
       ],
+      "id": "I34614",
       "name": "Szczepan Wo\u017aniak"
     },
     {
-      "id": "I34616",
+      "birth": {
+        "date": {
+          "year": 1867
+        }
+      },
       "fams": [
         "F11530"
       ],
+      "id": "I34616",
       "name": "Katarzyna Sasin"
     },
     {
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1877
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "famc": "F11529",
-      "id": "I46452",
       "fams": [
         "F15521"
       ],
+      "id": "I46452",
       "name": "Katarzyna Wo\u017aniak"
     },
     {
-      "id": "I46453",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1876
+        }
+      },
+      "death": {
+        "confirmed": true
+      },
       "fams": [
         "F15521"
       ],
+      "id": "I46453",
       "name": "Stanis\u0142aw German"
     },
     {
+      "birth": {
+        "date": {
+          "day": 23,
+          "month": 5,
+          "year": 1882
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1914
+          },
+          "to": {
+            "year": 1918
+          }
+        }
+      },
       "famc": "F11529",
-      "id": "I45741",
       "fams": [
         "F15268"
       ],
+      "id": "I45741",
       "name": "Filip Wo\u017aniak"
     },
     {
-      "id": "I45762",
+      "birth": {
+        "date": {
+          "day": 22,
+          "month": 12,
+          "year": 1884
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "dateRange": {
+          "from": {
+            "year": 1918
+          }
+        }
+      },
       "fams": [
         "F15268"
       ],
+      "id": "I45762",
       "name": "Katarzyna Oleksiak"
     },
     {
-      "id": "I46460",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1883
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 21,
+          "month": 11,
+          "year": 1908
+        }
+      },
       "fams": [
         "F15524"
       ],
+      "id": "I46460",
       "name": "Barbara Sulewska"
     },
     {
-      "id": "I46463",
+      "birth": {
+        "date": {
+          "qualifier": "cal",
+          "year": 1888
+        }
+      },
+      "death": {
+        "confirmed": true,
+        "date": {
+          "day": 21,
+          "month": 6,
+          "year": 1952
+        }
+      },
       "fams": [
         "F15525"
       ],
+      "id": "I46463",
       "name": "Ewa Banaszek"
     },
     {
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15525",
-      "id": "I46465",
       "fams": [],
+      "id": "I46465",
       "name": "W\u0142adys\u0142aw Wo\u017aniak"
     },
     {
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15525",
-      "id": "I46466",
       "fams": [],
+      "id": "I46466",
       "name": "Czes\u0142aw Wo\u017aniak"
     },
     {
+      "death": {
+        "confirmed": true
+      },
       "famc": "F15525",
-      "id": "I46467",
       "fams": [],
+      "id": "I46467",
       "name": "Jan Wo\u017aniak"
     }
   ]
