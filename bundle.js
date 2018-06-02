@@ -19293,7 +19293,7 @@ var AncestorChart = /** @class */ (function () {
      */
     AncestorChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = renderChart(root, this.options);
+        var nodes = renderChart(root, this.options, true);
         updateSvgDimensions(nodes, this.options.svgSelector);
     };
     return AncestorChart;
@@ -19446,6 +19446,15 @@ var JsonIndiDetails = /** @class */ (function () {
     JsonIndiDetails.prototype.getName = function () {
         return this.json.name || null;
     };
+    JsonIndiDetails.prototype.getBirthDate = function () {
+        return this.json.birth || null;
+    };
+    JsonIndiDetails.prototype.getDeathDate = function () {
+        return this.json.death || null;
+    };
+    JsonIndiDetails.prototype.isConfirmedDeath = function () {
+        return this.json.death && this.json.death.confirmed;
+    };
     return JsonIndiDetails;
 }());
 /** Details of a family based on Json input. */
@@ -19491,7 +19500,7 @@ exports.JsonDataProvider = JsonDataProvider;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
-var BOX_HEIGHT = 30;
+var MIN_HEIGHT = 27;
 var MIN_WIDTH = 50;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text) {
@@ -19500,6 +19509,16 @@ function getLength(text) {
     x.remove();
     return w;
 }
+function getYears(indi) {
+    var birthDate = indi.getBirthDate();
+    var birthYear = birthDate && birthDate.date && birthDate.date.year;
+    var deathDate = indi.getDeathDate();
+    var deathYear = deathDate && deathDate.date && deathDate.date.year;
+    if (!birthYear && !deathYear) {
+        return '';
+    }
+    return (birthYear || '') + " \u2013 " + (deathYear || '');
+}
 /** Simple rendering of an individual box showing only the person's name. */
 var SimpleRenderer = /** @class */ (function () {
     function SimpleRenderer(dataProvider, hrefFunc) {
@@ -19507,8 +19526,11 @@ var SimpleRenderer = /** @class */ (function () {
         this.hrefFunc = hrefFunc;
     }
     SimpleRenderer.prototype.getPreferredSize = function (id) {
-        var width = Math.max(getLength(this.dataProvider.getIndi(id).getName()), MIN_WIDTH);
-        return [width, BOX_HEIGHT];
+        var indi = this.dataProvider.getIndi(id);
+        var years = getYears(indi);
+        var width = Math.max(getLength(indi.getName()), getLength(years), MIN_WIDTH);
+        var height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
+        return [width, height];
     };
     SimpleRenderer.prototype.render = function (selection) {
         this.renderIndi(selection, function (node) { return node.indi; });
@@ -19529,11 +19551,18 @@ var SimpleRenderer = /** @class */ (function () {
             .attr('height', function (node) { return indiFunc(node.data).height; });
         // Text.
         group.append('text')
-            .attr('dy', '.35em')
             .attr('text-anchor', 'middle')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", " + indiFunc(node.data).height / 2 + ")"; })
+            .attr('class', 'name')
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
             .text(function (node) {
             return _this.dataProvider.getIndi(indiFunc(node.data).id).getName();
+        });
+        group.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'details')
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
+            .text(function (node) {
+            return getYears(_this.dataProvider.getIndi(indiFunc(node.data).id));
         });
     };
     return SimpleRenderer;

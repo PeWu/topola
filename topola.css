@@ -1,5 +1,8 @@
 .node text {
   font: 12px sans-serif;
+}
+
+.node .name {
   font-weight: bold;
 }
 
