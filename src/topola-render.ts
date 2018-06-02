@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import {DataProvider, Renderer, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
 import {FamDetails, IndiDetails} from './topola-data';
 
-const BOX_HEIGHT = 30;
+const MIN_HEIGHT = 27;
 const MIN_WIDTH = 50;
 
 
@@ -16,6 +16,20 @@ function getLength(text: string) {
 }
 
 
+function getYears(indi: IndiDetails) {
+  const birthDate = indi.getBirthDate();
+  const birthYear = birthDate && birthDate.date && birthDate.date.year;
+
+  const deathDate = indi.getDeathDate();
+  const deathYear = deathDate && deathDate.date && deathDate.date.year;
+
+  if (!birthYear && !deathYear) {
+    return '';
+  }
+  return `${birthYear || ''} – ${deathYear || ''}`;
+}
+
+
 /** Simple rendering of an individual box showing only the person's name. */
 export class SimpleRenderer implements Renderer {
   constructor(
@@ -23,9 +37,12 @@ export class SimpleRenderer implements Renderer {
       readonly hrefFunc?: (id: string) => string) {}
 
   getPreferredSize(id: string): [number, number] {
+    const indi = this.dataProvider.getIndi(id);
+    const years = getYears(indi);
     const width =
-        Math.max(getLength(this.dataProvider.getIndi(id).getName()), MIN_WIDTH);
-    return [width, BOX_HEIGHT];
+        Math.max(getLength(indi.getName()), getLength(years), MIN_WIDTH);
+    const height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
+    return [width, height];
   }
 
   render(selection: TreeNodeSelection): void {
@@ -55,14 +72,22 @@ export class SimpleRenderer implements Renderer {
 
     // Text.
     group.append('text')
-        .attr('dy', '.35em')
         .attr('text-anchor', 'middle')
+        .attr('class', 'name')
         .attr(
             'transform',
-            (node) => `translate(${indiFunc(node.data).width / 2}, ${
-                indiFunc(node.data).height / 2})`)
+            (node) => `translate(${indiFunc(node.data).width / 2}, 17)`)
         .text(
             (node) =>
                 this.dataProvider.getIndi(indiFunc(node.data).id).getName());
+    group.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('class', 'details')
+        .attr(
+            'transform',
+            (node) => `translate(${indiFunc(node.data).width / 2}, 33)`)
+        .text(
+            (node) =>
+                getYears(this.dataProvider.getIndi(indiFunc(node.data).id)));
   }
 }

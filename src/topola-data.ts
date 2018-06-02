@@ -1,11 +1,40 @@
 import {DataProvider, Fam, Indi} from './topola-api';
 
+
+export interface Date {
+  day?: number;
+  month?: number;
+  year?: number;
+}
+
+
+export interface DateRange {
+  from?: Date;
+  to?: Date;
+}
+
+
+export interface DateOrRange {
+  date?: Date;
+  dateRange?: DateRange;
+}
+
+
+export interface JsonEvent extends DateOrRange {
+  date?: Date;
+  dateRange?: DateRange;
+  confirmed?: boolean;
+}
+
+
 /** Json representation of an individual. */
 export interface JsonIndi {
   id: string;
   name?: string;
   famc?: string;
   fams?: string[];
+  birth?: JsonEvent;
+  death?: JsonEvent;
 }
 
 /** Json representation of a family. */
@@ -25,10 +54,15 @@ export interface JsonGedcomData {
 /** Details of an individual record. */
 export interface IndiDetails extends Indi {
   getName(): string|null;
+  getBirthDate(): DateOrRange|null;
+  getDeathDate(): DateOrRange|null;
+  isConfirmedDeath(): boolean;
 }
+
 
 /** Details of a family record. */
 export interface FamDetails extends Fam {}
+
 
 /** Details of an individual based on Json input. */
 class JsonIndiDetails implements IndiDetails {
@@ -45,7 +79,17 @@ class JsonIndiDetails implements IndiDetails {
   getName() {
     return this.json.name || null;
   }
+  getBirthDate(): DateOrRange|null {
+    return this.json.birth || null;
+  }
+  getDeathDate(): DateOrRange|null {
+    return this.json.death || null;
+  }
+  isConfirmedDeath(): boolean {
+    return this.json.death && this.json.death.confirmed;
+  }
 }
+
 
 /** Details of a family based on Json input. */
 class JsonFamDetails implements Fam {
