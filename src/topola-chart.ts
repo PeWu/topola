@@ -233,7 +233,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
    */
   render(): void {
     const root = this.createHierarchy();
-    const nodes = renderChart(root, this.options);
+    const nodes = renderChart(root, this.options, true);
     updateSvgDimensions(nodes, this.options.svgSelector);
   }
 }
