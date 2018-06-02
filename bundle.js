@@ -19155,6 +19155,18 @@ function setPreferredSize(indi, renderer) {
     }
     _a = renderer.getPreferredSize(indi.id), indi.width = _a[0], indi.height = _a[1];
 }
+function updateSvgDimensions(nodes, svgSelector) {
+    var selector = svgSelector || DEFAULT_SVG_SELECTOR;
+    // Calculate chart boundaries.
+    var x0 = d3.min(nodes.map(function (d) { return d.x - getHeight(d.data) / 2; }));
+    var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.indi.width / 2; }));
+    var x1 = d3.max(nodes.map(function (d) { return d.x + getHeight(d.data) / 2; }));
+    var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.indi.width / 2; }));
+    d3.select(selector)
+        .attr('width', y1 - y0 + 2 * MARGIN)
+        .attr('height', x1 - x0 + 2 * MARGIN);
+    d3.select(selector).select('g').attr('transform', "translate(" + (-y0 + MARGIN) + ", " + (-x0 + MARGIN) + ")");
+}
 function renderChart(root, options, flipHorizontally) {
     if (flipHorizontally === void 0) { flipHorizontally = false; }
     var svgSelector = options.svgSelector || DEFAULT_SVG_SELECTOR;
@@ -19201,17 +19213,6 @@ function renderChart(root, options, flipHorizontally) {
             node.y = -node.y;
         });
     }
-    // Calculate graph boundaries.
-    var x0 = d3.min(nodes.map(function (d) { return d.x - getHeight(d.data) / 2; }));
-    var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.indi.width / 2; }));
-    var x1 = d3.max(nodes.map(function (d) { return d.x + getHeight(d.data) / 2; }));
-    var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.indi.width / 2; }));
-    d3.select(svgSelector)
-        .attr('width', y1 - y0 + 2 * MARGIN)
-        .attr('height', x1 - x0 + 2 * MARGIN);
-    d3.select(svgSelector)
-        .select('g')
-        .attr('transform', "translate(" + (-y0 + MARGIN) + ", " + (-x0 + MARGIN) + ")");
     // Render nodes.
     var nodeEnter = d3.select(svgSelector)
         .select('g')
@@ -19233,6 +19234,7 @@ function renderChart(root, options, flipHorizontally) {
         .attr('class', 'link')
         .attr('d', function (node) { return flipHorizontally ? link(node, node.parent) :
         link(node.parent, node); });
+    return nodes;
 }
 /** Renders an ancestors chart. */
 var AncestorChart = /** @class */ (function () {
@@ -19242,12 +19244,17 @@ var AncestorChart = /** @class */ (function () {
     /** Creates a d3 hierarchy from the input data. */
     AncestorChart.prototype.createHierarchy = function () {
         var parents = [];
-        var indi = this.options.data.getIndi(this.options.startId);
-        var famc = indi.getFamilyAsChild();
-        parents.push({ id: this.options.startId, indi: { id: this.options.startId } });
         var stack = [];
-        if (famc) {
-            stack.push({ id: famc, parentId: this.options.startId });
+        if (this.options.startIndi) {
+            var indi = this.options.data.getIndi(this.options.startIndi);
+            var famc = indi.getFamilyAsChild();
+            if (famc) {
+                stack.push({ id: famc, parentId: this.options.startIndi });
+            }
+            parents.push({ id: this.options.startIndi, indi: { id: this.options.startIndi } });
+        }
+        else {
+            stack.push({ id: this.options.startFam });
         }
         while (stack.length) {
             var entry = stack.pop();
@@ -19262,18 +19269,18 @@ var AncestorChart = /** @class */ (function () {
             }
             if (mother) {
                 entry.spouse = { id: mother };
-                var indi_1 = this.options.data.getIndi(mother);
-                var famc_1 = indi_1.getFamilyAsChild();
-                if (famc_1) {
-                    stack.push({ id: famc_1, parentId: entry.id, parentsOfSpouse: true });
+                var indi = this.options.data.getIndi(mother);
+                var famc = indi.getFamilyAsChild();
+                if (famc) {
+                    stack.push({ id: famc, parentId: entry.id, parentsOfSpouse: true });
                 }
             }
             if (father) {
                 entry.indi = { id: father };
-                var indi_2 = this.options.data.getIndi(father);
-                var famc_2 = indi_2.getFamilyAsChild();
-                if (famc_2) {
-                    stack.push({ id: famc_2, parentId: entry.id, parentsOfSpouse: false });
+                var indi = this.options.data.getIndi(father);
+                var famc = indi.getFamilyAsChild();
+                if (famc) {
+                    stack.push({ id: famc, parentId: entry.id, parentsOfSpouse: false });
                 }
             }
             parents.push(entry);
@@ -19286,7 +19293,8 @@ var AncestorChart = /** @class */ (function () {
      */
     AncestorChart.prototype.render = function () {
         var root = this.createHierarchy();
-        renderChart(root, this.options, true);
+        var nodes = renderChart(root, this.options);
+        updateSvgDimensions(nodes, this.options.svgSelector);
     };
     return AncestorChart;
 }());
@@ -19326,11 +19334,26 @@ var DescendantChart = /** @class */ (function () {
             };
         });
     };
+    DescendantChart.prototype.getFamNode = function (famId) {
+        var node = { id: famId, family: { id: famId } };
+        var fam = this.options.data.getFam(famId);
+        var father = fam.getFather();
+        if (father) {
+            node.indi = { id: father };
+        }
+        var mother = fam.getMother();
+        if (mother) {
+            node.spouse = { id: mother };
+        }
+        return node;
+    };
     /** Creates a d3 hierarchy from the input data. */
     DescendantChart.prototype.createHierarchy = function () {
         var _this = this;
         var parents = [];
-        var nodes = this.getNodes(this.options.startId);
+        var nodes = this.options.startIndi ?
+            this.getNodes(this.options.startIndi) :
+            [this.getFamNode(this.options.startFam)];
         parents.push.apply(parents, nodes);
         var stack = [];
         nodes.forEach(function (node) {
@@ -19365,11 +19388,43 @@ var DescendantChart = /** @class */ (function () {
      */
     DescendantChart.prototype.render = function () {
         var root = this.createHierarchy();
-        renderChart(root, this.options);
+        var nodes = renderChart(root, this.options);
+        updateSvgDimensions(nodes, this.options.svgSelector);
     };
     return DescendantChart;
 }());
 exports.DescendantChart = DescendantChart;
+/**
+ * Renders an hourglass chart. It consists of an ancestor chart and
+ * a descendant chart for a family.
+ */
+var HourglassChart = /** @class */ (function () {
+    function HourglassChart(options) {
+        this.options = options;
+    }
+    HourglassChart.prototype.render = function () {
+        // If the start individual is set and this person has children, start with
+        // the family instead.
+        if (this.options.startIndi) {
+            var indi = this.options.data.getIndi(this.options.startIndi);
+            var fams = indi.getFamiliesAsSpouse();
+            if (fams.length) {
+                this.options.startFam = fams[0];
+                this.options.startIndi = undefined;
+            }
+        }
+        var ancestors = new AncestorChart(this.options);
+        var ancestorsRoot = ancestors.createHierarchy();
+        var ancestorNodes = renderChart(ancestorsRoot, this.options, true);
+        var descendants = new DescendantChart(this.options);
+        var descendantsRoot = descendants.createHierarchy();
+        var descendantNodes = renderChart(descendantsRoot, this.options);
+        var nodes = ancestorNodes.concat(descendantNodes);
+        updateSvgDimensions(nodes, this.options.svgSelector);
+    };
+    return HourglassChart;
+}());
+exports.HourglassChart = HourglassChart;
 
 },{"d3":34,"d3-flextree":14}],36:[function(require,module,exports){
 "use strict";
@@ -19500,7 +19555,8 @@ function createChartOptions(json, options) {
     return {
         data: data,
         renderer: new topola_render_1.SimpleRenderer(data, indiUrlFunction),
-        startId: options.startId,
+        startIndi: options.startIndi,
+        startFam: options.startFam,
         svgSelector: options.svgSelector,
     };
 }
@@ -19522,6 +19578,15 @@ function renderDescendants(options) {
     });
 }
 exports.renderDescendants = renderDescendants;
+/** A simplified API for rendering data based on the given RenderOptions. */
+function renderHourglass(options) {
+    d3.json(options.jsonUrl).then(function (json) {
+        var chartOptions = createChartOptions(json, options);
+        var chart = new topola_chart_1.HourglassChart(chartOptions);
+        chart.render();
+    });
+}
+exports.renderHourglass = renderHourglass;
 
 },{"./topola-chart":35,"./topola-data":36,"./topola-render":37,"d3":34}]},{},[1])(1)
 });
