@@ -68,9 +68,27 @@ function setPreferredSize(indi: TreeIndi|undefined, renderer: Renderer): void {
 }
 
 
+function updateSvgDimensions(
+    nodes: Array<d3.HierarchyPointNode<TreeNode>>, svgSelector?: string) {
+  const selector = svgSelector || DEFAULT_SVG_SELECTOR;
+
+  // Calculate chart boundaries.
+  const x0 = d3.min(nodes.map((d) => d.x - getHeight(d.data) / 2));
+  const y0 = d3.min(nodes.map((d) => d.y - d.data.indi.width / 2));
+  const x1 = d3.max(nodes.map((d) => d.x + getHeight(d.data) / 2));
+  const y1 = d3.max(nodes.map((d) => d.y + d.data.indi.width / 2));
+
+  d3.select(selector)
+      .attr('width', y1 - y0 + 2 * MARGIN)
+      .attr('height', x1 - x0 + 2 * MARGIN);
+  d3.select(selector).select('g').attr(
+      'transform', `translate(${- y0 + MARGIN}, ${- x0 + MARGIN})`);
+}
+
+
 function renderChart(
     root: d3.HierarchyNode<TreeNode>, options: ChartOptions,
-    flipHorizontally = false): void {
+    flipHorizontally = false): Array<d3.HierarchyPointNode<TreeNode>> {
   const svgSelector = options.svgSelector || DEFAULT_SVG_SELECTOR;
   const treemap =
       flextree<TreeNode>()
@@ -126,19 +144,6 @@ function renderChart(
     });
   }
 
-  // Calculate graph boundaries.
-  const x0 = d3.min(nodes.map((d) => d.x - getHeight(d.data) / 2));
-  const y0 = d3.min(nodes.map((d) => d.y - d.data.indi.width / 2));
-  const x1 = d3.max(nodes.map((d) => d.x + getHeight(d.data) / 2));
-  const y1 = d3.max(nodes.map((d) => d.y + d.data.indi.width / 2));
-
-  d3.select(svgSelector)
-      .attr('width', y1 - y0 + 2 * MARGIN)
-      .attr('height', x1 - x0 + 2 * MARGIN);
-  d3.select(svgSelector)
-      .select('g')
-      .attr('transform', `translate(${- y0 + MARGIN}, ${- x0 + MARGIN})`);
-
   // Render nodes.
   const nodeEnter =
       d3.select(svgSelector)
@@ -167,6 +172,7 @@ function renderChart(
           'd',
           (node) => flipHorizontally ? link(node, node.parent) :
                                        link(node.parent, node));
+  return nodes;
 }
 
 
@@ -175,7 +181,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
   constructor(readonly options: ChartOptions) {}
 
   /** Creates a d3 hierarchy from the input data. */
-  private createHierarchy(): d3.HierarchyNode<TreeNode> {
+  createHierarchy(): d3.HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
     const stack: TreeNode[] = [];
     if (this.options.startIndi) {
@@ -227,7 +233,8 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
    */
   render(): void {
     const root = this.createHierarchy();
-    renderChart(root, this.options, true);
+    const nodes = renderChart(root, this.options);
+    updateSvgDimensions(nodes, this.options.svgSelector);
   }
 }
 
@@ -281,7 +288,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> {
   }
 
   /** Creates a d3 hierarchy from the input data. */
-  private createHierarchy(): d3.HierarchyNode<TreeNode> {
+  createHierarchy(): d3.HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
 
     const nodes = this.options.startIndi ?
@@ -320,6 +327,39 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> {
    */
   render(): void {
     const root = this.createHierarchy();
-    renderChart(root, this.options);
+    const nodes = renderChart(root, this.options);
+    updateSvgDimensions(nodes, this.options.svgSelector);
+  }
+}
+
+/**
+ * Renders an hourglass chart. It consists of an ancestor chart and
+ * a descendant chart for a family.
+ */
+export class HourglassChart<IndiT extends Indi, FamT extends Fam> {
+  constructor(readonly options: ChartOptions) {}
+
+  render(): void {
+    // If the start individual is set and this person has children, start with
+    // the family instead.
+    if (this.options.startIndi) {
+      const indi = this.options.data.getIndi(this.options.startIndi);
+      const fams = indi.getFamiliesAsSpouse();
+      if (fams.length) {
+        this.options.startFam = fams[0];
+        this.options.startIndi = undefined;
+      }
+    }
+
+    const ancestors = new AncestorChart(this.options);
+    const ancestorsRoot = ancestors.createHierarchy();
+    const ancestorNodes = renderChart(ancestorsRoot, this.options, true);
+
+    const descendants = new DescendantChart(this.options);
+    const descendantsRoot = descendants.createHierarchy();
+    const descendantNodes = renderChart(descendantsRoot, this.options);
+
+    const nodes = ancestorNodes.concat(descendantNodes);
+    updateSvgDimensions(nodes, this.options.svgSelector);
   }
 }

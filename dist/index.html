@@ -7,6 +7,12 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
+      topola.renderHourglass({
+        jsonUrl: 'data/data.json',
+        startFam: 'F3047',
+        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+        svgSelector: '#hourglass',
+      });
       topola.renderAncestors({
         jsonUrl: 'data/data.json',
         startIndi: 'I46464',
@@ -22,6 +28,8 @@
     </script>
   </head>
   <body>
+    <h1>Hourglass</h1>
+    <svg class="graph" id="hourglass"/>
     <h1>Ancestors</h1>
     <svg class="graph" id="ancestors"/>
     <h1>Descendants</h1>

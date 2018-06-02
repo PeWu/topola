@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {AncestorChart, ChartOptions, DescendantChart} from './topola-chart';
+import {AncestorChart, ChartOptions, DescendantChart, HourglassChart} from './topola-chart';
 import {JsonDataProvider, JsonGedcomData} from './topola-data';
 import {SimpleRenderer} from './topola-render';
 
@@ -45,6 +45,16 @@ export function renderDescendants(options: RenderOptions): void {
   d3.json(options.jsonUrl).then((json) => {
     const chartOptions = createChartOptions(json as JsonGedcomData, options);
     const chart = new DescendantChart(chartOptions);
+    chart.render();
+  });
+}
+
+
+/** A simplified API for rendering data based on the given RenderOptions. */
+export function renderHourglass(options: RenderOptions): void {
+  d3.json(options.jsonUrl).then((json) => {
+    const chartOptions = createChartOptions(json as JsonGedcomData, options);
+    const chart = new HourglassChart(chartOptions);
     chart.render();
   });
 }
