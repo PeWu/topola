@@ -62,3 +62,8 @@ export interface Renderer {
   getPreferredSize(id: string): [number, number];
   render(selection: TreeNodeSelection): void;
 }
+
+
+export interface Chart {
+  render(): void;
+}

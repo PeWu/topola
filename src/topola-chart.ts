@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {flextree, FlexTreeLayout} from 'd3-flextree';
 
-import {DataProvider, Fam, Indi, Renderer, TreeIndi, TreeNode} from './topola-api';
+import {Chart, DataProvider, Fam, Indi, Renderer, TreeIndi, TreeNode} from './topola-api';
 
 /** Horizontal distance between boxes. */
 const DISTANCE_H = 30;
@@ -178,7 +178,8 @@ function renderChart(
 
 
 /** Renders an ancestors chart. */
-export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
+export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
+    Chart {
   constructor(readonly options: ChartOptions) {}
 
   /** Creates a d3 hierarchy from the input data. */
@@ -241,7 +242,8 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> {
 
 
 /** Renders a descendants chart. */
-export class DescendantChart<IndiT extends Indi, FamT extends Fam> {
+export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
+    Chart {
   constructor(readonly options: ChartOptions) {}
 
   private getNodes(id: string): TreeNode[] {
@@ -337,7 +339,8 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> {
  * Renders an hourglass chart. It consists of an ancestor chart and
  * a descendant chart for a family.
  */
-export class HourglassChart<IndiT extends Indi, FamT extends Fam> {
+export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
+    Chart {
   constructor(readonly options: ChartOptions) {}
 
   render(): void {

@@ -1,8 +1,19 @@
 import * as d3 from 'd3';
 
-import {AncestorChart, ChartOptions, DescendantChart, HourglassChart} from './topola-chart';
-import {JsonDataProvider, JsonGedcomData} from './topola-data';
-import {SimpleRenderer} from './topola-render';
+import {Chart, DataProvider, Renderer} from './topola-api';
+import {ChartOptions} from './topola-chart';
+import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './topola-data';
+
+
+interface ChartType {
+  new(options: ChartOptions): Chart;
+}
+
+
+interface RendererType {
+  new(dataProvider: DataProvider<IndiDetails, FamDetails>,
+      hrefFunc?: (id: string) => string): Renderer;
+}
 
 
 export interface RenderOptions {
@@ -11,6 +22,8 @@ export interface RenderOptions {
   startFam?: string;
   indiUrl?: string;
   svgSelector?: string;
+  chartType: ChartType;
+  renderer: RendererType;
 }
 
 
@@ -22,7 +35,7 @@ function createChartOptions(
       undefined;
   return {
     data,
-    renderer: new SimpleRenderer(data, indiUrlFunction),
+    renderer: new options.renderer(data, indiUrlFunction),
     startIndi: options.startIndi,
     startFam: options.startFam,
     svgSelector: options.svgSelector,
@@ -30,31 +43,11 @@ function createChartOptions(
 }
 
 
-/** A simplified API for rendering data based on the given RenderOptions. */
-export function renderAncestors(options: RenderOptions): void {
+/** A simplified API for rendering a chart based on the given RenderOptions. */
+export function renderChart(options: RenderOptions): void {
   d3.json(options.jsonUrl).then((json) => {
     const chartOptions = createChartOptions(json as JsonGedcomData, options);
-    const chart = new AncestorChart(chartOptions);
-    chart.render();
-  });
-}
-
-
-/** A simplified API for rendering data based on the given RenderOptions. */
-export function renderDescendants(options: RenderOptions): void {
-  d3.json(options.jsonUrl).then((json) => {
-    const chartOptions = createChartOptions(json as JsonGedcomData, options);
-    const chart = new DescendantChart(chartOptions);
-    chart.render();
-  });
-}
-
-
-/** A simplified API for rendering data based on the given RenderOptions. */
-export function renderHourglass(options: RenderOptions): void {
-  d3.json(options.jsonUrl).then((json) => {
-    const chartOptions = createChartOptions(json as JsonGedcomData, options);
-    const chart = new HourglassChart(chartOptions);
+    const chart = new options.chartType(chartOptions);
     chart.render();
   });
 }

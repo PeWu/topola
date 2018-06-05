@@ -7,23 +7,29 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
-      topola.renderHourglass({
+      topola.renderChart({
         jsonUrl: 'data/data.json',
         startFam: 'F3047',
         indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
         svgSelector: '#hourglass',
+        chartType: topola.HourglassChart,
+        renderer: topola.DetailedRenderer,
       });
-      topola.renderAncestors({
+      topola.renderChart({
         jsonUrl: 'data/data.json',
         startIndi: 'I46464',
         indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
         svgSelector: '#ancestors',
+        chartType: topola.HourglassChart,
+        renderer: topola.DetailedRenderer,
       });
-      topola.renderDescendants({
+      topola.renderChart({
         jsonUrl: 'data/data.json',
         startFam: 'F23172',
         indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
         svgSelector: '#descendants',
+        chartType: topola.DescendantChart,
+        renderer: topola.SimpleRenderer,
       });
     </script>
   </head>
@@ -32,7 +38,7 @@
     <svg class="graph" id="hourglass"/>
     <h1>Ancestors</h1>
     <svg class="graph" id="ancestors"/>
-    <h1>Descendants</h1>
+    <h1>Descendants – simple boxes</h1>
     <svg class="graph" id="descendants"/>
   </body>
 </html>
