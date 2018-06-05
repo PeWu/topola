@@ -13,27 +13,28 @@ const MARGIN = 15;
 const DEFAULT_SVG_SELECTOR = 'svg';
 
 
-/** Creates a path from parent to the child node. */
-function link(
-    s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
-  const mid = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
-  const dy = d.data.spouse ?
-      (s.data.parentsOfSpouse ? d.x + d.data.spouse.height / 2 :
-                                d.x - d.data.indi.height / 2) :
-      d.x;
-  return `M ${s.y} ${s.x}
-          L ${mid} ${s.x},
-            ${mid} ${dy},
-            ${d.y} ${dy}`;
-}
-
-
 /**
  * Returns the height of the whole tree node as the sum of the heights of both
  * spouses.
  */
 function getHeight(node: TreeNode): number {
   return node.indi.height + (node.spouse && node.spouse.height || 0);
+}
+
+
+/** Creates a path from parent to the child node. */
+function link(
+    s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
+  const midX = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
+  const sy = s.x - getHeight(s.data) / 2 + s.data.indi.height;
+  const dy = d.data.spouse ?
+      (s.data.parentsOfSpouse ? d.x + d.data.indi.height / 2 :
+                                d.x - d.data.spouse.height / 2) :
+      d.x;
+  return `M ${s.y} ${sy}
+          L ${midX} ${sy},
+            ${midX} ${dy},
+            ${d.y} ${dy}`;
 }
 
 
