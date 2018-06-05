@@ -2,6 +2,7 @@ import {DataProvider, Fam, Indi} from './topola-api';
 
 
 export interface Date {
+  qualifier?: string;
   day?: number;
   month?: number;
   year?: number;
@@ -23,6 +24,7 @@ export interface DateOrRange {
 export interface JsonEvent extends DateOrRange {
   date?: Date;
   dateRange?: DateRange;
+  place?: string;
   confirmed?: boolean;
 }
 
@@ -30,7 +32,8 @@ export interface JsonEvent extends DateOrRange {
 /** Json representation of an individual. */
 export interface JsonIndi {
   id: string;
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   famc?: string;
   fams?: string[];
   birth?: JsonEvent;
@@ -53,9 +56,12 @@ export interface JsonGedcomData {
 
 /** Details of an individual record. */
 export interface IndiDetails extends Indi {
-  getName(): string|null;
+  getFirstName(): string|null;
+  getLastName(): string|null;
   getBirthDate(): DateOrRange|null;
+  getBirthPlace(): string|null;
   getDeathDate(): DateOrRange|null;
+  getDeathPlace(): string|null;
   isConfirmedDeath(): boolean;
 }
 
@@ -76,14 +82,23 @@ class JsonIndiDetails implements IndiDetails {
   getFamilyAsChild() {
     return this.json.famc || null;
   }
-  getName() {
-    return this.json.name || null;
+  getFirstName() {
+    return this.json.firstName || null;
+  }
+  getLastName() {
+    return this.json.lastName || null;
   }
   getBirthDate(): DateOrRange|null {
     return this.json.birth || null;
   }
+  getBirthPlace(): string|null {
+    return this.json.birth && this.json.birth.place || null;
+  }
   getDeathDate(): DateOrRange|null {
     return this.json.death || null;
+  }
+  getDeathPlace(): string|null {
+    return this.json.death && this.json.death.place || null;
   }
   isConfirmedDeath(): boolean {
     return this.json.death && this.json.death.confirmed;

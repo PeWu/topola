@@ -9,10 +9,20 @@ const MIN_WIDTH = 50;
 
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text: string) {
-  const x = d3.select('svg').append('text').text(text);
+  const x = d3.select('svg')
+                .append('g')
+                .attr('class', 'node')
+                .append('text')
+                .attr('class', 'name')
+                .text(text);
   const w = (x.node() as SVGTextContentElement).getComputedTextLength();
   x.remove();
   return w;
+}
+
+
+function getName(indi: IndiDetails) {
+  return [(indi.getFirstName() || ''), (indi.getLastName() || '')].join(' ');
 }
 
 
@@ -40,7 +50,7 @@ export class SimpleRenderer implements Renderer {
     const indi = this.dataProvider.getIndi(id);
     const years = getYears(indi);
     const width =
-        Math.max(getLength(indi.getName()), getLength(years), MIN_WIDTH);
+        Math.max(getLength(getName(indi)) + 8, getLength(years), MIN_WIDTH);
     const height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
     return [width, height];
   }
@@ -48,7 +58,7 @@ export class SimpleRenderer implements Renderer {
   render(selection: TreeNodeSelection): void {
     this.renderIndi(selection, (node) => node.indi);
     const spouseSelection =
-        selection.filter((d) => !!d.data.spouse)
+        selection.filter((node) => !!node.data.spouse)
             .append('g')
             .attr(
                 'transform',
@@ -79,7 +89,7 @@ export class SimpleRenderer implements Renderer {
             (node) => `translate(${indiFunc(node.data).width / 2}, 17)`)
         .text(
             (node) =>
-                this.dataProvider.getIndi(indiFunc(node.data).id).getName());
+                getName(this.dataProvider.getIndi(indiFunc(node.data).id)));
     group.append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
