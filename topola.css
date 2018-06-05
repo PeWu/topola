@@ -1,4 +1,4 @@
-.node text {
+text {
   font: 12px sans-serif;
 }
 
@@ -28,4 +28,20 @@ svg {
 
 body {
   background: #ccc;
+}
+
+.detailed {
+  stroke-width: 2px;
+}
+
+.detailed rect {
+  fill: #ffd;
+}
+
+.detailed text {
+  font-family: verdana;
+}
+
+.detailed .details {
+  font-size: 10px;
 }

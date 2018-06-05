@@ -638,8 +638,9 @@
       "fams": [
         "F23172"
       ],
+      "firstName": "Wojciech",
       "id": "I68389",
-      "name": "Wojciech Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -648,8 +649,9 @@
       "fams": [
         "F23172"
       ],
+      "firstName": "Marianna",
       "id": "I68390",
-      "name": "Marianna"
+      "lastName": ""
     },
     {
       "birth": {
@@ -657,7 +659,8 @@
           "day": 26,
           "month": 10,
           "year": 1716
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -666,8 +669,9 @@
       "fams": [
         "F15629"
       ],
+      "firstName": "Szymon",
       "id": "I46741",
-      "name": "Szymon Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -676,8 +680,9 @@
       "fams": [
         "F15629"
       ],
+      "firstName": "Marianna",
       "id": "I46742",
-      "name": "Marianna O\u0142dak"
+      "lastName": "O\u0142dak"
     },
     {
       "birth": {
@@ -685,15 +690,17 @@
           "day": 10,
           "month": 3,
           "year": 1739
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15629",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I46743",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -701,7 +708,8 @@
           "day": 21,
           "month": 1,
           "year": 1741
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -709,15 +717,17 @@
           "day": 7,
           "month": 9,
           "year": 1809
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F15629",
       "fams": [
         "F9881",
         "F4126"
       ],
+      "firstName": "Sebastian",
       "id": "I12356",
-      "name": "Sebastian Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -730,8 +740,9 @@
       "fams": [
         "F9881"
       ],
+      "firstName": "Ma\u0142gorzata",
       "id": "I29773",
-      "name": "Ma\u0142gorzata Kacprzyk"
+      "lastName": "Kacprzyk"
     },
     {
       "birth": {
@@ -746,20 +757,23 @@
           "day": 4,
           "month": 12,
           "year": 1840
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F9881",
       "fams": [
         "F4185"
       ],
+      "firstName": "Szczepan",
       "id": "I12570",
-      "name": "Szczepan Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1768
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -767,20 +781,23 @@
           "day": 30,
           "month": 8,
           "year": 1847
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "fams": [
         "F4185"
       ],
+      "firstName": "Barbara",
       "id": "I12571",
-      "name": "Barbara Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1794
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -788,21 +805,24 @@
           "day": 20,
           "month": 3,
           "year": 1875
-        }
+        },
+        "place": "Wojtery"
       },
       "famc": "F4185",
       "fams": [
         "F4189"
       ],
+      "firstName": "Andrzej",
       "id": "I12576",
-      "name": "Andrzej Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1795
-        }
+        },
+        "place": "Jasienica"
       },
       "death": {
         "confirmed": true,
@@ -810,13 +830,15 @@
           "day": 10,
           "month": 4,
           "year": 1865
-        }
+        },
+        "place": "Wojtery"
       },
       "fams": [
         "F4189"
       ],
+      "firstName": "Katarzyna",
       "id": "I12578",
-      "name": "Katarzyna J\u0119drzejak"
+      "lastName": "J\u0119drzejak"
     },
     {
       "birth": {
@@ -824,7 +846,8 @@
           "day": 11,
           "month": 11,
           "year": 1815
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -832,12 +855,14 @@
           "day": 25,
           "month": 4,
           "year": 1865
-        }
+        },
+        "place": "Wojtery"
       },
       "famc": "F4189",
       "fams": [],
+      "firstName": "Marcin",
       "id": "I12579",
-      "name": "Marcin Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -845,7 +870,8 @@
           "day": 23,
           "month": 5,
           "year": 1819
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -853,12 +879,14 @@
           "day": 24,
           "month": 5,
           "year": 1819
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4189",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I12580",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -866,7 +894,8 @@
           "day": 18,
           "month": 9,
           "year": 1823
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -874,12 +903,14 @@
           "day": 5,
           "month": 11,
           "year": 1825
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4189",
       "fams": [],
+      "firstName": "Ambro\u017cy",
       "id": "I12581",
-      "name": "Ambro\u017cy Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -887,12 +918,14 @@
           "day": 24,
           "month": 5,
           "year": 1826
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4189",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I34013",
-      "name": "Franciszka Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -900,26 +933,30 @@
           "day": 8,
           "month": 11,
           "year": 1828
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4189",
       "fams": [],
+      "firstName": "Teodor",
       "id": "I34014",
-      "name": "Teodor Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1834
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4189",
       "fams": [],
+      "firstName": "Kacper",
       "id": "I12582",
-      "name": "Kacper Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -935,8 +972,9 @@
       "fams": [
         "F10891"
       ],
+      "firstName": "Katarzyna",
       "id": "I32617",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -951,8 +989,9 @@
       "fams": [
         "F10891"
       ],
+      "firstName": "Jakub",
       "id": "I32616",
-      "name": "Jakub O\u0142dak"
+      "lastName": "O\u0142dak"
     },
     {
       "birth": {
@@ -960,15 +999,17 @@
           "day": 3,
           "month": 11,
           "year": 1821
-        }
+        },
+        "place": "Lipka"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10891",
       "fams": [],
+      "firstName": "Andrzej",
       "id": "I32618",
-      "name": "Andrzej O\u0142dak"
+      "lastName": "O\u0142dak"
     },
     {
       "birth": {
@@ -987,8 +1028,9 @@
       "fams": [
         "F4184"
       ],
+      "firstName": "Ambro\u017cy",
       "id": "I12568",
-      "name": "Ambro\u017cy Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1006,14 +1048,16 @@
       "fams": [
         "F4184"
       ],
+      "firstName": "Magdalena",
       "id": "I12569",
-      "name": "Magdalena Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1824
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1023,15 +1067,17 @@
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Jan",
       "id": "I12574",
-      "name": "Jan Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "month": 10,
           "year": 1826
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1039,12 +1085,14 @@
           "day": 2,
           "month": 12,
           "year": 1826
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Anna",
       "id": "I12584",
-      "name": "Anna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1052,7 +1100,8 @@
           "day": 21,
           "month": 12,
           "year": 1827
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1060,12 +1109,14 @@
           "day": 11,
           "month": 3,
           "year": 1833
-        }
+        },
+        "place": "Ja\u017awie Mi\u0105si\u0144skie"
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Tomasz",
       "id": "I34016",
-      "name": "Tomasz Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1073,54 +1124,63 @@
           "day": 31,
           "month": 7,
           "year": 1830
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Piotr",
       "id": "I34017",
-      "name": "Piotr Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1833
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1834
-        }
+        },
+        "place": "Ja\u017awie Mi\u0105si\u0144skie"
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Bonifacy",
       "id": "I34018",
-      "name": "Bonifacy Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1835
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Rozalia",
       "id": "I34019",
-      "name": "Rozalia Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1838
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I40487",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1134,8 +1194,9 @@
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "J\u00f3zefa",
       "id": "I12567",
-      "name": "J\u00f3zefa Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1148,12 +1209,14 @@
         "confirmed": true,
         "date": {
           "year": 1848
-        }
+        },
+        "place": "Postoliska"
       },
       "famc": "F4184",
       "fams": [],
+      "firstName": "Roch",
       "id": "I34020",
-      "name": "Roch Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1166,8 +1229,9 @@
       "fams": [
         "F10889"
       ],
+      "firstName": "Teresa",
       "id": "I32537",
-      "name": "Teresa Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1182,8 +1246,9 @@
       "fams": [
         "F10889"
       ],
+      "firstName": "J\u00f3zef",
       "id": "I32613",
-      "name": "J\u00f3zef Banaszek"
+      "lastName": "Banaszek"
     },
     {
       "birth": {
@@ -1191,15 +1256,17 @@
           "day": 3,
           "month": 10,
           "year": 1822
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10889",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I32614",
-      "name": "Marianna Banaszek"
+      "lastName": "Banaszek"
     },
     {
       "birth": {
@@ -1214,15 +1281,17 @@
           "day": 11,
           "month": 10,
           "year": 1876
-        }
+        },
+        "place": "Wojtery"
       },
       "famc": "F4185",
       "fams": [
         "F13054",
         "F4273"
       ],
+      "firstName": "Jan",
       "id": "I40523",
-      "name": "Jan Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -1231,8 +1300,9 @@
       "fams": [
         "F13054"
       ],
+      "firstName": "Marianna",
       "id": "I40522",
-      "name": "Marianna O\u0142dak"
+      "lastName": "O\u0142dak"
     },
     {
       "death": {
@@ -1240,8 +1310,9 @@
       },
       "famc": "F13054",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I41468",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -1255,8 +1326,9 @@
       "fams": [
         "F4273"
       ],
+      "firstName": "Katarzyna",
       "id": "I12868",
-      "name": "Katarzyna Gajcy"
+      "lastName": "Gajcy"
     },
     {
       "birth": {
@@ -1264,7 +1336,8 @@
           "day": 2,
           "month": 9,
           "year": 1810
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1272,14 +1345,16 @@
           "day": 1,
           "month": 12,
           "year": 1861
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "famc": "F4185",
       "fams": [
         "F4224"
       ],
+      "firstName": "Ewa",
       "id": "I12583",
-      "name": "Ewa Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1287,7 +1362,8 @@
           "day": 29,
           "month": 7,
           "year": 1811
-        }
+        },
+        "place": "T\u0142uszcz"
       },
       "death": {
         "confirmed": true,
@@ -1295,13 +1371,15 @@
           "day": 13,
           "month": 3,
           "year": 1878
-        }
+        },
+        "place": "Wojtery"
       },
       "fams": [
         "F4224"
       ],
+      "firstName": "Piotr",
       "id": "I12677",
-      "name": "Piotr Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
@@ -1309,7 +1387,8 @@
           "day": 1,
           "month": 9,
           "year": 1832
-        }
+        },
+        "place": "Grab\u00f3w"
       },
       "death": {
         "confirmed": true,
@@ -1317,18 +1396,21 @@
           "day": 28,
           "month": 1,
           "year": 1895
-        }
+        },
+        "place": "Grab\u00f3w"
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Jan",
       "id": "I12675",
-      "name": "Jan Wojtera vel Wojtyra"
+      "lastName": "Wojtera vel Wojtyra"
     },
     {
       "birth": {
         "date": {
           "year": 1835
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true,
@@ -1336,18 +1418,21 @@
           "day": 12,
           "month": 3,
           "year": 1838
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I12870",
-      "name": "Marianna Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1838
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true,
@@ -1359,14 +1444,16 @@
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Karolina",
       "id": "I56835",
-      "name": "Karolina Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1840
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true,
@@ -1381,46 +1468,53 @@
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I18384",
-      "name": "Franciszka Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1842
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1843
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I56843",
-      "name": "Katarzyna Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1844
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "J\u00f3zefa",
       "id": "I56840",
-      "name": "J\u00f3zefa Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1847
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true,
@@ -1428,54 +1522,62 @@
           "day": 4,
           "month": 3,
           "year": 1857
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I12678",
-      "name": "Marianna Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1849
-        }
+        },
+        "place": "Wojtery"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "J\u00f3zef",
       "id": "I12679",
-      "name": "J\u00f3zef Wojtera vel Wojtyra"
+      "lastName": "Wojtera vel Wojtyra"
     },
     {
       "birth": {
         "date": {
           "year": 1851
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I56842",
-      "name": "Katarzyna Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
         "date": {
           "year": 1854
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4224",
       "fams": [],
+      "firstName": "Grzegorz",
       "id": "I56841",
-      "name": "Grzegorz Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
@@ -1483,7 +1585,8 @@
           "day": 8,
           "month": 10,
           "year": 1769
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1491,14 +1594,16 @@
           "day": 10,
           "month": 9,
           "year": 1835
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F9881",
       "fams": [
         "F3453"
       ],
+      "firstName": "Marianna",
       "id": "I10120",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -1513,13 +1618,15 @@
           "day": 11,
           "month": 2,
           "year": 1835
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "fams": [
         "F3453"
       ],
+      "firstName": "Jacenty",
       "id": "I10119",
-      "name": "Jacenty Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1527,18 +1634,21 @@
           "day": 25,
           "month": 6,
           "year": 1790
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1795
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3453",
       "fams": [],
+      "firstName": "Piotr",
       "id": "I29776",
-      "name": "Piotr Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1546,15 +1656,17 @@
           "day": 13,
           "month": 3,
           "year": 1793
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3453",
       "fams": [],
+      "firstName": "J\u00f3zef",
       "id": "I38030",
-      "name": "J\u00f3zef Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1562,18 +1674,21 @@
           "day": 29,
           "month": 3,
           "year": 1796
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1797
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3453",
       "fams": [],
+      "firstName": "Jan",
       "id": "I33298",
-      "name": "Jan Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1581,15 +1696,17 @@
           "day": 29,
           "month": 3,
           "year": 1796
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3453",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I38031",
-      "name": "Franciszka Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1597,7 +1714,8 @@
           "day": 9,
           "month": 11,
           "year": 1798
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1606,14 +1724,16 @@
             "month": 2,
             "year": 1855
           }
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "famc": "F3453",
       "fams": [
         "F4911"
       ],
+      "firstName": "Marcin",
       "id": "I14879",
-      "name": "Marcin Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1629,14 +1749,16 @@
       "fams": [
         "F4911"
       ],
+      "firstName": "Marianna",
       "id": "I14880",
-      "name": "Marianna Radzka"
+      "lastName": "Radzka"
     },
     {
       "birth": {
         "date": {
           "year": 1803
-        }
+        },
+        "place": "Postoliska"
       },
       "death": {
         "confirmed": true,
@@ -1644,21 +1766,24 @@
           "day": 10,
           "month": 8,
           "year": 1856
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3453",
       "fams": [
         "F3444"
       ],
+      "firstName": "Tomasz Stanis\u0142aw",
       "id": "I10098",
-      "name": "Tomasz Stanis\u0142aw Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1803
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1666,13 +1791,15 @@
           "day": 25,
           "month": 2,
           "year": 1871
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "fams": [
         "F3444"
       ],
+      "firstName": "Balbina",
       "id": "I10099",
-      "name": "Balbina Kubuj"
+      "lastName": "Kubuj"
     },
     {
       "birth": {
@@ -1680,22 +1807,25 @@
           "day": 7,
           "month": 2,
           "year": 1828
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Franciszek",
       "id": "I10121",
-      "name": "Franciszek Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1830
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1703,18 +1833,21 @@
           "day": 9,
           "month": 4,
           "year": 1861
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Kazimierz",
       "id": "I38476",
-      "name": "Kazimierz Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1835
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1726,8 +1859,9 @@
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Baltazar vel Marcel",
       "id": "I10097",
-      "name": "Baltazar vel Marcel Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1735,7 +1869,8 @@
           "day": 9,
           "month": 9,
           "year": 1832
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1743,18 +1878,21 @@
           "day": 4,
           "month": 1,
           "year": 1833
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Micha\u0142",
       "id": "I29758",
-      "name": "Micha\u0142 Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1833
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1764,14 +1902,16 @@
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Joanna",
       "id": "I29760",
-      "name": "Joanna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1837
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -1780,31 +1920,36 @@
       "fams": [
         "F12730"
       ],
+      "firstName": "Wojciech",
       "id": "I29762",
-      "name": "Wojciech Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1838
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1841
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Jan",
       "id": "I29763",
-      "name": "Jan Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1842
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1812,18 +1957,21 @@
           "day": 23,
           "month": 11,
           "year": 1858
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Antoni",
       "id": "I29764",
-      "name": "Antoni Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1844
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -1831,32 +1979,37 @@
           "day": 23,
           "month": 4,
           "year": 1895
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Teresa",
       "id": "I29765",
-      "name": "Teresa Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1850
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3444",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I29766",
-      "name": "Marianna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1807
-        }
+        },
+        "place": "Postoliska"
       },
       "death": {
         "confirmed": true,
@@ -1864,15 +2017,17 @@
           "day": 20,
           "month": 2,
           "year": 1855
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "famc": "F3453",
       "fams": [
         "F10666",
         "F10670"
       ],
+      "firstName": "Andrzej",
       "id": "I29779",
-      "name": "Andrzej Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1880,7 +2035,8 @@
           "day": 11,
           "month": 11,
           "year": 1810
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true,
@@ -1888,13 +2044,15 @@
           "day": 12,
           "month": 6,
           "year": 1847
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "fams": [
         "F10666"
       ],
+      "firstName": "J\u00f3zefa",
       "id": "I31972",
-      "name": "J\u00f3zefa Bereda"
+      "lastName": "Bereda"
     },
     {
       "birth": {
@@ -1907,42 +2065,49 @@
       },
       "famc": "F10666",
       "fams": [],
+      "firstName": "Ewa",
       "id": "I31985",
-      "name": "Ewa Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1842
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1843
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "famc": "F10666",
       "fams": [],
+      "firstName": "Julianna",
       "id": "I31986",
-      "name": "Julianna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1844
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1846
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "famc": "F10666",
       "fams": [],
+      "firstName": "Julianna",
       "id": "I31987",
-      "name": "Julianna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -1956,33 +2121,38 @@
           "day": 3,
           "month": 3,
           "year": 1855
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "fams": [
         "F10670"
       ],
+      "firstName": "Katarzyna",
       "id": "I31988",
-      "name": "Katarzyna Witkowska"
+      "lastName": "Witkowska"
     },
     {
       "birth": {
         "date": {
           "year": 1848
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10670",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I31989",
-      "name": "Franciszka Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1850
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true,
@@ -1990,32 +2160,37 @@
           "day": 18,
           "month": 3,
           "year": 1855
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "famc": "F10670",
       "fams": [],
+      "firstName": "J\u00f3zefa",
       "id": "I31990",
-      "name": "J\u00f3zefa Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1853
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10670",
       "fams": [],
+      "firstName": "Wiktoria",
       "id": "I31991",
-      "name": "Wiktoria Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1810
-        }
+        },
+        "place": "Postoliska"
       },
       "death": {
         "confirmed": true,
@@ -2029,8 +2204,9 @@
       "fams": [
         "F10673"
       ],
+      "firstName": "Franciszka",
       "id": "I29780",
-      "name": "Franciszka Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -2050,8 +2226,9 @@
       "fams": [
         "F10673"
       ],
+      "firstName": "Jan",
       "id": "I31994",
-      "name": "Jan Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
@@ -2059,7 +2236,8 @@
           "day": 24,
           "month": 12,
           "year": 1830
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true,
@@ -2071,8 +2249,9 @@
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "Ewa",
       "id": "I5321",
-      "name": "Ewa Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
@@ -2085,14 +2264,16 @@
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "Agnieszka",
       "id": "I32004",
-      "name": "Agnieszka Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
         "date": {
           "year": 1836
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true,
@@ -2100,18 +2281,21 @@
           "day": 20,
           "month": 7,
           "year": 1875
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "W\u0142adys\u0142aw",
       "id": "I32005",
-      "name": "W\u0142adys\u0142aw Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
         "date": {
           "year": 1839
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true,
@@ -2119,54 +2303,62 @@
           "day": 26,
           "month": 5,
           "year": 1903
-        }
+        },
+        "place": "Micha\u0142\u00f3w"
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "Marcin",
       "id": "I32007",
-      "name": "Marcin Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
         "date": {
           "year": 1842
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "Piotr",
       "id": "I32008",
-      "name": "Piotr Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
         "date": {
           "year": 1845
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "J\u00f3zefa",
       "id": "I32010",
-      "name": "J\u00f3zefa Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
         "date": {
           "year": 1848
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10673",
       "fams": [],
+      "firstName": "Antoni",
       "id": "I32009",
-      "name": "Antoni Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
@@ -2174,22 +2366,25 @@
           "day": 21,
           "month": 1,
           "year": 1773
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9881",
       "fams": [],
+      "firstName": "Agnieszka",
       "id": "I29774",
-      "name": "Agnieszka Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1765
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -2199,8 +2394,9 @@
         "F4126",
         "F4085"
       ],
+      "firstName": "Marcjanna",
       "id": "I12290",
-      "name": "Marcjanna Szewczak"
+      "lastName": "Szewczak"
     },
     {
       "birth": {
@@ -2208,15 +2404,17 @@
           "day": 1,
           "month": 11,
           "year": 1779
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4126",
       "fams": [],
+      "firstName": "Rozalia",
       "id": "I29775",
-      "name": "Rozalia Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2232,12 +2430,14 @@
           "day": 11,
           "month": 8,
           "year": 1781
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4126",
       "fams": [],
+      "firstName": "Adam",
       "id": "I46750",
-      "name": "Adam Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2252,15 +2452,17 @@
           "day": 7,
           "month": 4,
           "year": 1854
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "famc": "F4126",
       "fams": [
         "F15633",
         "F4910"
       ],
+      "firstName": "Maciej",
       "id": "I14876",
-      "name": "Maciej Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2268,7 +2470,8 @@
           "day": 11,
           "month": 4,
           "year": 1791
-        }
+        },
+        "place": "Borucza"
       },
       "death": {
         "confirmed": true,
@@ -2276,13 +2479,15 @@
           "day": 10,
           "month": 3,
           "year": 1814
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "fams": [
         "F15633"
       ],
+      "firstName": "Marianna",
       "id": "I46759",
-      "name": "Marianna O\u0142dak"
+      "lastName": "O\u0142dak"
     },
     {
       "birth": {
@@ -2290,15 +2495,17 @@
           "day": 7,
           "month": 1,
           "year": 1814
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15633",
       "fams": [],
+      "firstName": "Kacper",
       "id": "I46762",
-      "name": "Kacper Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2306,7 +2513,8 @@
           "day": 13,
           "month": 2,
           "year": 1788
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "death": {
         "confirmed": true,
@@ -2314,15 +2522,17 @@
           "day": 3,
           "month": 8,
           "year": 1848
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "famc": "F15627",
       "fams": [
         "F4910",
         "F15632"
       ],
+      "firstName": "Franciszka",
       "id": "I14877",
-      "name": "Franciszka Przybysz"
+      "lastName": "Przybysz"
     },
     {
       "birth": {
@@ -2337,14 +2547,16 @@
           "day": 20,
           "month": 6,
           "year": 1860
-        }
+        },
+        "place": "Jasienica"
       },
       "famc": "F4910",
       "fams": [
         "F3047"
       ],
+      "firstName": "Franciszka",
       "id": "I9556",
-      "name": "Franciszka Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2352,7 +2564,8 @@
           "day": 24,
           "month": 6,
           "year": 1812
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true,
@@ -2360,20 +2573,23 @@
           "day": 7,
           "month": 7,
           "year": 1855
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3978",
       "fams": [
         "F3047"
       ],
+      "firstName": "Piotr",
       "id": "I9555",
-      "name": "Piotr Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1834
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -2382,14 +2598,16 @@
       "fams": [
         "F10663"
       ],
+      "firstName": "Florian",
       "id": "I14878",
-      "name": "Florian Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1836
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -2398,14 +2616,16 @@
       "fams": [
         "F3046"
       ],
+      "firstName": "Kazimierz",
       "id": "I9554",
-      "name": "Kazimierz Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1838
-        }
+        },
+        "place": "Ja\u017awie Mi\u0105si\u0144skie"
       },
       "death": {
         "confirmed": true,
@@ -2413,42 +2633,49 @@
           "day": 29,
           "month": 6,
           "year": 1896
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "famc": "F3047",
       "fams": [
         "F11533"
       ],
+      "firstName": "Szymon",
       "id": "I34606",
-      "name": "Szymon Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1840
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3047",
       "fams": [],
+      "firstName": "Pawe\u0142",
       "id": "I34607",
-      "name": "Pawe\u0142 Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1841
-        }
+        },
+        "place": "Ja\u017awie Mi\u0105si\u0144skie"
       },
       "famc": "F3047",
       "fams": [],
+      "firstName": "Jan",
       "id": "I34608",
-      "name": "Jan Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1843
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2456,42 +2683,49 @@
           "day": 10,
           "month": 3,
           "year": 1909
-        }
+        },
+        "place": "Kobiel"
       },
       "famc": "F3047",
       "fams": [
         "F11529"
       ],
+      "firstName": "El\u017cbieta",
       "id": "I34609",
-      "name": "El\u017cbieta Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1847
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
         "date": {
           "year": 1848
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3047",
       "fams": [],
+      "firstName": "Ewa",
       "id": "I34610",
-      "name": "Ewa Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "year": 1852
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F3047",
       "fams": [],
+      "firstName": "J\u00f3zefa",
       "id": "I34611",
-      "name": "J\u00f3zefa Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -2499,7 +2733,8 @@
           "day": 6,
           "month": 1,
           "year": 1821
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -2508,8 +2743,9 @@
       "fams": [
         "F3488"
       ],
+      "firstName": "Agnieszka",
       "id": "I10257",
-      "name": "Agnieszka Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2517,7 +2753,8 @@
           "day": 26,
           "month": 9,
           "year": 1819
-        }
+        },
+        "place": "O\u0142daki"
       },
       "death": {
         "confirmed": true
@@ -2525,8 +2762,9 @@
       "fams": [
         "F3488"
       ],
+      "firstName": "Franciszek",
       "id": "I10256",
-      "name": "Franciszek Wojtera vel Wojtyra"
+      "lastName": "Wojtera vel Wojtyra"
     },
     {
       "birth": {
@@ -2543,8 +2781,9 @@
       },
       "famc": "F3488",
       "fams": [],
+      "firstName": "Apolonia",
       "id": "I10255",
-      "name": "Apolonia Wojtera"
+      "lastName": "Wojtera"
     },
     {
       "birth": {
@@ -2552,7 +2791,8 @@
           "day": 22,
           "month": 9,
           "year": 1823
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -2561,15 +2801,17 @@
       "fams": [
         "F15626"
       ],
+      "firstName": "Tomasz",
       "id": "I46730",
-      "name": "Tomasz Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1829
-        }
+        },
+        "place": "\u0141ysobyki"
       },
       "death": {
         "confirmed": true
@@ -2577,8 +2819,9 @@
       "fams": [
         "F15626"
       ],
+      "firstName": "Ewa",
       "id": "I46731",
-      "name": "Ewa Sycik"
+      "lastName": "Sycik"
     },
     {
       "birth": {
@@ -2586,7 +2829,8 @@
           "day": 9,
           "month": 12,
           "year": 1826
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2594,12 +2838,14 @@
           "day": 19,
           "month": 12,
           "year": 1826
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4910",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I46735",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2607,15 +2853,17 @@
           "day": 5,
           "month": 7,
           "year": 1828
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F4910",
       "fams": [],
+      "firstName": "Agnieszka",
       "id": "I46734",
-      "name": "Agnieszka Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2623,7 +2871,8 @@
           "day": 29,
           "month": 12,
           "year": 1789
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2631,12 +2880,14 @@
           "day": 22,
           "month": 8,
           "year": 1790
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4126",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I35404",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2644,7 +2895,8 @@
           "day": 21,
           "month": 6,
           "year": 1791
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2652,12 +2904,14 @@
           "day": 17,
           "month": 9,
           "year": 1795
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4126",
       "fams": [],
+      "firstName": "Magdalena",
       "id": "I46737",
-      "name": "Magdalena Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2672,12 +2926,14 @@
           "day": 2,
           "month": 3,
           "year": 1797
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4126",
       "fams": [],
+      "firstName": "Miko\u0142aj",
       "id": "I46757",
-      "name": "Miko\u0142aj Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2685,7 +2941,8 @@
           "day": 7,
           "month": 9,
           "year": 1797
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2693,14 +2950,16 @@
           "day": 3,
           "month": 3,
           "year": 1871
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F4126",
       "fams": [
         "F10745"
       ],
+      "firstName": "Micha\u0142",
       "id": "I32168",
-      "name": "Micha\u0142 Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2715,13 +2974,15 @@
           "day": 7,
           "month": 12,
           "year": 1838
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "fams": [
         "F10745"
       ],
+      "firstName": "Anna Helena",
       "id": "I32169",
-      "name": "Anna Helena Kubuj"
+      "lastName": "Kubuj"
     },
     {
       "birth": {
@@ -2729,14 +2990,16 @@
           "day": 27,
           "month": 9,
           "year": 1819
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F10745",
       "fams": [
         "F12675"
       ],
+      "firstName": "Mateusz",
       "id": "I33025",
-      "name": "Mateusz Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -2745,8 +3008,9 @@
       "fams": [
         "F12675"
       ],
+      "firstName": "Marianna",
       "id": "I37863",
-      "name": "Marianna Kowalczyk"
+      "lastName": "Kowalczyk"
     },
     {
       "birth": {
@@ -2754,7 +3018,8 @@
           "day": 20,
           "month": 7,
           "year": 1822
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2768,8 +3033,9 @@
       "fams": [
         "F12563"
       ],
+      "firstName": "Marianna",
       "id": "I33027",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2789,22 +3055,25 @@
       "fams": [
         "F12563"
       ],
+      "firstName": "Andrzej",
       "id": "I37590",
-      "name": "Andrzej Kowalczyk"
+      "lastName": "Kowalczyk"
     },
     {
       "birth": {
         "date": {
           "year": 1844
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F12563",
       "fams": [],
+      "firstName": "Marek",
       "id": "I37589",
-      "name": "Marek Kowalczyk"
+      "lastName": "Kowalczyk"
     },
     {
       "birth": {
@@ -2812,7 +3081,8 @@
           "day": 21,
           "month": 3,
           "year": 1825
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -2821,8 +3091,9 @@
       "fams": [
         "F10742"
       ],
+      "firstName": "Benedykt",
       "id": "I32167",
-      "name": "Benedykt Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2830,7 +3101,8 @@
           "day": 7,
           "month": 10,
           "year": 1824
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true
@@ -2838,22 +3110,25 @@
       "fams": [
         "F10742"
       ],
+      "firstName": "Ludwika",
       "id": "I32162",
-      "name": "Ludwika Banaszek"
+      "lastName": "Banaszek"
     },
     {
       "birth": {
         "date": {
           "year": 1865
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10742",
       "fams": [],
+      "firstName": "Piotr",
       "id": "I61192",
-      "name": "Piotr Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2861,15 +3136,17 @@
           "day": 9,
           "month": 12,
           "year": 1826
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10745",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I46748",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2877,12 +3154,14 @@
           "day": 3,
           "month": 3,
           "year": 1828
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F10745",
       "fams": [],
+      "firstName": "Helena",
       "id": "I33029",
-      "name": "Helena Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2890,7 +3169,8 @@
           "day": 28,
           "month": 11,
           "year": 1830
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2898,12 +3178,14 @@
           "day": 19,
           "month": 1,
           "year": 1832
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F10745",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I33030",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2911,21 +3193,24 @@
           "day": 7,
           "month": 11,
           "year": 1832
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F10745",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I46749",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1835
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -2933,20 +3218,23 @@
           "day": 10,
           "month": 1,
           "year": 1904
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F10745",
       "fams": [
         "F9879"
       ],
+      "firstName": "Ignacy",
       "id": "I29750",
-      "name": "Ignacy Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1840
-        }
+        },
+        "place": "K\u0105ty Mi\u0119dzyleskie"
       },
       "death": {
         "confirmed": true,
@@ -2959,8 +3247,9 @@
       "fams": [
         "F9879"
       ],
+      "firstName": "Marcjanna vel Marianna",
       "id": "I29751",
-      "name": "Marcjanna vel Marianna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -2968,15 +3257,17 @@
           "day": 21,
           "month": 2,
           "year": 1864
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Ignacy",
       "id": "I29755",
-      "name": "Ignacy Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -2984,43 +3275,49 @@
           "day": 6,
           "month": 7,
           "year": 1867
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "J\u00f3zef",
       "id": "I29756",
-      "name": "J\u00f3zef Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1869
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Stanis\u0142aw",
       "id": "I29746",
-      "name": "Stanis\u0142aw Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1873
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Eleonora",
       "id": "I68291",
-      "name": "Eleonora Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3028,7 +3325,8 @@
           "day": 13,
           "month": 3,
           "year": 1876
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -3036,54 +3334,62 @@
           "day": 12,
           "month": 10,
           "year": 1941
-        }
+        },
+        "place": "Kobry\u0144"
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Grzegorz",
       "id": "I68292",
-      "name": "Grzegorz Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1879
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I68293",
-      "name": "Katarzyna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1885
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I68294",
-      "name": "Franciszka Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1888
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F9879",
       "fams": [],
+      "firstName": "Jan",
       "id": "I68295",
-      "name": "Jan Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3091,15 +3397,17 @@
           "day": 15,
           "month": 12,
           "year": 1743
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15629",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I46744",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3107,7 +3415,8 @@
           "day": 1,
           "month": 10,
           "year": 1747
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -3115,14 +3424,16 @@
           "day": 5,
           "month": 12,
           "year": 1794
-        }
+        },
+        "place": "Jasienica"
       },
       "famc": "F15629",
       "fams": [
         "F15630"
       ],
+      "firstName": "Micha\u0142",
       "id": "I46745",
-      "name": "Micha\u0142 Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "death": {
@@ -3136,36 +3447,41 @@
       "fams": [
         "F15630"
       ],
+      "firstName": "Dorota",
       "id": "I46751",
-      "name": "Dorota"
+      "lastName": ""
     },
     {
       "birth": {
         "date": {
           "year": 1777
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15630",
       "fams": [],
+      "firstName": "Jadwiga",
       "id": "I46754",
-      "name": "Jadwiga Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
         "date": {
           "year": 1779
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15630",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I46755",
-      "name": "Marianna Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3178,12 +3494,14 @@
         "confirmed": true,
         "date": {
           "year": 1794
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F15630",
       "fams": [],
+      "firstName": "Ma\u0142gorzata",
       "id": "I46756",
-      "name": "Ma\u0142gorzata Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3191,15 +3509,17 @@
           "day": 8,
           "month": 12,
           "year": 1749
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15629",
       "fams": [],
+      "firstName": "Barbara",
       "id": "I46746",
-      "name": "Barbara Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3207,15 +3527,17 @@
           "day": 4,
           "month": 10,
           "year": 1752
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15629",
       "fams": [],
+      "firstName": "Kacper",
       "id": "I46747",
-      "name": "Kacper Wi\u0119ch"
+      "lastName": "Wi\u0119ch"
     },
     {
       "birth": {
@@ -3223,7 +3545,8 @@
           "day": 30,
           "month": 3,
           "year": 1910
-        }
+        },
+        "place": "Zienkiewicz\u00f3w"
       },
       "death": {
         "confirmed": true,
@@ -3237,8 +3560,9 @@
       "fams": [
         "F15526"
       ],
+      "firstName": "Stanis\u0142aw",
       "id": "I46464",
-      "name": "Stanis\u0142aw Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -3259,14 +3583,16 @@
       "fams": [
         "F15526"
       ],
+      "firstName": "Janina",
       "id": "I46468",
-      "name": "Janina Maguza"
+      "lastName": "Maguza"
     },
     {
       "birth": {
         "date": {
           "year": 1879
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true
@@ -3276,8 +3602,9 @@
         "F15524",
         "F15525"
       ],
+      "firstName": "Tomasz",
       "id": "I45740",
-      "name": "Tomasz Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -3285,14 +3612,16 @@
           "day": 6,
           "month": 8,
           "year": 1846
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F12731",
       "fams": [
         "F11529"
       ],
+      "firstName": "Stanis\u0142aw",
       "id": "I34612",
-      "name": "Stanis\u0142aw Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -3300,7 +3629,8 @@
           "day": 28,
           "month": 5,
           "year": 1816
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "death": {
         "confirmed": true,
@@ -3308,15 +3638,17 @@
           "day": 15,
           "month": 10,
           "year": 1887
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "famc": "F11580",
       "fams": [
         "F12731",
         "F15514"
       ],
+      "firstName": "Pawe\u0142",
       "id": "I38027",
-      "name": "Pawe\u0142 Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
     },
     {
       "birth": {
@@ -3324,7 +3656,8 @@
           "day": 25,
           "month": 11,
           "year": 1783
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "death": {
         "confirmed": true,
@@ -3332,14 +3665,16 @@
           "day": 1,
           "month": 10,
           "year": 1833
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F15513",
       "fams": [
         "F11580"
       ],
+      "firstName": "Jan",
       "id": "I34800",
-      "name": "Jan Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
     },
     {
       "death": {
@@ -3348,8 +3683,9 @@
       "fams": [
         "F15513"
       ],
+      "firstName": "Franciszek",
       "id": "I46426",
-      "name": "Franciszek Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
     },
     {
       "death": {
@@ -3358,8 +3694,9 @@
       "fams": [
         "F15513"
       ],
+      "firstName": "Marianna",
       "id": "I46427",
-      "name": "Marianna Jucha"
+      "lastName": "Jucha"
     },
     {
       "birth": {
@@ -3374,13 +3711,15 @@
           "day": 15,
           "month": 7,
           "year": 1850
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "fams": [
         "F11580"
       ],
+      "firstName": "Agnieszka",
       "id": "I34801",
-      "name": "Agnieszka Banaszek"
+      "lastName": "Banaszek"
     },
     {
       "birth": {
@@ -3394,15 +3733,17 @@
           "day": 26,
           "month": 9,
           "year": 1847
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11580",
       "fams": [
         "F11578",
         "F15550"
       ],
+      "firstName": "Ewa",
       "id": "I34790",
-      "name": "Ewa Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak"
     },
     {
       "birth": {
@@ -3417,13 +3758,15 @@
           "day": 24,
           "month": 10,
           "year": 1842
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "fams": [
         "F11578"
       ],
+      "firstName": "Andrzej",
       "id": "I34789",
-      "name": "Andrzej Bereda"
+      "lastName": "Bereda"
     },
     {
       "birth": {
@@ -3438,52 +3781,61 @@
       "fams": [
         "F15550"
       ],
+      "firstName": "Piotr",
       "id": "I46525",
-      "name": "Piotr Groszek"
+      "lastName": "Groszek"
     },
     {
       "birth": {
         "date": {
           "year": 1813
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11580",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I34803",
-      "name": "Franciszka Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak"
     },
     {
       "birth": {
         "date": {
           "year": 1815
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11580",
       "fams": [],
+      "firstName": "Ma\u0142gorzata",
       "id": "I34805",
-      "name": "Ma\u0142gorzata Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak"
     },
     {
       "birth": {
         "date": {
           "year": 1820
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11580",
       "fams": [],
+      "firstName": "Franciszka",
       "id": "I34804",
-      "name": "Franciszka Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak"
     },
     {
       "birth": {
         "date": {
           "year": 1823
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11580",
       "fams": [],
+      "firstName": "Apolonia",
       "id": "I34802",
-      "name": "Apolonia Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak"
     },
     {
       "birth": {
@@ -3491,15 +3843,17 @@
           "day": 23,
           "month": 6,
           "year": 1825
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F11580",
       "fams": [],
+      "firstName": "W\u0142adys\u0142aw",
       "id": "I46425",
-      "name": "W\u0142adys\u0142aw Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
     },
     {
       "birth": {
@@ -3519,8 +3873,9 @@
       "fams": [
         "F15514"
       ],
+      "firstName": "Marianna",
       "id": "I46428",
-      "name": "Marianna Matusiak"
+      "lastName": "Matusiak"
     },
     {
       "birth": {
@@ -3528,7 +3883,8 @@
           "day": 25,
           "month": 10,
           "year": 1818
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3536,14 +3892,16 @@
           "day": 14,
           "month": 12,
           "year": 1854
-        }
+        },
+        "place": "Klemb\u00f3w"
       },
       "famc": "F9882",
       "fams": [
         "F12731"
       ],
+      "firstName": "Urszula Tekla",
       "id": "I38028",
-      "name": "Urszula Tekla Radzka"
+      "lastName": "Radzka"
     },
     {
       "birth": {
@@ -3551,7 +3909,8 @@
           "day": 21,
           "month": 3,
           "year": 1779
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3559,14 +3918,16 @@
           "day": 27,
           "month": 4,
           "year": 1826
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F15516",
       "fams": [
         "F9882"
       ],
+      "firstName": "J\u00f3zef",
       "id": "I29777",
-      "name": "J\u00f3zef Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3586,8 +3947,9 @@
       "fams": [
         "F15516"
       ],
+      "firstName": "Marcin",
       "id": "I46431",
-      "name": "Marcin Radzki"
+      "lastName": "Radzki"
     },
     {
       "death": {
@@ -3596,8 +3958,9 @@
       "fams": [
         "F15516"
       ],
+      "firstName": "Jadwiga",
       "id": "I46432",
-      "name": "Jadwiga Kurek"
+      "lastName": "Kurek"
     },
     {
       "birth": {
@@ -3605,15 +3968,17 @@
           "day": 29,
           "month": 1,
           "year": 1781
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15516",
       "fams": [],
+      "firstName": "Walerian",
       "id": "I46443",
-      "name": "Walerian Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3621,7 +3986,8 @@
           "day": 28,
           "month": 5,
           "year": 1783
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3629,12 +3995,14 @@
           "day": 18,
           "month": 7,
           "year": 1791
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F15516",
       "fams": [],
+      "firstName": "Antoni",
       "id": "I46440",
-      "name": "Antoni Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3642,7 +4010,8 @@
           "day": 11,
           "month": 4,
           "year": 1785
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3650,14 +4019,16 @@
           "day": 6,
           "month": 2,
           "year": 1839
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F15516",
       "fams": [
         "F15518"
       ],
+      "firstName": "Leon",
       "id": "I46441",
-      "name": "Leon Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3677,8 +4048,9 @@
       "fams": [
         "F15518"
       ],
+      "firstName": "Rozalia",
       "id": "I46446",
-      "name": "Rozalia Jusi\u0144ska"
+      "lastName": "Jusi\u0144ska"
     },
     {
       "birth": {
@@ -3686,15 +4058,17 @@
           "day": 7,
           "month": 8,
           "year": 1786
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F15516",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I46439",
-      "name": "Marianna Radzka"
+      "lastName": "Radzka"
     },
     {
       "birth": {
@@ -3702,7 +4076,8 @@
           "day": 7,
           "month": 3,
           "year": 1788
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3710,12 +4085,14 @@
           "day": 3,
           "month": 7,
           "year": 1788
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F15516",
       "fams": [],
+      "firstName": "Tomasz",
       "id": "I46442",
-      "name": "Tomasz Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3729,12 +4106,14 @@
           "day": 3,
           "month": 10,
           "year": 1790
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F15516",
       "fams": [],
+      "firstName": "Franciszek",
       "id": "I46445",
-      "name": "Franciszek Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3754,8 +4133,9 @@
       },
       "famc": "F15516",
       "fams": [],
+      "firstName": "Tomasz",
       "id": "I46444",
-      "name": "Tomasz Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3775,8 +4155,9 @@
       "fams": [
         "F9882"
       ],
+      "firstName": "Teresa",
       "id": "I29778",
-      "name": "Teresa Gajcy"
+      "lastName": "Gajcy"
     },
     {
       "birth": {
@@ -3784,7 +4165,8 @@
           "day": 1,
           "month": 3,
           "year": 1811
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true
@@ -3793,8 +4175,9 @@
       "fams": [
         "F15517"
       ],
+      "firstName": "Kazimierz",
       "id": "I46430",
-      "name": "Kazimierz Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3802,7 +4185,8 @@
           "day": 4,
           "month": 8,
           "year": 1813
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true
@@ -3810,8 +4194,9 @@
       "fams": [
         "F15517"
       ],
+      "firstName": "Marianna",
       "id": "I37889",
-      "name": "Marianna Gajcy"
+      "lastName": "Gajcy"
     },
     {
       "birth": {
@@ -3819,7 +4204,8 @@
           "day": 20,
           "month": 7,
           "year": 1815
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3827,12 +4213,14 @@
           "day": 23,
           "month": 2,
           "year": 1819
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F9882",
       "fams": [],
+      "firstName": "Jakub",
       "id": "I46433",
-      "name": "Jakub Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
@@ -3840,7 +4228,8 @@
           "day": 28,
           "month": 11,
           "year": 1821
-        }
+        },
+        "place": "Szczepanek"
       },
       "death": {
         "confirmed": true,
@@ -3848,19 +4237,22 @@
           "day": 18,
           "month": 8,
           "year": 1830
-        }
+        },
+        "place": "Szczepanek"
       },
       "famc": "F9882",
       "fams": [],
+      "firstName": "Andrzej",
       "id": "I46434",
-      "name": "Andrzej Radzki"
+      "lastName": "Radzki"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1838
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "death": {
         "confirmed": true
@@ -3869,21 +4261,24 @@
       "fams": [
         "F12730"
       ],
+      "firstName": "Franciszka",
       "id": "I38023",
-      "name": "Franciszka Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
         "date": {
           "year": 1840
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F12731",
       "fams": [
         "F11533"
       ],
+      "firstName": "El\u017cbieta",
       "id": "I34624",
-      "name": "El\u017cbieta Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -3899,14 +4294,16 @@
       },
       "famc": "F12731",
       "fams": [],
+      "firstName": "Julianna",
       "id": "I38471",
-      "name": "Julianna Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
         "date": {
           "year": 1845
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "death": {
         "confirmed": true
@@ -3915,8 +4312,9 @@
       "fams": [
         "F13506"
       ],
+      "firstName": "Kazimierz",
       "id": "I38469",
-      "name": "Kazimierz Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -3931,8 +4329,9 @@
       "fams": [
         "F13506"
       ],
+      "firstName": "Marianna",
       "id": "I38975",
-      "name": "Marianna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -3947,15 +4346,17 @@
           "day": 21,
           "month": 11,
           "year": 1840
-        }
+        },
+        "place": "Kobiel"
       },
       "famc": "F3977",
       "fams": [
         "F3978",
         "F3979"
       ],
+      "firstName": "Szymon",
       "id": "I11877",
-      "name": "Szymon Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -3970,14 +4371,16 @@
           "day": 31,
           "month": 8,
           "year": 1832
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3981",
       "fams": [
         "F3977"
       ],
+      "firstName": "Grzegorz",
       "id": "I11873",
-      "name": "Grzegorz Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -3993,8 +4396,9 @@
         "F3982",
         "F3981"
       ],
+      "firstName": "Antoni",
       "id": "I11884",
-      "name": "Antoni Sasin"
+      "lastName": "Sasin"
     },
     {
       "death": {
@@ -4008,8 +4412,9 @@
       "fams": [
         "F3982"
       ],
+      "firstName": "Krystyna",
       "id": "I11886",
-      "name": "Krystyna Banach"
+      "lastName": "Banach"
     },
     {
       "birth": {
@@ -4022,13 +4427,15 @@
         "confirmed": true,
         "date": {
           "year": 1781
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "fams": [
         "F3981"
       ],
+      "firstName": "Konstancja",
       "id": "I11885",
-      "name": "Konstancja Ko\u017alik"
+      "lastName": "Ko\u017alik"
     },
     {
       "birth": {
@@ -4043,14 +4450,16 @@
           "day": 9,
           "month": 4,
           "year": 1811
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3981",
       "fams": [
         "F11713"
       ],
+      "firstName": "Marianna",
       "id": "I33591",
-      "name": "Marianna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4065,19 +4474,22 @@
           "day": 2,
           "month": 2,
           "year": 1814
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "fams": [
         "F11713"
       ],
+      "firstName": "Baltazar",
       "id": "I35174",
-      "name": "Baltazar Gajcy"
+      "lastName": "Gajcy"
     },
     {
       "birth": {
         "date": {
           "year": 1770
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true,
@@ -4085,14 +4497,16 @@
           "day": 10,
           "month": 2,
           "year": 1838
-        }
+        },
+        "place": "Wola Rasztowska"
       },
       "famc": "F3981",
       "fams": [
         "F10739"
       ],
+      "firstName": "Walenty",
       "id": "I32160",
-      "name": "Walenty Sasin"
+      "lastName": "Sasin"
     },
     {
       "death": {
@@ -4101,19 +4515,22 @@
       "fams": [
         "F10739"
       ],
+      "firstName": "El\u017cbieta",
       "id": "I32161",
-      "name": "El\u017cbieta O\u0142dak"
+      "lastName": "O\u0142dak"
     },
     {
       "birth": {
         "date": {
           "year": 1774
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3981",
       "fams": [],
+      "firstName": "Anna",
       "id": "I33592",
-      "name": "Anna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4128,14 +4545,16 @@
           "day": 9,
           "month": 9,
           "year": 1832
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3983",
       "fams": [
         "F3977"
       ],
+      "firstName": "Ma\u0142gorzata",
       "id": "I11874",
-      "name": "Ma\u0142gorzata Kubuj"
+      "lastName": "Kubuj"
     },
     {
       "death": {
@@ -4144,8 +4563,9 @@
       "fams": [
         "F3983"
       ],
+      "firstName": "B\u0142a\u017cej",
       "id": "I11887",
-      "name": "B\u0142a\u017cej Kubuj"
+      "lastName": "Kubuj"
     },
     {
       "death": {
@@ -4154,22 +4574,25 @@
       "fams": [
         "F3983"
       ],
+      "firstName": "Marianna",
       "id": "I11888",
-      "name": "Marianna"
+      "lastName": ""
     },
     {
       "birth": {
         "date": {
           "year": 1769
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3983",
       "fams": [],
+      "firstName": "Magdalena",
       "id": "I32170",
-      "name": "Magdalena Kubuj"
+      "lastName": "Kubuj"
     },
     {
       "birth": {
@@ -4184,21 +4607,24 @@
           "day": 25,
           "month": 1,
           "year": 1818
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3977",
       "fams": [
         "F11233"
       ],
+      "firstName": "Baltazar vel Balcer",
       "id": "I33639",
-      "name": "Baltazar vel Balcer Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1791
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true,
@@ -4206,13 +4632,15 @@
           "day": 13,
           "month": 3,
           "year": 1861
-        }
+        },
+        "place": "Kobiel"
       },
       "fams": [
         "F11233"
       ],
+      "firstName": "Anna",
       "id": "I33636",
-      "name": "Anna Ros\u0142on"
+      "lastName": "Ros\u0142on"
     },
     {
       "birth": {
@@ -4227,12 +4655,14 @@
           "day": 12,
           "month": 5,
           "year": 1795
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3977",
       "fams": [],
+      "firstName": "Adam",
       "id": "I11890",
-      "name": "Adam Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4247,19 +4677,22 @@
           "day": 11,
           "month": 9,
           "year": 1793
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3977",
       "fams": [],
+      "firstName": "Katarzyna",
       "id": "I11889",
-      "name": "Katarzyna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1796
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true,
@@ -4267,15 +4700,17 @@
           "day": 17,
           "month": 12,
           "year": 1866
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "famc": "F3977",
       "fams": [
         "F3980",
         "F12683"
       ],
+      "firstName": "Jan",
       "id": "I11880",
-      "name": "Jan Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4290,20 +4725,23 @@
           "day": 9,
           "month": 8,
           "year": 1841
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "fams": [
         "F3980"
       ],
+      "firstName": "Katarzyna",
       "id": "I11881",
-      "name": "Katarzyna Borucka vel Banaszek"
+      "lastName": "Borucka vel Banaszek"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1816
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true,
@@ -4316,8 +4754,9 @@
       "fams": [
         "F12683"
       ],
+      "firstName": "Anastazja",
       "id": "I37884",
-      "name": "Anastazja Gajcy"
+      "lastName": "Gajcy"
     },
     {
       "birth": {
@@ -4325,15 +4764,17 @@
           "day": 4,
           "month": 8,
           "year": 1799
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3977",
       "fams": [],
+      "firstName": "Wawrzyniec",
       "id": "I10117",
-      "name": "Wawrzyniec Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4354,8 +4795,9 @@
       "fams": [
         "F3979"
       ],
+      "firstName": "Ewa",
       "id": "I11879",
-      "name": "Ewa Radzka"
+      "lastName": "Radzka"
     },
     {
       "birth": {
@@ -4370,13 +4812,15 @@
           "day": 20,
           "month": 4,
           "year": 1817
-        }
+        },
+        "place": "Kobiel"
       },
       "fams": [
         "F3978"
       ],
+      "firstName": "Anna",
       "id": "I11878",
-      "name": "Anna Gajcy"
+      "lastName": "Gajcy"
     },
     {
       "birth": {
@@ -4384,7 +4828,8 @@
           "day": 3,
           "month": 3,
           "year": 1793
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true,
@@ -4392,12 +4837,14 @@
           "day": 24,
           "month": 8,
           "year": 1793
-        }
+        },
+        "place": "Kobiel"
       },
       "famc": "F3978",
       "fams": [],
+      "firstName": "Kazimierz",
       "id": "I35183",
-      "name": "Kazimierz Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4405,15 +4852,17 @@
           "day": 21,
           "month": 7,
           "year": 1798
-        }
+        },
+        "place": "Mi\u0119dzyle\u015b"
       },
       "death": {
         "confirmed": true
       },
       "famc": "F3978",
       "fams": [],
+      "firstName": "Jakub",
       "id": "I37236",
-      "name": "Jakub Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4428,19 +4877,22 @@
           "day": 17,
           "month": 3,
           "year": 1816
-        }
+        },
+        "place": "Kobiel"
       },
       "famc": "F3978",
       "fams": [],
+      "firstName": "J\u00f3zef",
       "id": "I11891",
-      "name": "J\u00f3zef Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1810
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true,
@@ -4448,21 +4900,24 @@
           "day": 17,
           "month": 9,
           "year": 1865
-        }
+        },
+        "place": "Borucza"
       },
       "famc": "F3978",
       "fams": [
         "F10747"
       ],
+      "firstName": "B\u0142a\u017cej",
       "id": "I32173",
-      "name": "B\u0142a\u017cej Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1809
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true,
@@ -4470,13 +4925,15 @@
           "day": 8,
           "month": 10,
           "year": 1877
-        }
+        },
+        "place": "Borucza"
       },
       "fams": [
         "F10747"
       ],
+      "firstName": "Julianna",
       "id": "I32174",
-      "name": "Julianna Mo\u015bcicka"
+      "lastName": "Mo\u015bcicka"
     },
     {
       "birth": {
@@ -4484,7 +4941,8 @@
           "day": 15,
           "month": 5,
           "year": 1811
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true,
@@ -4492,12 +4950,14 @@
           "day": 9,
           "month": 7,
           "year": 1811
-        }
+        },
+        "place": "Kobiel"
       },
       "famc": "F3978",
       "fams": [],
+      "firstName": "Helena",
       "id": "I32289",
-      "name": "Helena Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
@@ -4516,23 +4976,29 @@
       "fams": [
         "F1674"
       ],
+      "firstName": "Wojciech",
       "id": "I5724",
-      "name": "Wojciech Sasin"
+      "lastName": "Sasin"
     },
     {
+      "birth": {
+        "place": "Ja\u017awie"
+      },
       "death": {
         "confirmed": true,
         "date": {
           "day": 1,
           "month": 6,
           "year": 1888
-        }
+        },
+        "place": "Roszczep"
       },
       "fams": [
         "F1674"
       ],
+      "firstName": "Anastazja",
       "id": "I5725",
-      "name": "Anastazja Gotowiec"
+      "lastName": "Gotowiec"
     },
     {
       "death": {
@@ -4541,8 +5007,9 @@
       "fams": [
         "F4127"
       ],
+      "firstName": "Antoni",
       "id": "I12357",
-      "name": "Antoni Szewczak"
+      "lastName": "Szewczak"
     },
     {
       "death": {
@@ -4551,8 +5018,9 @@
       "fams": [
         "F4127"
       ],
+      "firstName": "Marianna",
       "id": "I12358",
-      "name": "Marianna Rosie\u0144ska"
+      "lastName": "Rosie\u0144ska"
     },
     {
       "birth": {
@@ -4560,7 +5028,8 @@
           "day": 4,
           "month": 1,
           "year": 1757
-        }
+        },
+        "place": "T\u0142uszcz"
       },
       "death": {
         "confirmed": true
@@ -4568,8 +5037,9 @@
       "fams": [
         "F4085"
       ],
+      "firstName": "Jan",
       "id": "I12225",
-      "name": "Jan Kostrzewa"
+      "lastName": "Kostrzewa"
     },
     {
       "death": {
@@ -4583,8 +5053,9 @@
       "fams": [
         "F15627"
       ],
+      "firstName": "Marcin",
       "id": "I46732",
-      "name": "Marcin Przybysz"
+      "lastName": "Przybysz"
     },
     {
       "birth": {
@@ -4599,14 +5070,16 @@
           "day": 22,
           "month": 2,
           "year": 1814
-        }
+        },
+        "place": "Jasienica"
       },
       "famc": "F15649",
       "fams": [
         "F15627"
       ],
+      "firstName": "Ewa",
       "id": "I46733",
-      "name": "Ewa Zacheja"
+      "lastName": "Zacheja"
     },
     {
       "death": {
@@ -4615,8 +5088,9 @@
       "fams": [
         "F15649"
       ],
+      "firstName": "Cyprian",
       "id": "I46817",
-      "name": "Cyprian Zacheja"
+      "lastName": "Zacheja"
     },
     {
       "death": {
@@ -4625,21 +5099,24 @@
       "fams": [
         "F15649"
       ],
+      "firstName": "Magdalena",
       "id": "I46818",
-      "name": "Magdalena Owczarz"
+      "lastName": "Owczarz"
     },
     {
       "death": {
         "confirmed": true,
         "date": {
           "year": 1814
-        }
+        },
+        "place": "Jasienica"
       },
       "fams": [
         "F15632"
       ],
+      "firstName": "Wojciech",
       "id": "I46758",
-      "name": "Wojciech Krystosiak"
+      "lastName": "Krystosiak"
     },
     {
       "birth": {
@@ -4647,7 +5124,8 @@
           "day": 14,
           "month": 2,
           "year": 1826
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "death": {
         "confirmed": true
@@ -4655,14 +5133,16 @@
       "fams": [
         "F10663"
       ],
+      "firstName": "Franciszka",
       "id": "I31967",
-      "name": "Franciszka Groszek"
+      "lastName": "Groszek"
     },
     {
       "birth": {
         "date": {
           "year": 1842
-        }
+        },
+        "place": "K\u0105ty Dzi\u0119cio\u0142y"
       },
       "death": {
         "confirmed": true
@@ -4670,30 +5150,35 @@
       "fams": [
         "F3046"
       ],
+      "firstName": "Marianna",
       "id": "I9548",
-      "name": "Marianna Marsza\u0142"
+      "lastName": "Marsza\u0142"
     },
     {
       "birth": {
         "date": {
           "year": 1866
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11529",
       "fams": [],
+      "firstName": "Jan",
       "id": "I34613",
-      "name": "Jan Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
         "date": {
           "year": 1868
-        }
+        },
+        "place": "Mi\u0105se"
       },
       "famc": "F11529",
       "fams": [],
+      "firstName": "Marianna",
       "id": "I34615",
-      "name": "Marianna Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -4706,27 +5191,31 @@
       "fams": [
         "F11530"
       ],
+      "firstName": "Szczepan",
       "id": "I34614",
-      "name": "Szczepan Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
         "date": {
           "year": 1867
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "fams": [
         "F11530"
       ],
+      "firstName": "Katarzyna",
       "id": "I34616",
-      "name": "Katarzyna Sasin"
+      "lastName": "Sasin"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1877
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true
@@ -4735,15 +5224,17 @@
       "fams": [
         "F15521"
       ],
+      "firstName": "Katarzyna",
       "id": "I46452",
-      "name": "Katarzyna Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
         "date": {
           "qualifier": "cal",
           "year": 1876
-        }
+        },
+        "place": "Ja\u017awie"
       },
       "death": {
         "confirmed": true
@@ -4751,8 +5242,9 @@
       "fams": [
         "F15521"
       ],
+      "firstName": "Stanis\u0142aw",
       "id": "I46453",
-      "name": "Stanis\u0142aw German"
+      "lastName": "German"
     },
     {
       "birth": {
@@ -4760,7 +5252,8 @@
           "day": 23,
           "month": 5,
           "year": 1882
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true,
@@ -4777,8 +5270,9 @@
       "fams": [
         "F15268"
       ],
+      "firstName": "Filip",
       "id": "I45741",
-      "name": "Filip Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "birth": {
@@ -4786,7 +5280,8 @@
           "day": 22,
           "month": 12,
           "year": 1884
-        }
+        },
+        "place": "Kobiel"
       },
       "death": {
         "confirmed": true,
@@ -4799,8 +5294,9 @@
       "fams": [
         "F15268"
       ],
+      "firstName": "Katarzyna",
       "id": "I45762",
-      "name": "Katarzyna Oleksiak"
+      "lastName": "Oleksiak"
     },
     {
       "birth": {
@@ -4815,13 +5311,15 @@
           "day": 21,
           "month": 11,
           "year": 1908
-        }
+        },
+        "place": "Zienkiewicz\u00f3w"
       },
       "fams": [
         "F15524"
       ],
+      "firstName": "Barbara",
       "id": "I46460",
-      "name": "Barbara Sulewska"
+      "lastName": "Sulewska"
     },
     {
       "birth": {
@@ -4841,8 +5339,9 @@
       "fams": [
         "F15525"
       ],
+      "firstName": "Ewa",
       "id": "I46463",
-      "name": "Ewa Banaszek"
+      "lastName": "Banaszek"
     },
     {
       "death": {
@@ -4850,8 +5349,9 @@
       },
       "famc": "F15525",
       "fams": [],
+      "firstName": "W\u0142adys\u0142aw",
       "id": "I46465",
-      "name": "W\u0142adys\u0142aw Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "death": {
@@ -4859,8 +5359,9 @@
       },
       "famc": "F15525",
       "fams": [],
+      "firstName": "Czes\u0142aw",
       "id": "I46466",
-      "name": "Czes\u0142aw Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     },
     {
       "death": {
@@ -4868,8 +5369,9 @@
       },
       "famc": "F15525",
       "fams": [],
+      "firstName": "Jan",
       "id": "I46467",
-      "name": "Jan Wo\u017aniak"
+      "lastName": "Wo\u017aniak"
     }
   ]
 }

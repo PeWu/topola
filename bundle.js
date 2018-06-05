@@ -7,9 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./src/topola-chart"));
 __export(require("./src/topola-data"));
 __export(require("./src/topola-render"));
+__export(require("./src/detailed-renderer"));
 __export(require("./src/topola-simple-api"));
 
-},{"./src/topola-chart":35,"./src/topola-data":36,"./src/topola-render":37,"./src/topola-simple-api":38}],2:[function(require,module,exports){
+},{"./src/detailed-renderer":35,"./src/topola-chart":36,"./src/topola-data":37,"./src/topola-render":38,"./src/topola-simple-api":39}],2:[function(require,module,exports){
 // https://d3js.org/d3-array/ Version 1.2.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -19117,6 +19118,158 @@ Object.defineProperty(exports, "event", {get: function() { return d3Selection.ev
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
+var MIN_HEIGHT = 44;
+var MIN_WIDTH = 50;
+/** Calculates the length of the given text in pixels when rendered. */
+function getLength(text) {
+    var x = d3.select('svg')
+        .append('g')
+        .attr('class', 'detailed node')
+        .append('text')
+        .attr('class', 'name')
+        .text(text);
+    var w = x.node().getComputedTextLength();
+    x.remove();
+    return w;
+}
+var MONTHS = new Map([
+    [1, 'Jan'],
+    [2, 'Feb'],
+    [3, 'Mar'],
+    [4, 'Apr'],
+    [5, 'May'],
+    [6, 'Jun'],
+    [7, 'Jul'],
+    [8, 'Aug'],
+    [9, 'Sep'],
+    [10, 'Oct'],
+    [11, 'Nov'],
+    [12, 'Dec'],
+]);
+/** Simple date formatter. */
+function formatDate(date) {
+    return [
+        date.qualifier, date.day, date.month && MONTHS.get(date.month), date.year
+    ].join(' ');
+}
+/** Extracts lines of details for a person. */
+function getDetails(indi) {
+    var detailsList = [];
+    var birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
+        formatDate(indi.getBirthDate().date);
+    var birthPlace = indi.getBirthPlace();
+    var deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
+        formatDate(indi.getDeathDate().date);
+    var deathPlace = indi.getDeathPlace();
+    if (birthDate) {
+        detailsList.push({ symbol: '', text: birthDate });
+    }
+    if (birthPlace) {
+        detailsList.push({ symbol: '', text: birthPlace });
+    }
+    if (birthDate || birthPlace) {
+        detailsList[0].symbol = '*';
+    }
+    var listIndex = detailsList.length;
+    if (deathDate) {
+        detailsList.push({ symbol: '', text: deathDate });
+    }
+    if (deathPlace) {
+        detailsList.push({ symbol: '', text: deathPlace });
+    }
+    if (deathDate || deathPlace) {
+        detailsList[listIndex].symbol = '+';
+    }
+    return detailsList;
+}
+/**
+ * Renders some details about a person such as date and place of birth
+ * and death.
+ */
+var DetailedRenderer = /** @class */ (function () {
+    function DetailedRenderer(dataProvider, hrefFunc) {
+        this.dataProvider = dataProvider;
+        this.hrefFunc = hrefFunc;
+    }
+    DetailedRenderer.prototype.getPreferredSize = function (id) {
+        var indi = this.dataProvider.getIndi(id);
+        var details = getDetails(indi);
+        var height = MIN_HEIGHT + details.length * 14;
+        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
+        var width = d3.max([
+            maxDetailsWidth, getLength(indi.getFirstName()) + 8,
+            getLength(indi.getLastName()) + 8, MIN_WIDTH
+        ]);
+        return [width, height];
+    };
+    DetailedRenderer.prototype.render = function (selection) {
+        this.renderIndi(selection, function (node) { return node.indi; });
+        var spouseSelection = selection.filter(function (d) { return !!d.data.spouse; })
+            .append('g')
+            .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
+        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
+    };
+    DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
+        var _this = this;
+        // Optionally add a link.
+        selection = selection.append('g').attr('class', 'detailed');
+        var group = this.hrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.hrefFunc(indiFunc(node.data).id); }) :
+            selection;
+        // Box.
+        group.append('rect')
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .attr('width', function (node) { return indiFunc(node.data).width; })
+            .attr('height', function (node) { return indiFunc(node.data).height; });
+        // Name.
+        group.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'name')
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
+            .text(function (node) { return _this.dataProvider.getIndi(indiFunc(node.data).id)
+            .getFirstName(); });
+        group.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'name')
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
+            .text(function (node) { return _this.dataProvider.getIndi(indiFunc(node.data).id)
+            .getLastName(); });
+        // Extract details.
+        var details = new Map();
+        group.each(function (node) {
+            var indiId = indiFunc(node.data).id;
+            var indi = _this.dataProvider.getIndi(indiId);
+            var detailsList = getDetails(indi);
+            details.set(indiId, detailsList);
+        });
+        var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
+        var _loop_1 = function (i) {
+            var lineGroup = group.filter(function (node) { return details.get(indiFunc(node.data).id).length > i; });
+            lineGroup.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('class', 'details')
+                .attr('transform', "translate(9, " + (49 + i * 14) + ")")
+                .text(function (node) { return details.get(indiFunc(node.data).id)[i].symbol; });
+            lineGroup.append('text')
+                .attr('text-anchor', 'left')
+                .attr('class', 'details')
+                .attr('transform', "translate(15, " + (49 + i * 14) + ")")
+                .text(function (node) { return details.get(indiFunc(node.data).id)[i].text; });
+        };
+        // Render details.
+        for (var i = 0; i < maxDetails; ++i) {
+            _loop_1(i);
+        }
+    };
+    return DetailedRenderer;
+}());
+exports.DetailedRenderer = DetailedRenderer;
+
+},{"d3":34}],36:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
 var d3_flextree_1 = require("d3-flextree");
 /** Horizontal distance between boxes. */
 var DISTANCE_H = 30;
@@ -19125,21 +19278,22 @@ var DISTANCE_V = 15;
 /** Margin around the whole drawing. */
 var MARGIN = 15;
 var DEFAULT_SVG_SELECTOR = 'svg';
-/** Creates a path from parent to the child node. */
-function link(s, d) {
-    var mid = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
-    var dy = d.data.spouse ?
-        (s.data.parentsOfSpouse ? d.x + d.data.spouse.height / 2 :
-            d.x - d.data.indi.height / 2) :
-        d.x;
-    return "M " + s.y + " " + s.x + "\n          L " + mid + " " + s.x + ",\n            " + mid + " " + dy + ",\n            " + d.y + " " + dy;
-}
 /**
  * Returns the height of the whole tree node as the sum of the heights of both
  * spouses.
  */
 function getHeight(node) {
     return node.indi.height + (node.spouse && node.spouse.height || 0);
+}
+/** Creates a path from parent to the child node. */
+function link(s, d) {
+    var midX = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
+    var sy = s.x - getHeight(s.data) / 2 + s.data.indi.height;
+    var dy = d.data.spouse ?
+        (s.data.parentsOfSpouse ? d.x + d.data.indi.height / 2 :
+            d.x - d.data.spouse.height / 2) :
+        d.x;
+    return "M " + s.y + " " + sy + "\n          L " + midX + " " + sy + ",\n            " + midX + " " + dy + ",\n            " + d.y + " " + dy;
 }
 /** Returns the spouse of the given individual in the given family. */
 function getSpouse(indiId, fam) {
@@ -19426,7 +19580,7 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"d3":34,"d3-flextree":14}],36:[function(require,module,exports){
+},{"d3":34,"d3-flextree":14}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Details of an individual based on Json input. */
@@ -19443,14 +19597,23 @@ var JsonIndiDetails = /** @class */ (function () {
     JsonIndiDetails.prototype.getFamilyAsChild = function () {
         return this.json.famc || null;
     };
-    JsonIndiDetails.prototype.getName = function () {
-        return this.json.name || null;
+    JsonIndiDetails.prototype.getFirstName = function () {
+        return this.json.firstName || null;
+    };
+    JsonIndiDetails.prototype.getLastName = function () {
+        return this.json.lastName || null;
     };
     JsonIndiDetails.prototype.getBirthDate = function () {
         return this.json.birth || null;
     };
+    JsonIndiDetails.prototype.getBirthPlace = function () {
+        return this.json.birth && this.json.birth.place || null;
+    };
     JsonIndiDetails.prototype.getDeathDate = function () {
         return this.json.death || null;
+    };
+    JsonIndiDetails.prototype.getDeathPlace = function () {
+        return this.json.death && this.json.death.place || null;
     };
     JsonIndiDetails.prototype.isConfirmedDeath = function () {
         return this.json.death && this.json.death.confirmed;
@@ -19496,7 +19659,7 @@ var JsonDataProvider = /** @class */ (function () {
 }());
 exports.JsonDataProvider = JsonDataProvider;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19504,10 +19667,18 @@ var MIN_HEIGHT = 27;
 var MIN_WIDTH = 50;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text) {
-    var x = d3.select('svg').append('text').text(text);
+    var x = d3.select('svg')
+        .append('g')
+        .attr('class', 'node')
+        .append('text')
+        .attr('class', 'name')
+        .text(text);
     var w = x.node().getComputedTextLength();
     x.remove();
     return w;
+}
+function getName(indi) {
+    return [(indi.getFirstName() || ''), (indi.getLastName() || '')].join(' ');
 }
 function getYears(indi) {
     var birthDate = indi.getBirthDate();
@@ -19519,7 +19690,10 @@ function getYears(indi) {
     }
     return (birthYear || '') + " \u2013 " + (deathYear || '');
 }
-/** Simple rendering of an individual box showing only the person's name. */
+/**
+ * Simple rendering of an individual box showing only the person's name and
+ * years of birth and death.
+ */
 var SimpleRenderer = /** @class */ (function () {
     function SimpleRenderer(dataProvider, hrefFunc) {
         this.dataProvider = dataProvider;
@@ -19528,13 +19702,13 @@ var SimpleRenderer = /** @class */ (function () {
     SimpleRenderer.prototype.getPreferredSize = function (id) {
         var indi = this.dataProvider.getIndi(id);
         var years = getYears(indi);
-        var width = Math.max(getLength(indi.getName()), getLength(years), MIN_WIDTH);
+        var width = Math.max(getLength(getName(indi)) + 8, getLength(years), MIN_WIDTH);
         var height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
         return [width, height];
     };
     SimpleRenderer.prototype.render = function (selection) {
         this.renderIndi(selection, function (node) { return node.indi; });
-        var spouseSelection = selection.filter(function (d) { return !!d.data.spouse; })
+        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
             .append('g')
             .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
@@ -19555,7 +19729,7 @@ var SimpleRenderer = /** @class */ (function () {
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
             .text(function (node) {
-            return _this.dataProvider.getIndi(indiFunc(node.data).id).getName();
+            return getName(_this.dataProvider.getIndi(indiFunc(node.data).id));
         });
         group.append('text')
             .attr('text-anchor', 'middle')
@@ -19569,13 +19743,11 @@ var SimpleRenderer = /** @class */ (function () {
 }());
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"d3":34}],38:[function(require,module,exports){
+},{"d3":34}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
-var topola_chart_1 = require("./topola-chart");
 var topola_data_1 = require("./topola-data");
-var topola_render_1 = require("./topola-render");
 function createChartOptions(json, options) {
     var data = new topola_data_1.JsonDataProvider(json);
     var indiUrlFunction = options.indiUrl ?
@@ -19583,39 +19755,21 @@ function createChartOptions(json, options) {
         undefined;
     return {
         data: data,
-        renderer: new topola_render_1.SimpleRenderer(data, indiUrlFunction),
+        renderer: new options.renderer(data, indiUrlFunction),
         startIndi: options.startIndi,
         startFam: options.startFam,
         svgSelector: options.svgSelector,
     };
 }
-/** A simplified API for rendering data based on the given RenderOptions. */
-function renderAncestors(options) {
+/** A simplified API for rendering a chart based on the given RenderOptions. */
+function renderChart(options) {
     d3.json(options.jsonUrl).then(function (json) {
         var chartOptions = createChartOptions(json, options);
-        var chart = new topola_chart_1.AncestorChart(chartOptions);
+        var chart = new options.chartType(chartOptions);
         chart.render();
     });
 }
-exports.renderAncestors = renderAncestors;
-/** A simplified API for rendering data based on the given RenderOptions. */
-function renderDescendants(options) {
-    d3.json(options.jsonUrl).then(function (json) {
-        var chartOptions = createChartOptions(json, options);
-        var chart = new topola_chart_1.DescendantChart(chartOptions);
-        chart.render();
-    });
-}
-exports.renderDescendants = renderDescendants;
-/** A simplified API for rendering data based on the given RenderOptions. */
-function renderHourglass(options) {
-    d3.json(options.jsonUrl).then(function (json) {
-        var chartOptions = createChartOptions(json, options);
-        var chart = new topola_chart_1.HourglassChart(chartOptions);
-        chart.render();
-    });
-}
-exports.renderHourglass = renderHourglass;
+exports.renderChart = renderChart;
 
-},{"./topola-chart":35,"./topola-data":36,"./topola-render":37,"d3":34}]},{},[1])(1)
+},{"./topola-data":37,"d3":34}]},{},[1])(1)
 });
