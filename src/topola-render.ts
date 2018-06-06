@@ -40,7 +40,10 @@ function getYears(indi: IndiDetails) {
 }
 
 
-/** Simple rendering of an individual box showing only the person's name. */
+/**
+ * Simple rendering of an individual box showing only the person's name and
+ * years of birth and death.
+ */
 export class SimpleRenderer implements Renderer {
   constructor(
       readonly dataProvider: DataProvider<IndiDetails, FamDetails>,
