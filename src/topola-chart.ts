@@ -18,15 +18,28 @@ const DEFAULT_SVG_SELECTOR = 'svg';
  * spouses.
  */
 function getHeight(node: TreeNode): number {
-  return node.indi.height + (node.spouse && node.spouse.height || 0);
+  return (node.indi && node.indi.height || 0) +
+      (node.spouse && node.spouse.height || 0);
+}
+
+
+/**
+ * Returns the size of the whole tree node, including both spouses and
+ * the family.
+ */
+function getWidth(node: TreeNode): number {
+  const indiWidth =
+      d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width]);
+  const famWidth = node.family && node.family.width || 0;
+  return indiWidth + famWidth;
 }
 
 
 /** Creates a path from parent to the child node. */
 function link(
     s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
-  const midX = (s.y + s.data.indi.width / 2 + d.y - d.data.indi.width / 2) / 2;
-  const sy = s.x - getHeight(s.data) / 2 + s.data.indi.height;
+  const midX = (s.y + s.data.width / 2 + d.y - d.data.width / 2) / 2;
+  const sy = s.x - s.data.height / 2 + s.data.indi.height;
   const dy = d.data.spouse ?
       (s.data.parentsOfSpouse ? d.x + d.data.indi.height / 2 :
                                 d.x - d.data.spouse.height / 2) :
@@ -61,11 +74,12 @@ export interface ChartOptions {
 }
 
 
-function setPreferredSize(indi: TreeIndi|undefined, renderer: Renderer): void {
+function setPreferredIndiSize(
+    indi: TreeIndi|undefined, renderer: Renderer): void {
   if (!indi) {
     return;
   }
-  [indi.width, indi.height] = renderer.getPreferredSize(indi.id);
+  [indi.width, indi.height] = renderer.getPreferredIndiSize(indi.id);
 }
 
 
@@ -75,9 +89,9 @@ function updateSvgDimensions(
 
   // Calculate chart boundaries.
   const x0 = d3.min(nodes.map((d) => d.x - getHeight(d.data) / 2));
-  const y0 = d3.min(nodes.map((d) => d.y - d.data.indi.width / 2));
+  const y0 = d3.min(nodes.map((d) => d.y - getWidth(d.data) / 2));
   const x1 = d3.max(nodes.map((d) => d.x + getHeight(d.data) / 2));
-  const y1 = d3.max(nodes.map((d) => d.y + d.data.indi.width / 2));
+  const y1 = d3.max(nodes.map((d) => d.y + getWidth(d.data) / 2));
 
   d3.select(selector)
       .attr('width', y1 - y0 + 2 * MARGIN)
@@ -97,12 +111,11 @@ function renderChart(
             let w = 0;
             if (node.children) {
               node.children.forEach((child) => {
-                const childW = child.data.indi.width;
+                const childW = child.data.width;
                 w = Math.max(w, childW);
               });
             }
-            const thisW = node.data.indi.width;
-            return [getHeight(node.data), (w + thisW) / 2 + DISTANCE_H];
+            return [node.data.height, (w + node.data.width) / 2 + DISTANCE_H];
           })
           .spacing((a, b) => DISTANCE_V);
 
@@ -110,29 +123,47 @@ function renderChart(
 
   // Set preferred sizes.
   root.each((node) => {
-    setPreferredSize(node.data.indi, options.renderer);
-    setPreferredSize(node.data.spouse, options.renderer);
+    setPreferredIndiSize(node.data.indi, options.renderer);
+    setPreferredIndiSize(node.data.spouse, options.renderer);
+    if (node.data.family) {
+      [node.data.family.width, node.data.family.height] =
+          options.renderer.getPreferredFamSize(node.data.family.id);
+    }
   });
 
-  // Calculate width per depth.
-  const widthPerDepth = new Map<number, number>();
+  // Calculate individual width per depth.
+  const indiWidthPerDepth = new Map<number, number>();
   root.each((node) => {
     const depth = node.depth;
-    const maxWidth = Math.max(
-        node.data.indi && node.data.indi.width || 0,
-        node.data.spouse && node.data.spouse.width || 0,
-        widthPerDepth.get(depth) || 0);
-    widthPerDepth.set(depth, maxWidth);
+    const maxIndiWidth = d3.max([
+      node.data.indi && node.data.indi.width,
+      node.data.spouse && node.data.spouse.width,
+      indiWidthPerDepth.get(depth),
+    ]);
+    indiWidthPerDepth.set(depth, maxIndiWidth);
   });
 
   // Set same width for each depth.
   root.each((node) => {
     if (node.data.indi) {
-      node.data.indi.width = widthPerDepth.get(node.depth);
+      node.data.indi.width = indiWidthPerDepth.get(node.depth);
     }
     if (node.data.spouse) {
-      node.data.spouse.width = widthPerDepth.get(node.depth);
+      node.data.spouse.width = indiWidthPerDepth.get(node.depth);
     }
+  });
+
+  const widthPerDepth = new Map<number, number>();
+  root.each((node) => {
+    const depth = node.depth;
+    const maxWidth = d3.max([getWidth(node.data), widthPerDepth.get(depth)]);
+    widthPerDepth.set(depth, maxWidth);
+  });
+
+  // Set sizes of whole nodes.
+  root.each((node) => {
+    node.data.width = widthPerDepth.get(node.depth);
+    node.data.height = getHeight(node.data);
   });
 
   // Assigns the x and y position for the nodes.
@@ -156,8 +187,8 @@ function renderChart(
           .attr('class', 'node')
           .attr(
               'transform',
-              (node) => `translate(${node.y - node.data.indi.width / 2}, ${
-                  node.x - getHeight(node.data) / 2})`);
+              (node) => `translate(${node.y - node.data.width / 2}, ${
+                  node.x - node.data.height / 2})`);
   options.renderer.render(nodeEnter);
 
   // Render links.
@@ -190,12 +221,19 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
       const indi = this.options.data.getIndi(this.options.startIndi);
       const famc = indi.getFamilyAsChild();
       if (famc) {
-        stack.push({id: famc, parentId: this.options.startIndi});
+        stack.push({
+          id: famc,
+          parentId: this.options.startIndi,
+          family: {id: famc},
+        });
       }
       parents.push(
           {id: this.options.startIndi, indi: {id: this.options.startIndi}});
     } else {
-      stack.push({id: this.options.startFam});
+      stack.push({
+        id: this.options.startFam,
+        family: {id: this.options.startFam},
+      });
     }
     while (stack.length) {
       const entry = stack.pop();
@@ -213,7 +251,12 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
         const indi = this.options.data.getIndi(mother);
         const famc = indi.getFamilyAsChild();
         if (famc) {
-          stack.push({id: famc, parentId: entry.id, parentsOfSpouse: true});
+          stack.push({
+            id: famc,
+            parentId: entry.id,
+            parentsOfSpouse: true,
+            family: {id: famc},
+          });
         }
       }
       if (father) {
@@ -221,7 +264,12 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
         const indi = this.options.data.getIndi(father);
         const famc = indi.getFamilyAsChild();
         if (famc) {
-          stack.push({id: famc, parentId: entry.id, parentsOfSpouse: false});
+          stack.push({
+            id: famc,
+            parentId: entry.id,
+            parentsOfSpouse: false,
+            family: {id: famc},
+          });
         }
       }
       parents.push(entry);

@@ -15,7 +15,12 @@ export interface TreeNode {
 
   indi?: TreeIndi;
   spouse?: TreeIndi;
-  family?: {id: string;};
+  family?: {id: string; width?: number; height?: number;};
+
+  // Dimensions of the whole tree node for the purpose of laying out.
+  width?: number;
+  height?: number;
+
   // If true, the links to children of this family will be attached to
   // the spouse box of the child node.
   parentsOfSpouse?: boolean;
@@ -59,7 +64,8 @@ export type TreeNodeSelection =
 
 /** Interface for rendering data. */
 export interface Renderer {
-  getPreferredSize(id: string): [number, number];
+  getPreferredIndiSize(id: string): [number, number];
+  getPreferredFamSize(id: string): [number, number];
   render(selection: TreeNodeSelection): void;
 }
 

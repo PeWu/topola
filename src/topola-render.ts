@@ -49,13 +49,18 @@ export class SimpleRenderer implements Renderer {
       readonly dataProvider: DataProvider<IndiDetails, FamDetails>,
       readonly hrefFunc?: (id: string) => string) {}
 
-  getPreferredSize(id: string): [number, number] {
+  getPreferredIndiSize(id: string): [number, number] {
     const indi = this.dataProvider.getIndi(id);
     const years = getYears(indi);
     const width =
         Math.max(getLength(getName(indi)) + 8, getLength(years), MIN_WIDTH);
     const height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
     return [width, height];
+  }
+
+  getPreferredFamSize(id: string): [number, number] {
+    // No family box in the simple renderer.
+    return [0, 0];
   }
 
   render(selection: TreeNodeSelection): void {
