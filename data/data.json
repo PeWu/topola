@@ -29,6 +29,12 @@
       ],
       "husb": "I12356",
       "id": "F9881",
+      "marriage": {
+        "date": {
+          "year": 1764
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I29773"
     },
     {
@@ -55,6 +61,14 @@
       ],
       "husb": "I12576",
       "id": "F4189",
+      "marriage": {
+        "date": {
+          "day": 6,
+          "month": 2,
+          "year": 1815
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I12578"
     },
     {
@@ -63,6 +77,14 @@
       ],
       "husb": "I32616",
       "id": "F10891",
+      "marriage": {
+        "date": {
+          "day": 7,
+          "month": 2,
+          "year": 1820
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I32617"
     },
     {
@@ -79,6 +101,14 @@
       ],
       "husb": "I12568",
       "id": "F4184",
+      "marriage": {
+        "date": {
+          "day": 19,
+          "month": 2,
+          "year": 1821
+        },
+        "place": "Postoliska"
+      },
       "wife": "I12569"
     },
     {
@@ -87,6 +117,14 @@
       ],
       "husb": "I32613",
       "id": "F10889",
+      "marriage": {
+        "date": {
+          "day": 20,
+          "month": 11,
+          "year": 1820
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I32537"
     },
     {
@@ -95,6 +133,12 @@
       ],
       "husb": "I40523",
       "id": "F13054",
+      "marriage": {
+        "date": {
+          "year": 1827
+        },
+        "place": "Postoliska"
+      },
       "wife": "I40522"
     },
     {
@@ -118,6 +162,14 @@
       ],
       "husb": "I12677",
       "id": "F4224",
+      "marriage": {
+        "date": {
+          "day": 8,
+          "month": 11,
+          "year": 1830
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I12583"
     },
     {
@@ -133,12 +185,28 @@
       ],
       "husb": "I10119",
       "id": "F3453",
+      "marriage": {
+        "date": {
+          "day": 21,
+          "month": 2,
+          "year": 1790
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I10120"
     },
     {
       "children": [],
       "husb": "I14879",
       "id": "F4911",
+      "marriage": {
+        "date": {
+          "day": 7,
+          "month": 2,
+          "year": 1820
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I14880"
     },
     {
@@ -156,6 +224,14 @@
       ],
       "husb": "I10098",
       "id": "F3444",
+      "marriage": {
+        "date": {
+          "day": 30,
+          "month": 1,
+          "year": 1826
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I10099"
     },
     {
@@ -166,6 +242,14 @@
       ],
       "husb": "I29779",
       "id": "F10666",
+      "marriage": {
+        "date": {
+          "day": 19,
+          "month": 11,
+          "year": 1827
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I31972"
     },
     {
@@ -176,6 +260,14 @@
       ],
       "husb": "I29779",
       "id": "F10670",
+      "marriage": {
+        "date": {
+          "day": 22,
+          "month": 8,
+          "year": 1847
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I31988"
     },
     {
@@ -190,6 +282,14 @@
       ],
       "husb": "I31994",
       "id": "F10673",
+      "marriage": {
+        "date": {
+          "day": 11,
+          "month": 2,
+          "year": 1828
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I29780"
     },
     {
@@ -204,6 +304,12 @@
       ],
       "husb": "I12356",
       "id": "F4126",
+      "marriage": {
+        "date": {
+          "year": 1777
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I12290"
     },
     {
@@ -212,6 +318,14 @@
       ],
       "husb": "I14876",
       "id": "F15633",
+      "marriage": {
+        "date": {
+          "day": 22,
+          "month": 2,
+          "year": 1813
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I46759"
     },
     {
@@ -224,6 +338,14 @@
       ],
       "husb": "I14876",
       "id": "F4910",
+      "marriage": {
+        "date": {
+          "day": 21,
+          "month": 8,
+          "year": 1814
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I14877"
     },
     {
@@ -239,6 +361,14 @@
       ],
       "husb": "I9555",
       "id": "F3047",
+      "marriage": {
+        "date": {
+          "day": 26,
+          "month": 5,
+          "year": 1832
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I9556"
     },
     {
@@ -247,12 +377,26 @@
       ],
       "husb": "I10256",
       "id": "F3488",
+      "marriage": {
+        "date": {
+          "year": 1840
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I10257"
     },
     {
       "children": [],
       "husb": "I46730",
       "id": "F15626",
+      "marriage": {
+        "date": {
+          "day": 23,
+          "month": 11,
+          "year": 1846
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I46731"
     },
     {
@@ -268,12 +412,26 @@
       ],
       "husb": "I32168",
       "id": "F10745",
+      "marriage": {
+        "date": {
+          "day": 17,
+          "month": 11,
+          "year": 1817
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I32169"
     },
     {
       "children": [],
       "husb": "I33025",
       "id": "F12675",
+      "marriage": {
+        "date": {
+          "year": 1839
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I37863"
     },
     {
@@ -282,6 +440,12 @@
       ],
       "husb": "I37590",
       "id": "F12563",
+      "marriage": {
+        "date": {
+          "year": 1840
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I33027"
     },
     {
@@ -290,6 +454,14 @@
       ],
       "husb": "I32167",
       "id": "F10742",
+      "marriage": {
+        "date": {
+          "day": 11,
+          "month": 11,
+          "year": 1844
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I32162"
     },
     {
@@ -305,6 +477,14 @@
       ],
       "husb": "I29750",
       "id": "F9879",
+      "marriage": {
+        "date": {
+          "day": 1,
+          "month": 2,
+          "year": 1858
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I29751"
     },
     {
@@ -321,6 +501,14 @@
       "children": [],
       "husb": "I46464",
       "id": "F15526",
+      "marriage": {
+        "date": {
+          "day": 27,
+          "month": 2,
+          "year": 1935
+        },
+        "place": "Koby\u0142ka"
+      },
       "wife": "I46468"
     },
     {
@@ -332,6 +520,13 @@
       ],
       "husb": "I45740",
       "id": "F15525",
+      "marriage": {
+        "date": {
+          "day": 18,
+          "month": 1,
+          "year": 1909
+        }
+      },
       "wife": "I46463"
     },
     {
@@ -345,6 +540,14 @@
       ],
       "husb": "I34612",
       "id": "F11529",
+      "marriage": {
+        "date": {
+          "day": 20,
+          "month": 11,
+          "year": 1865
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I34609"
     },
     {
@@ -357,6 +560,12 @@
       ],
       "husb": "I38027",
       "id": "F12731",
+      "marriage": {
+        "date": {
+          "year": 1835
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I38028"
     },
     {
@@ -371,6 +580,12 @@
       ],
       "husb": "I34800",
       "id": "F11580",
+      "marriage": {
+        "date": {
+          "year": 1806
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I34801"
     },
     {
@@ -379,24 +594,54 @@
       ],
       "husb": "I46426",
       "id": "F15513",
+      "marriage": {
+        "date": {
+          "year": 1778
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I46427"
     },
     {
       "children": [],
       "husb": "I34789",
       "id": "F11578",
+      "marriage": {
+        "date": {
+          "day": 16,
+          "month": 2,
+          "year": 1824
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I34790"
     },
     {
       "children": [],
       "husb": "I46525",
       "id": "F15550",
+      "marriage": {
+        "date": {
+          "day": 22,
+          "month": 10,
+          "year": 1843
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I34790"
     },
     {
       "children": [],
       "husb": "I38027",
       "id": "F15514",
+      "marriage": {
+        "date": {
+          "day": 22,
+          "month": 2,
+          "year": 1857
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I46428"
     },
     {
@@ -436,12 +681,28 @@
       "children": [],
       "husb": "I46430",
       "id": "F15517",
+      "marriage": {
+        "date": {
+          "day": 26,
+          "month": 11,
+          "year": 1832
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I37889"
     },
     {
       "children": [],
       "husb": "I29762",
       "id": "F12730",
+      "marriage": {
+        "date": {
+          "day": 10,
+          "month": 2,
+          "year": 1862
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I38023"
     },
     {
@@ -454,6 +715,14 @@
       "children": [],
       "husb": "I38469",
       "id": "F13506",
+      "marriage": {
+        "date": {
+          "day": 22,
+          "month": 2,
+          "year": 1892
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I38975"
     },
     {
@@ -468,6 +737,14 @@
       ],
       "husb": "I11877",
       "id": "F3978",
+      "marriage": {
+        "date": {
+          "day": 21,
+          "month": 3,
+          "year": 1792
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I11878"
     },
     {
@@ -481,6 +758,14 @@
       ],
       "husb": "I11873",
       "id": "F3977",
+      "marriage": {
+        "date": {
+          "day": 2,
+          "month": 3,
+          "year": 1783
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I11874"
     },
     {
@@ -492,18 +777,40 @@
       ],
       "husb": "I11884",
       "id": "F3981",
+      "marriage": {
+        "date": {
+          "day": 22,
+          "month": 2,
+          "year": 1756
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I11885"
     },
     {
       "children": [],
       "husb": "I11884",
       "id": "F3982",
+      "marriage": {
+        "date": {
+          "day": 7,
+          "month": 2,
+          "year": 1748
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I11886"
     },
     {
       "children": [],
       "husb": "I35174",
       "id": "F11713",
+      "marriage": {
+        "date": {
+          "year": 1782
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I33591"
     },
     {
@@ -525,36 +832,82 @@
       "children": [],
       "husb": "I33639",
       "id": "F11233",
+      "marriage": {
+        "date": {
+          "day": 13,
+          "month": 11,
+          "year": 1809
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I33636"
     },
     {
       "children": [],
       "husb": "I11880",
       "id": "F3980",
+      "marriage": {
+        "date": {
+          "day": 7,
+          "month": 2,
+          "year": 1820
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I11881"
     },
     {
       "children": [],
       "husb": "I11880",
       "id": "F12683",
+      "marriage": {
+        "date": {
+          "day": 31,
+          "month": 1,
+          "year": 1842
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I37884"
     },
     {
       "children": [],
       "husb": "I11877",
       "id": "F3979",
+      "marriage": {
+        "date": {
+          "day": 28,
+          "month": 9,
+          "year": 1817
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I11879"
     },
     {
       "children": [],
       "husb": "I32173",
       "id": "F10747",
+      "marriage": {
+        "date": {
+          "day": 13,
+          "month": 11,
+          "year": 1826
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I32174"
     },
     {
       "children": [],
       "husb": "I5724",
       "id": "F1674",
+      "marriage": {
+        "date": {
+          "year": 1836
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I5725"
     },
     {
@@ -569,6 +922,14 @@
       "children": [],
       "husb": "I12225",
       "id": "F4085",
+      "marriage": {
+        "date": {
+          "day": 13,
+          "month": 7,
+          "year": 1812
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I12290"
     },
     {
@@ -585,6 +946,14 @@
       ],
       "husb": "I46817",
       "id": "F15649",
+      "marriage": {
+        "date": {
+          "day": 29,
+          "month": 1,
+          "year": 1744
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I46818"
     },
     {
@@ -597,30 +966,70 @@
       "children": [],
       "husb": "I14878",
       "id": "F10663",
+      "marriage": {
+        "date": {
+          "day": 21,
+          "month": 11,
+          "year": 1853
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I31967"
     },
     {
       "children": [],
       "husb": "I9554",
       "id": "F3046",
+      "marriage": {
+        "date": {
+          "day": 28,
+          "month": 5,
+          "year": 1861
+        },
+        "place": "Postoliska"
+      },
       "wife": "I9548"
     },
     {
       "children": [],
       "husb": "I34614",
       "id": "F11530",
+      "marriage": {
+        "date": {
+          "day": 14,
+          "month": 2,
+          "year": 1898
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I34616"
     },
     {
       "children": [],
       "husb": "I46453",
       "id": "F15521",
+      "marriage": {
+        "date": {
+          "day": 7,
+          "month": 11,
+          "year": 1898
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I46452"
     },
     {
       "children": [],
       "husb": "I45741",
       "id": "F15268",
+      "marriage": {
+        "date": {
+          "day": 15,
+          "month": 6,
+          "year": 1903
+        },
+        "place": "Klemb\u00f3w"
+      },
       "wife": "I45762"
     },
     {
@@ -640,7 +1049,8 @@
       ],
       "firstName": "Wojciech",
       "id": "I68389",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "death": {
@@ -651,7 +1061,8 @@
       ],
       "firstName": "Marianna",
       "id": "I68390",
-      "lastName": ""
+      "lastName": "",
+      "sex": "F"
     },
     {
       "birth": {
@@ -671,7 +1082,8 @@
       ],
       "firstName": "Szymon",
       "id": "I46741",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "death": {
@@ -682,7 +1094,8 @@
       ],
       "firstName": "Marianna",
       "id": "I46742",
-      "lastName": "O\u0142dak"
+      "lastName": "O\u0142dak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -700,7 +1113,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I46743",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -727,7 +1141,8 @@
       ],
       "firstName": "Sebastian",
       "id": "I12356",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "death": {
@@ -742,7 +1157,8 @@
       ],
       "firstName": "Ma\u0142gorzata",
       "id": "I29773",
-      "lastName": "Kacprzyk"
+      "lastName": "Kacprzyk",
+      "sex": "F"
     },
     {
       "birth": {
@@ -766,7 +1182,8 @@
       ],
       "firstName": "Szczepan",
       "id": "I12570",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -789,7 +1206,8 @@
       ],
       "firstName": "Barbara",
       "id": "I12571",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -814,7 +1232,8 @@
       ],
       "firstName": "Andrzej",
       "id": "I12576",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -838,7 +1257,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I12578",
-      "lastName": "J\u0119drzejak"
+      "lastName": "J\u0119drzejak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -862,7 +1282,8 @@
       "fams": [],
       "firstName": "Marcin",
       "id": "I12579",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -886,7 +1307,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I12580",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -910,7 +1332,8 @@
       "fams": [],
       "firstName": "Ambro\u017cy",
       "id": "I12581",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -925,7 +1348,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I34013",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -940,7 +1364,8 @@
       "fams": [],
       "firstName": "Teodor",
       "id": "I34014",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -956,7 +1381,8 @@
       "fams": [],
       "firstName": "Kacper",
       "id": "I12582",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -974,7 +1400,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I32617",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -991,7 +1418,8 @@
       ],
       "firstName": "Jakub",
       "id": "I32616",
-      "lastName": "O\u0142dak"
+      "lastName": "O\u0142dak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1009,7 +1437,8 @@
       "fams": [],
       "firstName": "Andrzej",
       "id": "I32618",
-      "lastName": "O\u0142dak"
+      "lastName": "O\u0142dak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1030,7 +1459,8 @@
       ],
       "firstName": "Ambro\u017cy",
       "id": "I12568",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1050,7 +1480,8 @@
       ],
       "firstName": "Magdalena",
       "id": "I12569",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1069,7 +1500,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I12574",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1092,7 +1524,8 @@
       "fams": [],
       "firstName": "Anna",
       "id": "I12584",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1116,7 +1549,8 @@
       "fams": [],
       "firstName": "Tomasz",
       "id": "I34016",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1131,7 +1565,8 @@
       "fams": [],
       "firstName": "Piotr",
       "id": "I34017",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1151,7 +1586,8 @@
       "fams": [],
       "firstName": "Bonifacy",
       "id": "I34018",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1164,7 +1600,8 @@
       "fams": [],
       "firstName": "Rozalia",
       "id": "I34019",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1180,7 +1617,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I40487",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1196,7 +1634,8 @@
       "fams": [],
       "firstName": "J\u00f3zefa",
       "id": "I12567",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1216,7 +1655,8 @@
       "fams": [],
       "firstName": "Roch",
       "id": "I34020",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1231,7 +1671,8 @@
       ],
       "firstName": "Teresa",
       "id": "I32537",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1248,7 +1689,8 @@
       ],
       "firstName": "J\u00f3zef",
       "id": "I32613",
-      "lastName": "Banaszek"
+      "lastName": "Banaszek",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1266,7 +1708,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I32614",
-      "lastName": "Banaszek"
+      "lastName": "Banaszek",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1291,7 +1734,8 @@
       ],
       "firstName": "Jan",
       "id": "I40523",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "death": {
@@ -1302,7 +1746,8 @@
       ],
       "firstName": "Marianna",
       "id": "I40522",
-      "lastName": "O\u0142dak"
+      "lastName": "O\u0142dak",
+      "sex": "F"
     },
     {
       "death": {
@@ -1312,7 +1757,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I41468",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "death": {
@@ -1328,7 +1774,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I12868",
-      "lastName": "Gajcy"
+      "lastName": "Gajcy",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1354,7 +1801,8 @@
       ],
       "firstName": "Ewa",
       "id": "I12583",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1379,7 +1827,8 @@
       ],
       "firstName": "Piotr",
       "id": "I12677",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1403,7 +1852,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I12675",
-      "lastName": "Wojtera vel Wojtyra"
+      "lastName": "Wojtera vel Wojtyra",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1425,7 +1875,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I12870",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1446,7 +1897,8 @@
       "fams": [],
       "firstName": "Karolina",
       "id": "I56835",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1470,7 +1922,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I18384",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1490,7 +1943,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I56843",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1506,7 +1960,8 @@
       "fams": [],
       "firstName": "J\u00f3zefa",
       "id": "I56840",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1529,7 +1984,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I12678",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1545,7 +2001,8 @@
       "fams": [],
       "firstName": "J\u00f3zef",
       "id": "I12679",
-      "lastName": "Wojtera vel Wojtyra"
+      "lastName": "Wojtera vel Wojtyra",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1561,7 +2018,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I56842",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1577,7 +2035,8 @@
       "fams": [],
       "firstName": "Grzegorz",
       "id": "I56841",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1603,7 +2062,8 @@
       ],
       "firstName": "Marianna",
       "id": "I10120",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1626,7 +2086,8 @@
       ],
       "firstName": "Jacenty",
       "id": "I10119",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1648,7 +2109,8 @@
       "fams": [],
       "firstName": "Piotr",
       "id": "I29776",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1666,7 +2128,8 @@
       "fams": [],
       "firstName": "J\u00f3zef",
       "id": "I38030",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1688,7 +2151,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I33298",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1706,7 +2170,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I38031",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1733,7 +2198,8 @@
       ],
       "firstName": "Marcin",
       "id": "I14879",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1751,7 +2217,8 @@
       ],
       "firstName": "Marianna",
       "id": "I14880",
-      "lastName": "Radzka"
+      "lastName": "Radzka",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1775,7 +2242,8 @@
       ],
       "firstName": "Tomasz Stanis\u0142aw",
       "id": "I10098",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1799,7 +2267,8 @@
       ],
       "firstName": "Balbina",
       "id": "I10099",
-      "lastName": "Kubuj"
+      "lastName": "Kubuj",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1817,7 +2286,8 @@
       "fams": [],
       "firstName": "Franciszek",
       "id": "I10121",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1840,7 +2310,8 @@
       "fams": [],
       "firstName": "Kazimierz",
       "id": "I38476",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1861,7 +2332,8 @@
       "fams": [],
       "firstName": "Baltazar vel Marcel",
       "id": "I10097",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1885,7 +2357,8 @@
       "fams": [],
       "firstName": "Micha\u0142",
       "id": "I29758",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1904,7 +2377,8 @@
       "fams": [],
       "firstName": "Joanna",
       "id": "I29760",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -1922,7 +2396,8 @@
       ],
       "firstName": "Wojciech",
       "id": "I29762",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1942,7 +2417,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I29763",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1964,7 +2440,8 @@
       "fams": [],
       "firstName": "Antoni",
       "id": "I29764",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -1986,7 +2463,8 @@
       "fams": [],
       "firstName": "Teresa",
       "id": "I29765",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2002,7 +2480,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I29766",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2027,7 +2506,8 @@
       ],
       "firstName": "Andrzej",
       "id": "I29779",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2052,7 +2532,8 @@
       ],
       "firstName": "J\u00f3zefa",
       "id": "I31972",
-      "lastName": "Bereda"
+      "lastName": "Bereda",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2067,7 +2548,8 @@
       "fams": [],
       "firstName": "Ewa",
       "id": "I31985",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2087,7 +2569,8 @@
       "fams": [],
       "firstName": "Julianna",
       "id": "I31986",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2107,7 +2590,8 @@
       "fams": [],
       "firstName": "Julianna",
       "id": "I31987",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2129,7 +2613,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I31988",
-      "lastName": "Witkowska"
+      "lastName": "Witkowska",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2145,7 +2630,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I31989",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2167,7 +2653,8 @@
       "fams": [],
       "firstName": "J\u00f3zefa",
       "id": "I31990",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2183,7 +2670,8 @@
       "fams": [],
       "firstName": "Wiktoria",
       "id": "I31991",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2206,7 +2694,8 @@
       ],
       "firstName": "Franciszka",
       "id": "I29780",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2228,7 +2717,8 @@
       ],
       "firstName": "Jan",
       "id": "I31994",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2251,7 +2741,8 @@
       "fams": [],
       "firstName": "Ewa",
       "id": "I5321",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2266,7 +2757,8 @@
       "fams": [],
       "firstName": "Agnieszka",
       "id": "I32004",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2288,7 +2780,8 @@
       "fams": [],
       "firstName": "W\u0142adys\u0142aw",
       "id": "I32005",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2310,7 +2803,8 @@
       "fams": [],
       "firstName": "Marcin",
       "id": "I32007",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2326,7 +2820,8 @@
       "fams": [],
       "firstName": "Piotr",
       "id": "I32008",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2342,7 +2837,8 @@
       "fams": [],
       "firstName": "J\u00f3zefa",
       "id": "I32010",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2358,7 +2854,8 @@
       "fams": [],
       "firstName": "Antoni",
       "id": "I32009",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2376,7 +2873,8 @@
       "fams": [],
       "firstName": "Agnieszka",
       "id": "I29774",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2396,7 +2894,8 @@
       ],
       "firstName": "Marcjanna",
       "id": "I12290",
-      "lastName": "Szewczak"
+      "lastName": "Szewczak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2414,7 +2913,8 @@
       "fams": [],
       "firstName": "Rozalia",
       "id": "I29775",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2437,7 +2937,8 @@
       "fams": [],
       "firstName": "Adam",
       "id": "I46750",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2462,7 +2963,8 @@
       ],
       "firstName": "Maciej",
       "id": "I14876",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2487,7 +2989,8 @@
       ],
       "firstName": "Marianna",
       "id": "I46759",
-      "lastName": "O\u0142dak"
+      "lastName": "O\u0142dak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2505,7 +3008,8 @@
       "fams": [],
       "firstName": "Kacper",
       "id": "I46762",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2532,7 +3036,8 @@
       ],
       "firstName": "Franciszka",
       "id": "I14877",
-      "lastName": "Przybysz"
+      "lastName": "Przybysz",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2556,7 +3061,8 @@
       ],
       "firstName": "Franciszka",
       "id": "I9556",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2582,7 +3088,8 @@
       ],
       "firstName": "Piotr",
       "id": "I9555",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2600,7 +3107,8 @@
       ],
       "firstName": "Florian",
       "id": "I14878",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2618,7 +3126,8 @@
       ],
       "firstName": "Kazimierz",
       "id": "I9554",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2642,7 +3151,8 @@
       ],
       "firstName": "Szymon",
       "id": "I34606",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2655,7 +3165,8 @@
       "fams": [],
       "firstName": "Pawe\u0142",
       "id": "I34607",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2668,7 +3179,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I34608",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2692,7 +3204,8 @@
       ],
       "firstName": "El\u017cbieta",
       "id": "I34609",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2712,7 +3225,8 @@
       "fams": [],
       "firstName": "Ewa",
       "id": "I34610",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2725,7 +3239,8 @@
       "fams": [],
       "firstName": "J\u00f3zefa",
       "id": "I34611",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2745,7 +3260,8 @@
       ],
       "firstName": "Agnieszka",
       "id": "I10257",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2764,7 +3280,8 @@
       ],
       "firstName": "Franciszek",
       "id": "I10256",
-      "lastName": "Wojtera vel Wojtyra"
+      "lastName": "Wojtera vel Wojtyra",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2783,7 +3300,8 @@
       "fams": [],
       "firstName": "Apolonia",
       "id": "I10255",
-      "lastName": "Wojtera"
+      "lastName": "Wojtera",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2803,7 +3321,8 @@
       ],
       "firstName": "Tomasz",
       "id": "I46730",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2821,7 +3340,8 @@
       ],
       "firstName": "Ewa",
       "id": "I46731",
-      "lastName": "Sycik"
+      "lastName": "Sycik",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2845,7 +3365,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I46735",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2863,7 +3384,8 @@
       "fams": [],
       "firstName": "Agnieszka",
       "id": "I46734",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2887,7 +3409,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I35404",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2911,7 +3434,8 @@
       "fams": [],
       "firstName": "Magdalena",
       "id": "I46737",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2933,7 +3457,8 @@
       "fams": [],
       "firstName": "Miko\u0142aj",
       "id": "I46757",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2959,7 +3484,8 @@
       ],
       "firstName": "Micha\u0142",
       "id": "I32168",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -2982,7 +3508,8 @@
       ],
       "firstName": "Anna Helena",
       "id": "I32169",
-      "lastName": "Kubuj"
+      "lastName": "Kubuj",
+      "sex": "F"
     },
     {
       "birth": {
@@ -2999,7 +3526,8 @@
       ],
       "firstName": "Mateusz",
       "id": "I33025",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "death": {
@@ -3010,7 +3538,8 @@
       ],
       "firstName": "Marianna",
       "id": "I37863",
-      "lastName": "Kowalczyk"
+      "lastName": "Kowalczyk",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3035,7 +3564,8 @@
       ],
       "firstName": "Marianna",
       "id": "I33027",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3057,7 +3587,8 @@
       ],
       "firstName": "Andrzej",
       "id": "I37590",
-      "lastName": "Kowalczyk"
+      "lastName": "Kowalczyk",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3073,7 +3604,8 @@
       "fams": [],
       "firstName": "Marek",
       "id": "I37589",
-      "lastName": "Kowalczyk"
+      "lastName": "Kowalczyk",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3093,7 +3625,8 @@
       ],
       "firstName": "Benedykt",
       "id": "I32167",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3112,7 +3645,8 @@
       ],
       "firstName": "Ludwika",
       "id": "I32162",
-      "lastName": "Banaszek"
+      "lastName": "Banaszek",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3128,7 +3662,8 @@
       "fams": [],
       "firstName": "Piotr",
       "id": "I61192",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3146,7 +3681,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I46748",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3161,7 +3697,8 @@
       "fams": [],
       "firstName": "Helena",
       "id": "I33029",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3185,7 +3722,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I33030",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3203,7 +3741,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I46749",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3227,7 +3766,8 @@
       ],
       "firstName": "Ignacy",
       "id": "I29750",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3249,7 +3789,8 @@
       ],
       "firstName": "Marcjanna vel Marianna",
       "id": "I29751",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3267,7 +3808,8 @@
       "fams": [],
       "firstName": "Ignacy",
       "id": "I29755",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3285,7 +3827,8 @@
       "fams": [],
       "firstName": "J\u00f3zef",
       "id": "I29756",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3301,7 +3844,8 @@
       "fams": [],
       "firstName": "Stanis\u0142aw",
       "id": "I29746",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3317,7 +3861,8 @@
       "fams": [],
       "firstName": "Eleonora",
       "id": "I68291",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3341,7 +3886,8 @@
       "fams": [],
       "firstName": "Grzegorz",
       "id": "I68292",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3357,7 +3903,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I68293",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3373,7 +3920,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I68294",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3389,7 +3937,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I68295",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3407,7 +3956,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I46744",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3433,7 +3983,8 @@
       ],
       "firstName": "Micha\u0142",
       "id": "I46745",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "death": {
@@ -3449,7 +4000,8 @@
       ],
       "firstName": "Dorota",
       "id": "I46751",
-      "lastName": ""
+      "lastName": "",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3465,7 +4017,8 @@
       "fams": [],
       "firstName": "Jadwiga",
       "id": "I46754",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3481,7 +4034,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I46755",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3501,7 +4055,8 @@
       "fams": [],
       "firstName": "Ma\u0142gorzata",
       "id": "I46756",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3519,7 +4074,8 @@
       "fams": [],
       "firstName": "Barbara",
       "id": "I46746",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3537,7 +4093,8 @@
       "fams": [],
       "firstName": "Kacper",
       "id": "I46747",
-      "lastName": "Wi\u0119ch"
+      "lastName": "Wi\u0119ch",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3562,7 +4119,8 @@
       ],
       "firstName": "Stanis\u0142aw",
       "id": "I46464",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3585,7 +4143,8 @@
       ],
       "firstName": "Janina",
       "id": "I46468",
-      "lastName": "Maguza"
+      "lastName": "Maguza",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3604,7 +4163,8 @@
       ],
       "firstName": "Tomasz",
       "id": "I45740",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3621,7 +4181,8 @@
       ],
       "firstName": "Stanis\u0142aw",
       "id": "I34612",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3648,7 +4209,8 @@
       ],
       "firstName": "Pawe\u0142",
       "id": "I38027",
-      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3674,7 +4236,8 @@
       ],
       "firstName": "Jan",
       "id": "I34800",
-      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak",
+      "sex": "M"
     },
     {
       "death": {
@@ -3685,7 +4248,8 @@
       ],
       "firstName": "Franciszek",
       "id": "I46426",
-      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak",
+      "sex": "M"
     },
     {
       "death": {
@@ -3696,7 +4260,8 @@
       ],
       "firstName": "Marianna",
       "id": "I46427",
-      "lastName": "Jucha"
+      "lastName": "Jucha",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3719,7 +4284,8 @@
       ],
       "firstName": "Agnieszka",
       "id": "I34801",
-      "lastName": "Banaszek"
+      "lastName": "Banaszek",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3743,7 +4309,8 @@
       ],
       "firstName": "Ewa",
       "id": "I34790",
-      "lastName": "Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3766,7 +4333,8 @@
       ],
       "firstName": "Andrzej",
       "id": "I34789",
-      "lastName": "Bereda"
+      "lastName": "Bereda",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3783,7 +4351,8 @@
       ],
       "firstName": "Piotr",
       "id": "I46525",
-      "lastName": "Groszek"
+      "lastName": "Groszek",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3796,7 +4365,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I34803",
-      "lastName": "Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3809,7 +4379,8 @@
       "fams": [],
       "firstName": "Ma\u0142gorzata",
       "id": "I34805",
-      "lastName": "Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3822,7 +4393,8 @@
       "fams": [],
       "firstName": "Franciszka",
       "id": "I34804",
-      "lastName": "Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3835,7 +4407,8 @@
       "fams": [],
       "firstName": "Apolonia",
       "id": "I34802",
-      "lastName": "Wo\u017aniczak"
+      "lastName": "Wo\u017aniczak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3853,7 +4426,8 @@
       "fams": [],
       "firstName": "W\u0142adys\u0142aw",
       "id": "I46425",
-      "lastName": "Wo\u017aniak vel Wo\u017aniczak"
+      "lastName": "Wo\u017aniak vel Wo\u017aniczak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3875,7 +4449,8 @@
       ],
       "firstName": "Marianna",
       "id": "I46428",
-      "lastName": "Matusiak"
+      "lastName": "Matusiak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3901,7 +4476,8 @@
       ],
       "firstName": "Urszula Tekla",
       "id": "I38028",
-      "lastName": "Radzka"
+      "lastName": "Radzka",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3927,7 +4503,8 @@
       ],
       "firstName": "J\u00f3zef",
       "id": "I29777",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -3949,7 +4526,8 @@
       ],
       "firstName": "Marcin",
       "id": "I46431",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "death": {
@@ -3960,7 +4538,8 @@
       ],
       "firstName": "Jadwiga",
       "id": "I46432",
-      "lastName": "Kurek"
+      "lastName": "Kurek",
+      "sex": "F"
     },
     {
       "birth": {
@@ -3978,7 +4557,8 @@
       "fams": [],
       "firstName": "Walerian",
       "id": "I46443",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4002,7 +4582,8 @@
       "fams": [],
       "firstName": "Antoni",
       "id": "I46440",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4028,7 +4609,8 @@
       ],
       "firstName": "Leon",
       "id": "I46441",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4050,7 +4632,8 @@
       ],
       "firstName": "Rozalia",
       "id": "I46446",
-      "lastName": "Jusi\u0144ska"
+      "lastName": "Jusi\u0144ska",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4068,7 +4651,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I46439",
-      "lastName": "Radzka"
+      "lastName": "Radzka",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4092,7 +4676,8 @@
       "fams": [],
       "firstName": "Tomasz",
       "id": "I46442",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4113,7 +4698,8 @@
       "fams": [],
       "firstName": "Franciszek",
       "id": "I46445",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4135,7 +4721,8 @@
       "fams": [],
       "firstName": "Tomasz",
       "id": "I46444",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4157,7 +4744,8 @@
       ],
       "firstName": "Teresa",
       "id": "I29778",
-      "lastName": "Gajcy"
+      "lastName": "Gajcy",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4177,7 +4765,8 @@
       ],
       "firstName": "Kazimierz",
       "id": "I46430",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4196,7 +4785,8 @@
       ],
       "firstName": "Marianna",
       "id": "I37889",
-      "lastName": "Gajcy"
+      "lastName": "Gajcy",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4220,7 +4810,8 @@
       "fams": [],
       "firstName": "Jakub",
       "id": "I46433",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4244,7 +4835,8 @@
       "fams": [],
       "firstName": "Andrzej",
       "id": "I46434",
-      "lastName": "Radzki"
+      "lastName": "Radzki",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4263,7 +4855,8 @@
       ],
       "firstName": "Franciszka",
       "id": "I38023",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4278,7 +4871,8 @@
       ],
       "firstName": "El\u017cbieta",
       "id": "I34624",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4296,7 +4890,8 @@
       "fams": [],
       "firstName": "Julianna",
       "id": "I38471",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4314,7 +4909,8 @@
       ],
       "firstName": "Kazimierz",
       "id": "I38469",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4331,7 +4927,8 @@
       ],
       "firstName": "Marianna",
       "id": "I38975",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4356,7 +4953,8 @@
       ],
       "firstName": "Szymon",
       "id": "I11877",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4380,7 +4978,8 @@
       ],
       "firstName": "Grzegorz",
       "id": "I11873",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4398,7 +4997,8 @@
       ],
       "firstName": "Antoni",
       "id": "I11884",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "death": {
@@ -4414,7 +5014,8 @@
       ],
       "firstName": "Krystyna",
       "id": "I11886",
-      "lastName": "Banach"
+      "lastName": "Banach",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4435,7 +5036,8 @@
       ],
       "firstName": "Konstancja",
       "id": "I11885",
-      "lastName": "Ko\u017alik"
+      "lastName": "Ko\u017alik",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4459,7 +5061,8 @@
       ],
       "firstName": "Marianna",
       "id": "I33591",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4482,7 +5085,8 @@
       ],
       "firstName": "Baltazar",
       "id": "I35174",
-      "lastName": "Gajcy"
+      "lastName": "Gajcy",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4506,7 +5110,8 @@
       ],
       "firstName": "Walenty",
       "id": "I32160",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "death": {
@@ -4517,7 +5122,8 @@
       ],
       "firstName": "El\u017cbieta",
       "id": "I32161",
-      "lastName": "O\u0142dak"
+      "lastName": "O\u0142dak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4530,7 +5136,8 @@
       "fams": [],
       "firstName": "Anna",
       "id": "I33592",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4554,7 +5161,8 @@
       ],
       "firstName": "Ma\u0142gorzata",
       "id": "I11874",
-      "lastName": "Kubuj"
+      "lastName": "Kubuj",
+      "sex": "F"
     },
     {
       "death": {
@@ -4565,7 +5173,8 @@
       ],
       "firstName": "B\u0142a\u017cej",
       "id": "I11887",
-      "lastName": "Kubuj"
+      "lastName": "Kubuj",
+      "sex": "M"
     },
     {
       "death": {
@@ -4576,7 +5185,8 @@
       ],
       "firstName": "Marianna",
       "id": "I11888",
-      "lastName": ""
+      "lastName": "",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4592,7 +5202,8 @@
       "fams": [],
       "firstName": "Magdalena",
       "id": "I32170",
-      "lastName": "Kubuj"
+      "lastName": "Kubuj",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4616,7 +5227,8 @@
       ],
       "firstName": "Baltazar vel Balcer",
       "id": "I33639",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4640,7 +5252,8 @@
       ],
       "firstName": "Anna",
       "id": "I33636",
-      "lastName": "Ros\u0142on"
+      "lastName": "Ros\u0142on",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4662,7 +5275,8 @@
       "fams": [],
       "firstName": "Adam",
       "id": "I11890",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4684,7 +5298,8 @@
       "fams": [],
       "firstName": "Katarzyna",
       "id": "I11889",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4710,7 +5325,8 @@
       ],
       "firstName": "Jan",
       "id": "I11880",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4733,7 +5349,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I11881",
-      "lastName": "Borucka vel Banaszek"
+      "lastName": "Borucka vel Banaszek",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4756,7 +5373,8 @@
       ],
       "firstName": "Anastazja",
       "id": "I37884",
-      "lastName": "Gajcy"
+      "lastName": "Gajcy",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4774,7 +5392,8 @@
       "fams": [],
       "firstName": "Wawrzyniec",
       "id": "I10117",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4797,7 +5416,8 @@
       ],
       "firstName": "Ewa",
       "id": "I11879",
-      "lastName": "Radzka"
+      "lastName": "Radzka",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4820,7 +5440,8 @@
       ],
       "firstName": "Anna",
       "id": "I11878",
-      "lastName": "Gajcy"
+      "lastName": "Gajcy",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4844,7 +5465,8 @@
       "fams": [],
       "firstName": "Kazimierz",
       "id": "I35183",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4862,7 +5484,8 @@
       "fams": [],
       "firstName": "Jakub",
       "id": "I37236",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4884,7 +5507,8 @@
       "fams": [],
       "firstName": "J\u00f3zef",
       "id": "I11891",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4909,7 +5533,8 @@
       ],
       "firstName": "B\u0142a\u017cej",
       "id": "I32173",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4933,7 +5558,8 @@
       ],
       "firstName": "Julianna",
       "id": "I32174",
-      "lastName": "Mo\u015bcicka"
+      "lastName": "Mo\u015bcicka",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4957,7 +5583,8 @@
       "fams": [],
       "firstName": "Helena",
       "id": "I32289",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -4978,7 +5605,8 @@
       ],
       "firstName": "Wojciech",
       "id": "I5724",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "M"
     },
     {
       "birth": {
@@ -4998,7 +5626,8 @@
       ],
       "firstName": "Anastazja",
       "id": "I5725",
-      "lastName": "Gotowiec"
+      "lastName": "Gotowiec",
+      "sex": "F"
     },
     {
       "death": {
@@ -5009,7 +5638,8 @@
       ],
       "firstName": "Antoni",
       "id": "I12357",
-      "lastName": "Szewczak"
+      "lastName": "Szewczak",
+      "sex": "M"
     },
     {
       "death": {
@@ -5020,7 +5650,8 @@
       ],
       "firstName": "Marianna",
       "id": "I12358",
-      "lastName": "Rosie\u0144ska"
+      "lastName": "Rosie\u0144ska",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5039,7 +5670,8 @@
       ],
       "firstName": "Jan",
       "id": "I12225",
-      "lastName": "Kostrzewa"
+      "lastName": "Kostrzewa",
+      "sex": "M"
     },
     {
       "death": {
@@ -5055,7 +5687,8 @@
       ],
       "firstName": "Marcin",
       "id": "I46732",
-      "lastName": "Przybysz"
+      "lastName": "Przybysz",
+      "sex": "M"
     },
     {
       "birth": {
@@ -5079,7 +5712,8 @@
       ],
       "firstName": "Ewa",
       "id": "I46733",
-      "lastName": "Zacheja"
+      "lastName": "Zacheja",
+      "sex": "F"
     },
     {
       "death": {
@@ -5090,7 +5724,8 @@
       ],
       "firstName": "Cyprian",
       "id": "I46817",
-      "lastName": "Zacheja"
+      "lastName": "Zacheja",
+      "sex": "M"
     },
     {
       "death": {
@@ -5101,7 +5736,8 @@
       ],
       "firstName": "Magdalena",
       "id": "I46818",
-      "lastName": "Owczarz"
+      "lastName": "Owczarz",
+      "sex": "F"
     },
     {
       "death": {
@@ -5116,7 +5752,8 @@
       ],
       "firstName": "Wojciech",
       "id": "I46758",
-      "lastName": "Krystosiak"
+      "lastName": "Krystosiak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -5135,7 +5772,8 @@
       ],
       "firstName": "Franciszka",
       "id": "I31967",
-      "lastName": "Groszek"
+      "lastName": "Groszek",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5152,7 +5790,8 @@
       ],
       "firstName": "Marianna",
       "id": "I9548",
-      "lastName": "Marsza\u0142"
+      "lastName": "Marsza\u0142",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5165,7 +5804,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I34613",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -5178,7 +5818,8 @@
       "fams": [],
       "firstName": "Marianna",
       "id": "I34615",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5193,7 +5834,8 @@
       ],
       "firstName": "Szczepan",
       "id": "I34614",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -5207,7 +5849,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I34616",
-      "lastName": "Sasin"
+      "lastName": "Sasin",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5226,7 +5869,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I46452",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5244,7 +5888,8 @@
       ],
       "firstName": "Stanis\u0142aw",
       "id": "I46453",
-      "lastName": "German"
+      "lastName": "German",
+      "sex": "M"
     },
     {
       "birth": {
@@ -5272,7 +5917,8 @@
       ],
       "firstName": "Filip",
       "id": "I45741",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "birth": {
@@ -5296,7 +5942,8 @@
       ],
       "firstName": "Katarzyna",
       "id": "I45762",
-      "lastName": "Oleksiak"
+      "lastName": "Oleksiak",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5319,7 +5966,8 @@
       ],
       "firstName": "Barbara",
       "id": "I46460",
-      "lastName": "Sulewska"
+      "lastName": "Sulewska",
+      "sex": "F"
     },
     {
       "birth": {
@@ -5341,7 +5989,8 @@
       ],
       "firstName": "Ewa",
       "id": "I46463",
-      "lastName": "Banaszek"
+      "lastName": "Banaszek",
+      "sex": "F"
     },
     {
       "death": {
@@ -5351,7 +6000,8 @@
       "fams": [],
       "firstName": "W\u0142adys\u0142aw",
       "id": "I46465",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "death": {
@@ -5361,7 +6011,8 @@
       "fams": [],
       "firstName": "Czes\u0142aw",
       "id": "I46466",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     },
     {
       "death": {
@@ -5371,7 +6022,8 @@
       "fams": [],
       "firstName": "Jan",
       "id": "I46467",
-      "lastName": "Wo\u017aniak"
+      "lastName": "Wo\u017aniak",
+      "sex": "M"
     }
   ]
 }
