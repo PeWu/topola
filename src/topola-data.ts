@@ -46,6 +46,7 @@ export interface JsonFam {
   children?: string[];
   wife?: string;
   husb?: string;
+  marriage: JsonEvent;
 }
 
 /** Json representation of Gedcom data. */
@@ -67,7 +68,10 @@ export interface IndiDetails extends Indi {
 
 
 /** Details of a family record. */
-export interface FamDetails extends Fam {}
+export interface FamDetails extends Fam {
+  getMarriageDate(): DateOrRange|null;
+  getMarriagePlace(): string|null;
+}
 
 
 /** Details of an individual based on Json input. */
@@ -107,7 +111,7 @@ class JsonIndiDetails implements IndiDetails {
 
 
 /** Details of a family based on Json input. */
-class JsonFamDetails implements Fam {
+class JsonFamDetails implements FamDetails {
   constructor(readonly json: JsonFam) {}
   getId() {
     return this.json.id;
@@ -120,6 +124,12 @@ class JsonFamDetails implements Fam {
   }
   getChildren() {
     return this.json.children || [];
+  }
+  getMarriageDate() {
+    return this.json.marriage;
+  }
+  getMarriagePlace() {
+    return this.json.marriage && this.json.marriage.place || null;
   }
 }
 
