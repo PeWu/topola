@@ -23,15 +23,19 @@ function getHeight(node: TreeNode): number {
 }
 
 
+/** Returns the width of individual boxes. */
+function getIndiWidth(node: TreeNode): number {
+  return d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width]);
+}
+
+
 /**
  * Returns the size of the whole tree node, including both spouses and
  * the family.
  */
 function getWidth(node: TreeNode): number {
-  const indiWidth =
-      d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width]);
   const famWidth = node.family && node.family.width || 0;
-  return indiWidth + famWidth;
+  return getIndiWidth(node) + famWidth;
 }
 
 
@@ -39,15 +43,17 @@ function getWidth(node: TreeNode): number {
 function link(
     s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
   const midX = (s.y + s.data.width / 2 + d.y - d.data.width / 2) / 2;
+  const sx = s.y - s.data.width / 2 + getIndiWidth(s.data) / 2;
   const sy = s.x - s.data.height / 2 + s.data.indi.height;
+  const dx = d.y - d.data.width / 2 + getIndiWidth(d.data) / 2;
   const dy = d.data.spouse ?
       (s.data.parentsOfSpouse ? d.x + d.data.indi.height / 2 :
                                 d.x - d.data.spouse.height / 2) :
       d.x;
-  return `M ${s.y} ${sy}
+  return `M ${sx} ${sy}
           L ${midX} ${sy},
             ${midX} ${dy},
-            ${d.y} ${dy}`;
+            ${dx} ${dy}`;
 }
 
 
