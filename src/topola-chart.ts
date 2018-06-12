@@ -42,14 +42,14 @@ function getWidth(node: TreeNode): number {
 /** Creates a path from parent to the child node. */
 function link(
     s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
-  const midX = (s.y + s.data.width / 2 + d.y - d.data.width / 2) / 2;
-  const sx = s.y - s.data.width / 2 + getIndiWidth(s.data) / 2;
-  const sy = s.x - s.data.height / 2 + s.data.indi.height;
-  const dx = d.y - d.data.width / 2 + getIndiWidth(d.data) / 2;
+  const midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
+  const sx = s.x - s.data.width / 2 + getIndiWidth(s.data) / 2;
+  const sy = s.y - s.data.height / 2 + s.data.indi.height;
+  const dx = d.x - d.data.width / 2 + getIndiWidth(d.data) / 2;
   const dy = d.data.spouse ?
-      (s.data.parentsOfSpouse ? d.x + d.data.indi.height / 2 :
-                                d.x - d.data.spouse.height / 2) :
-      d.x;
+      (s.data.parentsOfSpouse ? d.y + d.data.indi.height / 2 :
+                                d.y - d.data.spouse.height / 2) :
+      d.y;
   return `M ${sx} ${sy}
           L ${midX} ${sy},
             ${midX} ${dy},
@@ -94,16 +94,16 @@ function updateSvgDimensions(
   const selector = svgSelector || DEFAULT_SVG_SELECTOR;
 
   // Calculate chart boundaries.
-  const x0 = d3.min(nodes.map((d) => d.x - getHeight(d.data) / 2));
-  const y0 = d3.min(nodes.map((d) => d.y - getWidth(d.data) / 2));
-  const x1 = d3.max(nodes.map((d) => d.x + getHeight(d.data) / 2));
-  const y1 = d3.max(nodes.map((d) => d.y + getWidth(d.data) / 2));
+  const x0 = d3.min(nodes.map((d) => d.x - d.data.width / 2));
+  const y0 = d3.min(nodes.map((d) => d.y - d.data.height / 2));
+  const x1 = d3.max(nodes.map((d) => d.x + d.data.width / 2));
+  const y1 = d3.max(nodes.map((d) => d.y + d.data.height / 2));
 
   d3.select(selector)
-      .attr('width', y1 - y0 + 2 * MARGIN)
-      .attr('height', x1 - x0 + 2 * MARGIN);
+      .attr('width', x1 - x0 + 2 * MARGIN)
+      .attr('height', y1 - y0 + 2 * MARGIN);
   d3.select(selector).select('g').attr(
-      'transform', `translate(${- y0 + MARGIN}, ${- x0 + MARGIN})`);
+      'transform', `translate(${- x0 + MARGIN}, ${- y0 + MARGIN})`);
 }
 
 
@@ -175,10 +175,15 @@ function renderChart(
   // Assigns the x and y position for the nodes.
   const nodes = treemap(root).descendants();
 
+  // Swap x-y coordinates for horizontal layout.
+  nodes.forEach((node) => {
+    [node.x, node.y] = [node.y, node.x];
+  });
+
   // Flip left-right.
   if (flipHorizontally) {
     nodes.forEach((node) => {
-      node.y = -node.y;
+      node.x = -node.x;
     });
   }
 
@@ -193,8 +198,8 @@ function renderChart(
           .attr('class', 'node')
           .attr(
               'transform',
-              (node) => `translate(${node.y - node.data.width / 2}, ${
-                  node.x - node.data.height / 2})`);
+              (node) => `translate(${node.x - node.data.width / 2}, ${
+                  node.y - node.data.height / 2})`);
   options.renderer.render(nodeEnter);
 
   // Render links.
