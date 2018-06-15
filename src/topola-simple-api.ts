@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {Chart, DataProvider, Renderer} from './topola-api';
+import {Chart, DataProvider, Renderer, RendererOptions} from './topola-api';
 import {ChartOptions} from './topola-chart';
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './topola-data';
 
@@ -11,8 +11,7 @@ interface ChartType {
 
 
 interface RendererType {
-  new(dataProvider: DataProvider<IndiDetails, FamDetails>,
-      hrefFunc?: (id: string) => string): Renderer;
+  new(options: RendererOptions<IndiDetails, FamDetails>): Renderer;
 }
 
 
@@ -24,21 +23,27 @@ export interface RenderOptions {
   svgSelector?: string;
   chartType: ChartType;
   renderer: RendererType;
+  horizontal?: boolean;
 }
 
 
 function createChartOptions(
     json: JsonGedcomData, options: RenderOptions): ChartOptions {
   const data = new JsonDataProvider(json);
-  const indiUrlFunction = options.indiUrl ?
+  const hrefFunc = options.indiUrl ?
       (id: string) => options.indiUrl.replace('${id}', id) :
       undefined;
   return {
     data,
-    renderer: new options.renderer(data, indiUrlFunction),
+    renderer: new options.renderer({
+      data,
+      hrefFunc,
+      horizontal: options.horizontal,
+    }),
     startIndi: options.startIndi,
     startFam: options.startFam,
     svgSelector: options.svgSelector,
+    horizontal: options.horizontal,
   };
 }
 

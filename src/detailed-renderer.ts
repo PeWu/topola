@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {formatDefaultLocale} from 'd3';
 
-import {DataProvider, Renderer, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
+import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
 import {Date, FamDetails, IndiDetails} from './topola-data';
 
 const INDI_MIN_HEIGHT = 44;
@@ -110,19 +110,17 @@ function getFamDetails(fam: FamDetails): DetailsLine[] {
  * and death.
  */
 export class DetailedRenderer implements Renderer {
-  constructor(
-      readonly dataProvider: DataProvider<IndiDetails, FamDetails>,
-      readonly hrefFunc?: (id: string) => string) {}
+  constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {}
 
   getPreferredIndiSize(id: string): [number, number] {
-    const indi = this.dataProvider.getIndi(id);
+    const indi = this.options.data.getIndi(id);
     const details = getIndiDetails(indi);
 
     const height = INDI_MIN_HEIGHT + details.length * 14;
 
     const maxDetailsWidth = d3.max(details.map((x) => getLength(x.text)));
     const width = d3.max([
-      maxDetailsWidth,
+      maxDetailsWidth + 8,
       getLength(indi.getFirstName()) + 8,
       getLength(indi.getLastName()) + 8,
       INDI_MIN_WIDTH,
@@ -131,7 +129,7 @@ export class DetailedRenderer implements Renderer {
   }
 
   getPreferredFamSize(id: string): [number, number] {
-    const fam = this.dataProvider.getFam(id);
+    const fam = this.options.data.getFam(id);
     const details = getFamDetails(fam);
 
     const height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
@@ -147,15 +145,22 @@ export class DetailedRenderer implements Renderer {
             .append('g')
             .attr(
                 'transform',
-                (node) => `translate(0, ${node.data.indi.height})`);
+                (node) => this.options.horizontal ?
+                    `translate(0, ${node.data.indi.height})` :
+                    `translate(${node.data.indi.width}, 0)`);
     this.renderIndi(spouseSelection, (node) => node.spouse);
     const familySelection =
         selection.filter((node) => !!node.data.family)
             .append('g')
             .attr(
                 'transform',
-                (node) => `translate(${node.data.indi.width}, ${
-                    node.data.indi.height - node.data.family.height / 2})`);
+                (node) => this.options.horizontal ?
+                    `translate(${node.data.indi.width}, ${
+                        node.data.indi.height - node.data.family.height / 2})` :
+                    `translate(${
+                        node.data.indi.width -
+                        node.data.family.width /
+                            2}, ${node.data.indi.height})`);
     this.renderFamily(familySelection);
   }
 
@@ -164,9 +169,9 @@ export class DetailedRenderer implements Renderer {
       indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
     selection = selection.append('g').attr('class', 'detailed');
-    const group = this.hrefFunc ?
+    const group = this.options.hrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.hrefFunc(indiFunc(node.data).id)) :
+            'href', (node) => this.options.hrefFunc(indiFunc(node.data).id)) :
         selection;
 
     // Box.
@@ -184,7 +189,7 @@ export class DetailedRenderer implements Renderer {
             'transform',
             (node) => `translate(${indiFunc(node.data).width / 2}, 17)`)
         .text(
-            (node) => this.dataProvider.getIndi(indiFunc(node.data).id)
+            (node) => this.options.data.getIndi(indiFunc(node.data).id)
                           .getFirstName());
     group.append('text')
         .attr('text-anchor', 'middle')
@@ -193,13 +198,13 @@ export class DetailedRenderer implements Renderer {
             'transform',
             (node) => `translate(${indiFunc(node.data).width / 2}, 33)`)
         .text(
-            (node) => this.dataProvider.getIndi(indiFunc(node.data).id)
+            (node) => this.options.data.getIndi(indiFunc(node.data).id)
                           .getLastName());
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
     group.each((node) => {
       const indiId = indiFunc(node.data).id;
-      const indi = this.dataProvider.getIndi(indiId);
+      const indi = this.options.data.getIndi(indiId);
       const detailsList = getIndiDetails(indi);
       details.set(indiId, detailsList);
     });
@@ -225,9 +230,9 @@ export class DetailedRenderer implements Renderer {
 
   renderFamily(selection: TreeNodeSelection) {
     selection = selection.append('g').attr('class', 'detailed');
-    const group = this.hrefFunc ?
+    const group = this.options.hrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.hrefFunc(node.data.family.id)) :
+            'href', (node) => this.options.hrefFunc(node.data.family.id)) :
         selection;
 
     // Box.
@@ -241,7 +246,7 @@ export class DetailedRenderer implements Renderer {
     const details = new Map<string, DetailsLine[]>();
     group.each((node) => {
       const famId = node.data.family.id;
-      const fam = this.dataProvider.getFam(famId);
+      const fam = this.options.data.getFam(famId);
       const detailsList = getFamDetails(fam);
       details.set(famId, detailsList);
     });

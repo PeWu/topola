@@ -69,6 +69,12 @@ export interface Renderer {
   render(selection: TreeNodeSelection): void;
 }
 
+export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
+  /** Creates HTTP link based on ID. */
+  hrefFunc?: (id: string) => string;
+  data: DataProvider<IndiT, FamT>;
+  horizontal?: boolean;
+}
 
 export interface Chart {
   render(): void;

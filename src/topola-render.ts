@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {DataProvider, Renderer, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
+import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
 import {FamDetails, IndiDetails} from './topola-data';
 
 const MIN_HEIGHT = 27;
@@ -45,12 +45,10 @@ function getYears(indi: IndiDetails) {
  * years of birth and death.
  */
 export class SimpleRenderer implements Renderer {
-  constructor(
-      readonly dataProvider: DataProvider<IndiDetails, FamDetails>,
-      readonly hrefFunc?: (id: string) => string) {}
+  constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {}
 
   getPreferredIndiSize(id: string): [number, number] {
-    const indi = this.dataProvider.getIndi(id);
+    const indi = this.options.data.getIndi(id);
     const years = getYears(indi);
     const width =
         Math.max(getLength(getName(indi)) + 8, getLength(years), MIN_WIDTH);
@@ -78,9 +76,9 @@ export class SimpleRenderer implements Renderer {
       selection: TreeNodeSelection,
       indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
-    const group = this.hrefFunc ?
+    const group = this.options.hrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.hrefFunc(indiFunc(node.data).id)) :
+            'href', (node) => this.options.hrefFunc(indiFunc(node.data).id)) :
         selection;
 
     // Box.
@@ -97,7 +95,7 @@ export class SimpleRenderer implements Renderer {
             (node) => `translate(${indiFunc(node.data).width / 2}, 17)`)
         .text(
             (node) =>
-                getName(this.dataProvider.getIndi(indiFunc(node.data).id)));
+                getName(this.options.data.getIndi(indiFunc(node.data).id)));
     group.append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
@@ -106,6 +104,6 @@ export class SimpleRenderer implements Renderer {
             (node) => `translate(${indiFunc(node.data).width / 2}, 33)`)
         .text(
             (node) =>
-                getYears(this.dataProvider.getIndi(indiFunc(node.data).id)));
+                getYears(this.options.data.getIndi(indiFunc(node.data).id)));
   }
 }
