@@ -22,6 +22,7 @@
         svgSelector: '#ancestors',
         chartType: topola.HourglassChart,
         renderer: topola.DetailedRenderer,
+        horizontal: true,
       });
       topola.renderChart({
         jsonUrl: 'data/data.json',
@@ -30,13 +31,14 @@
         svgSelector: '#descendants',
         chartType: topola.DescendantChart,
         renderer: topola.SimpleRenderer,
+        horizontal: true,
       });
     </script>
   </head>
   <body>
-    <h1>Hourglass</h1>
+    <h1>Hourglass – vertical layout</h1>
     <svg class="graph" id="hourglass"/>
-    <h1>Ancestors</h1>
+    <h1>Ancestors – horizontal layout</h1>
     <svg class="graph" id="ancestors"/>
     <h1>Descendants – simple boxes</h1>
     <svg class="graph" id="descendants"/>

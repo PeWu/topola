@@ -19206,17 +19206,16 @@ function getFamDetails(fam) {
  * and death.
  */
 var DetailedRenderer = /** @class */ (function () {
-    function DetailedRenderer(dataProvider, hrefFunc) {
-        this.dataProvider = dataProvider;
-        this.hrefFunc = hrefFunc;
+    function DetailedRenderer(options) {
+        this.options = options;
     }
     DetailedRenderer.prototype.getPreferredIndiSize = function (id) {
-        var indi = this.dataProvider.getIndi(id);
+        var indi = this.options.data.getIndi(id);
         var details = getIndiDetails(indi);
         var height = INDI_MIN_HEIGHT + details.length * 14;
         var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
         var width = d3.max([
-            maxDetailsWidth,
+            maxDetailsWidth + 8,
             getLength(indi.getFirstName()) + 8,
             getLength(indi.getLastName()) + 8,
             INDI_MIN_WIDTH,
@@ -19224,7 +19223,7 @@ var DetailedRenderer = /** @class */ (function () {
         return [width, height];
     };
     DetailedRenderer.prototype.getPreferredFamSize = function (id) {
-        var fam = this.dataProvider.getFam(id);
+        var fam = this.options.data.getFam(id);
         var details = getFamDetails(fam);
         var height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
         var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
@@ -19232,22 +19231,29 @@ var DetailedRenderer = /** @class */ (function () {
         return [width, height];
     };
     DetailedRenderer.prototype.render = function (selection) {
+        var _this = this;
         this.renderIndi(selection, function (node) { return node.indi; });
         var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
             .append('g')
-            .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
+            .attr('transform', function (node) { return _this.options.horizontal ?
+            "translate(0, " + node.data.indi.height + ")" :
+            "translate(" + node.data.indi.width + ", 0)"; });
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
         var familySelection = selection.filter(function (node) { return !!node.data.family; })
             .append('g')
-            .attr('transform', function (node) { return "translate(" + node.data.indi.width + ", " + (node.data.indi.height - node.data.family.height / 2) + ")"; });
+            .attr('transform', function (node) { return _this.options.horizontal ?
+            "translate(" + node.data.indi.width + ", " + (node.data.indi.height - node.data.family.height / 2) + ")" :
+            "translate(" + (node.data.indi.width -
+                node.data.family.width /
+                    2) + ", " + node.data.indi.height + ")"; });
         this.renderFamily(familySelection);
     };
     DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
         // Optionally add a link.
         selection = selection.append('g').attr('class', 'detailed');
-        var group = this.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.hrefFunc(indiFunc(node.data).id); }) :
+        var group = this.options.hrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.options.hrefFunc(indiFunc(node.data).id); }) :
             selection;
         // Box.
         group.append('rect')
@@ -19260,19 +19266,19 @@ var DetailedRenderer = /** @class */ (function () {
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
-            .text(function (node) { return _this.dataProvider.getIndi(indiFunc(node.data).id)
+            .text(function (node) { return _this.options.data.getIndi(indiFunc(node.data).id)
             .getFirstName(); });
         group.append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
-            .text(function (node) { return _this.dataProvider.getIndi(indiFunc(node.data).id)
+            .text(function (node) { return _this.options.data.getIndi(indiFunc(node.data).id)
             .getLastName(); });
         // Extract details.
         var details = new Map();
         group.each(function (node) {
             var indiId = indiFunc(node.data).id;
-            var indi = _this.dataProvider.getIndi(indiId);
+            var indi = _this.options.data.getIndi(indiId);
             var detailsList = getIndiDetails(indi);
             details.set(indiId, detailsList);
         });
@@ -19298,8 +19304,8 @@ var DetailedRenderer = /** @class */ (function () {
     DetailedRenderer.prototype.renderFamily = function (selection) {
         var _this = this;
         selection = selection.append('g').attr('class', 'detailed');
-        var group = this.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.hrefFunc(node.data.family.id); }) :
+        var group = this.options.hrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.options.hrefFunc(node.data.family.id); }) :
             selection;
         // Box.
         group.append('rect')
@@ -19311,7 +19317,7 @@ var DetailedRenderer = /** @class */ (function () {
         var details = new Map();
         group.each(function (node) {
             var famId = node.data.family.id;
-            var fam = _this.dataProvider.getFam(famId);
+            var fam = _this.options.data.getFam(famId);
             var detailsList = getFamDetails(fam);
             details.set(famId, detailsList);
         });
@@ -19344,39 +19350,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var d3_flextree_1 = require("d3-flextree");
 /** Horizontal distance between boxes. */
-var DISTANCE_H = 30;
+var H_SPACING = 15;
 /** Vertical distance between boxes. */
-var DISTANCE_V = 15;
+var V_SPACING = 30;
 /** Margin around the whole drawing. */
 var MARGIN = 15;
 var DEFAULT_SVG_SELECTOR = 'svg';
-/**
- * Returns the height of the whole tree node as the sum of the heights of both
- * spouses.
- */
-function getHeight(node) {
-    return (node.indi && node.indi.height || 0) +
-        (node.spouse && node.spouse.height || 0);
-}
-/**
- * Returns the size of the whole tree node, including both spouses and
- * the family.
- */
-function getWidth(node) {
-    var indiWidth = d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width]);
-    var famWidth = node.family && node.family.width || 0;
-    return indiWidth + famWidth;
-}
-/** Creates a path from parent to the child node. */
-function link(s, d) {
-    var midX = (s.y + s.data.width / 2 + d.y - d.data.width / 2) / 2;
-    var sy = s.x - s.data.height / 2 + s.data.indi.height;
-    var dy = d.data.spouse ?
-        (s.data.parentsOfSpouse ? d.x + d.data.indi.height / 2 :
-            d.x - d.data.spouse.height / 2) :
-        d.x;
-    return "M " + s.y + " " + sy + "\n          L " + midX + " " + sy + ",\n            " + midX + " " + dy + ",\n            " + d.y + " " + dy;
-}
 /** Returns the spouse of the given individual in the given family. */
 function getSpouse(indiId, fam) {
     if (fam.getFather() === indiId) {
@@ -19384,116 +19363,209 @@ function getSpouse(indiId, fam) {
     }
     return fam.getFather();
 }
-function setPreferredIndiSize(indi, renderer) {
-    var _a;
-    if (!indi) {
-        return;
+/** Utility class with common code for all chart types. */
+var ChartUtil = /** @class */ (function () {
+    function ChartUtil(options) {
+        this.options = options;
     }
-    _a = renderer.getPreferredIndiSize(indi.id), indi.width = _a[0], indi.height = _a[1];
-}
-function updateSvgDimensions(nodes, svgSelector) {
-    var selector = svgSelector || DEFAULT_SVG_SELECTOR;
-    // Calculate chart boundaries.
-    var x0 = d3.min(nodes.map(function (d) { return d.x - getHeight(d.data) / 2; }));
-    var y0 = d3.min(nodes.map(function (d) { return d.y - getWidth(d.data) / 2; }));
-    var x1 = d3.max(nodes.map(function (d) { return d.x + getHeight(d.data) / 2; }));
-    var y1 = d3.max(nodes.map(function (d) { return d.y + getWidth(d.data) / 2; }));
-    d3.select(selector)
-        .attr('width', y1 - y0 + 2 * MARGIN)
-        .attr('height', x1 - x0 + 2 * MARGIN);
-    d3.select(selector).select('g').attr('transform', "translate(" + (-y0 + MARGIN) + ", " + (-x0 + MARGIN) + ")");
-}
-function renderChart(root, options, flipHorizontally) {
-    if (flipHorizontally === void 0) { flipHorizontally = false; }
-    var svgSelector = options.svgSelector || DEFAULT_SVG_SELECTOR;
-    var treemap = d3_flextree_1.flextree()
-        .nodeSize(function (node) {
-        var w = 0;
-        if (node.children) {
-            node.children.forEach(function (child) {
-                var childW = child.data.width;
-                w = Math.max(w, childW);
-            });
+    /** Returns the horizontal size. */
+    ChartUtil.prototype.getHSize = function (node) {
+        if (this.options.horizontal) {
+            return (node.indi && node.indi.height || 0) +
+                (node.spouse && node.spouse.height || 0);
         }
-        return [node.data.height, (w + node.data.width) / 2 + DISTANCE_H];
-    })
-        .spacing(function (a, b) { return DISTANCE_V; });
-    d3.select(svgSelector).append('g');
-    // Set preferred sizes.
-    root.each(function (node) {
+        return (node.indi && node.indi.width || 0) +
+            (node.spouse && node.spouse.width || 0);
+    };
+    /** Returns the vertical size. */
+    ChartUtil.prototype.getVSize = function (node) {
+        return this.getIndiVSize(node) + this.getFamVSize(node);
+    };
+    ChartUtil.prototype.getFamVSize = function (node) {
+        if (this.options.horizontal) {
+            return node.family && node.family.width || 0;
+        }
+        return node.family && node.family.height || 0;
+    };
+    /** Returns the vertical size of individual boxes. */
+    ChartUtil.prototype.getIndiVSize = function (node) {
+        if (this.options.horizontal) {
+            return d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width]);
+        }
+        return d3.max([node.indi && node.indi.height, node.spouse && node.spouse.height]);
+    };
+    /** Creates a path from parent to the child node (horizontal layout). */
+    ChartUtil.prototype.linkHorizontal = function (s, d) {
+        var midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
+        var sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
+        var sy = s.y - s.data.height / 2 + s.data.indi.height;
+        var dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
+        var dy = d.data.spouse ?
+            (s.data.parentsOfSpouse ? d.y + d.data.indi.height / 2 :
+                d.y - d.data.spouse.height / 2) :
+            d.y;
+        return "M " + sx + " " + sy + "\n            L " + midX + " " + sy + ",\n              " + midX + " " + dy + ",\n              " + dx + " " + dy;
+    };
+    /** Creates a path from parent to the child node (vertical layout). */
+    ChartUtil.prototype.linkVertical = function (s, d) {
+        var midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
+        var sx = s.x - s.data.width / 2 + s.data.indi.width;
+        var sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
+        var dx = d.data.spouse ?
+            (s.data.parentsOfSpouse ? d.x + d.data.indi.width / 2 :
+                d.x - d.data.spouse.width / 2) :
+            d.x;
+        var dy = d.y - d.data.height / 2 + this.getIndiVSize(d.data) / 2;
+        return "M " + sx + " " + sy + "\n            L " + sx + " " + midY + ",\n              " + dx + " " + midY + ",\n              " + dx + " " + dy;
+    };
+    ChartUtil.prototype.setPreferredIndiSize = function (indi) {
         var _a;
-        setPreferredIndiSize(node.data.indi, options.renderer);
-        setPreferredIndiSize(node.data.spouse, options.renderer);
-        if (node.data.family) {
-            _a = options.renderer.getPreferredFamSize(node.data.family.id), node.data.family.width = _a[0], node.data.family.height = _a[1];
+        if (!indi) {
+            return;
         }
-    });
-    // Calculate individual width per depth.
-    var indiWidthPerDepth = new Map();
-    root.each(function (node) {
-        var depth = node.depth;
-        var maxIndiWidth = d3.max([
-            node.data.indi && node.data.indi.width,
-            node.data.spouse && node.data.spouse.width,
-            indiWidthPerDepth.get(depth),
-        ]);
-        indiWidthPerDepth.set(depth, maxIndiWidth);
-    });
-    // Set same width for each depth.
-    root.each(function (node) {
-        if (node.data.indi) {
-            node.data.indi.width = indiWidthPerDepth.get(node.depth);
-        }
-        if (node.data.spouse) {
-            node.data.spouse.width = indiWidthPerDepth.get(node.depth);
-        }
-    });
-    var widthPerDepth = new Map();
-    root.each(function (node) {
-        var depth = node.depth;
-        var maxWidth = d3.max([getWidth(node.data), widthPerDepth.get(depth)]);
-        widthPerDepth.set(depth, maxWidth);
-    });
-    // Set sizes of whole nodes.
-    root.each(function (node) {
-        node.data.width = widthPerDepth.get(node.depth);
-        node.data.height = getHeight(node.data);
-    });
-    // Assigns the x and y position for the nodes.
-    var nodes = treemap(root).descendants();
-    // Flip left-right.
-    if (flipHorizontally) {
-        nodes.forEach(function (node) {
-            node.y = -node.y;
+        _a = this.options.renderer.getPreferredIndiSize(indi.id), indi.width = _a[0], indi.height = _a[1];
+    };
+    ChartUtil.prototype.updateSvgDimensions = function (nodes) {
+        var selector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
+        // Calculate chart boundaries.
+        var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.width / 2; }));
+        var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.height / 2; }));
+        var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.width / 2; }));
+        var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.height / 2; }));
+        d3.select(selector)
+            .attr('width', x1 - x0 + 2 * MARGIN)
+            .attr('height', y1 - y0 + 2 * MARGIN);
+        d3.select(selector).select('g').attr('transform', "translate(" + (-x0 + MARGIN) + ", " + (-y0 + MARGIN) + ")");
+    };
+    ChartUtil.prototype.renderChart = function (root, flipVertically) {
+        var _this = this;
+        if (flipVertically === void 0) { flipVertically = false; }
+        var svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
+        var treemap = d3_flextree_1.flextree()
+            .nodeSize(function (node) {
+            if (_this.options.horizontal) {
+                var maxChildSize_1 = d3.max(node.children || [], function (n) { return n.data.width; }) || 0;
+                return [
+                    node.data.height,
+                    (maxChildSize_1 + node.data.width) / 2 + V_SPACING
+                ];
+            }
+            var maxChildSize = d3.max(node.children || [], function (n) { return n.data.height; }) || 0;
+            return [
+                node.data.width,
+                (maxChildSize + node.data.height) / 2 + V_SPACING
+            ];
+        })
+            .spacing(function (a, b) { return H_SPACING; });
+        d3.select(svgSelector).append('g');
+        // Set preferred sizes.
+        root.each(function (node) {
+            var _a;
+            _this.setPreferredIndiSize(node.data.indi);
+            _this.setPreferredIndiSize(node.data.spouse);
+            if (node.data.family) {
+                _a = _this.options.renderer.getPreferredFamSize(node.data.family.id), node.data.family.width = _a[0], node.data.family.height = _a[1];
+            }
         });
-    }
-    // Render nodes.
-    var nodeEnter = d3.select(svgSelector)
-        .select('g')
-        .selectAll('g.node')
-        .data(nodes, function (d) { return d.id; })
-        .enter()
-        .append('g')
-        .attr('class', 'node')
-        .attr('transform', function (node) { return "translate(" + (node.y - node.data.width / 2) + ", " + (node.x - node.data.height / 2) + ")"; });
-    options.renderer.render(nodeEnter);
-    // Render links.
-    var links = nodes.slice(1);
-    d3.select(svgSelector)
-        .select('g')
-        .selectAll('path.link')
-        .data(links, function (d) { return d.id; })
-        .enter()
-        .insert('path', 'g')
-        .attr('class', 'link')
-        .attr('d', function (node) { return flipHorizontally ? link(node, node.parent) :
-        link(node.parent, node); });
-    return nodes;
-}
+        // Calculate individual vertical size per depth.
+        var indiVSizePerDepth = new Map();
+        root.each(function (node) {
+            var depth = node.depth;
+            var maxIndiVSize = d3.max([
+                _this.getIndiVSize(node.data),
+                indiVSizePerDepth.get(depth),
+            ]);
+            indiVSizePerDepth.set(depth, maxIndiVSize);
+        });
+        // Set same width for each depth.
+        root.each(function (node) {
+            if (_this.options.horizontal) {
+                if (node.data.indi) {
+                    node.data.indi.width = indiVSizePerDepth.get(node.depth);
+                }
+                if (node.data.spouse) {
+                    node.data.spouse.width = indiVSizePerDepth.get(node.depth);
+                }
+            }
+            else {
+                if (node.data.indi) {
+                    node.data.indi.height = indiVSizePerDepth.get(node.depth);
+                }
+                if (node.data.spouse) {
+                    node.data.spouse.height = indiVSizePerDepth.get(node.depth);
+                }
+            }
+        });
+        var vSizePerDepth = new Map();
+        root.each(function (node) {
+            var depth = node.depth;
+            var maxVSize = d3.max([_this.getVSize(node.data), vSizePerDepth.get(depth)]);
+            vSizePerDepth.set(depth, maxVSize);
+        });
+        // Set sizes of whole nodes.
+        root.each(function (node) {
+            if (_this.options.horizontal) {
+                node.data.width = vSizePerDepth.get(node.depth);
+                node.data.height = _this.getHSize(node.data);
+            }
+            else {
+                node.data.height = vSizePerDepth.get(node.depth);
+                node.data.width = _this.getHSize(node.data);
+            }
+        });
+        // Assigns the x and y position for the nodes.
+        var nodes = treemap(root).descendants();
+        // Swap x-y coordinates for horizontal layout.
+        nodes.forEach(function (node) {
+            var _a;
+            if (flipVertically) {
+                node.y = -node.y;
+            }
+            if (_this.options.horizontal) {
+                _a = [node.y, node.x], node.x = _a[0], node.y = _a[1];
+            }
+        });
+        // Render nodes.
+        var nodeEnter = d3.select(svgSelector)
+            .select('g')
+            .selectAll('g.node')
+            .data(nodes, function (d) { return d.id; })
+            .enter()
+            .append('g')
+            .attr('class', 'node')
+            .attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
+        this.options.renderer.render(nodeEnter);
+        var link = function (parent, child) {
+            if (_this.options.horizontal) {
+                if (flipVertically) {
+                    return _this.linkHorizontal(child, parent);
+                }
+                return _this.linkHorizontal(parent, child);
+            }
+            if (flipVertically) {
+                return _this.linkVertical(child, parent);
+            }
+            return _this.linkVertical(parent, child);
+        };
+        // Render links.
+        var links = nodes.slice(1);
+        d3.select(svgSelector)
+            .select('g')
+            .selectAll('path.link')
+            .data(links, function (d) { return d.id; })
+            .enter()
+            .insert('path', 'g')
+            .attr('class', 'link')
+            .attr('d', function (node) { return link(node.parent, node); });
+        return nodes;
+    };
+    return ChartUtil;
+}());
 /** Renders an ancestors chart. */
 var AncestorChart = /** @class */ (function () {
     function AncestorChart(options) {
         this.options = options;
+        this.util = new ChartUtil(options);
     }
     /** Creates a d3 hierarchy from the input data. */
     AncestorChart.prototype.createHierarchy = function () {
@@ -19564,8 +19636,8 @@ var AncestorChart = /** @class */ (function () {
      */
     AncestorChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = renderChart(root, this.options, true);
-        updateSvgDimensions(nodes, this.options.svgSelector);
+        var nodes = this.util.renderChart(root, true);
+        this.util.updateSvgDimensions(nodes);
     };
     return AncestorChart;
 }());
@@ -19574,6 +19646,7 @@ exports.AncestorChart = AncestorChart;
 var DescendantChart = /** @class */ (function () {
     function DescendantChart(options) {
         this.options = options;
+        this.util = new ChartUtil(options);
     }
     DescendantChart.prototype.getNodes = function (id) {
         var _this = this;
@@ -19659,8 +19732,8 @@ var DescendantChart = /** @class */ (function () {
      */
     DescendantChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = renderChart(root, this.options);
-        updateSvgDimensions(nodes, this.options.svgSelector);
+        var nodes = this.util.renderChart(root);
+        this.util.updateSvgDimensions(nodes);
     };
     return DescendantChart;
 }());
@@ -19672,6 +19745,7 @@ exports.DescendantChart = DescendantChart;
 var HourglassChart = /** @class */ (function () {
     function HourglassChart(options) {
         this.options = options;
+        this.util = new ChartUtil(options);
     }
     HourglassChart.prototype.render = function () {
         // If the start individual is set and this person has children, start with
@@ -19686,12 +19760,12 @@ var HourglassChart = /** @class */ (function () {
         }
         var ancestors = new AncestorChart(this.options);
         var ancestorsRoot = ancestors.createHierarchy();
-        var ancestorNodes = renderChart(ancestorsRoot, this.options, true);
+        var ancestorNodes = this.util.renderChart(ancestorsRoot, true);
         var descendants = new DescendantChart(this.options);
         var descendantsRoot = descendants.createHierarchy();
-        var descendantNodes = renderChart(descendantsRoot, this.options);
+        var descendantNodes = this.util.renderChart(descendantsRoot);
         var nodes = ancestorNodes.concat(descendantNodes);
-        updateSvgDimensions(nodes, this.options.svgSelector);
+        this.util.updateSvgDimensions(nodes);
     };
     return HourglassChart;
 }());
@@ -19818,12 +19892,11 @@ function getYears(indi) {
  * years of birth and death.
  */
 var SimpleRenderer = /** @class */ (function () {
-    function SimpleRenderer(dataProvider, hrefFunc) {
-        this.dataProvider = dataProvider;
-        this.hrefFunc = hrefFunc;
+    function SimpleRenderer(options) {
+        this.options = options;
     }
     SimpleRenderer.prototype.getPreferredIndiSize = function (id) {
-        var indi = this.dataProvider.getIndi(id);
+        var indi = this.options.data.getIndi(id);
         var years = getYears(indi);
         var width = Math.max(getLength(getName(indi)) + 8, getLength(years), MIN_WIDTH);
         var height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
@@ -19843,8 +19916,8 @@ var SimpleRenderer = /** @class */ (function () {
     SimpleRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
         // Optionally add a link.
-        var group = this.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.hrefFunc(indiFunc(node.data).id); }) :
+        var group = this.options.hrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.options.hrefFunc(indiFunc(node.data).id); }) :
             selection;
         // Box.
         group.append('rect')
@@ -19856,14 +19929,14 @@ var SimpleRenderer = /** @class */ (function () {
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
             .text(function (node) {
-            return getName(_this.dataProvider.getIndi(indiFunc(node.data).id));
+            return getName(_this.options.data.getIndi(indiFunc(node.data).id));
         });
         group.append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'details')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
             .text(function (node) {
-            return getYears(_this.dataProvider.getIndi(indiFunc(node.data).id));
+            return getYears(_this.options.data.getIndi(indiFunc(node.data).id));
         });
     };
     return SimpleRenderer;
@@ -19877,15 +19950,20 @@ var d3 = require("d3");
 var topola_data_1 = require("./topola-data");
 function createChartOptions(json, options) {
     var data = new topola_data_1.JsonDataProvider(json);
-    var indiUrlFunction = options.indiUrl ?
+    var hrefFunc = options.indiUrl ?
         function (id) { return options.indiUrl.replace('${id}', id); } :
         undefined;
     return {
         data: data,
-        renderer: new options.renderer(data, indiUrlFunction),
+        renderer: new options.renderer({
+            data: data,
+            hrefFunc: hrefFunc,
+            horizontal: options.horizontal,
+        }),
         startIndi: options.startIndi,
         startFam: options.startFam,
         svgSelector: options.svgSelector,
+        horizontal: options.horizontal,
     };
 }
 /** A simplified API for rendering a chart based on the given RenderOptions. */
