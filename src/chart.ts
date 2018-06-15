@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {flextree, FlexTreeLayout} from 'd3-flextree';
 
-import {Chart, DataProvider, Fam, Indi, Renderer, TreeIndi, TreeNode} from './topola-api';
+import {Chart, DataProvider, Fam, Indi, Renderer, TreeIndi, TreeNode} from './api';
 
 /** Horizontal distance between boxes. */
 const H_SPACING = 15;

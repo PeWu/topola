@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import {formatDefaultLocale} from 'd3';
 
-import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
-import {Date, FamDetails, IndiDetails} from './topola-data';
+import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
+import {Date, FamDetails, IndiDetails} from './data';
 
 const INDI_MIN_HEIGHT = 44;
 const INDI_MIN_WIDTH = 50;

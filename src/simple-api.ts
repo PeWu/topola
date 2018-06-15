@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 
-import {Chart, DataProvider, Renderer, RendererOptions} from './topola-api';
-import {ChartOptions} from './topola-chart';
-import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './topola-data';
+import {Chart, DataProvider, Renderer, RendererOptions} from './api';
+import {ChartOptions} from './chart';
+import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
 
 
 interface ChartType {

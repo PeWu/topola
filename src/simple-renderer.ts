@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
-import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './topola-api';
-import {FamDetails, IndiDetails} from './topola-data';
+import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
+import {FamDetails, IndiDetails} from './data';
 
 const MIN_HEIGHT = 27;
 const MIN_WIDTH = 50;
