@@ -40,6 +40,10 @@ const MONTHS: Map<number, string> = new Map([
 ]);
 
 
+const SEX_SYMBOLS: Map<string, string> =
+    new Map([['F', '\u2640'], ['M', '\u2642']]);
+
+
 /** Simple date formatter. */
 function formatDate(date: Date) {
   return [
@@ -182,6 +186,9 @@ export class DetailedRenderer implements Renderer {
         .attr('width', (node) => indiFunc(node.data).width)
         .attr('height', (node) => indiFunc(node.data).height);
 
+    const getIndi = (node: d3.HierarchyPointNode<TreeNode>) =>
+        this.options.data.getIndi(indiFunc(node.data).id);
+
     // Name.
     group.append('text')
         .attr('text-anchor', 'middle')
@@ -189,18 +196,14 @@ export class DetailedRenderer implements Renderer {
         .attr(
             'transform',
             (node) => `translate(${indiFunc(node.data).width / 2}, 17)`)
-        .text(
-            (node) => this.options.data.getIndi(indiFunc(node.data).id)
-                          .getFirstName());
+        .text((node) => getIndi(node).getFirstName());
     group.append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'name')
         .attr(
             'transform',
             (node) => `translate(${indiFunc(node.data).width / 2}, 33)`)
-        .text(
-            (node) => this.options.data.getIndi(indiFunc(node.data).id)
-                          .getLastName());
+        .text((node) => getIndi(node).getLastName());
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
     group.each((node) => {
@@ -234,6 +237,16 @@ export class DetailedRenderer implements Renderer {
             'transform',
             (node) => `translate(9, ${indiFunc(node.data).height - 5})`)
         .text((node) => indiFunc(node.data).id);
+
+    // Render sex.
+    group.append('text')
+        .attr('class', 'details')
+        .attr('text-anchor', 'end')
+        .attr(
+            'transform',
+            (node) => `translate(${indiFunc(node.data).width - 5}, ${
+                indiFunc(node.data).height - 5})`)
+        .text((node) => SEX_SYMBOLS.get(getIndi(node).getSex()));
   }
 
   renderFamily(selection: TreeNodeSelection) {

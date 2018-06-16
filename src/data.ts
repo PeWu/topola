@@ -38,6 +38,7 @@ export interface JsonIndi {
   fams?: string[];
   birth?: JsonEvent;
   death?: JsonEvent;
+  sex?: string;
 }
 
 /** Json representation of a family. */
@@ -64,6 +65,7 @@ export interface IndiDetails extends Indi {
   getDeathDate(): DateOrRange|null;
   getDeathPlace(): string|null;
   isConfirmedDeath(): boolean;
+  getSex(): string|null;
 }
 
 
@@ -92,20 +94,23 @@ class JsonIndiDetails implements IndiDetails {
   getLastName() {
     return this.json.lastName || null;
   }
-  getBirthDate(): DateOrRange|null {
+  getBirthDate() {
     return this.json.birth || null;
   }
-  getBirthPlace(): string|null {
+  getBirthPlace() {
     return this.json.birth && this.json.birth.place || null;
   }
-  getDeathDate(): DateOrRange|null {
+  getDeathDate() {
     return this.json.death || null;
   }
-  getDeathPlace(): string|null {
+  getDeathPlace() {
     return this.json.death && this.json.death.place || null;
   }
-  isConfirmedDeath(): boolean {
+  isConfirmedDeath() {
     return this.json.death && this.json.death.confirmed;
+  }
+  getSex() {
+    return this.json.sex;
   }
 }
 
