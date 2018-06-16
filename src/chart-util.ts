@@ -23,8 +23,9 @@ export class ChartUtil {
       return (node.indi && node.indi.height || 0) +
           (node.spouse && node.spouse.height || 0);
     }
-    return (node.indi && node.indi.width || 0) +
+    const indiHSize = (node.indi && node.indi.width || 0) +
         (node.spouse && node.spouse.width || 0);
+    return d3.max([indiHSize, node.family && node.family.width]);
   }
 
   /** Returns the vertical size. */

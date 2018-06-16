@@ -142,6 +142,34 @@ export class DetailedRenderer implements Renderer {
     return [width, height];
   }
 
+  /**
+   * Returns the relative position of the family box for the vertical layout.
+   */
+  getFamPositionVertical(node: TreeNode): number {
+    const indiWidth = node.indi && node.indi.width || INDI_MIN_WIDTH;
+    const spouseWidth = node.spouse && node.spouse.width || INDI_MIN_WIDTH;
+    const familyWidth = node.family.width;
+    if (indiWidth + spouseWidth <= familyWidth) {
+      return (indiWidth + spouseWidth - familyWidth) / 2;
+    }
+    if (familyWidth / 2 >= spouseWidth) {
+      return indiWidth + spouseWidth - familyWidth;
+    }
+    if (familyWidth / 2 >= indiWidth) {
+      return 0;
+    }
+    return indiWidth - familyWidth / 2;
+  }
+
+  getFamTransform(node: TreeNode): string {
+    if (this.options.horizontal) {
+      return `translate(${node.indi.width}, ${
+          node.indi.height - node.family.height / 2})`;
+    }
+    return `translate(${this.getFamPositionVertical(node)}, ${
+        node.indi.height})`;
+  }
+
   render(selection: TreeNodeSelection): void {
     this.renderIndi(selection, (node) => node.indi);
     const spouseSelection =
@@ -156,15 +184,7 @@ export class DetailedRenderer implements Renderer {
     const familySelection =
         selection.filter((node) => !!node.data.family)
             .append('g')
-            .attr(
-                'transform',
-                (node) => this.options.horizontal ?
-                    `translate(${node.data.indi.width}, ${
-                        node.data.indi.height - node.data.family.height / 2})` :
-                    `translate(${
-                        node.data.indi.width -
-                        node.data.family.width /
-                            2}, ${node.data.indi.height})`);
+            .attr('transform', (node) => this.getFamTransform(node.data));
     this.renderFamily(familySelection);
   }
 
