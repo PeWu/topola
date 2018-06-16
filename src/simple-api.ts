@@ -20,6 +20,7 @@ export interface RenderOptions {
   startIndi?: string;
   startFam?: string;
   indiUrl?: string;
+  famUrl?: string;
   svgSelector?: string;
   chartType: ChartType;
   renderer: RendererType;
@@ -30,14 +31,18 @@ export interface RenderOptions {
 function createChartOptions(
     json: JsonGedcomData, options: RenderOptions): ChartOptions {
   const data = new JsonDataProvider(json);
-  const hrefFunc = options.indiUrl ?
+  const indiHrefFunc = options.indiUrl ?
       (id: string) => options.indiUrl.replace('${id}', id) :
+      undefined;
+  const famHrefFunc = options.famUrl ?
+      (id: string) => options.famUrl.replace('${id}', id) :
       undefined;
   return {
     data,
     renderer: new options.renderer({
       data,
-      hrefFunc,
+      indiHrefFunc,
+      famHrefFunc,
       horizontal: options.horizontal,
     }),
     startIndi: options.startIndi,

@@ -71,7 +71,8 @@ export interface Renderer {
 
 export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   /** Creates HTTP link based on ID. */
-  hrefFunc?: (id: string) => string;
+  indiHrefFunc?: (id: string) => string;
+  famHrefFunc?: (id: string) => string;
   data: DataProvider<IndiT, FamT>;
   horizontal?: boolean;
 }

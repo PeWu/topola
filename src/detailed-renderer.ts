@@ -169,9 +169,10 @@ export class DetailedRenderer implements Renderer {
       indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
     selection = selection.append('g').attr('class', 'detailed');
-    const group = this.options.hrefFunc ?
+    const group = this.options.indiHrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.options.hrefFunc(indiFunc(node.data).id)) :
+            'href',
+            (node) => this.options.indiHrefFunc(indiFunc(node.data).id)) :
         selection;
 
     // Box.
@@ -230,9 +231,9 @@ export class DetailedRenderer implements Renderer {
 
   renderFamily(selection: TreeNodeSelection) {
     selection = selection.append('g').attr('class', 'detailed');
-    const group = this.options.hrefFunc ?
+    const group = this.options.famHrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.options.hrefFunc(node.data.family.id)) :
+            'href', (node) => this.options.famHrefFunc(node.data.family.id)) :
         selection;
 
     // Box.

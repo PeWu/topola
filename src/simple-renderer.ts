@@ -76,9 +76,10 @@ export class SimpleRenderer implements Renderer {
       selection: TreeNodeSelection,
       indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
-    const group = this.options.hrefFunc ?
+    const group = this.options.indiHrefFunc ?
         selection.append('a').attr(
-            'href', (node) => this.options.hrefFunc(indiFunc(node.data).id)) :
+            'href',
+            (node) => this.options.indiHrefFunc(indiFunc(node.data).id)) :
         selection;
 
     // Box.
