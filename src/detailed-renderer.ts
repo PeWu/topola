@@ -5,7 +5,7 @@ import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSel
 import {Date, FamDetails, IndiDetails} from './data';
 
 const INDI_MIN_HEIGHT = 58;
-const INDI_MIN_WIDTH = 50;
+const INDI_MIN_WIDTH = 64;
 const FAM_MIN_HEIGHT = 15;
 const FAM_MIN_WIDTH = 15;
 
