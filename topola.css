@@ -45,3 +45,8 @@ body {
 .detailed .details {
   font-size: 10px;
 }
+
+.detailed .id {
+  font-size: 10px;
+  font-style: italic;
+}

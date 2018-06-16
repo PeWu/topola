@@ -4,13 +4,16 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-__export(require("./src/topola-chart"));
-__export(require("./src/topola-data"));
-__export(require("./src/topola-render"));
+__export(require("./src/ancestor-chart"));
+__export(require("./src/chart-util"));
+__export(require("./src/data"));
+__export(require("./src/descendant-chart"));
 __export(require("./src/detailed-renderer"));
-__export(require("./src/topola-simple-api"));
+__export(require("./src/hourglass-chart"));
+__export(require("./src/simple-api"));
+__export(require("./src/simple-renderer"));
 
-},{"./src/detailed-renderer":35,"./src/topola-chart":36,"./src/topola-data":37,"./src/topola-render":38,"./src/topola-simple-api":39}],2:[function(require,module,exports){
+},{"./src/ancestor-chart":35,"./src/chart-util":36,"./src/data":37,"./src/descendant-chart":38,"./src/detailed-renderer":39,"./src/hourglass-chart":40,"./src/simple-api":41,"./src/simple-renderer":42}],2:[function(require,module,exports){
 // https://d3js.org/d3-array/ Version 1.2.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -19118,233 +19121,90 @@ Object.defineProperty(exports, "event", {get: function() { return d3Selection.ev
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
-var INDI_MIN_HEIGHT = 44;
-var INDI_MIN_WIDTH = 50;
-var FAM_MIN_HEIGHT = 15;
-var FAM_MIN_WIDTH = 15;
-/** Calculates the length of the given text in pixels when rendered. */
-function getLength(text) {
-    var x = d3.select('svg')
-        .append('g')
-        .attr('class', 'detailed node')
-        .append('text')
-        .attr('class', 'name')
-        .text(text);
-    var w = x.node().getComputedTextLength();
-    x.remove();
-    return w;
-}
-var MONTHS = new Map([
-    [1, 'Jan'],
-    [2, 'Feb'],
-    [3, 'Mar'],
-    [4, 'Apr'],
-    [5, 'May'],
-    [6, 'Jun'],
-    [7, 'Jul'],
-    [8, 'Aug'],
-    [9, 'Sep'],
-    [10, 'Oct'],
-    [11, 'Nov'],
-    [12, 'Dec'],
-]);
-/** Simple date formatter. */
-function formatDate(date) {
-    return [
-        date.qualifier, date.day, date.month && MONTHS.get(date.month), date.year
-    ].join(' ');
-}
-/** Extracts lines of details for a person. */
-function getIndiDetails(indi) {
-    var detailsList = [];
-    var birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
-        formatDate(indi.getBirthDate().date);
-    var birthPlace = indi.getBirthPlace();
-    var deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
-        formatDate(indi.getDeathDate().date);
-    var deathPlace = indi.getDeathPlace();
-    if (birthDate) {
-        detailsList.push({ symbol: '', text: birthDate });
-    }
-    if (birthPlace) {
-        detailsList.push({ symbol: '', text: birthPlace });
-    }
-    if (birthDate || birthPlace) {
-        detailsList[0].symbol = '*';
-    }
-    var listIndex = detailsList.length;
-    if (deathDate) {
-        detailsList.push({ symbol: '', text: deathDate });
-    }
-    if (deathPlace) {
-        detailsList.push({ symbol: '', text: deathPlace });
-    }
-    if (deathDate || deathPlace) {
-        detailsList[listIndex].symbol = '+';
-    }
-    return detailsList;
-}
-/** Extracts lines of details for a family. */
-function getFamDetails(fam) {
-    var detailsList = [];
-    var marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
-        formatDate(fam.getMarriageDate().date);
-    var marriagePlace = fam.getMarriagePlace();
-    if (marriageDate) {
-        detailsList.push({ symbol: '', text: marriageDate });
-    }
-    if (marriagePlace) {
-        detailsList.push({ symbol: '', text: marriagePlace });
-    }
-    if (marriageDate || marriagePlace) {
-        detailsList[0].symbol = '\u26AD';
-    }
-    return detailsList;
-}
-/**
- * Renders some details about a person such as date and place of birth
- * and death.
- */
-var DetailedRenderer = /** @class */ (function () {
-    function DetailedRenderer(options) {
+var chart_util_1 = require("./chart-util");
+/** Renders an ancestors chart. */
+var AncestorChart = /** @class */ (function () {
+    function AncestorChart(options) {
         this.options = options;
+        this.util = new chart_util_1.ChartUtil(options);
     }
-    DetailedRenderer.prototype.getPreferredIndiSize = function (id) {
-        var indi = this.options.data.getIndi(id);
-        var details = getIndiDetails(indi);
-        var height = INDI_MIN_HEIGHT + details.length * 14;
-        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
-        var width = d3.max([
-            maxDetailsWidth + 8,
-            getLength(indi.getFirstName()) + 8,
-            getLength(indi.getLastName()) + 8,
-            INDI_MIN_WIDTH,
-        ]);
-        return [width, height];
-    };
-    DetailedRenderer.prototype.getPreferredFamSize = function (id) {
-        var fam = this.options.data.getFam(id);
-        var details = getFamDetails(fam);
-        var height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
-        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
-        var width = d3.max([maxDetailsWidth + 8, FAM_MIN_WIDTH]);
-        return [width, height];
-    };
-    DetailedRenderer.prototype.render = function (selection) {
-        var _this = this;
-        this.renderIndi(selection, function (node) { return node.indi; });
-        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
-            .append('g')
-            .attr('transform', function (node) { return _this.options.horizontal ?
-            "translate(0, " + node.data.indi.height + ")" :
-            "translate(" + node.data.indi.width + ", 0)"; });
-        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
-        var familySelection = selection.filter(function (node) { return !!node.data.family; })
-            .append('g')
-            .attr('transform', function (node) { return _this.options.horizontal ?
-            "translate(" + node.data.indi.width + ", " + (node.data.indi.height - node.data.family.height / 2) + ")" :
-            "translate(" + (node.data.indi.width -
-                node.data.family.width /
-                    2) + ", " + node.data.indi.height + ")"; });
-        this.renderFamily(familySelection);
-    };
-    DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
-        var _this = this;
-        // Optionally add a link.
-        selection = selection.append('g').attr('class', 'detailed');
-        var group = this.options.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.options.hrefFunc(indiFunc(node.data).id); }) :
-            selection;
-        // Box.
-        group.append('rect')
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .attr('width', function (node) { return indiFunc(node.data).width; })
-            .attr('height', function (node) { return indiFunc(node.data).height; });
-        // Name.
-        group.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
-            .text(function (node) { return _this.options.data.getIndi(indiFunc(node.data).id)
-            .getFirstName(); });
-        group.append('text')
-            .attr('text-anchor', 'middle')
-            .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
-            .text(function (node) { return _this.options.data.getIndi(indiFunc(node.data).id)
-            .getLastName(); });
-        // Extract details.
-        var details = new Map();
-        group.each(function (node) {
-            var indiId = indiFunc(node.data).id;
-            var indi = _this.options.data.getIndi(indiId);
-            var detailsList = getIndiDetails(indi);
-            details.set(indiId, detailsList);
-        });
-        var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
-        var _loop_1 = function (i) {
-            var lineGroup = group.filter(function (node) { return details.get(indiFunc(node.data).id).length > i; });
-            lineGroup.append('text')
-                .attr('text-anchor', 'middle')
-                .attr('class', 'details')
-                .attr('transform', "translate(9, " + (49 + i * 14) + ")")
-                .text(function (node) { return details.get(indiFunc(node.data).id)[i].symbol; });
-            lineGroup.append('text')
-                .attr('text-anchor', 'left')
-                .attr('class', 'details')
-                .attr('transform', "translate(15, " + (49 + i * 14) + ")")
-                .text(function (node) { return details.get(indiFunc(node.data).id)[i].text; });
-        };
-        // Render details.
-        for (var i = 0; i < maxDetails; ++i) {
-            _loop_1(i);
+    /** Creates a d3 hierarchy from the input data. */
+    AncestorChart.prototype.createHierarchy = function () {
+        var parents = [];
+        var stack = [];
+        if (this.options.startIndi) {
+            var indi = this.options.data.getIndi(this.options.startIndi);
+            var famc = indi.getFamilyAsChild();
+            if (famc) {
+                stack.push({
+                    id: famc,
+                    parentId: this.options.startIndi,
+                    family: { id: famc },
+                });
+            }
+            parents.push({ id: this.options.startIndi, indi: { id: this.options.startIndi } });
         }
-    };
-    DetailedRenderer.prototype.renderFamily = function (selection) {
-        var _this = this;
-        selection = selection.append('g').attr('class', 'detailed');
-        var group = this.options.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.options.hrefFunc(node.data.family.id); }) :
-            selection;
-        // Box.
-        group.append('rect')
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .attr('width', function (node) { return node.data.family.width; })
-            .attr('height', function (node) { return node.data.family.height; });
-        // Extract details.
-        var details = new Map();
-        group.each(function (node) {
-            var famId = node.data.family.id;
-            var fam = _this.options.data.getFam(famId);
-            var detailsList = getFamDetails(fam);
-            details.set(famId, detailsList);
-        });
-        var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
-        var _loop_2 = function (i) {
-            var lineGroup = group.filter(function (node) { return details.get(node.data.family.id).length > i; });
-            lineGroup.append('text')
-                .attr('text-anchor', 'middle')
-                .attr('class', 'details')
-                .attr('transform', "translate(9, " + (16 + i * 14) + ")")
-                .text(function (node) { return details.get(node.data.family.id)[i].symbol; });
-            lineGroup.append('text')
-                .attr('text-anchor', 'left')
-                .attr('class', 'details')
-                .attr('transform', "translate(15, " + (16 + i * 14) + ")")
-                .text(function (node) { return details.get(node.data.family.id)[i].text; });
-        };
-        // Render details.
-        for (var i = 0; i < maxDetails; ++i) {
-            _loop_2(i);
+        else {
+            stack.push({
+                id: this.options.startFam,
+                family: { id: this.options.startFam },
+            });
         }
+        while (stack.length) {
+            var entry = stack.pop();
+            var fam = this.options.data.getFam(entry.id);
+            if (!fam) {
+                continue;
+            }
+            var father = fam.getFather();
+            var mother = fam.getMother();
+            if (!father && !mother) {
+                continue;
+            }
+            if (mother) {
+                entry.spouse = { id: mother };
+                var indi = this.options.data.getIndi(mother);
+                var famc = indi.getFamilyAsChild();
+                if (famc) {
+                    stack.push({
+                        id: famc,
+                        parentId: entry.id,
+                        parentsOfSpouse: true,
+                        family: { id: famc },
+                    });
+                }
+            }
+            if (father) {
+                entry.indi = { id: father };
+                var indi = this.options.data.getIndi(father);
+                var famc = indi.getFamilyAsChild();
+                if (famc) {
+                    stack.push({
+                        id: famc,
+                        parentId: entry.id,
+                        parentsOfSpouse: false,
+                        family: { id: famc },
+                    });
+                }
+            }
+            parents.push(entry);
+        }
+        return d3.stratify()(parents);
     };
-    return DetailedRenderer;
+    /**
+     * Renders the tree, calling the provided renderer to draw boxes for
+     * individuals.
+     */
+    AncestorChart.prototype.render = function () {
+        var root = this.createHierarchy();
+        var nodes = this.util.renderChart(root, true);
+        this.util.updateSvgDimensions(nodes);
+    };
+    return AncestorChart;
 }());
-exports.DetailedRenderer = DetailedRenderer;
+exports.AncestorChart = AncestorChart;
 
-},{"d3":34}],36:[function(require,module,exports){
+},{"./chart-util":36,"d3":34}],36:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19356,13 +19216,6 @@ var V_SPACING = 30;
 /** Margin around the whole drawing. */
 var MARGIN = 15;
 var DEFAULT_SVG_SELECTOR = 'svg';
-/** Returns the spouse of the given individual in the given family. */
-function getSpouse(indiId, fam) {
-    if (fam.getFather() === indiId) {
-        return fam.getMother();
-    }
-    return fam.getFather();
-}
 /** Utility class with common code for all chart types. */
 var ChartUtil = /** @class */ (function () {
     function ChartUtil(options) {
@@ -19561,92 +19414,113 @@ var ChartUtil = /** @class */ (function () {
     };
     return ChartUtil;
 }());
-/** Renders an ancestors chart. */
-var AncestorChart = /** @class */ (function () {
-    function AncestorChart(options) {
-        this.options = options;
-        this.util = new ChartUtil(options);
+exports.ChartUtil = ChartUtil;
+
+},{"d3":34,"d3-flextree":14}],37:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/** Details of an individual based on Json input. */
+var JsonIndiDetails = /** @class */ (function () {
+    function JsonIndiDetails(json) {
+        this.json = json;
     }
-    /** Creates a d3 hierarchy from the input data. */
-    AncestorChart.prototype.createHierarchy = function () {
-        var parents = [];
-        var stack = [];
-        if (this.options.startIndi) {
-            var indi = this.options.data.getIndi(this.options.startIndi);
-            var famc = indi.getFamilyAsChild();
-            if (famc) {
-                stack.push({
-                    id: famc,
-                    parentId: this.options.startIndi,
-                    family: { id: famc },
-                });
-            }
-            parents.push({ id: this.options.startIndi, indi: { id: this.options.startIndi } });
-        }
-        else {
-            stack.push({
-                id: this.options.startFam,
-                family: { id: this.options.startFam },
-            });
-        }
-        while (stack.length) {
-            var entry = stack.pop();
-            var fam = this.options.data.getFam(entry.id);
-            if (!fam) {
-                continue;
-            }
-            var father = fam.getFather();
-            var mother = fam.getMother();
-            if (!father && !mother) {
-                continue;
-            }
-            if (mother) {
-                entry.spouse = { id: mother };
-                var indi = this.options.data.getIndi(mother);
-                var famc = indi.getFamilyAsChild();
-                if (famc) {
-                    stack.push({
-                        id: famc,
-                        parentId: entry.id,
-                        parentsOfSpouse: true,
-                        family: { id: famc },
-                    });
-                }
-            }
-            if (father) {
-                entry.indi = { id: father };
-                var indi = this.options.data.getIndi(father);
-                var famc = indi.getFamilyAsChild();
-                if (famc) {
-                    stack.push({
-                        id: famc,
-                        parentId: entry.id,
-                        parentsOfSpouse: false,
-                        family: { id: famc },
-                    });
-                }
-            }
-            parents.push(entry);
-        }
-        return d3.stratify()(parents);
+    JsonIndiDetails.prototype.getId = function () {
+        return this.json.id;
     };
-    /**
-     * Renders the tree, calling the provided renderer to draw boxes for
-     * individuals.
-     */
-    AncestorChart.prototype.render = function () {
-        var root = this.createHierarchy();
-        var nodes = this.util.renderChart(root, true);
-        this.util.updateSvgDimensions(nodes);
+    JsonIndiDetails.prototype.getFamiliesAsSpouse = function () {
+        return this.json.fams || [];
     };
-    return AncestorChart;
+    JsonIndiDetails.prototype.getFamilyAsChild = function () {
+        return this.json.famc || null;
+    };
+    JsonIndiDetails.prototype.getFirstName = function () {
+        return this.json.firstName || null;
+    };
+    JsonIndiDetails.prototype.getLastName = function () {
+        return this.json.lastName || null;
+    };
+    JsonIndiDetails.prototype.getBirthDate = function () {
+        return this.json.birth || null;
+    };
+    JsonIndiDetails.prototype.getBirthPlace = function () {
+        return this.json.birth && this.json.birth.place || null;
+    };
+    JsonIndiDetails.prototype.getDeathDate = function () {
+        return this.json.death || null;
+    };
+    JsonIndiDetails.prototype.getDeathPlace = function () {
+        return this.json.death && this.json.death.place || null;
+    };
+    JsonIndiDetails.prototype.isConfirmedDeath = function () {
+        return this.json.death && this.json.death.confirmed;
+    };
+    JsonIndiDetails.prototype.getSex = function () {
+        return this.json.sex;
+    };
+    return JsonIndiDetails;
 }());
-exports.AncestorChart = AncestorChart;
+/** Details of a family based on Json input. */
+var JsonFamDetails = /** @class */ (function () {
+    function JsonFamDetails(json) {
+        this.json = json;
+    }
+    JsonFamDetails.prototype.getId = function () {
+        return this.json.id;
+    };
+    JsonFamDetails.prototype.getFather = function () {
+        return this.json.husb || null;
+    };
+    JsonFamDetails.prototype.getMother = function () {
+        return this.json.wife || null;
+    };
+    JsonFamDetails.prototype.getChildren = function () {
+        return this.json.children || [];
+    };
+    JsonFamDetails.prototype.getMarriageDate = function () {
+        return this.json.marriage;
+    };
+    JsonFamDetails.prototype.getMarriagePlace = function () {
+        return this.json.marriage && this.json.marriage.place || null;
+    };
+    return JsonFamDetails;
+}());
+/** Implementation of the DataProvider interface based on Json input. */
+var JsonDataProvider = /** @class */ (function () {
+    function JsonDataProvider(json) {
+        var _this = this;
+        this.json = json;
+        this.indis = new Map();
+        this.fams = new Map();
+        json.indis.forEach(function (indi) { return _this.indis.set(indi.id, new JsonIndiDetails(indi)); });
+        json.fams.forEach(function (fam) { return _this.fams.set(fam.id, new JsonFamDetails(fam)); });
+    }
+    JsonDataProvider.prototype.getIndi = function (id) {
+        return this.indis.get(id) || null;
+    };
+    JsonDataProvider.prototype.getFam = function (id) {
+        return this.fams.get(id) || null;
+    };
+    return JsonDataProvider;
+}());
+exports.JsonDataProvider = JsonDataProvider;
+
+},{}],38:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+var chart_util_1 = require("./chart-util");
+/** Returns the spouse of the given individual in the given family. */
+function getSpouse(indiId, fam) {
+    if (fam.getFather() === indiId) {
+        return fam.getMother();
+    }
+    return fam.getFather();
+}
 /** Renders a descendants chart. */
 var DescendantChart = /** @class */ (function () {
     function DescendantChart(options) {
         this.options = options;
-        this.util = new ChartUtil(options);
+        this.util = new chart_util_1.ChartUtil(options);
     }
     DescendantChart.prototype.getNodes = function (id) {
         var _this = this;
@@ -19738,6 +19612,255 @@ var DescendantChart = /** @class */ (function () {
     return DescendantChart;
 }());
 exports.DescendantChart = DescendantChart;
+
+},{"./chart-util":36,"d3":34}],39:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+var INDI_MIN_HEIGHT = 58;
+var INDI_MIN_WIDTH = 50;
+var FAM_MIN_HEIGHT = 15;
+var FAM_MIN_WIDTH = 15;
+/** Calculates the length of the given text in pixels when rendered. */
+function getLength(text) {
+    var x = d3.select('svg')
+        .append('g')
+        .attr('class', 'detailed node')
+        .append('text')
+        .attr('class', 'name')
+        .text(text);
+    var w = x.node().getComputedTextLength();
+    x.remove();
+    return w;
+}
+var MONTHS = new Map([
+    [1, 'Jan'],
+    [2, 'Feb'],
+    [3, 'Mar'],
+    [4, 'Apr'],
+    [5, 'May'],
+    [6, 'Jun'],
+    [7, 'Jul'],
+    [8, 'Aug'],
+    [9, 'Sep'],
+    [10, 'Oct'],
+    [11, 'Nov'],
+    [12, 'Dec'],
+]);
+var SEX_SYMBOLS = new Map([['F', '\u2640'], ['M', '\u2642']]);
+/** Simple date formatter. */
+function formatDate(date) {
+    return [
+        date.qualifier, date.day, date.month && MONTHS.get(date.month), date.year
+    ].join(' ');
+}
+/** Extracts lines of details for a person. */
+function getIndiDetails(indi) {
+    var detailsList = [];
+    var birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
+        formatDate(indi.getBirthDate().date);
+    var birthPlace = indi.getBirthPlace();
+    var deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
+        formatDate(indi.getDeathDate().date);
+    var deathPlace = indi.getDeathPlace();
+    if (birthDate) {
+        detailsList.push({ symbol: '', text: birthDate });
+    }
+    if (birthPlace) {
+        detailsList.push({ symbol: '', text: birthPlace });
+    }
+    if (birthDate || birthPlace) {
+        detailsList[0].symbol = '*';
+    }
+    var listIndex = detailsList.length;
+    if (deathDate) {
+        detailsList.push({ symbol: '', text: deathDate });
+    }
+    if (deathPlace) {
+        detailsList.push({ symbol: '', text: deathPlace });
+    }
+    if (deathDate || deathPlace) {
+        detailsList[listIndex].symbol = '+';
+    }
+    return detailsList;
+}
+/** Extracts lines of details for a family. */
+function getFamDetails(fam) {
+    var detailsList = [];
+    var marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
+        formatDate(fam.getMarriageDate().date);
+    var marriagePlace = fam.getMarriagePlace();
+    if (marriageDate) {
+        detailsList.push({ symbol: '', text: marriageDate });
+    }
+    if (marriagePlace) {
+        detailsList.push({ symbol: '', text: marriagePlace });
+    }
+    if (marriageDate || marriagePlace) {
+        detailsList[0].symbol = '\u26AD';
+    }
+    return detailsList;
+}
+/**
+ * Renders some details about a person such as date and place of birth
+ * and death.
+ */
+var DetailedRenderer = /** @class */ (function () {
+    function DetailedRenderer(options) {
+        this.options = options;
+    }
+    DetailedRenderer.prototype.getPreferredIndiSize = function (id) {
+        var indi = this.options.data.getIndi(id);
+        var details = getIndiDetails(indi);
+        var height = INDI_MIN_HEIGHT + details.length * 14;
+        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
+        var width = d3.max([
+            maxDetailsWidth + 8,
+            getLength(indi.getFirstName()) + 8,
+            getLength(indi.getLastName()) + 8,
+            INDI_MIN_WIDTH,
+        ]);
+        return [width, height];
+    };
+    DetailedRenderer.prototype.getPreferredFamSize = function (id) {
+        var fam = this.options.data.getFam(id);
+        var details = getFamDetails(fam);
+        var height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
+        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
+        var width = d3.max([maxDetailsWidth + 8, FAM_MIN_WIDTH]);
+        return [width, height];
+    };
+    DetailedRenderer.prototype.render = function (selection) {
+        var _this = this;
+        this.renderIndi(selection, function (node) { return node.indi; });
+        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
+            .append('g')
+            .attr('transform', function (node) { return _this.options.horizontal ?
+            "translate(0, " + node.data.indi.height + ")" :
+            "translate(" + node.data.indi.width + ", 0)"; });
+        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
+        var familySelection = selection.filter(function (node) { return !!node.data.family; })
+            .append('g')
+            .attr('transform', function (node) { return _this.options.horizontal ?
+            "translate(" + node.data.indi.width + ", " + (node.data.indi.height - node.data.family.height / 2) + ")" :
+            "translate(" + (node.data.indi.width -
+                node.data.family.width /
+                    2) + ", " + node.data.indi.height + ")"; });
+        this.renderFamily(familySelection);
+    };
+    DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
+        var _this = this;
+        // Optionally add a link.
+        selection = selection.append('g').attr('class', 'detailed');
+        var group = this.options.indiHrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.options.indiHrefFunc(indiFunc(node.data).id); }) :
+            selection;
+        // Box.
+        group.append('rect')
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .attr('width', function (node) { return indiFunc(node.data).width; })
+            .attr('height', function (node) { return indiFunc(node.data).height; });
+        var getIndi = function (node) {
+            return _this.options.data.getIndi(indiFunc(node.data).id);
+        };
+        // Name.
+        group.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'name')
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
+            .text(function (node) { return getIndi(node).getFirstName(); });
+        group.append('text')
+            .attr('text-anchor', 'middle')
+            .attr('class', 'name')
+            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
+            .text(function (node) { return getIndi(node).getLastName(); });
+        // Extract details.
+        var details = new Map();
+        group.each(function (node) {
+            var indiId = indiFunc(node.data).id;
+            var indi = _this.options.data.getIndi(indiId);
+            var detailsList = getIndiDetails(indi);
+            details.set(indiId, detailsList);
+        });
+        var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
+        var _loop_1 = function (i) {
+            var lineGroup = group.filter(function (node) { return details.get(indiFunc(node.data).id).length > i; });
+            lineGroup.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('class', 'details')
+                .attr('transform', "translate(9, " + (49 + i * 14) + ")")
+                .text(function (node) { return details.get(indiFunc(node.data).id)[i].symbol; });
+            lineGroup.append('text')
+                .attr('class', 'details')
+                .attr('transform', "translate(15, " + (49 + i * 14) + ")")
+                .text(function (node) { return details.get(indiFunc(node.data).id)[i].text; });
+        };
+        // Render details.
+        for (var i = 0; i < maxDetails; ++i) {
+            _loop_1(i);
+        }
+        // Render id.
+        group.append('text')
+            .attr('class', 'id')
+            .attr('transform', function (node) { return "translate(9, " + (indiFunc(node.data).height - 5) + ")"; })
+            .text(function (node) { return indiFunc(node.data).id; });
+        // Render sex.
+        group.append('text')
+            .attr('class', 'details')
+            .attr('text-anchor', 'end')
+            .attr('transform', function (node) { return "translate(" + (indiFunc(node.data).width - 5) + ", " + (indiFunc(node.data).height - 5) + ")"; })
+            .text(function (node) { return SEX_SYMBOLS.get(getIndi(node).getSex()); });
+    };
+    DetailedRenderer.prototype.renderFamily = function (selection) {
+        var _this = this;
+        selection = selection.append('g').attr('class', 'detailed');
+        var group = this.options.famHrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); }) :
+            selection;
+        // Box.
+        group.append('rect')
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .attr('width', function (node) { return node.data.family.width; })
+            .attr('height', function (node) { return node.data.family.height; });
+        // Extract details.
+        var details = new Map();
+        group.each(function (node) {
+            var famId = node.data.family.id;
+            var fam = _this.options.data.getFam(famId);
+            var detailsList = getFamDetails(fam);
+            details.set(famId, detailsList);
+        });
+        var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
+        var _loop_2 = function (i) {
+            var lineGroup = group.filter(function (node) { return details.get(node.data.family.id).length > i; });
+            lineGroup.append('text')
+                .attr('text-anchor', 'middle')
+                .attr('class', 'details')
+                .attr('transform', "translate(9, " + (16 + i * 14) + ")")
+                .text(function (node) { return details.get(node.data.family.id)[i].symbol; });
+            lineGroup.append('text')
+                .attr('text-anchor', 'left')
+                .attr('class', 'details')
+                .attr('transform', "translate(15, " + (16 + i * 14) + ")")
+                .text(function (node) { return details.get(node.data.family.id)[i].text; });
+        };
+        // Render details.
+        for (var i = 0; i < maxDetails; ++i) {
+            _loop_2(i);
+        }
+    };
+    return DetailedRenderer;
+}());
+exports.DetailedRenderer = DetailedRenderer;
+
+},{"d3":34}],40:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ancestor_chart_1 = require("./ancestor-chart");
+var chart_util_1 = require("./chart-util");
+var descendant_chart_1 = require("./descendant-chart");
 /**
  * Renders an hourglass chart. It consists of an ancestor chart and
  * a descendant chart for a family.
@@ -19745,7 +19868,7 @@ exports.DescendantChart = DescendantChart;
 var HourglassChart = /** @class */ (function () {
     function HourglassChart(options) {
         this.options = options;
-        this.util = new ChartUtil(options);
+        this.util = new chart_util_1.ChartUtil(options);
     }
     HourglassChart.prototype.render = function () {
         // If the start individual is set and this person has children, start with
@@ -19758,10 +19881,10 @@ var HourglassChart = /** @class */ (function () {
                 this.options.startIndi = undefined;
             }
         }
-        var ancestors = new AncestorChart(this.options);
+        var ancestors = new ancestor_chart_1.AncestorChart(this.options);
         var ancestorsRoot = ancestors.createHierarchy();
         var ancestorNodes = this.util.renderChart(ancestorsRoot, true);
-        var descendants = new DescendantChart(this.options);
+        var descendants = new descendant_chart_1.DescendantChart(this.options);
         var descendantsRoot = descendants.createHierarchy();
         var descendantNodes = this.util.renderChart(descendantsRoot);
         var nodes = ancestorNodes.concat(descendantNodes);
@@ -19771,92 +19894,44 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"d3":34,"d3-flextree":14}],37:[function(require,module,exports){
+},{"./ancestor-chart":35,"./chart-util":36,"./descendant-chart":38}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/** Details of an individual based on Json input. */
-var JsonIndiDetails = /** @class */ (function () {
-    function JsonIndiDetails(json) {
-        this.json = json;
-    }
-    JsonIndiDetails.prototype.getId = function () {
-        return this.json.id;
+var d3 = require("d3");
+var data_1 = require("./data");
+function createChartOptions(json, options) {
+    var data = new data_1.JsonDataProvider(json);
+    var indiHrefFunc = options.indiUrl ?
+        function (id) { return options.indiUrl.replace('${id}', id); } :
+        undefined;
+    var famHrefFunc = options.famUrl ?
+        function (id) { return options.famUrl.replace('${id}', id); } :
+        undefined;
+    return {
+        data: data,
+        renderer: new options.renderer({
+            data: data,
+            indiHrefFunc: indiHrefFunc,
+            famHrefFunc: famHrefFunc,
+            horizontal: options.horizontal,
+        }),
+        startIndi: options.startIndi,
+        startFam: options.startFam,
+        svgSelector: options.svgSelector,
+        horizontal: options.horizontal,
     };
-    JsonIndiDetails.prototype.getFamiliesAsSpouse = function () {
-        return this.json.fams || [];
-    };
-    JsonIndiDetails.prototype.getFamilyAsChild = function () {
-        return this.json.famc || null;
-    };
-    JsonIndiDetails.prototype.getFirstName = function () {
-        return this.json.firstName || null;
-    };
-    JsonIndiDetails.prototype.getLastName = function () {
-        return this.json.lastName || null;
-    };
-    JsonIndiDetails.prototype.getBirthDate = function () {
-        return this.json.birth || null;
-    };
-    JsonIndiDetails.prototype.getBirthPlace = function () {
-        return this.json.birth && this.json.birth.place || null;
-    };
-    JsonIndiDetails.prototype.getDeathDate = function () {
-        return this.json.death || null;
-    };
-    JsonIndiDetails.prototype.getDeathPlace = function () {
-        return this.json.death && this.json.death.place || null;
-    };
-    JsonIndiDetails.prototype.isConfirmedDeath = function () {
-        return this.json.death && this.json.death.confirmed;
-    };
-    return JsonIndiDetails;
-}());
-/** Details of a family based on Json input. */
-var JsonFamDetails = /** @class */ (function () {
-    function JsonFamDetails(json) {
-        this.json = json;
-    }
-    JsonFamDetails.prototype.getId = function () {
-        return this.json.id;
-    };
-    JsonFamDetails.prototype.getFather = function () {
-        return this.json.husb || null;
-    };
-    JsonFamDetails.prototype.getMother = function () {
-        return this.json.wife || null;
-    };
-    JsonFamDetails.prototype.getChildren = function () {
-        return this.json.children || [];
-    };
-    JsonFamDetails.prototype.getMarriageDate = function () {
-        return this.json.marriage;
-    };
-    JsonFamDetails.prototype.getMarriagePlace = function () {
-        return this.json.marriage && this.json.marriage.place || null;
-    };
-    return JsonFamDetails;
-}());
-/** Implementation of the DataProvider interface based on Json input. */
-var JsonDataProvider = /** @class */ (function () {
-    function JsonDataProvider(json) {
-        var _this = this;
-        this.json = json;
-        this.indis = new Map();
-        this.fams = new Map();
-        json.indis.forEach(function (indi) { return _this.indis.set(indi.id, new JsonIndiDetails(indi)); });
-        json.fams.forEach(function (fam) { return _this.fams.set(fam.id, new JsonFamDetails(fam)); });
-    }
-    JsonDataProvider.prototype.getIndi = function (id) {
-        return this.indis.get(id) || null;
-    };
-    JsonDataProvider.prototype.getFam = function (id) {
-        return this.fams.get(id) || null;
-    };
-    return JsonDataProvider;
-}());
-exports.JsonDataProvider = JsonDataProvider;
+}
+/** A simplified API for rendering a chart based on the given RenderOptions. */
+function renderChart(options) {
+    d3.json(options.jsonUrl).then(function (json) {
+        var chartOptions = createChartOptions(json, options);
+        var chart = new options.chartType(chartOptions);
+        chart.render();
+    });
+}
+exports.renderChart = renderChart;
 
-},{}],38:[function(require,module,exports){
+},{"./data":37,"d3":34}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19916,8 +19991,8 @@ var SimpleRenderer = /** @class */ (function () {
     SimpleRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
         // Optionally add a link.
-        var group = this.options.hrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.options.hrefFunc(indiFunc(node.data).id); }) :
+        var group = this.options.indiHrefFunc ?
+            selection.append('a').attr('href', function (node) { return _this.options.indiHrefFunc(indiFunc(node.data).id); }) :
             selection;
         // Box.
         group.append('rect')
@@ -19943,38 +20018,5 @@ var SimpleRenderer = /** @class */ (function () {
 }());
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"d3":34}],39:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var d3 = require("d3");
-var topola_data_1 = require("./topola-data");
-function createChartOptions(json, options) {
-    var data = new topola_data_1.JsonDataProvider(json);
-    var hrefFunc = options.indiUrl ?
-        function (id) { return options.indiUrl.replace('${id}', id); } :
-        undefined;
-    return {
-        data: data,
-        renderer: new options.renderer({
-            data: data,
-            hrefFunc: hrefFunc,
-            horizontal: options.horizontal,
-        }),
-        startIndi: options.startIndi,
-        startFam: options.startFam,
-        svgSelector: options.svgSelector,
-        horizontal: options.horizontal,
-    };
-}
-/** A simplified API for rendering a chart based on the given RenderOptions. */
-function renderChart(options) {
-    d3.json(options.jsonUrl).then(function (json) {
-        var chartOptions = createChartOptions(json, options);
-        var chart = new options.chartType(chartOptions);
-        chart.render();
-    });
-}
-exports.renderChart = renderChart;
-
-},{"./topola-data":37,"d3":34}]},{},[1])(1)
+},{"d3":34}]},{},[1])(1)
 });
