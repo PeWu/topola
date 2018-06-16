@@ -4,7 +4,7 @@ import {formatDefaultLocale} from 'd3';
 import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
 import {Date, FamDetails, IndiDetails} from './data';
 
-const INDI_MIN_HEIGHT = 44;
+const INDI_MIN_HEIGHT = 58;
 const INDI_MIN_WIDTH = 50;
 const FAM_MIN_HEIGHT = 15;
 const FAM_MIN_WIDTH = 15;
@@ -222,11 +222,18 @@ export class DetailedRenderer implements Renderer {
           .attr('transform', `translate(9, ${49 + i * 14})`)
           .text((node) => details.get(indiFunc(node.data).id)[i].symbol);
       lineGroup.append('text')
-          .attr('text-anchor', 'left')
           .attr('class', 'details')
           .attr('transform', `translate(15, ${49 + i * 14})`)
           .text((node) => details.get(indiFunc(node.data).id)[i].text);
     }
+
+    // Render id.
+    group.append('text')
+        .attr('class', 'id')
+        .attr(
+            'transform',
+            (node) => `translate(9, ${indiFunc(node.data).height - 5})`)
+        .text((node) => indiFunc(node.data).id);
   }
 
   renderFamily(selection: TreeNodeSelection) {
