@@ -69,6 +69,7 @@ export interface Renderer {
   render(selection: TreeNodeSelection): void;
 }
 
+
 export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   /** Creates HTTP link based on ID. */
   indiHrefFunc?: (id: string) => string;
@@ -77,6 +78,22 @@ export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   horizontal?: boolean;
 }
 
+
 export interface Chart {
   render(): void;
+}
+
+
+export interface ChartOptions {
+  // Input data.
+  data: DataProvider<Indi, Fam>;
+  // Renderer for individual data.
+  renderer: Renderer;
+  // The ID of the root individual or family. Set either startIndi or startFam.
+  startIndi?: string;
+  startFam?: string;
+  // CSS selector of the SVG tag to draw in. If not provided, the chart will be
+  // rendered in the first SVG tag.
+  svgSelector?: string;
+  horizontal?: boolean;
 }
