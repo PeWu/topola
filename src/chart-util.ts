@@ -132,6 +132,11 @@ export class ChartUtil {
 
     d3.select(svgSelector).append('g');
 
+    // Assign generation number.
+    root.each((node) => {
+      node.data.generation = node.depth * (flipVertically ? -1 : 1);
+    });
+
     // Set preferred sizes.
     root.each((node) => {
       this.setPreferredIndiSize(node.data.indi);
@@ -212,7 +217,7 @@ export class ChartUtil {
             .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id)
             .enter()
             .append('g')
-            .attr('class', 'node')
+            .attr('class', (node) => `node generation${node.data.generation}`)
             .attr(
                 'transform',
                 (node) => `translate(${node.x - node.data.width / 2}, ${

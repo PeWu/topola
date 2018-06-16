@@ -21,6 +21,10 @@ export interface TreeNode {
   width?: number;
   height?: number;
 
+  // The generation number relative to the starting individual where negative
+  // numbers are ancestors and positive numbers are descendants.
+  generation?: number;
+
   // If true, the links to children of this family will be attached to
   // the spouse box of the child node.
   parentsOfSpouse?: boolean;
