@@ -19311,6 +19311,10 @@ var ChartUtil = /** @class */ (function () {
         })
             .spacing(function (a, b) { return H_SPACING; });
         d3.select(svgSelector).append('g');
+        // Assign generation number.
+        root.each(function (node) {
+            node.data.generation = node.depth * (flipVertically ? -1 : 1);
+        });
         // Set preferred sizes.
         root.each(function (node) {
             var _a;
@@ -19385,7 +19389,7 @@ var ChartUtil = /** @class */ (function () {
             .data(nodes, function (d) { return d.id; })
             .enter()
             .append('g')
-            .attr('class', 'node')
+            .attr('class', function (node) { return "node generation" + node.data.generation; })
             .attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
         this.options.renderer.render(nodeEnter);
         var link = function (parent, child) {
