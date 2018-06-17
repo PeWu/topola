@@ -12,12 +12,12 @@ const IMAGE_WIDTH = 70;
 
 
 /** Calculates the length of the given text in pixels when rendered. */
-function getLength(text: string) {
+export function getLength(text: string, textClass: string) {
   const x = d3.select('svg')
                 .append('g')
                 .attr('class', 'detailed node')
                 .append('text')
-                .attr('class', 'name')
+                .attr('class', textClass)
                 .text(text);
   const w = (x.node() as SVGTextContentElement).getComputedTextLength();
   x.remove();
@@ -123,11 +123,12 @@ export class DetailedRenderer implements Renderer {
 
     const height = INDI_MIN_HEIGHT + details.length * 14;
 
-    const maxDetailsWidth = d3.max(details.map((x) => getLength(x.text)));
+    const maxDetailsWidth =
+        d3.max(details.map((x) => getLength(x.text, 'details')));
     const width = d3.max([
-      maxDetailsWidth + 8,
-      getLength(indi.getFirstName()) + 8,
-      getLength(indi.getLastName()) + 8,
+      maxDetailsWidth + 22,
+      getLength(indi.getFirstName(), 'name') + 8,
+      getLength(indi.getLastName(), 'name') + 8,
       INDI_MIN_WIDTH,
     ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
     return [width, height];
@@ -138,8 +139,9 @@ export class DetailedRenderer implements Renderer {
     const details = getFamDetails(fam);
 
     const height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
-    const maxDetailsWidth = d3.max(details.map((x) => getLength(x.text)));
-    const width = d3.max([maxDetailsWidth + 8, FAM_MIN_WIDTH]);
+    const maxDetailsWidth =
+        d3.max(details.map((x) => getLength(x.text, 'details')));
+    const width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
     return [width, height];
   }
 
