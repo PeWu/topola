@@ -19227,8 +19227,9 @@ var ChartUtil = /** @class */ (function () {
             return (node.indi && node.indi.height || 0) +
                 (node.spouse && node.spouse.height || 0);
         }
-        return (node.indi && node.indi.width || 0) +
+        var indiHSize = (node.indi && node.indi.width || 0) +
             (node.spouse && node.spouse.width || 0);
+        return d3.max([indiHSize, node.family && node.family.width]);
     };
     /** Returns the vertical size. */
     ChartUtil.prototype.getVSize = function (node) {
@@ -19459,7 +19460,10 @@ var JsonIndiDetails = /** @class */ (function () {
         return this.json.death && this.json.death.confirmed;
     };
     JsonIndiDetails.prototype.getSex = function () {
-        return this.json.sex;
+        return this.json.sex || null;
+    };
+    JsonIndiDetails.prototype.getImageUrl = function () {
+        return this.json.imageUrl || null;
     };
     return JsonIndiDetails;
 }());
@@ -19622,9 +19626,10 @@ exports.DescendantChart = DescendantChart;
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var INDI_MIN_HEIGHT = 58;
-var INDI_MIN_WIDTH = 50;
+var INDI_MIN_WIDTH = 64;
 var FAM_MIN_HEIGHT = 15;
 var FAM_MIN_WIDTH = 15;
+var IMAGE_WIDTH = 70;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text) {
     var x = d3.select('svg')
@@ -19723,7 +19728,7 @@ var DetailedRenderer = /** @class */ (function () {
             getLength(indi.getFirstName()) + 8,
             getLength(indi.getLastName()) + 8,
             INDI_MIN_WIDTH,
-        ]);
+        ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
         return [width, height];
     };
     DetailedRenderer.prototype.getPreferredFamSize = function (id) {
@@ -19733,6 +19738,30 @@ var DetailedRenderer = /** @class */ (function () {
         var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
         var width = d3.max([maxDetailsWidth + 8, FAM_MIN_WIDTH]);
         return [width, height];
+    };
+    /**
+     * Returns the relative position of the family box for the vertical layout.
+     */
+    DetailedRenderer.prototype.getFamPositionVertical = function (node) {
+        var indiWidth = node.indi && node.indi.width || INDI_MIN_WIDTH;
+        var spouseWidth = node.spouse && node.spouse.width || INDI_MIN_WIDTH;
+        var familyWidth = node.family.width;
+        if (indiWidth + spouseWidth <= familyWidth) {
+            return (indiWidth + spouseWidth - familyWidth) / 2;
+        }
+        if (familyWidth / 2 >= spouseWidth) {
+            return indiWidth + spouseWidth - familyWidth;
+        }
+        if (familyWidth / 2 >= indiWidth) {
+            return 0;
+        }
+        return indiWidth - familyWidth / 2;
+    };
+    DetailedRenderer.prototype.getFamTransform = function (node) {
+        if (this.options.horizontal) {
+            return "translate(" + node.indi.width + ", " + (node.indi.height - node.family.height / 2) + ")";
+        }
+        return "translate(" + this.getFamPositionVertical(node) + ", " + node.indi.height + ")";
     };
     DetailedRenderer.prototype.render = function (selection) {
         var _this = this;
@@ -19745,11 +19774,7 @@ var DetailedRenderer = /** @class */ (function () {
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
         var familySelection = selection.filter(function (node) { return !!node.data.family; })
             .append('g')
-            .attr('transform', function (node) { return _this.options.horizontal ?
-            "translate(" + node.data.indi.width + ", " + (node.data.indi.height - node.data.family.height / 2) + ")" :
-            "translate(" + (node.data.indi.width -
-                node.data.family.width /
-                    2) + ", " + node.data.indi.height + ")"; });
+            .attr('transform', function (node) { return _this.getFamTransform(node.data); });
         this.renderFamily(familySelection);
     };
     DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
@@ -19762,22 +19787,35 @@ var DetailedRenderer = /** @class */ (function () {
         // Box.
         group.append('rect')
             .attr('rx', 5)
-            .attr('ry', 5)
+            .attr('width', function (node) { return indiFunc(node.data).width; })
+            .attr('height', function (node) { return indiFunc(node.data).height; });
+        // Clip path.
+        var getClipId = function (node) {
+            return "clip-" + node.id + "-" + indiFunc(node).id;
+        };
+        group.append('clipPath')
+            .attr('id', function (node) { return getClipId(node.data); })
+            .append('rect')
+            .attr('rx', 5)
             .attr('width', function (node) { return indiFunc(node.data).width; })
             .attr('height', function (node) { return indiFunc(node.data).height; });
         var getIndi = function (node) {
             return _this.options.data.getIndi(indiFunc(node.data).id);
         };
+        var getDetailsWidth = function (node) {
+            return indiFunc(node.data).width -
+                (getIndi(node).getImageUrl() ? IMAGE_WIDTH : 0);
+        };
         // Name.
         group.append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
+            .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 17)"; })
             .text(function (node) { return getIndi(node).getFirstName(); });
         group.append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
+            .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 33)"; })
             .text(function (node) { return getIndi(node).getLastName(); });
         // Extract details.
         var details = new Map();
@@ -19813,8 +19851,17 @@ var DetailedRenderer = /** @class */ (function () {
         group.append('text')
             .attr('class', 'details')
             .attr('text-anchor', 'end')
-            .attr('transform', function (node) { return "translate(" + (indiFunc(node.data).width - 5) + ", " + (indiFunc(node.data).height - 5) + ")"; })
+            .attr('transform', function (node) { return "translate(" + (getDetailsWidth(node) - 5) + ", " + (indiFunc(node.data).height - 5) + ")"; })
             .text(function (node) { return SEX_SYMBOLS.get(getIndi(node).getSex()); });
+        // Image.
+        group.filter(function (node) { return !!getIndi(node).getImageUrl(); })
+            .append('image')
+            .attr('width', IMAGE_WIDTH)
+            .attr('transform', function (node) {
+            return "translate(" + (indiFunc(node.data).width - IMAGE_WIDTH) + ", 0)";
+        })
+            .attr('clip-path', function (node) { return "url(#" + getClipId(node.data) + ")"; })
+            .attr('href', function (node) { return getIndi(node).getImageUrl(); });
     };
     DetailedRenderer.prototype.renderFamily = function (selection) {
         var _this = this;
