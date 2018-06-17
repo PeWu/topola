@@ -39,6 +39,7 @@ export interface JsonIndi {
   birth?: JsonEvent;
   death?: JsonEvent;
   sex?: string;
+  imageUrl?: string;
 }
 
 /** Json representation of a family. */
@@ -66,6 +67,7 @@ export interface IndiDetails extends Indi {
   getDeathPlace(): string|null;
   isConfirmedDeath(): boolean;
   getSex(): string|null;
+  getImageUrl(): string|null;
 }
 
 
@@ -110,7 +112,10 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.death && this.json.death.confirmed;
   }
   getSex() {
-    return this.json.sex;
+    return this.json.sex || null;
+  }
+  getImageUrl() {
+    return this.json.imageUrl || null;
   }
 }
 

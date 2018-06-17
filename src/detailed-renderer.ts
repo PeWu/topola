@@ -8,6 +8,7 @@ const INDI_MIN_HEIGHT = 58;
 const INDI_MIN_WIDTH = 64;
 const FAM_MIN_HEIGHT = 15;
 const FAM_MIN_WIDTH = 15;
+const IMAGE_WIDTH = 70;
 
 
 /** Calculates the length of the given text in pixels when rendered. */
@@ -128,7 +129,7 @@ export class DetailedRenderer implements Renderer {
       getLength(indi.getFirstName()) + 8,
       getLength(indi.getLastName()) + 8,
       INDI_MIN_WIDTH,
-    ]);
+    ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
     return [width, height];
   }
 
@@ -202,12 +203,25 @@ export class DetailedRenderer implements Renderer {
     // Box.
     group.append('rect')
         .attr('rx', 5)
-        .attr('ry', 5)
+        .attr('width', (node) => indiFunc(node.data).width)
+        .attr('height', (node) => indiFunc(node.data).height);
+
+    // Clip path.
+    const getClipId = (node: TreeNode) =>
+        `clip-${node.id}-${indiFunc(node).id}`;
+    group.append('clipPath')
+        .attr('id', (node) => getClipId(node.data))
+        .append('rect')
+        .attr('rx', 5)
         .attr('width', (node) => indiFunc(node.data).width)
         .attr('height', (node) => indiFunc(node.data).height);
 
     const getIndi = (node: d3.HierarchyPointNode<TreeNode>) =>
         this.options.data.getIndi(indiFunc(node.data).id);
+
+    const getDetailsWidth = (node: d3.HierarchyPointNode<TreeNode>) =>
+        indiFunc(node.data).width -
+        (getIndi(node).getImageUrl() ? IMAGE_WIDTH : 0);
 
     // Name.
     group.append('text')
@@ -215,14 +229,14 @@ export class DetailedRenderer implements Renderer {
         .attr('class', 'name')
         .attr(
             'transform',
-            (node) => `translate(${indiFunc(node.data).width / 2}, 17)`)
+            (node) => `translate(${getDetailsWidth(node) / 2}, 17)`)
         .text((node) => getIndi(node).getFirstName());
     group.append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'name')
         .attr(
             'transform',
-            (node) => `translate(${indiFunc(node.data).width / 2}, 33)`)
+            (node) => `translate(${getDetailsWidth(node) / 2}, 33)`)
         .text((node) => getIndi(node).getLastName());
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
@@ -264,9 +278,20 @@ export class DetailedRenderer implements Renderer {
         .attr('text-anchor', 'end')
         .attr(
             'transform',
-            (node) => `translate(${indiFunc(node.data).width - 5}, ${
+            (node) => `translate(${getDetailsWidth(node) - 5}, ${
                 indiFunc(node.data).height - 5})`)
         .text((node) => SEX_SYMBOLS.get(getIndi(node).getSex()));
+
+    // Image.
+    group.filter((node) => !!getIndi(node).getImageUrl())
+        .append('image')
+        .attr('width', IMAGE_WIDTH)
+        .attr(
+            'transform',
+            (node) =>
+                `translate(${indiFunc(node.data).width - IMAGE_WIDTH}, 0)`)
+        .attr('clip-path', (node) => `url(#${getClipId(node.data)})`)
+        .attr('href', (node) => getIndi(node).getImageUrl());
   }
 
   renderFamily(selection: TreeNodeSelection) {

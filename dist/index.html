@@ -8,6 +8,13 @@
     <script src="bundle.js"></script>
     <script>
       topola.renderChart({
+        jsonUrl: 'data/tudor.json',
+        startFam: 'F15',
+        svgSelector: '#tudor',
+        chartType: topola.HourglassChart,
+        renderer: topola.DetailedRenderer,
+      });
+      topola.renderChart({
         jsonUrl: 'data/data.json',
         startFam: 'F3047',
         indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
@@ -43,6 +50,8 @@
     <svg class="graph" id="hourglass"/>
     <h1>Ancestors – horizontal layout</h1>
     <svg class="graph" id="ancestors"/>
+    <h1>Tree with images</h1>
+    <svg class="graph" id="tudor"/>
     <h1>Descendants – simple boxes</h1>
     <svg class="graph" id="descendants"/>
   </body>
