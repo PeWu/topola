@@ -8,13 +8,6 @@
     <script src="bundle.js"></script>
     <script>
       topola.renderChart({
-        jsonUrl: 'data/tudor.json',
-        startFam: 'F15',
-        svgSelector: '#tudor',
-        chartType: topola.HourglassChart,
-        renderer: topola.DetailedRenderer,
-      });
-      topola.renderChart({
         jsonUrl: 'data/data.json',
         startFam: 'F3047',
         indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
@@ -32,6 +25,13 @@
         chartType: topola.HourglassChart,
         renderer: topola.DetailedRenderer,
         horizontal: true,
+      });
+      topola.renderChart({
+        jsonUrl: 'data/tudor.json',
+        startFam: 'F15',
+        svgSelector: '#tudor',
+        chartType: topola.AncestorChart,
+        renderer: topola.DetailedRenderer,
       });
       topola.renderChart({
         jsonUrl: 'data/data.json',

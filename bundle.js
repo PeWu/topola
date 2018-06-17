@@ -19631,17 +19631,18 @@ var FAM_MIN_HEIGHT = 15;
 var FAM_MIN_WIDTH = 15;
 var IMAGE_WIDTH = 70;
 /** Calculates the length of the given text in pixels when rendered. */
-function getLength(text) {
+function getLength(text, textClass) {
     var x = d3.select('svg')
         .append('g')
         .attr('class', 'detailed node')
         .append('text')
-        .attr('class', 'name')
+        .attr('class', textClass)
         .text(text);
     var w = x.node().getComputedTextLength();
     x.remove();
     return w;
 }
+exports.getLength = getLength;
 var MONTHS = new Map([
     [1, 'Jan'],
     [2, 'Feb'],
@@ -19722,11 +19723,11 @@ var DetailedRenderer = /** @class */ (function () {
         var indi = this.options.data.getIndi(id);
         var details = getIndiDetails(indi);
         var height = INDI_MIN_HEIGHT + details.length * 14;
-        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
+        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text, 'details'); }));
         var width = d3.max([
-            maxDetailsWidth + 8,
-            getLength(indi.getFirstName()) + 8,
-            getLength(indi.getLastName()) + 8,
+            maxDetailsWidth + 22,
+            getLength(indi.getFirstName(), 'name') + 8,
+            getLength(indi.getLastName(), 'name') + 8,
             INDI_MIN_WIDTH,
         ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
         return [width, height];
@@ -19735,8 +19736,8 @@ var DetailedRenderer = /** @class */ (function () {
         var fam = this.options.data.getFam(id);
         var details = getFamDetails(fam);
         var height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
-        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text); }));
-        var width = d3.max([maxDetailsWidth + 8, FAM_MIN_WIDTH]);
+        var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text, 'details'); }));
+        var width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
         return [width, height];
     };
     /**
