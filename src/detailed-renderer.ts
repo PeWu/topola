@@ -5,7 +5,7 @@ import {Date, FamDetails, IndiDetails} from './data';
 
 const INDI_MIN_HEIGHT = 58;
 const INDI_MIN_WIDTH = 64;
-const FAM_MIN_HEIGHT = 15;
+const FAM_MIN_HEIGHT = 10;
 const FAM_MIN_WIDTH = 15;
 const IMAGE_WIDTH = 70;
 
@@ -220,6 +220,7 @@ export class DetailedRenderer implements Renderer {
     // Box.
     group.append('rect')
         .attr('rx', 5)
+        .attr('stroke-width', 0)
         .attr('width', (node) => indiFunc(node.data).width)
         .attr('height', (node) => indiFunc(node.data).height);
 
@@ -309,6 +310,13 @@ export class DetailedRenderer implements Renderer {
                 `translate(${indiFunc(node.data).width - IMAGE_WIDTH}, 0)`)
         .attr('clip-path', (node) => `url(#${getClipId(node.data)})`)
         .attr('href', (node) => getIndi(node).getImageUrl());
+
+    // Border on top.
+    group.append('rect')
+        .attr('rx', 5)
+        .attr('fill-opacity', 0)
+        .attr('width', (node) => indiFunc(node.data).width)
+        .attr('height', (node) => indiFunc(node.data).height);
   }
 
   renderFamily(selection: TreeNodeSelection) {
