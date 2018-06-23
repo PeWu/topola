@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
+import {Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
 import {FamDetails, IndiDetails} from './data';
 
 const MIN_HEIGHT = 27;

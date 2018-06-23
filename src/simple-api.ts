@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {Chart, ChartOptions, DataProvider, Renderer, RendererOptions} from './api';
+import {Chart, ChartOptions, Renderer, RendererOptions} from './api';
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
 
 

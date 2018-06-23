@@ -1,8 +1,5 @@
-import * as d3 from 'd3';
-import {flextree, FlexTreeLayout} from 'd3-flextree';
-
 import {AncestorChart} from './ancestor-chart';
-import {Chart, ChartOptions, DataProvider, Fam, Indi, Renderer, TreeIndi, TreeNode} from './api';
+import {Chart, ChartOptions, Fam, Indi} from './api';
 import {ChartUtil} from './chart-util';
 import {DescendantChart} from './descendant-chart';
 

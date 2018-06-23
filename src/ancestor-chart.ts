@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
-import {flextree, FlexTreeLayout} from 'd3-flextree';
 
-import {Chart, ChartOptions, DataProvider, Fam, Indi, Renderer, TreeIndi, TreeNode} from './api';
+import {Chart, ChartOptions, Fam, Indi, TreeNode} from './api';
 import {ChartUtil} from './chart-util';
 
 
