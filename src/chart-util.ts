@@ -55,11 +55,15 @@ export class ChartUtil {
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
     const midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
     const sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
-    const sy = s.y - s.data.height / 2 + s.data.indi.height;
+    const sy = s.y -
+        (s.data.indi && s.data.spouse &&
+             (s.data.height / 2 - s.data.indi.height) ||
+         0);
     const dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
     const dy = d.data.spouse ?
-        (s.data.parentsOfSpouse ? d.y + d.data.indi.height / 2 :
-                                  d.y - d.data.spouse.height / 2) :
+        (s.data.parentsOfSpouse ?
+             d.y + (d.data.indi && (d.data.indi.height / 2) || 0) :
+             d.y - d.data.spouse.height / 2) :
         d.y;
     return `M ${sx} ${sy}
             L ${midX} ${sy},
@@ -71,11 +75,15 @@ export class ChartUtil {
   linkVertical(
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
     const midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
-    const sx = s.x - s.data.width / 2 + s.data.indi.width;
+    const sx = s.x -
+        (s.data.indi && s.data.spouse &&
+             (s.data.width / 2 - s.data.indi.width) ||
+         0);
     const sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
     const dx = d.data.spouse ?
-        (s.data.parentsOfSpouse ? d.x + d.data.indi.width / 2 :
-                                  d.x - d.data.spouse.width / 2) :
+        (s.data.parentsOfSpouse ?
+             d.x + (d.data.indi && (d.data.indi.width / 2) || 0) :
+             d.x - d.data.spouse.width / 2) :
         d.x;
     const dy = d.y - d.data.height / 2 + this.getIndiVSize(d.data) / 2;
     return `M ${sx} ${sy}

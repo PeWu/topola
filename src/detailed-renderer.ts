@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
-import {formatDefaultLocale} from 'd3';
 
-import {DataProvider, Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
+import {Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
 import {Date, FamDetails, IndiDetails} from './data';
 
 const INDI_MIN_HEIGHT = 58;
@@ -149,10 +148,10 @@ export class DetailedRenderer implements Renderer {
    * Returns the relative position of the family box for the vertical layout.
    */
   getFamPositionVertical(node: TreeNode): number {
-    const indiWidth = node.indi && node.indi.width || INDI_MIN_WIDTH;
-    const spouseWidth = node.spouse && node.spouse.width || INDI_MIN_WIDTH;
+    const indiWidth = node.indi && node.indi.width || 0;
+    const spouseWidth = node.spouse && node.spouse.width || 0;
     const familyWidth = node.family.width;
-    if (indiWidth + spouseWidth <= familyWidth) {
+    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
       return (indiWidth + spouseWidth - familyWidth) / 2;
     }
     if (familyWidth / 2 >= spouseWidth) {
@@ -164,25 +163,41 @@ export class DetailedRenderer implements Renderer {
     return indiWidth - familyWidth / 2;
   }
 
+  /**
+   * Returns the relative position of the family box for the horizontal layout.
+   */
+  getFamPositionHorizontal(node: TreeNode): number {
+    const indiHeight = node.indi && node.indi.height || 0;
+    const spouseHeight = node.spouse && node.spouse.height || 0;
+    const familyHeight = node.family.height;
+    if (!node.indi || !node.spouse) {
+      return (indiHeight + spouseHeight - familyHeight) / 2;
+    }
+    return indiHeight - familyHeight / 2;
+  }
+
   getFamTransform(node: TreeNode): string {
     if (this.options.horizontal) {
-      return `translate(${node.indi.width}, ${
-          node.indi.height - node.family.height / 2})`;
+      return `translate(${node.indi && node.indi.width || node.spouse.width}, ${
+          this.getFamPositionHorizontal(node)})`;
     }
     return `translate(${this.getFamPositionVertical(node)}, ${
-        node.indi.height})`;
+        node.indi && node.indi.height || node.spouse.height})`;
   }
 
   render(selection: TreeNodeSelection): void {
-    this.renderIndi(selection, (node) => node.indi);
+    const indiSelection = selection.filter((node) => !!node.data.indi);
+    this.renderIndi(indiSelection, (node) => node.indi);
     const spouseSelection =
         selection.filter((node) => !!node.data.spouse)
             .append('g')
             .attr(
                 'transform',
                 (node) => this.options.horizontal ?
-                    `translate(0, ${node.data.indi.height})` :
-                    `translate(${node.data.indi.width}, 0)`);
+                    `translate(0, ${
+                        node.data.indi && node.data.indi.height || 0})` :
+                    `translate(${
+                        node.data.indi && node.data.indi.width || 0}, 0)`);
     this.renderIndi(spouseSelection, (node) => node.spouse);
     const familySelection =
         selection.filter((node) => !!node.data.family)
