@@ -48,7 +48,7 @@ export interface JsonFam {
   children?: string[];
   wife?: string;
   husb?: string;
-  marriage: JsonEvent;
+  marriage?: JsonEvent;
 }
 
 /** Json representation of Gedcom data. */

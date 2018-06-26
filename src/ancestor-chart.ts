@@ -36,9 +36,13 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
         family: {id: this.options.startFam},
       });
     }
+
     while (stack.length) {
       const entry = stack.pop();
       const fam = this.options.data.getFam(entry.id);
+      // Assign random ID to the node so that parts of the tree can be repeated.
+      // TODO: Figure out how to make stable IDs for animations.
+      entry.id = `${Math.random()}`;
       if (!fam) {
         continue;
       }

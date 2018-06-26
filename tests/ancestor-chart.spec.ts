@@ -21,4 +21,39 @@ describe('Ancestor chart', () => {
     chart.render();
     expect(document.querySelectorAll('g.node').length).toEqual(1);
   });
+
+  it('should work with a common ancestor of two spouses', () => {
+    // I5+I6
+    //   F3
+    //   |
+    //   I3+I4
+    //     F2
+    //     |
+    //   +-++
+    //   |  |
+    //   I1+I2
+    //     F1
+    const json: JsonGedcomData = {
+      fams: [
+        {id: 'F1', husb: 'I1', wife: 'I2'},
+        {id: 'F2', husb: 'I3', wife: 'I4', children: ['I1', 'I2']},
+        {id: 'F3', husb: 'I5', wife: 'I6', children: ['I3']},
+      ],
+      indis: [
+        {id: 'I1', fams: ['F1'], famc: 'F2'},
+        {id: 'I2', fams: ['F1'], famc: 'F2'},
+        {id: 'I3', fams: ['F2'], famc: 'F3'},
+        {id: 'I4', fams: ['F2']},
+        {id: 'I5', fams: ['F3']},
+        {id: 'I6', fams: ['F3']},
+      ],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new AncestorChart({
+      data,
+      startFam: 'F1',
+      renderer: new FakeRenderer(),
+    });
+    chart.render();
+  });
 });
