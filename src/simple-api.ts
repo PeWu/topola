@@ -1,10 +1,7 @@
 import * as d3 from 'd3';
 
-import {AncestorChart} from './ancestor-chart';
 import {Chart, ChartOptions, DataProvider, Renderer, RendererOptions} from './api';
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
-import {DescendantChart} from './descendant-chart';
-import {HourglassChart} from './hourglass-chart';
 
 
 interface ChartType {
