@@ -37,19 +37,21 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
     }
     // Marriages.
     return famIds.map((famId) => {
-      const fam = this.options.data.getFam(famId);
-      return {
+      const entry: TreeNode = {
         id: famId,
         indi: {
           id,
-        },
-        spouse: {
-          id: getSpouse(id, fam),
         },
         family: {
           id: famId,
         }
       };
+      const fam = this.options.data.getFam(famId);
+      const spouse = getSpouse(id, fam);
+      if (spouse) {
+        entry.spouse = {id: spouse};
+      }
+      return entry;
     });
   }
 
@@ -77,22 +79,26 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
 
     parents.push(...nodes);
 
-    const stack: string[] = [];
+    const stack: TreeNode[] = [];
     nodes.forEach((node) => {
       if (node.family) {
-        stack.push(node.family.id);
+        stack.push(node);
       }
     });
     while (stack.length) {
-      const famId = stack.pop();
-      const fam = this.options.data.getFam(famId);
+      const entry = stack.pop();
+      const fam = this.options.data.getFam(entry.family.id);
       const children = fam.getChildren();
       children.forEach((childId) => {
         const childNodes = this.getNodes(childId);
         childNodes.forEach((node) => {
-          node.parentId = famId;
+          node.parentId = entry.id;
           if (node.family) {
-            stack.push(node.family.id);
+            // Assign random ID to the node so that parts of the tree can be
+            // repeated.
+            // TODO: Figure out how to make stable IDs for animations.
+            node.id = `${Math.random()}`;
+            stack.push(node);
           }
         });
         parents.push(...childNodes);
