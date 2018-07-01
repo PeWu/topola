@@ -28,6 +28,10 @@ export interface TreeNode {
   // If true, the links to children of this family will be attached to
   // the spouse box of the child node.
   parentsOfSpouse?: boolean;
+
+  // If true, this marriage will be rendered as an additional marriage
+  // of an existing child.
+  additionalMarriage?: boolean;
 }
 
 

@@ -92,6 +92,20 @@ export class ChartUtil {
               ${dx} ${dy}`;
   }
 
+  linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
+    const nodeIndex = node.parent.children.findIndex((n) => n.id === node.id);
+    // Assert nodeIndex > 0.
+    const siblingNode = node.parent.children[nodeIndex - 1];
+    const sx = node.x + (node.data.indi.width - node.data.width) / 2;
+    const sy = node.y + (node.data.indi.height - node.data.height) / 2;
+    const dx = siblingNode.x +
+        (siblingNode.data.indi.width - siblingNode.data.width) / 2;
+    const dy = siblingNode.y +
+        (siblingNode.data.indi.height - siblingNode.data.height) / 2;
+    return `M ${sx}, ${sy}
+            L ${dx}, ${dy}`;
+  }
+
   setPreferredIndiSize(indi: TreeIndi|undefined): void {
     if (!indi) {
       return;
@@ -236,6 +250,9 @@ export class ChartUtil {
     const link =
         (parent: d3.HierarchyPointNode<TreeNode>,
          child: d3.HierarchyPointNode<TreeNode>) => {
+          if (child.data.additionalMarriage) {
+            return this.linkAdditionalMarriage(child);
+          }
           if (this.options.horizontal) {
             if (flipVertically) {
               return this.linkHorizontal(child, parent);
@@ -256,7 +273,11 @@ export class ChartUtil {
         .data(links, (d: d3.HierarchyPointNode<Node>) => d.id)
         .enter()
         .insert('path', 'g')
-        .attr('class', 'link')
+        .attr(
+            'class',
+            (node) => node.data.additionalMarriage ?
+                'link additional-marriage' :
+                'link')
         .attr('d', (node) => link(node.parent, node));
     return nodes;
   }

@@ -16,6 +16,10 @@ text {
   stroke-width: 1px;
 }
 
+.additional-marriage {
+  stroke-dasharray: 2;
+}
+
 rect {
   fill: #fff;
   stroke: black;

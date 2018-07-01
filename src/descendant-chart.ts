@@ -35,7 +35,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
       }];
     }
     // Marriages.
-    return famIds.map((famId) => {
+    const nodes = famIds.map((famId) => {
       const entry: TreeNode = {
         id: famId,
         indi: {
@@ -52,6 +52,10 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
       }
       return entry;
     });
+    nodes.slice(1).forEach((node) => {
+      node.additionalMarriage = true;
+    });
+    return nodes;
   }
 
   private getFamNode(famId: string): TreeNode {
