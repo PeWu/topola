@@ -8,6 +8,8 @@ const INDI_MIN_WIDTH = 64;
 const FAM_MIN_HEIGHT = 10;
 const FAM_MIN_WIDTH = 15;
 const IMAGE_WIDTH = 70;
+/** Minimum box height when an image is present. */
+const IMAGE_HEIGHT = 90;
 
 
 /** Calculates the length of the given text in pixels when rendered. */
@@ -120,7 +122,10 @@ export class DetailedRenderer implements Renderer {
     const indi = this.options.data.getIndi(id);
     const details = getIndiDetails(indi);
 
-    const height = INDI_MIN_HEIGHT + details.length * 14;
+    const height = d3.max([
+      INDI_MIN_HEIGHT + details.length * 14,
+      indi.getImageUrl() && IMAGE_HEIGHT,
+    ]);
 
     const maxDetailsWidth =
         d3.max(details.map((x) => getLength(x.text, 'details')));
