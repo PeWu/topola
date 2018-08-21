@@ -9,11 +9,12 @@ __export(require("./src/chart-util"));
 __export(require("./src/data"));
 __export(require("./src/descendant-chart"));
 __export(require("./src/detailed-renderer"));
+__export(require("./src/gedcom"));
 __export(require("./src/hourglass-chart"));
 __export(require("./src/simple-api"));
 __export(require("./src/simple-renderer"));
 
-},{"./src/ancestor-chart":35,"./src/chart-util":36,"./src/data":37,"./src/descendant-chart":38,"./src/detailed-renderer":39,"./src/hourglass-chart":40,"./src/simple-api":41,"./src/simple-renderer":42}],2:[function(require,module,exports){
+},{"./src/ancestor-chart":38,"./src/chart-util":39,"./src/data":40,"./src/descendant-chart":41,"./src/detailed-renderer":42,"./src/gedcom":43,"./src/hourglass-chart":44,"./src/simple-api":45,"./src/simple-renderer":46}],2:[function(require,module,exports){
 // https://d3js.org/d3-array/ Version 1.2.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -606,197 +607,197 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 },{}],3:[function(require,module,exports){
-// https://d3js.org/d3-axis/ Version 1.0.8. Copyright 2017 Mike Bostock.
+// https://d3js.org/d3-axis/ Version 1.0.9 Copyright 2018 Mike Bostock.
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.d3 = global.d3 || {})));
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.d3 = global.d3 || {})));
 }(this, (function (exports) { 'use strict';
 
-var slice = Array.prototype.slice;
+  var slice = Array.prototype.slice;
 
-var identity = function(x) {
-  return x;
-};
-
-var top = 1;
-var right = 2;
-var bottom = 3;
-var left = 4;
-var epsilon = 1e-6;
-
-function translateX(x) {
-  return "translate(" + (x + 0.5) + ",0)";
-}
-
-function translateY(y) {
-  return "translate(0," + (y + 0.5) + ")";
-}
-
-function number(scale) {
-  return function(d) {
-    return +scale(d);
-  };
-}
-
-function center(scale) {
-  var offset = Math.max(0, scale.bandwidth() - 1) / 2; // Adjust for 0.5px offset.
-  if (scale.round()) offset = Math.round(offset);
-  return function(d) {
-    return +scale(d) + offset;
-  };
-}
-
-function entering() {
-  return !this.__axis;
-}
-
-function axis(orient, scale) {
-  var tickArguments = [],
-      tickValues = null,
-      tickFormat = null,
-      tickSizeInner = 6,
-      tickSizeOuter = 6,
-      tickPadding = 3,
-      k = orient === top || orient === left ? -1 : 1,
-      x = orient === left || orient === right ? "x" : "y",
-      transform = orient === top || orient === bottom ? translateX : translateY;
-
-  function axis(context) {
-    var values = tickValues == null ? (scale.ticks ? scale.ticks.apply(scale, tickArguments) : scale.domain()) : tickValues,
-        format = tickFormat == null ? (scale.tickFormat ? scale.tickFormat.apply(scale, tickArguments) : identity) : tickFormat,
-        spacing = Math.max(tickSizeInner, 0) + tickPadding,
-        range = scale.range(),
-        range0 = +range[0] + 0.5,
-        range1 = +range[range.length - 1] + 0.5,
-        position = (scale.bandwidth ? center : number)(scale.copy()),
-        selection = context.selection ? context.selection() : context,
-        path = selection.selectAll(".domain").data([null]),
-        tick = selection.selectAll(".tick").data(values, scale).order(),
-        tickExit = tick.exit(),
-        tickEnter = tick.enter().append("g").attr("class", "tick"),
-        line = tick.select("line"),
-        text = tick.select("text");
-
-    path = path.merge(path.enter().insert("path", ".tick")
-        .attr("class", "domain")
-        .attr("stroke", "#000"));
-
-    tick = tick.merge(tickEnter);
-
-    line = line.merge(tickEnter.append("line")
-        .attr("stroke", "#000")
-        .attr(x + "2", k * tickSizeInner));
-
-    text = text.merge(tickEnter.append("text")
-        .attr("fill", "#000")
-        .attr(x, k * spacing)
-        .attr("dy", orient === top ? "0em" : orient === bottom ? "0.71em" : "0.32em"));
-
-    if (context !== selection) {
-      path = path.transition(context);
-      tick = tick.transition(context);
-      line = line.transition(context);
-      text = text.transition(context);
-
-      tickExit = tickExit.transition(context)
-          .attr("opacity", epsilon)
-          .attr("transform", function(d) { return isFinite(d = position(d)) ? transform(d) : this.getAttribute("transform"); });
-
-      tickEnter
-          .attr("opacity", epsilon)
-          .attr("transform", function(d) { var p = this.parentNode.__axis; return transform(p && isFinite(p = p(d)) ? p : position(d)); });
-    }
-
-    tickExit.remove();
-
-    path
-        .attr("d", orient === left || orient == right
-            ? "M" + k * tickSizeOuter + "," + range0 + "H0.5V" + range1 + "H" + k * tickSizeOuter
-            : "M" + range0 + "," + k * tickSizeOuter + "V0.5H" + range1 + "V" + k * tickSizeOuter);
-
-    tick
-        .attr("opacity", 1)
-        .attr("transform", function(d) { return transform(position(d)); });
-
-    line
-        .attr(x + "2", k * tickSizeInner);
-
-    text
-        .attr(x, k * spacing)
-        .text(format);
-
-    selection.filter(entering)
-        .attr("fill", "none")
-        .attr("font-size", 10)
-        .attr("font-family", "sans-serif")
-        .attr("text-anchor", orient === right ? "start" : orient === left ? "end" : "middle");
-
-    selection
-        .each(function() { this.__axis = position; });
+  function identity(x) {
+    return x;
   }
 
-  axis.scale = function(_) {
-    return arguments.length ? (scale = _, axis) : scale;
-  };
+  var top = 1,
+      right = 2,
+      bottom = 3,
+      left = 4,
+      epsilon = 1e-6;
 
-  axis.ticks = function() {
-    return tickArguments = slice.call(arguments), axis;
-  };
+  function translateX(x) {
+    return "translate(" + (x + 0.5) + ",0)";
+  }
 
-  axis.tickArguments = function(_) {
-    return arguments.length ? (tickArguments = _ == null ? [] : slice.call(_), axis) : tickArguments.slice();
-  };
+  function translateY(y) {
+    return "translate(0," + (y + 0.5) + ")";
+  }
 
-  axis.tickValues = function(_) {
-    return arguments.length ? (tickValues = _ == null ? null : slice.call(_), axis) : tickValues && tickValues.slice();
-  };
+  function number(scale) {
+    return function(d) {
+      return +scale(d);
+    };
+  }
 
-  axis.tickFormat = function(_) {
-    return arguments.length ? (tickFormat = _, axis) : tickFormat;
-  };
+  function center(scale) {
+    var offset = Math.max(0, scale.bandwidth() - 1) / 2; // Adjust for 0.5px offset.
+    if (scale.round()) offset = Math.round(offset);
+    return function(d) {
+      return +scale(d) + offset;
+    };
+  }
 
-  axis.tickSize = function(_) {
-    return arguments.length ? (tickSizeInner = tickSizeOuter = +_, axis) : tickSizeInner;
-  };
+  function entering() {
+    return !this.__axis;
+  }
 
-  axis.tickSizeInner = function(_) {
-    return arguments.length ? (tickSizeInner = +_, axis) : tickSizeInner;
-  };
+  function axis(orient, scale) {
+    var tickArguments = [],
+        tickValues = null,
+        tickFormat = null,
+        tickSizeInner = 6,
+        tickSizeOuter = 6,
+        tickPadding = 3,
+        k = orient === top || orient === left ? -1 : 1,
+        x = orient === left || orient === right ? "x" : "y",
+        transform = orient === top || orient === bottom ? translateX : translateY;
 
-  axis.tickSizeOuter = function(_) {
-    return arguments.length ? (tickSizeOuter = +_, axis) : tickSizeOuter;
-  };
+    function axis(context) {
+      var values = tickValues == null ? (scale.ticks ? scale.ticks.apply(scale, tickArguments) : scale.domain()) : tickValues,
+          format = tickFormat == null ? (scale.tickFormat ? scale.tickFormat.apply(scale, tickArguments) : identity) : tickFormat,
+          spacing = Math.max(tickSizeInner, 0) + tickPadding,
+          range = scale.range(),
+          range0 = +range[0] + 0.5,
+          range1 = +range[range.length - 1] + 0.5,
+          position = (scale.bandwidth ? center : number)(scale.copy()),
+          selection = context.selection ? context.selection() : context,
+          path = selection.selectAll(".domain").data([null]),
+          tick = selection.selectAll(".tick").data(values, scale).order(),
+          tickExit = tick.exit(),
+          tickEnter = tick.enter().append("g").attr("class", "tick"),
+          line = tick.select("line"),
+          text = tick.select("text");
 
-  axis.tickPadding = function(_) {
-    return arguments.length ? (tickPadding = +_, axis) : tickPadding;
-  };
+      path = path.merge(path.enter().insert("path", ".tick")
+          .attr("class", "domain")
+          .attr("stroke", "currentColor"));
 
-  return axis;
-}
+      tick = tick.merge(tickEnter);
 
-function axisTop(scale) {
-  return axis(top, scale);
-}
+      line = line.merge(tickEnter.append("line")
+          .attr("stroke", "currentColor")
+          .attr(x + "2", k * tickSizeInner));
 
-function axisRight(scale) {
-  return axis(right, scale);
-}
+      text = text.merge(tickEnter.append("text")
+          .attr("fill", "currentColor")
+          .attr(x, k * spacing)
+          .attr("dy", orient === top ? "0em" : orient === bottom ? "0.71em" : "0.32em"));
 
-function axisBottom(scale) {
-  return axis(bottom, scale);
-}
+      if (context !== selection) {
+        path = path.transition(context);
+        tick = tick.transition(context);
+        line = line.transition(context);
+        text = text.transition(context);
 
-function axisLeft(scale) {
-  return axis(left, scale);
-}
+        tickExit = tickExit.transition(context)
+            .attr("opacity", epsilon)
+            .attr("transform", function(d) { return isFinite(d = position(d)) ? transform(d) : this.getAttribute("transform"); });
 
-exports.axisTop = axisTop;
-exports.axisRight = axisRight;
-exports.axisBottom = axisBottom;
-exports.axisLeft = axisLeft;
+        tickEnter
+            .attr("opacity", epsilon)
+            .attr("transform", function(d) { var p = this.parentNode.__axis; return transform(p && isFinite(p = p(d)) ? p : position(d)); });
+      }
 
-Object.defineProperty(exports, '__esModule', { value: true });
+      tickExit.remove();
+
+      path
+          .attr("d", orient === left || orient == right
+              ? "M" + k * tickSizeOuter + "," + range0 + "H0.5V" + range1 + "H" + k * tickSizeOuter
+              : "M" + range0 + "," + k * tickSizeOuter + "V0.5H" + range1 + "V" + k * tickSizeOuter);
+
+      tick
+          .attr("opacity", 1)
+          .attr("transform", function(d) { return transform(position(d)); });
+
+      line
+          .attr(x + "2", k * tickSizeInner);
+
+      text
+          .attr(x, k * spacing)
+          .text(format);
+
+      selection.filter(entering)
+          .attr("fill", "none")
+          .attr("font-size", 10)
+          .attr("font-family", "sans-serif")
+          .attr("text-anchor", orient === right ? "start" : orient === left ? "end" : "middle");
+
+      selection
+          .each(function() { this.__axis = position; });
+    }
+
+    axis.scale = function(_) {
+      return arguments.length ? (scale = _, axis) : scale;
+    };
+
+    axis.ticks = function() {
+      return tickArguments = slice.call(arguments), axis;
+    };
+
+    axis.tickArguments = function(_) {
+      return arguments.length ? (tickArguments = _ == null ? [] : slice.call(_), axis) : tickArguments.slice();
+    };
+
+    axis.tickValues = function(_) {
+      return arguments.length ? (tickValues = _ == null ? null : slice.call(_), axis) : tickValues && tickValues.slice();
+    };
+
+    axis.tickFormat = function(_) {
+      return arguments.length ? (tickFormat = _, axis) : tickFormat;
+    };
+
+    axis.tickSize = function(_) {
+      return arguments.length ? (tickSizeInner = tickSizeOuter = +_, axis) : tickSizeInner;
+    };
+
+    axis.tickSizeInner = function(_) {
+      return arguments.length ? (tickSizeInner = +_, axis) : tickSizeInner;
+    };
+
+    axis.tickSizeOuter = function(_) {
+      return arguments.length ? (tickSizeOuter = +_, axis) : tickSizeOuter;
+    };
+
+    axis.tickPadding = function(_) {
+      return arguments.length ? (tickPadding = +_, axis) : tickPadding;
+    };
+
+    return axis;
+  }
+
+  function axisTop(scale) {
+    return axis(top, scale);
+  }
+
+  function axisRight(scale) {
+    return axis(right, scale);
+  }
+
+  function axisBottom(scale) {
+    return axis(bottom, scale);
+  }
+
+  function axisLeft(scale) {
+    return axis(left, scale);
+  }
+
+  exports.axisTop = axisTop;
+  exports.axisRight = axisRight;
+  exports.axisBottom = axisBottom;
+  exports.axisLeft = axisLeft;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
@@ -2372,7 +2373,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 },{}],8:[function(require,module,exports){
-// https://d3js.org/d3-contour/ Version 1.2.0. Copyright 2018 Mike Bostock.
+// https://d3js.org/d3-contour/ Version 1.3.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'd3-array'], factory) :
@@ -2677,9 +2678,14 @@ function defaultY(d) {
   return d[1];
 }
 
+function defaultWeight() {
+  return 1;
+}
+
 var density = function() {
   var x = defaultX,
       y = defaultY,
+      weight = defaultWeight,
       dx = 960,
       dy = 500,
       r = 20, // blur radius
@@ -2694,10 +2700,11 @@ var density = function() {
         values1 = new Float32Array(n * m);
 
     data.forEach(function(d, i, data) {
-      var xi = (x(d, i, data) + o) >> k,
-          yi = (y(d, i, data) + o) >> k;
+      var xi = (+x(d, i, data) + o) >> k,
+          yi = (+y(d, i, data) + o) >> k,
+          wi = +weight(d, i, data);
       if (xi >= 0 && xi < n && yi >= 0 && yi < m) {
-        ++values0[xi + yi * n];
+        values0[xi + yi * n] += wi;
       }
     });
 
@@ -2759,6 +2766,10 @@ var density = function() {
 
   density.y = function(_) {
     return arguments.length ? (y = typeof _ === "function" ? _ : constant(+_), density) : y;
+  };
+
+  density.weight = function(_) {
+    return arguments.length ? (weight = typeof _ === "function" ? _ : constant(+_), density) : weight;
   };
 
   density.size = function(_) {
@@ -11720,7 +11731,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 },{"d3-color":7,"d3-interpolate":19}],25:[function(require,module,exports){
-// https://d3js.org/d3-scale/ Version 2.0.0. Copyright 2018 Mike Bostock.
+// https://d3js.org/d3-scale/ Version 2.1.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array'), require('d3-collection'), require('d3-interpolate'), require('d3-format'), require('d3-time'), require('d3-time-format')) :
 	typeof define === 'function' && define.amd ? define(['exports', 'd3-array', 'd3-collection', 'd3-interpolate', 'd3-format', 'd3-time', 'd3-time-format'], factory) :
@@ -12542,15 +12553,16 @@ function utcTime() {
 function sequential(interpolator) {
   var x0 = 0,
       x1 = 1,
+      k10 = 1,
       clamp = false;
 
   function scale(x) {
-    var t = (x - x0) / (x1 - x0);
+    var t = (x - x0) * k10;
     return interpolator(clamp ? Math.max(0, Math.min(1, t)) : t);
   }
 
   scale.domain = function(_) {
-    return arguments.length ? (x0 = +_[0], x1 = +_[1], scale) : [x0, x1];
+    return arguments.length ? (x0 = +_[0], x1 = +_[1], k10 = x0 === x1 ? 0 : 1 / (x1 - x0), scale) : [x0, x1];
   };
 
   scale.clamp = function(_) {
@@ -12563,6 +12575,38 @@ function sequential(interpolator) {
 
   scale.copy = function() {
     return sequential(interpolator).domain([x0, x1]).clamp(clamp);
+  };
+
+  return linearish(scale);
+}
+
+function diverging(interpolator) {
+  var x0 = 0,
+      x1 = 0.5,
+      x2 = 1,
+      k10 = 1,
+      k21 = 1,
+      clamp = false;
+
+  function scale(x) {
+    var t = 0.5 + ((x = +x) - x1) * (x < x1 ? k10 : k21);
+    return interpolator(clamp ? Math.max(0, Math.min(1, t)) : t);
+  }
+
+  scale.domain = function(_) {
+    return arguments.length ? (x0 = +_[0], x1 = +_[1], x2 = +_[2], k10 = x0 === x1 ? 0 : 0.5 / (x1 - x0), k21 = x1 === x2 ? 0 : 0.5 / (x2 - x1), scale) : [x0, x1, x2];
+  };
+
+  scale.clamp = function(_) {
+    return arguments.length ? (clamp = !!_, scale) : clamp;
+  };
+
+  scale.interpolator = function(_) {
+    return arguments.length ? (interpolator = _, scale) : interpolator;
+  };
+
+  scale.copy = function() {
+    return diverging(interpolator).domain([x0, x1, x2]).clamp(clamp);
   };
 
   return linearish(scale);
@@ -12583,6 +12627,7 @@ exports.scaleThreshold = threshold;
 exports.scaleTime = time;
 exports.scaleUtc = utcTime;
 exports.scaleSequential = sequential;
+exports.scaleDiverging = diverging;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
@@ -19081,7 +19126,7 @@ var d3Transition = require('d3-transition');
 var d3Voronoi = require('d3-voronoi');
 var d3Zoom = require('d3-zoom');
 
-var version = "5.4.0";
+var version = "5.6.0";
 
 Object.keys(d3Array).forEach(function (key) { exports[key] = d3Array[key]; });
 Object.keys(d3Axis).forEach(function (key) { exports[key] = d3Axis[key]; });
@@ -19118,6 +19163,464 @@ exports.version = version;
 Object.defineProperty(exports, "event", {get: function() { return d3Selection.event; }});
 
 },{"d3-array":2,"d3-axis":3,"d3-brush":4,"d3-chord":5,"d3-collection":6,"d3-color":7,"d3-contour":8,"d3-dispatch":9,"d3-drag":10,"d3-dsv":11,"d3-ease":12,"d3-fetch":13,"d3-force":15,"d3-format":16,"d3-geo":17,"d3-hierarchy":18,"d3-interpolate":19,"d3-path":20,"d3-polygon":21,"d3-quadtree":22,"d3-random":23,"d3-scale":25,"d3-scale-chromatic":24,"d3-selection":26,"d3-shape":27,"d3-time":29,"d3-time-format":28,"d3-timer":30,"d3-transition":31,"d3-voronoi":32,"d3-zoom":33}],35:[function(require,module,exports){
+function hasTag(val) {
+    return function(node) {
+        return node.tag === val;
+    };
+}
+
+function d3ize(tree) {
+    var peopleNodes = tree
+        .filter(hasTag('INDI'))
+        .map(toNode);
+    var families = tree.filter(hasTag('FAM'));
+    var familyNodes = families.map(toNode);
+    var links = families.reduce(function(memo, family) {
+        return memo.concat(familyLinks(family));
+    }, []);
+    var allNodes = peopleNodes.concat(familyNodes);
+    var indexedNodes = allNodes.reduce(function(memo, node, i) {
+        memo[node.id] = i;
+        return memo;
+    }, {});
+    links = links.map(idToIndex(indexedNodes));
+    return {
+        nodes: allNodes,
+        links: links
+    };
+}
+
+function getName(p) {
+    if (p.tag === 'INDI') {
+        var nameNode = (p.tree.filter(hasTag('NAME')) || [])[0];
+        if (nameNode) {
+            return nameNode.data.replace(/\//g, '');
+        }
+    } else {
+        return 'Family';
+    }
+}
+
+function toNode(p) {
+    p.id = p.pointer;
+    p.name = getName(p);
+    return p;
+}
+
+function idToIndex(indexedNodes) {
+    return function(link) {
+        function getIndexed(id) {
+            return indexedNodes[id];
+        }
+        return {
+            source: getIndexed(link.source),
+            target: getIndexed(link.target)
+        };
+    };
+}
+
+function familyLinks(family) {
+    var memberLinks = family.tree.filter(function(member) {
+        // avoid connecting MARR, etc: things that are not
+        // people.
+        return member.data && member.data[0] === '@';
+    }).map(function(member) {
+        return {
+            source: family.pointer,
+            target: member.data
+        };
+    });
+    return memberLinks;
+}
+
+module.exports = d3ize;
+
+},{}],36:[function(require,module,exports){
+var traverse = require('traverse');
+
+// from https://github.com/madprime/python-gedcom/blob/master/gedcom/__init__.py
+// * Level must start with nonnegative int, no leading zeros.
+// * Pointer optional, if it exists it must be flanked by '@'
+// * Tag must be alphanumeric string
+// * Value optional, consists of anything after a space to end of line
+//   End of line defined by \n or \r
+var lineRe = /\s*(0|[1-9]+[0-9]*) (@[^@]+@ |)([A-Za-z0-9_]+)( [^\n\r]*|)/;
+
+function parse(input) {
+    var start = { root: { tree: [] }, level: 0 };
+    start.pointer = start.root;
+
+    return traverse(input
+        .split('\n')
+        .map(mapLine)
+        .filter(function(_) { return _; })
+        .reduce(buildTree, start)
+        .root.tree).map(function(node) {
+            delete node.up;
+            delete node.level;
+            this.update(node);
+        });
+
+    // the basic trick of this module is turning the suggested tree
+    // structure of a GEDCOM file into a tree in JSON. This reduction
+    // does that. The only real trick is the `.up` member of objects
+    // that points to a level up in the structure. This we have to
+    // censor before JSON.stringify since it creates circular references.
+    function buildTree(memo, data) {
+        if (data.level === memo.level) {
+            memo.pointer.tree.push(data);
+        } else if (data.level > memo.level) {
+            var up = memo.pointer;
+            memo.pointer = memo.pointer.tree[
+                memo.pointer.tree.length - 1];
+                memo.pointer.tree.push(data);
+                memo.pointer.up = up;
+                memo.level = data.level;
+        } else if (data.level < memo.level) {
+            // the jump up in the stack may be by more than one, so ascend
+            // until we're at the right level.
+            while (data.level <= memo.pointer.level && memo.pointer.up) {
+                memo.pointer = memo.pointer.up;
+            }
+            memo.pointer.tree.push(data);
+            memo.level = data.level;
+        }
+        return memo;
+    }
+
+    function mapLine(data) {
+        var match = data.match(lineRe);
+        if (!match) return null;
+        return {
+            level: parseInt(match[1], 10),
+            pointer: match[2].trim(),
+            tag: match[3].trim(),
+            data: match[4].trim(),
+            tree: []
+        };
+    }
+}
+
+module.exports.parse = parse;
+module.exports.d3ize = require('./d3ize');
+
+},{"./d3ize":35,"traverse":37}],37:[function(require,module,exports){
+var traverse = module.exports = function (obj) {
+    return new Traverse(obj);
+};
+
+function Traverse (obj) {
+    this.value = obj;
+}
+
+Traverse.prototype.get = function (ps) {
+    var node = this.value;
+    for (var i = 0; i < ps.length; i ++) {
+        var key = ps[i];
+        if (!node || !hasOwnProperty.call(node, key)) {
+            node = undefined;
+            break;
+        }
+        node = node[key];
+    }
+    return node;
+};
+
+Traverse.prototype.has = function (ps) {
+    var node = this.value;
+    for (var i = 0; i < ps.length; i ++) {
+        var key = ps[i];
+        if (!node || !hasOwnProperty.call(node, key)) {
+            return false;
+        }
+        node = node[key];
+    }
+    return true;
+};
+
+Traverse.prototype.set = function (ps, value) {
+    var node = this.value;
+    for (var i = 0; i < ps.length - 1; i ++) {
+        var key = ps[i];
+        if (!hasOwnProperty.call(node, key)) node[key] = {};
+        node = node[key];
+    }
+    node[ps[i]] = value;
+    return value;
+};
+
+Traverse.prototype.map = function (cb) {
+    return walk(this.value, cb, true);
+};
+
+Traverse.prototype.forEach = function (cb) {
+    this.value = walk(this.value, cb, false);
+    return this.value;
+};
+
+Traverse.prototype.reduce = function (cb, init) {
+    var skip = arguments.length === 1;
+    var acc = skip ? this.value : init;
+    this.forEach(function (x) {
+        if (!this.isRoot || !skip) {
+            acc = cb.call(this, acc, x);
+        }
+    });
+    return acc;
+};
+
+Traverse.prototype.paths = function () {
+    var acc = [];
+    this.forEach(function (x) {
+        acc.push(this.path); 
+    });
+    return acc;
+};
+
+Traverse.prototype.nodes = function () {
+    var acc = [];
+    this.forEach(function (x) {
+        acc.push(this.node);
+    });
+    return acc;
+};
+
+Traverse.prototype.clone = function () {
+    var parents = [], nodes = [];
+    
+    return (function clone (src) {
+        for (var i = 0; i < parents.length; i++) {
+            if (parents[i] === src) {
+                return nodes[i];
+            }
+        }
+        
+        if (typeof src === 'object' && src !== null) {
+            var dst = copy(src);
+            
+            parents.push(src);
+            nodes.push(dst);
+            
+            forEach(objectKeys(src), function (key) {
+                dst[key] = clone(src[key]);
+            });
+            
+            parents.pop();
+            nodes.pop();
+            return dst;
+        }
+        else {
+            return src;
+        }
+    })(this.value);
+};
+
+function walk (root, cb, immutable) {
+    var path = [];
+    var parents = [];
+    var alive = true;
+    
+    return (function walker (node_) {
+        var node = immutable ? copy(node_) : node_;
+        var modifiers = {};
+        
+        var keepGoing = true;
+        
+        var state = {
+            node : node,
+            node_ : node_,
+            path : [].concat(path),
+            parent : parents[parents.length - 1],
+            parents : parents,
+            key : path.slice(-1)[0],
+            isRoot : path.length === 0,
+            level : path.length,
+            circular : null,
+            update : function (x, stopHere) {
+                if (!state.isRoot) {
+                    state.parent.node[state.key] = x;
+                }
+                state.node = x;
+                if (stopHere) keepGoing = false;
+            },
+            'delete' : function (stopHere) {
+                delete state.parent.node[state.key];
+                if (stopHere) keepGoing = false;
+            },
+            remove : function (stopHere) {
+                if (isArray(state.parent.node)) {
+                    state.parent.node.splice(state.key, 1);
+                }
+                else {
+                    delete state.parent.node[state.key];
+                }
+                if (stopHere) keepGoing = false;
+            },
+            keys : null,
+            before : function (f) { modifiers.before = f },
+            after : function (f) { modifiers.after = f },
+            pre : function (f) { modifiers.pre = f },
+            post : function (f) { modifiers.post = f },
+            stop : function () { alive = false },
+            block : function () { keepGoing = false }
+        };
+        
+        if (!alive) return state;
+        
+        function updateState() {
+            if (typeof state.node === 'object' && state.node !== null) {
+                if (!state.keys || state.node_ !== state.node) {
+                    state.keys = objectKeys(state.node)
+                }
+                
+                state.isLeaf = state.keys.length == 0;
+                
+                for (var i = 0; i < parents.length; i++) {
+                    if (parents[i].node_ === node_) {
+                        state.circular = parents[i];
+                        break;
+                    }
+                }
+            }
+            else {
+                state.isLeaf = true;
+                state.keys = null;
+            }
+            
+            state.notLeaf = !state.isLeaf;
+            state.notRoot = !state.isRoot;
+        }
+        
+        updateState();
+        
+        // use return values to update if defined
+        var ret = cb.call(state, state.node);
+        if (ret !== undefined && state.update) state.update(ret);
+        
+        if (modifiers.before) modifiers.before.call(state, state.node);
+        
+        if (!keepGoing) return state;
+        
+        if (typeof state.node == 'object'
+        && state.node !== null && !state.circular) {
+            parents.push(state);
+            
+            updateState();
+            
+            forEach(state.keys, function (key, i) {
+                path.push(key);
+                
+                if (modifiers.pre) modifiers.pre.call(state, state.node[key], key);
+                
+                var child = walker(state.node[key]);
+                if (immutable && hasOwnProperty.call(state.node, key)) {
+                    state.node[key] = child.node;
+                }
+                
+                child.isLast = i == state.keys.length - 1;
+                child.isFirst = i == 0;
+                
+                if (modifiers.post) modifiers.post.call(state, child);
+                
+                path.pop();
+            });
+            parents.pop();
+        }
+        
+        if (modifiers.after) modifiers.after.call(state, state.node);
+        
+        return state;
+    })(root).node;
+}
+
+function copy (src) {
+    if (typeof src === 'object' && src !== null) {
+        var dst;
+        
+        if (isArray(src)) {
+            dst = [];
+        }
+        else if (isDate(src)) {
+            dst = new Date(src.getTime ? src.getTime() : src);
+        }
+        else if (isRegExp(src)) {
+            dst = new RegExp(src);
+        }
+        else if (isError(src)) {
+            dst = { message: src.message };
+        }
+        else if (isBoolean(src)) {
+            dst = new Boolean(src);
+        }
+        else if (isNumber(src)) {
+            dst = new Number(src);
+        }
+        else if (isString(src)) {
+            dst = new String(src);
+        }
+        else if (Object.create && Object.getPrototypeOf) {
+            dst = Object.create(Object.getPrototypeOf(src));
+        }
+        else if (src.constructor === Object) {
+            dst = {};
+        }
+        else {
+            var proto =
+                (src.constructor && src.constructor.prototype)
+                || src.__proto__
+                || {}
+            ;
+            var T = function () {};
+            T.prototype = proto;
+            dst = new T;
+        }
+        
+        forEach(objectKeys(src), function (key) {
+            dst[key] = src[key];
+        });
+        return dst;
+    }
+    else return src;
+}
+
+var objectKeys = Object.keys || function keys (obj) {
+    var res = [];
+    for (var key in obj) res.push(key)
+    return res;
+};
+
+function toS (obj) { return Object.prototype.toString.call(obj) }
+function isDate (obj) { return toS(obj) === '[object Date]' }
+function isRegExp (obj) { return toS(obj) === '[object RegExp]' }
+function isError (obj) { return toS(obj) === '[object Error]' }
+function isBoolean (obj) { return toS(obj) === '[object Boolean]' }
+function isNumber (obj) { return toS(obj) === '[object Number]' }
+function isString (obj) { return toS(obj) === '[object String]' }
+
+var isArray = Array.isArray || function isArray (xs) {
+    return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+var forEach = function (xs, fn) {
+    if (xs.forEach) return xs.forEach(fn)
+    else for (var i = 0; i < xs.length; i++) {
+        fn(xs[i], i, xs);
+    }
+};
+
+forEach(objectKeys(Traverse.prototype), function (key) {
+    traverse[key] = function (obj) {
+        var args = [].slice.call(arguments, 1);
+        var t = new Traverse(obj);
+        return t[key].apply(t, args);
+    };
+});
+
+var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
+    return key in obj;
+};
+
+},{}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19153,6 +19656,9 @@ var AncestorChart = /** @class */ (function () {
         while (stack.length) {
             var entry = stack.pop();
             var fam = this.options.data.getFam(entry.id);
+            // Assign random ID to the node so that parts of the tree can be repeated.
+            // TODO: Figure out how to make stable IDs for animations.
+            entry.id = "" + Math.random();
             if (!fam) {
                 continue;
             }
@@ -19204,7 +19710,7 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":36,"d3":34}],36:[function(require,module,exports){
+},{"./chart-util":39,"d3":34}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19252,10 +19758,14 @@ var ChartUtil = /** @class */ (function () {
     ChartUtil.prototype.linkHorizontal = function (s, d) {
         var midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
         var sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
-        var sy = s.y - s.data.height / 2 + s.data.indi.height;
+        var sy = s.y -
+            (s.data.indi && s.data.spouse &&
+                (s.data.height / 2 - s.data.indi.height) ||
+                0);
         var dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
         var dy = d.data.spouse ?
-            (s.data.parentsOfSpouse ? d.y + d.data.indi.height / 2 :
+            (s.data.parentsOfSpouse ?
+                d.y + (d.data.indi && (d.data.indi.height / 2) || 0) :
                 d.y - d.data.spouse.height / 2) :
             d.y;
         return "M " + sx + " " + sy + "\n            L " + midX + " " + sy + ",\n              " + midX + " " + dy + ",\n              " + dx + " " + dy;
@@ -19263,14 +19773,30 @@ var ChartUtil = /** @class */ (function () {
     /** Creates a path from parent to the child node (vertical layout). */
     ChartUtil.prototype.linkVertical = function (s, d) {
         var midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
-        var sx = s.x - s.data.width / 2 + s.data.indi.width;
+        var sx = s.x -
+            (s.data.indi && s.data.spouse &&
+                (s.data.width / 2 - s.data.indi.width) ||
+                0);
         var sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
         var dx = d.data.spouse ?
-            (s.data.parentsOfSpouse ? d.x + d.data.indi.width / 2 :
+            (s.data.parentsOfSpouse ?
+                d.x + (d.data.indi && (d.data.indi.width / 2) || 0) :
                 d.x - d.data.spouse.width / 2) :
             d.x;
         var dy = d.y - d.data.height / 2 + this.getIndiVSize(d.data) / 2;
         return "M " + sx + " " + sy + "\n            L " + sx + " " + midY + ",\n              " + dx + " " + midY + ",\n              " + dx + " " + dy;
+    };
+    ChartUtil.prototype.linkAdditionalMarriage = function (node) {
+        var nodeIndex = node.parent.children.findIndex(function (n) { return n.id === node.id; });
+        // Assert nodeIndex > 0.
+        var siblingNode = node.parent.children[nodeIndex - 1];
+        var sx = node.x + (node.data.indi.width - node.data.width) / 2;
+        var sy = node.y + (node.data.indi.height - node.data.height) / 2;
+        var dx = siblingNode.x +
+            (siblingNode.data.indi.width - siblingNode.data.width) / 2;
+        var dy = siblingNode.y +
+            (siblingNode.data.indi.height - siblingNode.data.height) / 2;
+        return "M " + sx + ", " + sy + "\n            L " + dx + ", " + dy;
     };
     ChartUtil.prototype.setPreferredIndiSize = function (indi) {
         var _a;
@@ -19394,6 +19920,9 @@ var ChartUtil = /** @class */ (function () {
             .attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
         this.options.renderer.render(nodeEnter);
         var link = function (parent, child) {
+            if (child.data.additionalMarriage) {
+                return _this.linkAdditionalMarriage(child);
+            }
             if (_this.options.horizontal) {
                 if (flipVertically) {
                     return _this.linkHorizontal(child, parent);
@@ -19413,7 +19942,9 @@ var ChartUtil = /** @class */ (function () {
             .data(links, function (d) { return d.id; })
             .enter()
             .insert('path', 'g')
-            .attr('class', 'link')
+            .attr('class', function (node) { return node.data.additionalMarriage ?
+            'link additional-marriage' :
+            'link'; })
             .attr('d', function (node) { return link(node.parent, node); });
         return nodes;
     };
@@ -19421,7 +19952,7 @@ var ChartUtil = /** @class */ (function () {
 }());
 exports.ChartUtil = ChartUtil;
 
-},{"d3":34,"d3-flextree":14}],37:[function(require,module,exports){
+},{"d3":34,"d3-flextree":14}],40:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Details of an individual based on Json input. */
@@ -19512,7 +20043,7 @@ var JsonDataProvider = /** @class */ (function () {
 }());
 exports.JsonDataProvider = JsonDataProvider;
 
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19544,21 +20075,27 @@ var DescendantChart = /** @class */ (function () {
                 }];
         }
         // Marriages.
-        return famIds.map(function (famId) {
-            var fam = _this.options.data.getFam(famId);
-            return {
+        var nodes = famIds.map(function (famId) {
+            var entry = {
                 id: famId,
                 indi: {
                     id: id,
-                },
-                spouse: {
-                    id: getSpouse(id, fam),
                 },
                 family: {
                     id: famId,
                 }
             };
+            var fam = _this.options.data.getFam(famId);
+            var spouse = getSpouse(id, fam);
+            if (spouse) {
+                entry.spouse = { id: spouse };
+            }
+            return entry;
         });
+        nodes.slice(1).forEach(function (node) {
+            node.additionalMarriage = true;
+        });
+        return nodes;
     };
     DescendantChart.prototype.getFamNode = function (famId) {
         var node = { id: famId, family: { id: famId } };
@@ -19584,19 +20121,23 @@ var DescendantChart = /** @class */ (function () {
         var stack = [];
         nodes.forEach(function (node) {
             if (node.family) {
-                stack.push(node.family.id);
+                stack.push(node);
             }
         });
         var _loop_1 = function () {
-            var famId = stack.pop();
-            var fam = this_1.options.data.getFam(famId);
+            var entry = stack.pop();
+            var fam = this_1.options.data.getFam(entry.family.id);
             var children = fam.getChildren();
             children.forEach(function (childId) {
                 var childNodes = _this.getNodes(childId);
                 childNodes.forEach(function (node) {
-                    node.parentId = famId;
+                    node.parentId = entry.id;
                     if (node.family) {
-                        stack.push(node.family.id);
+                        // Assign random ID to the node so that parts of the tree can be
+                        // repeated.
+                        // TODO: Figure out how to make stable IDs for animations.
+                        node.id = "" + Math.random();
+                        stack.push(node);
                     }
                 });
                 parents.push.apply(parents, childNodes);
@@ -19621,15 +20162,17 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":36,"d3":34}],39:[function(require,module,exports){
+},{"./chart-util":39,"d3":34}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var INDI_MIN_HEIGHT = 58;
 var INDI_MIN_WIDTH = 64;
-var FAM_MIN_HEIGHT = 15;
+var FAM_MIN_HEIGHT = 10;
 var FAM_MIN_WIDTH = 15;
 var IMAGE_WIDTH = 70;
+/** Minimum box height when an image is present. */
+var IMAGE_HEIGHT = 90;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text, textClass) {
     var x = d3.select('svg')
@@ -19722,7 +20265,10 @@ var DetailedRenderer = /** @class */ (function () {
     DetailedRenderer.prototype.getPreferredIndiSize = function (id) {
         var indi = this.options.data.getIndi(id);
         var details = getIndiDetails(indi);
-        var height = INDI_MIN_HEIGHT + details.length * 14;
+        var height = d3.max([
+            INDI_MIN_HEIGHT + details.length * 14,
+            indi.getImageUrl() && IMAGE_HEIGHT,
+        ]);
         var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text, 'details'); }));
         var width = d3.max([
             maxDetailsWidth + 22,
@@ -19744,10 +20290,10 @@ var DetailedRenderer = /** @class */ (function () {
      * Returns the relative position of the family box for the vertical layout.
      */
     DetailedRenderer.prototype.getFamPositionVertical = function (node) {
-        var indiWidth = node.indi && node.indi.width || INDI_MIN_WIDTH;
-        var spouseWidth = node.spouse && node.spouse.width || INDI_MIN_WIDTH;
+        var indiWidth = node.indi && node.indi.width || 0;
+        var spouseWidth = node.spouse && node.spouse.width || 0;
         var familyWidth = node.family.width;
-        if (indiWidth + spouseWidth <= familyWidth) {
+        if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
             return (indiWidth + spouseWidth - familyWidth) / 2;
         }
         if (familyWidth / 2 >= spouseWidth) {
@@ -19758,20 +20304,33 @@ var DetailedRenderer = /** @class */ (function () {
         }
         return indiWidth - familyWidth / 2;
     };
+    /**
+     * Returns the relative position of the family box for the horizontal layout.
+     */
+    DetailedRenderer.prototype.getFamPositionHorizontal = function (node) {
+        var indiHeight = node.indi && node.indi.height || 0;
+        var spouseHeight = node.spouse && node.spouse.height || 0;
+        var familyHeight = node.family.height;
+        if (!node.indi || !node.spouse) {
+            return (indiHeight + spouseHeight - familyHeight) / 2;
+        }
+        return indiHeight - familyHeight / 2;
+    };
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
-            return "translate(" + node.indi.width + ", " + (node.indi.height - node.family.height / 2) + ")";
+            return "translate(" + (node.indi && node.indi.width || node.spouse.width) + ", " + this.getFamPositionHorizontal(node) + ")";
         }
-        return "translate(" + this.getFamPositionVertical(node) + ", " + node.indi.height + ")";
+        return "translate(" + this.getFamPositionVertical(node) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
     };
     DetailedRenderer.prototype.render = function (selection) {
         var _this = this;
-        this.renderIndi(selection, function (node) { return node.indi; });
+        var indiSelection = selection.filter(function (node) { return !!node.data.indi; });
+        this.renderIndi(indiSelection, function (node) { return node.indi; });
         var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
             .append('g')
             .attr('transform', function (node) { return _this.options.horizontal ?
-            "translate(0, " + node.data.indi.height + ")" :
-            "translate(" + node.data.indi.width + ", 0)"; });
+            "translate(0, " + (node.data.indi && node.data.indi.height || 0) + ")" :
+            "translate(" + (node.data.indi && node.data.indi.width || 0) + ", 0)"; });
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
         var familySelection = selection.filter(function (node) { return !!node.data.family; })
             .append('g')
@@ -19788,6 +20347,7 @@ var DetailedRenderer = /** @class */ (function () {
         // Box.
         group.append('rect')
             .attr('rx', 5)
+            .attr('stroke-width', 0)
             .attr('width', function (node) { return indiFunc(node.data).width; })
             .attr('height', function (node) { return indiFunc(node.data).height; });
         // Clip path.
@@ -19863,6 +20423,12 @@ var DetailedRenderer = /** @class */ (function () {
         })
             .attr('clip-path', function (node) { return "url(#" + getClipId(node.data) + ")"; })
             .attr('href', function (node) { return getIndi(node).getImageUrl(); });
+        // Border on top.
+        group.append('rect')
+            .attr('rx', 5)
+            .attr('fill-opacity', 0)
+            .attr('width', function (node) { return indiFunc(node.data).width; })
+            .attr('height', function (node) { return indiFunc(node.data).height; });
     };
     DetailedRenderer.prototype.renderFamily = function (selection) {
         var _this = this;
@@ -19907,7 +20473,204 @@ var DetailedRenderer = /** @class */ (function () {
 }());
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"d3":34}],40:[function(require,module,exports){
+},{"d3":34}],43:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var parse_gedcom_1 = require("parse-gedcom");
+/** Returns the first entry with the given tag or undefined if not found. */
+function findTag(tree, tag) {
+    return tree.find(function (entry) { return entry.tag === tag; });
+}
+/** Returns all entries with the given tag. */
+function findTags(tree, tag) {
+    return tree.filter(function (entry) { return entry.tag === tag; });
+}
+/**
+ * Returns the identifier extracted from a pointer string.
+ * E.g. '@I123@' -> 'I123'
+ */
+function pointerToId(pointer) {
+    return pointer.substring(1, pointer.length - 1);
+}
+/** Extracts the first and last name from a GEDCOM name field. */
+function extractName(name) {
+    var arr = name.split('/');
+    if (arr.length === 1) {
+        return { firstName: arr[0].trim() };
+    }
+    return { firstName: arr[0].trim(), lastName: arr[1].trim() };
+}
+/** Maps month abbreviations used in GEDCOM to month numbers. */
+var MONTHS = new Map([
+    ['jan', 1],
+    ['feb', 2],
+    ['mar', 3],
+    ['apr', 4],
+    ['may', 5],
+    ['jun', 6],
+    ['jul', 7],
+    ['aug', 8],
+    ['sep', 9],
+    ['oct', 10],
+    ['nov', 11],
+    ['dec', 12],
+]);
+/** Parses the GEDCOM date into the Date structure. */
+function parseDate(parts) {
+    if (!parts || !parts.length) {
+        return undefined;
+    }
+    var result = {};
+    var firstPart = parts[0].toLowerCase();
+    if (firstPart === 'cal' || firstPart === 'abt' || firstPart === 'est') {
+        result.qualifier = firstPart;
+        parts = parts.slice(1);
+    }
+    if (parts.length && parts[parts.length - 1].match(/^\d\d\d\d$/)) {
+        result.year = Number(parts[parts.length - 1]);
+        parts = parts.slice(0, parts.length - 1);
+    }
+    if (parts.length) {
+        var lastPart = parts[parts.length - 1].toLowerCase();
+        if (MONTHS.has(lastPart)) {
+            result.month = MONTHS.get(lastPart);
+            parts = parts.slice(0, parts.length - 1);
+        }
+    }
+    if (parts.length && parts[0].match(/^\d\d?$/)) {
+        result.day = Number(parts[0]);
+    }
+    return result;
+}
+/** Parses a GEDCOM date or date range. */
+function getDate(dateTag) {
+    if (!dateTag || !dateTag.data) {
+        return undefined;
+    }
+    var parts = dateTag.data.split(' ');
+    var firstPart = parts[0].toLowerCase();
+    if (firstPart === 'bet') {
+        var i = parts.findIndex(function (x) { return x.toLowerCase() === 'and'; });
+        var from = parseDate(parts.slice(1, i));
+        var to = parseDate(parts.slice(i + 1));
+        return { dateRange: { from: from, to: to } };
+    }
+    if (firstPart === 'bef' || firstPart === 'aft') {
+        var date_1 = parseDate(parts.slice(1));
+        if (firstPart === 'bef') {
+            return { dateRange: { to: date_1 } };
+        }
+        return { dateRange: { from: date_1 } };
+    }
+    var date = parseDate(parts);
+    if (date) {
+        return { date: date };
+    }
+    return undefined;
+}
+/**
+ * Creates a JsonEvent object from a GEDCOM entry.
+ * Used for BIRT, DEAT and MARR tags.
+ */
+function createEvent(entry) {
+    if (!entry) {
+        return undefined;
+    }
+    var dateTag = findTag(entry.tree, 'DATE');
+    var date = getDate(dateTag);
+    var placeTag = findTag(entry.tree, 'PLAC');
+    var place = placeTag && placeTag.data;
+    if (date || place) {
+        var result = date || {};
+        if (place) {
+            result.place = place;
+        }
+        result.confirmed = true;
+        return result;
+    }
+    if (entry.data && entry.data.toLowerCase() === 'y') {
+        return { confirmed: true };
+    }
+    return undefined;
+}
+/** Creates a JsonIndi object from an INDI entry in GEDCOM. */
+function createIndi(entry) {
+    var id = pointerToId(entry.pointer);
+    var fams = findTags(entry.tree, 'FAMS').map(function (entry) { return pointerToId(entry.data); });
+    var indi = { id: id, fams: fams };
+    // Name.
+    var nameTag = findTag(entry.tree, 'NAME');
+    if (nameTag) {
+        var _a = extractName(nameTag.data), firstName = _a.firstName, lastName = _a.lastName;
+        if (firstName) {
+            indi.firstName = firstName;
+        }
+        if (lastName) {
+            indi.lastName = lastName;
+        }
+    }
+    // Sex.
+    var sexTag = findTag(entry.tree, 'SEX');
+    if (sexTag) {
+        indi.sex = sexTag.data;
+    }
+    // Family with parents.
+    var famcTag = findTag(entry.tree, 'FAMC');
+    if (famcTag) {
+        indi.famc = pointerToId(famcTag.data);
+    }
+    // Image URL.
+    var objeTag = findTag(entry.tree, 'OBJE');
+    if (objeTag) {
+        var fileTag = findTag(objeTag.tree, 'FILE');
+        if (fileTag) {
+            indi.imageUrl = fileTag.data;
+        }
+    }
+    // Birth date and place.
+    var birth = createEvent(findTag(entry.tree, 'BIRT'));
+    if (birth) {
+        indi.birth = birth;
+    }
+    // Death date and place.
+    var death = createEvent(findTag(entry.tree, 'DEAT'));
+    if (death) {
+        indi.death = death;
+    }
+    return indi;
+}
+/** Creates a JsonFam object from an FAM entry in GEDCOM. */
+function createFam(entry) {
+    var id = pointerToId(entry.pointer);
+    var children = findTags(entry.tree, 'CHIL').map(function (entry) { return pointerToId(entry.data); });
+    var fam = { id: id, children: children };
+    // Husband.
+    var husbTag = findTag(entry.tree, 'HUSB');
+    if (husbTag) {
+        fam.husb = pointerToId(husbTag.data);
+    }
+    // Wife.
+    var wifeTag = findTag(entry.tree, 'WIFE');
+    if (wifeTag) {
+        fam.wife = pointerToId(wifeTag.data);
+    }
+    // Marriage
+    var marriage = createEvent(findTag(entry.tree, 'MARR'));
+    if (marriage) {
+        fam.marriage = marriage;
+    }
+    return fam;
+}
+/** Parses a GEDCOM file into a JsonGedcomData structure. */
+function gedcomToJson(gedcomContents) {
+    var gedcom = parse_gedcom_1.parse(gedcomContents);
+    var indis = findTags(gedcom, 'INDI').map(createIndi);
+    var fams = findTags(gedcom, 'FAM').map(createFam);
+    return { indis: indis, fams: fams };
+}
+exports.gedcomToJson = gedcomToJson;
+
+},{"parse-gedcom":36}],44:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ancestor_chart_1 = require("./ancestor-chart");
@@ -19946,19 +20709,23 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"./ancestor-chart":35,"./chart-util":36,"./descendant-chart":38}],41:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":41}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var data_1 = require("./data");
-function createChartOptions(json, options) {
-    var data = new data_1.JsonDataProvider(json);
+function createChartOptions(options) {
+    var data = new data_1.JsonDataProvider(options.json);
     var indiHrefFunc = options.indiUrl ?
         function (id) { return options.indiUrl.replace('${id}', id); } :
         undefined;
     var famHrefFunc = options.famUrl ?
         function (id) { return options.famUrl.replace('${id}', id); } :
         undefined;
+    // If startIndi nor startFam is provided, select the first indi in the data.
+    if (!options.startIndi && !options.startFam) {
+        options.startIndi = options.json.indis[0].id;
+    }
     return {
         data: data,
         renderer: new options.renderer({
@@ -19975,15 +20742,21 @@ function createChartOptions(json, options) {
 }
 /** A simplified API for rendering a chart based on the given RenderOptions. */
 function renderChart(options) {
-    d3.json(options.jsonUrl).then(function (json) {
-        var chartOptions = createChartOptions(json, options);
-        var chart = new options.chartType(chartOptions);
-        chart.render();
-    });
+    if (!options.json) {
+        // First, load the data.
+        d3.json(options.jsonUrl).then(function (json) {
+            options.json = json;
+            renderChart(options);
+        });
+        return;
+    }
+    var chartOptions = createChartOptions(options);
+    var chart = new options.chartType(chartOptions);
+    chart.render();
 }
 exports.renderChart = renderChart;
 
-},{"./data":37,"d3":34}],42:[function(require,module,exports){
+},{"./data":40,"d3":34}],46:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");

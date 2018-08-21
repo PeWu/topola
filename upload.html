@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="topola.css"/>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="bundle.js"></script>
+    <script>
+      function render(gedcom) {
+        document.getElementById('loading').style.display = 'none';
+        var svg = document.getElementById('graph');
+        // Clear previous chart.
+        svg.innerHTML = '';
+        // Show chart.
+        svg.style.display = '';
+        var json = topola.gedcomToJson(gedcom);
+        topola.renderChart({
+          json,
+          svgSelector: '#graph',
+          chartType: topola.HourglassChart,
+          renderer: topola.DetailedRenderer,
+        });
+      }
+
+      function handleFiles(files) {
+        document.getElementById('graph').style.display = '';
+        var reader = new FileReader();
+        reader.onload = (evt) => render(evt.target.result);
+        reader.readAsText(files[0]);
+      }
+
+      function loadFromUrl(url) {
+        // Hide chart.
+        document.getElementById('graph').style.display = 'none';
+        document.getElementById('loading').style.display = '';
+        // Load data.
+        d3.text('https://cors-anywhere.herokuapp.com/' + url, render);
+      }
+
+      function loadFromInputUrl() {
+        loadFromUrl(document.getElementById('gedcomUrl').value);
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Select input</h1>
+    <div>
+      <input
+          type="file"
+          id="fileInput"
+          onchange="handleFiles(this.files)"
+          style="display: none">
+      <label for="fileInput" id="fileUploadLink">Select a file</label>
+      or load by URL:
+      <input type="text" id="gedcomUrl">
+      <input type="submit" value="Load" onclick="loadFromInputUrl()">
+      <p><i>The files are only processed in the browser and are not sent to a server.</i>
+      <h2>Examples</h2>
+      <ul>
+        <li><a href='#'
+          onclick="loadFromUrl('https://webtreeprint.com/tp_downloader.php?path=famous_gedcoms/shakespeare.ged')">
+            shakespeare.ged
+        </a>
+        (from <a href="https://webtreeprint.com/tp_famous_gedcoms.php">webtreeprint.com</a>)
+        <li><a href='#'
+          onclick="loadFromUrl('https://webtreeprint.com/tp_downloader.php?path=famous_gedcoms/bronte.ged')">
+            bronte.ged
+        </a>
+        (from <a href="https://webtreeprint.com/tp_famous_gedcoms.php">webtreeprint.com</a>)
+        <li><a href='#'
+          onclick="loadFromUrl('https://webtreeprint.com/tp_downloader.php?path=famous_gedcoms/pres.ged')">
+            pres.ged
+        </a>
+        (from <a href="https://webtreeprint.com/tp_famous_gedcoms.php">webtreeprint.com</a>)
+        <li><a href='#'
+          onclick="loadFromUrl('https://raw.githubusercontent.com/ligurio/gedcom-samples/master/george_washington.ged')">
+            george_washington.ged
+        </a>
+        (from <a href="https://github.com/ligurio/gedcom-samples">github.com/ligurio/gedcom-samples</a>)
+        <li><a href='#'
+          onclick="loadFromUrl('https://raw.githubusercontent.com/ligurio/gedcom-samples/master/wmm.ged')">
+            wmm.ged
+        </a>
+        (from <a href="https://github.com/ligurio/gedcom-samples">github.com/ligurio/gedcom-samples</a>)
+        <li><a href='#'
+          onclick="loadFromUrl('http://www.genpol.com/module-Downloads-prep_hand_out-lid-32.html')">
+            Karol Wojtyła
+        </a>
+        (from <a href="http://www.genpol.com/module-Downloads-display-lid-32.html">GENPOL</a>)
+      </ul>
+    </div>
+    <h1>Tree</h1>
+    <div id="loading" style="display: none">Loading...</div>
+    <svg class="graph" id="graph" style="display: none"/>
+  </body>
+</html>

@@ -12,8 +12,12 @@ text {
 
 .link {
   fill: none;
-  stroke: #777;
+  stroke: #000;
   stroke-width: 1px;
+}
+
+.additional-marriage {
+  stroke-dasharray: 2;
 }
 
 rect {
@@ -97,4 +101,14 @@ body {
 
 .generation-1 .detailed rect, .generation11 .detailed rect {
   fill: #ffeddb;
+}
+
+#fileUploadLink {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#gedcomUrl {
+  width: 400px;
 }
