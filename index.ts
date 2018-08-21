@@ -4,6 +4,7 @@ export * from './src/chart-util';
 export * from './src/data';
 export * from './src/descendant-chart';
 export * from './src/detailed-renderer';
+export * from './src/gedcom';
 export * from './src/hourglass-chart';
 export * from './src/simple-api';
 export * from './src/simple-renderer';

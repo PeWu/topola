@@ -22,8 +22,6 @@ export interface DateOrRange {
 
 
 export interface JsonEvent extends DateOrRange {
-  date?: Date;
-  dateRange?: DateRange;
   place?: string;
   confirmed?: boolean;
 }

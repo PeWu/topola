@@ -15,7 +15,11 @@ interface RendererType {
 
 
 export interface RenderOptions {
-  jsonUrl: string;
+  // Data to be rendered.
+  json?: JsonGedcomData;
+  // If `jsonUrl` is provided but not `json`, data is loaded from `jsonUrl`
+  // first.
+  jsonUrl?: string;
   startIndi?: string;
   startFam?: string;
   indiUrl?: string;
@@ -27,15 +31,19 @@ export interface RenderOptions {
 }
 
 
-function createChartOptions(
-    json: JsonGedcomData, options: RenderOptions): ChartOptions {
-  const data = new JsonDataProvider(json);
+function createChartOptions(options: RenderOptions): ChartOptions {
+  const data = new JsonDataProvider(options.json);
   const indiHrefFunc = options.indiUrl ?
       (id: string) => options.indiUrl.replace('${id}', id) :
       undefined;
   const famHrefFunc = options.famUrl ?
       (id: string) => options.famUrl.replace('${id}', id) :
       undefined;
+
+  // If startIndi nor startFam is provided, select the first indi in the data.
+  if (!options.startIndi && !options.startFam) {
+    options.startIndi = options.json.indis[0].id;
+  }
   return {
     data,
     renderer: new options.renderer({
@@ -54,9 +62,16 @@ function createChartOptions(
 
 /** A simplified API for rendering a chart based on the given RenderOptions. */
 export function renderChart(options: RenderOptions): void {
-  d3.json(options.jsonUrl).then((json) => {
-    const chartOptions = createChartOptions(json as JsonGedcomData, options);
-    const chart = new options.chartType(chartOptions);
-    chart.render();
-  });
+  if (!options.json) {
+    // First, load the data.
+    d3.json(options.jsonUrl).then((json: JsonGedcomData) => {
+      options.json = json;
+      renderChart(options);
+    });
+    return;
+  }
+
+  const chartOptions = createChartOptions(options);
+  const chart = new options.chartType(chartOptions);
+  chart.render();
 }

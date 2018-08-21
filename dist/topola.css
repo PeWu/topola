@@ -102,3 +102,13 @@ body {
 .generation-1 .detailed rect, .generation11 .detailed rect {
   fill: #ffeddb;
 }
+
+#fileUploadLink {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#gedcomUrl {
+  width: 400px;
+}

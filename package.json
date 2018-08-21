@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "d3": "^5.4.0",
-    "d3-flextree": "^2.1.1"
+    "d3-flextree": "^2.1.1",
+    "parse-gedcom": "^1.0.3"
   }
 }
