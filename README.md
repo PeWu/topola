@@ -20,6 +20,8 @@ npm start
 
 https://pewu.github.io/topola/
 
+Try it with your own GEDCOM file: https://pewu.github.io/topola/upload
+
 # Future
 
 The aim of this project is to create a feature-rich library for creating interactive genealogy visualizations for the Web.
