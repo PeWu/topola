@@ -8,12 +8,11 @@
     <script src="bundle.js"></script>
     <script>
       function render(gedcom) {
-        document.getElementById('loading').style.display = 'none';
-        var svg = document.getElementById('graph');
-        // Clear previous chart.
-        svg.innerHTML = '';
         // Show chart.
-        svg.style.display = '';
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('chart').style.display = '';
+        // Clear previous chart.
+        document.getElementById('graph').innerHTML = '';
         var json = topola.gedcomToJson(gedcom);
         topola.renderChart({
           json,
@@ -24,7 +23,6 @@
       }
 
       function handleFiles(files) {
-        document.getElementById('graph').style.display = '';
         var reader = new FileReader();
         reader.onload = (evt) => render(evt.target.result);
         reader.readAsText(files[0]);
@@ -32,7 +30,7 @@
 
       function loadFromUrl(url) {
         // Hide chart.
-        document.getElementById('graph').style.display = 'none';
+        document.getElementById('chart').style.display = 'none';
         document.getElementById('loading').style.display = '';
         // Load data.
         d3.text('https://cors-anywhere.herokuapp.com/' + url, render);
@@ -40,6 +38,25 @@
 
       function loadFromInputUrl() {
         loadFromUrl(document.getElementById('gedcomUrl').value);
+      }
+
+      function download(elementId) {
+        var contents = document.getElementById(elementId).outerHTML;
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:attachment/text,' + encodeURI(contents);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = elementId + '.svg';
+        hiddenElement.click();
+      }
+
+      function print(elementId) {
+        var contents = document.getElementById(elementId).outerHTML;
+        var printWindow = window.open('', 'PRINT');
+
+        printWindow.document.write(contents);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
       }
     </script>
   </head>
@@ -90,6 +107,12 @@
     </div>
     <h1>Tree</h1>
     <div id="loading" style="display: none">Loading...</div>
-    <svg class="graph" id="graph" style="display: none"/>
+    <div id="chart" style="display: none">
+      <div>
+          <button onclick="download('graph')">Download SVG</button>
+          <button onclick="print('graph')">Print</button>
+      </div>
+      <svg class="graph" id="graph"/>
+    </div>
   </body>
 </html>
