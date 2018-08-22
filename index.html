@@ -43,16 +43,51 @@
         renderer: topola.SimpleRenderer,
         horizontal: true,
       });
+
+      function download(elementId) {
+        var contents = document.getElementById(elementId).outerHTML;
+        var hiddenElement = document.createElement('a');
+        hiddenElement.href = 'data:attachment/text,' + encodeURI(contents);
+        hiddenElement.target = '_blank';
+        hiddenElement.download = elementId + '.svg';
+        hiddenElement.click();
+      }
+
+      function print(elementId) {
+        var contents = document.getElementById(elementId).outerHTML;
+        var printWindow = window.open('', 'PRINT');
+
+        printWindow.document.write(contents);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      }
     </script>
   </head>
   <body>
     <h1>Hourglass – vertical layout</h1>
+    <div>
+        <button onclick="download('hourglass')">Download SVG</button>
+        <button onclick="print('hourglass')">Print</button>
+    </div>
     <svg class="graph" id="hourglass"/>
     <h1>Ancestors – horizontal layout</h1>
+    <div>
+        <button onclick="download('ancestors')">Download SVG</button>
+        <button onclick="print('ancestors')">Print</button>
+    </div>
     <svg class="graph" id="ancestors"/>
     <h1>Tree with images</h1>
+    <div>
+        <button onclick="download('tudor')">Download SVG</button>
+        <button onclick="print('tudor')">Print</button>
+    </div>
     <svg class="graph" id="tudor"/>
     <h1>Descendants – simple boxes</h1>
+    <div>
+        <button onclick="download('descendants')">Download SVG</button>
+        <button onclick="print('descendants')">Print</button>
+    </div>
     <svg class="graph" id="descendants"/>
   </body>
 </html>

@@ -19837,6 +19837,7 @@ var ChartUtil = /** @class */ (function () {
             ];
         })
             .spacing(function (a, b) { return H_SPACING; });
+        d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
         d3.select(svgSelector).append('g');
         // Assign generation number.
         root.each(function (node) {
@@ -20286,6 +20287,25 @@ var DetailedRenderer = /** @class */ (function () {
         var width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
         return [width, height];
     };
+    DetailedRenderer.prototype.render = function (selection) {
+        var _this = this;
+        selection = selection.append('g').attr('class', 'detailed');
+        var indiSelection = selection.filter(function (node) { return !!node.data.indi; });
+        this.renderIndi(indiSelection, function (node) { return node.indi; });
+        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
+            .append('g')
+            .attr('transform', function (node) { return _this.options.horizontal ?
+            "translate(0, " + (node.data.indi && node.data.indi.height || 0) + ")" :
+            "translate(" + (node.data.indi && node.data.indi.width || 0) + ", 0)"; });
+        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
+        var familySelection = selection.filter(function (node) { return !!node.data.family; })
+            .append('g')
+            .attr('transform', function (node) { return _this.getFamTransform(node.data); });
+        this.renderFamily(familySelection);
+    };
+    DetailedRenderer.prototype.getCss = function () {
+        return "\n.detailed text {\n  font: 12px verdana;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
+    };
     /**
      * Returns the relative position of the family box for the vertical layout.
      */
@@ -20322,25 +20342,9 @@ var DetailedRenderer = /** @class */ (function () {
         }
         return "translate(" + this.getFamPositionVertical(node) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
     };
-    DetailedRenderer.prototype.render = function (selection) {
-        var _this = this;
-        var indiSelection = selection.filter(function (node) { return !!node.data.indi; });
-        this.renderIndi(indiSelection, function (node) { return node.indi; });
-        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
-            .append('g')
-            .attr('transform', function (node) { return _this.options.horizontal ?
-            "translate(0, " + (node.data.indi && node.data.indi.height || 0) + ")" :
-            "translate(" + (node.data.indi && node.data.indi.width || 0) + ", 0)"; });
-        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
-        var familySelection = selection.filter(function (node) { return !!node.data.family; })
-            .append('g')
-            .attr('transform', function (node) { return _this.getFamTransform(node.data); });
-        this.renderFamily(familySelection);
-    };
     DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
         // Optionally add a link.
-        selection = selection.append('g').attr('class', 'detailed');
         var group = this.options.indiHrefFunc ?
             selection.append('a').attr('href', function (node) { return _this.options.indiHrefFunc(indiFunc(node.data).id); }) :
             selection;
@@ -20766,7 +20770,7 @@ var MIN_WIDTH = 50;
 function getLength(text) {
     var x = d3.select('svg')
         .append('g')
-        .attr('class', 'node')
+        .attr('class', 'simple node')
         .append('text')
         .attr('class', 'name')
         .text(text);
@@ -20807,11 +20811,15 @@ var SimpleRenderer = /** @class */ (function () {
         return [0, 0];
     };
     SimpleRenderer.prototype.render = function (selection) {
+        selection = selection.append('g').attr('class', 'simple');
         this.renderIndi(selection, function (node) { return node.indi; });
         var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
             .append('g')
             .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
+    };
+    SimpleRenderer.prototype.getCss = function () {
+        return "\n.simple text {\n  font: 12px sans-serif;\n}\n\n.simple .name {\n  font-weight: bold;\n}\n\n.simple rect {\n  fill: #fff;\n  stroke: black;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}";
     };
     SimpleRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
