@@ -11,7 +11,7 @@ const MIN_WIDTH = 50;
 function getLength(text: string) {
   const x = d3.select('svg')
                 .append('g')
-                .attr('class', 'node')
+                .attr('class', 'simple node')
                 .append('text')
                 .attr('class', 'name')
                 .text(text);
@@ -62,6 +62,7 @@ export class SimpleRenderer implements Renderer {
   }
 
   render(selection: TreeNodeSelection): void {
+    selection = selection.append('g').attr('class', 'simple');
     this.renderIndi(selection, (node) => node.indi);
     const spouseSelection =
         selection.filter((node) => !!node.data.spouse)
@@ -70,6 +71,32 @@ export class SimpleRenderer implements Renderer {
                 'transform',
                 (node) => `translate(0, ${node.data.indi.height})`);
     this.renderIndi(spouseSelection, (node) => node.spouse);
+  }
+
+  getCss() {
+    return `
+.simple text {
+  font: 12px sans-serif;
+}
+
+.simple .name {
+  font-weight: bold;
+}
+
+.simple rect {
+  fill: #fff;
+  stroke: black;
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.additional-marriage {
+  stroke-dasharray: 2;
+}`;
   }
 
   private renderIndi(

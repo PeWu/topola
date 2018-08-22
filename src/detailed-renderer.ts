@@ -149,48 +149,8 @@ export class DetailedRenderer implements Renderer {
     return [width, height];
   }
 
-  /**
-   * Returns the relative position of the family box for the vertical layout.
-   */
-  getFamPositionVertical(node: TreeNode): number {
-    const indiWidth = node.indi && node.indi.width || 0;
-    const spouseWidth = node.spouse && node.spouse.width || 0;
-    const familyWidth = node.family.width;
-    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
-      return (indiWidth + spouseWidth - familyWidth) / 2;
-    }
-    if (familyWidth / 2 >= spouseWidth) {
-      return indiWidth + spouseWidth - familyWidth;
-    }
-    if (familyWidth / 2 >= indiWidth) {
-      return 0;
-    }
-    return indiWidth - familyWidth / 2;
-  }
-
-  /**
-   * Returns the relative position of the family box for the horizontal layout.
-   */
-  getFamPositionHorizontal(node: TreeNode): number {
-    const indiHeight = node.indi && node.indi.height || 0;
-    const spouseHeight = node.spouse && node.spouse.height || 0;
-    const familyHeight = node.family.height;
-    if (!node.indi || !node.spouse) {
-      return (indiHeight + spouseHeight - familyHeight) / 2;
-    }
-    return indiHeight - familyHeight / 2;
-  }
-
-  getFamTransform(node: TreeNode): string {
-    if (this.options.horizontal) {
-      return `translate(${node.indi && node.indi.width || node.spouse.width}, ${
-          this.getFamPositionHorizontal(node)})`;
-    }
-    return `translate(${this.getFamPositionVertical(node)}, ${
-        node.indi && node.indi.height || node.spouse.height})`;
-  }
-
   render(selection: TreeNodeSelection): void {
+    selection = selection.append('g').attr('class', 'detailed');
     const indiSelection = selection.filter((node) => !!node.data.indi);
     this.renderIndi(indiSelection, (node) => node.indi);
     const spouseSelection =
@@ -211,11 +171,137 @@ export class DetailedRenderer implements Renderer {
     this.renderFamily(familySelection);
   }
 
+  getCss() {
+    return `
+.detailed text {
+  font: 12px verdana;
+}
+
+.detailed .name {
+  font-weight: bold;
+}
+
+.link {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.additional-marriage {
+  stroke-dasharray: 2;
+}
+
+.detailed rect {
+  stroke: black;
+}
+
+.detailed {
+  stroke-width: 2px;
+}
+
+.detailed .details {
+  font-size: 10px;
+}
+
+.detailed .id {
+  font-size: 10px;
+  font-style: italic;
+}
+
+.detailed rect {
+  fill: #ffffdd;
+}
+
+.generation-11 .detailed rect, .generation1 .detailed rect {
+  fill: #edffdb;
+}
+
+.generation-10 .detailed rect, .generation2 .detailed rect {
+  fill: #dbffdb;
+}
+
+.generation-9 .detailed rect, .generation3 .detailed rect {
+  fill: #dbffed;
+}
+
+.generation-8 .detailed rect, .generation4 .detailed rect {
+  fill: #dbffff;
+}
+
+.generation-7 .detailed rect, .generation5 .detailed rect {
+  fill: #dbedff;
+}
+
+.generation-6 .detailed rect, .generation6 .detailed rect {
+  fill: #dbdbff;
+}
+
+.generation-5 .detailed rect, .generation7 .detailed rect {
+  fill: #eddbff;
+}
+
+.generation-4 .detailed rect, .generation8 .detailed rect {
+  fill: #ffdbff;
+}
+
+.generation-3 .detailed rect, .generation9 .detailed rect {
+  fill: #ffdbed;
+}
+
+.generation-2 .detailed rect, .generation10 .detailed rect {
+  fill: #ffdbdb;
+}
+
+.generation-1 .detailed rect, .generation11 .detailed rect {
+  fill: #ffeddb;
+}`;
+  }
+
+  /**
+   * Returns the relative position of the family box for the vertical layout.
+   */
+  private getFamPositionVertical(node: TreeNode): number {
+    const indiWidth = node.indi && node.indi.width || 0;
+    const spouseWidth = node.spouse && node.spouse.width || 0;
+    const familyWidth = node.family.width;
+    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
+      return (indiWidth + spouseWidth - familyWidth) / 2;
+    }
+    if (familyWidth / 2 >= spouseWidth) {
+      return indiWidth + spouseWidth - familyWidth;
+    }
+    if (familyWidth / 2 >= indiWidth) {
+      return 0;
+    }
+    return indiWidth - familyWidth / 2;
+  }
+
+  /**
+   * Returns the relative position of the family box for the horizontal layout.
+   */
+  private getFamPositionHorizontal(node: TreeNode): number {
+    const indiHeight = node.indi && node.indi.height || 0;
+    const spouseHeight = node.spouse && node.spouse.height || 0;
+    const familyHeight = node.family.height;
+    if (!node.indi || !node.spouse) {
+      return (indiHeight + spouseHeight - familyHeight) / 2;
+    }
+    return indiHeight - familyHeight / 2;
+  }
+
+  private getFamTransform(node: TreeNode): string {
+    if (this.options.horizontal) {
+      return `translate(${node.indi && node.indi.width || node.spouse.width}, ${
+          this.getFamPositionHorizontal(node)})`;
+    }
+    return `translate(${this.getFamPositionVertical(node)}, ${
+        node.indi && node.indi.height || node.spouse.height})`;
+  }
+
   private renderIndi(
       selection: TreeNodeSelection,
       indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
-    selection = selection.append('g').attr('class', 'detailed');
     const group = this.options.indiHrefFunc ?
         selection.append('a').attr(
             'href',
@@ -324,7 +410,7 @@ export class DetailedRenderer implements Renderer {
         .attr('height', (node) => indiFunc(node.data).height);
   }
 
-  renderFamily(selection: TreeNodeSelection) {
+  private renderFamily(selection: TreeNodeSelection) {
     selection = selection.append('g').attr('class', 'detailed');
     const group = this.options.famHrefFunc ?
         selection.append('a').attr(

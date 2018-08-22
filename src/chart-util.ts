@@ -153,6 +153,7 @@ export class ChartUtil {
             })
             .spacing((a, b) => H_SPACING);
 
+    d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
     d3.select(svgSelector).append('g');
 
     // Assign generation number.

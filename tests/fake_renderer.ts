@@ -11,5 +11,9 @@ export class FakeRenderer implements Renderer {
     return [0, 0];
   }
 
-  render(selection: TreeNodeSelection): void {}
+  render(selection: TreeNodeSelection) {}
+
+  getCss() {
+    return '';
+  }
 }

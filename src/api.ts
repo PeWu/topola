@@ -75,6 +75,7 @@ export interface Renderer {
   getPreferredIndiSize(id: string): [number, number];
   getPreferredFamSize(id: string): [number, number];
   render(selection: TreeNodeSelection): void;
+  getCss(): string;
 }
 
 
