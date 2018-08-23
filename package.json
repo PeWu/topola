@@ -1,7 +1,7 @@
 {
   "name": "topola",
   "version": "1.0.0",
-  "description": "",
+  "description": "Topola – online genealogy visualization",
   "main": "index.ts",
   "scripts": {
     "build": "browserify index.ts -p [ tsify ] -o dist/bundle.js --s topola",
@@ -34,5 +34,19 @@
     "d3": "^5.4.0",
     "d3-flextree": "^2.1.1",
     "parse-gedcom": "^1.0.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PeWu/topola.git"
+  },
+  "homepage": "https://github.com/PeWu/topola",
+  "bugs": {
+    "url": "https://github.com/PeWu/topola/issues"
+  },
+  "keywords": [
+    "gedcom",
+    "geneaology",
+    "visualization",
+    "family tree"
+  ]
 }
