@@ -1,3 +1,4 @@
+/// <reference path="./jsdom-global.d.ts" />
 import * as jsdomGlobal from 'jsdom-global';
 
 import {AncestorChart} from '../src/ancestor-chart';
