@@ -2,9 +2,10 @@
   "name": "topola",
   "version": "1.0.0",
   "description": "Topola – online genealogy visualization",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "browserify index.ts -p [ tsify ] -o demo/bundle.js --s topola",
+    "build": "tsc",
     "watch": "watchify index.ts -p [ tsify ] -o demo/bundle.js --s topola --debug",
     "server": "browser-sync start --server demo --files demo",
     "start": "concurrently \"npm run watch\" \"npm run server\"",

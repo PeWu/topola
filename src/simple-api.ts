@@ -4,12 +4,12 @@ import {Chart, ChartOptions, Renderer, RendererOptions} from './api';
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
 
 
-interface ChartType {
+export interface ChartType {
   new(options: ChartOptions): Chart;
 }
 
 
-interface RendererType {
+export interface RendererType {
   new(options: RendererOptions<IndiDetails, FamDetails>): Renderer;
 }
 
