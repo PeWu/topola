@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "watch": "watchify index.ts -p [ tsify ] -o demo/bundle.js --s topola --debug",
+    "build-demo": "browserify src/index.ts -p [ tsify ] -o demo/bundle.js --s topola",
+    "watch": "watchify src/index.ts -p [ tsify ] -o demo/bundle.js --s topola --debug",
     "server": "browser-sync start --server demo --files demo",
     "start": "concurrently \"npm run watch\" \"npm run server\"",
     "fix": "gts fix",
