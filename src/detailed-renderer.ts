@@ -14,14 +14,10 @@ const IMAGE_HEIGHT = 90;
 
 /** Calculates the length of the given text in pixels when rendered. */
 export function getLength(text: string, textClass: string) {
-  const x = d3.select('svg')
-                .append('g')
-                .attr('class', 'detailed node')
-                .append('text')
-                .attr('class', textClass)
-                .text(text);
+  const g = d3.select('svg').append('g').attr('class', 'detailed node');
+  const x = g.append('text').attr('class', textClass).text(text);
   const w = (x.node() as SVGTextContentElement).getComputedTextLength();
-  x.remove();
+  g.remove();
   return w;
 }
 

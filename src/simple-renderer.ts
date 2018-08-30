@@ -9,14 +9,10 @@ const MIN_WIDTH = 50;
 
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text: string) {
-  const x = d3.select('svg')
-                .append('g')
-                .attr('class', 'simple node')
-                .append('text')
-                .attr('class', 'name')
-                .text(text);
+  const g = d3.select('svg').append('g').attr('class', 'simple node');
+  const x = g.append('text').attr('class', 'name').text(text);
   const w = (x.node() as SVGTextContentElement).getComputedTextLength();
-  x.remove();
+  g.remove();
   return w;
 }
 
