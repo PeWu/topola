@@ -24,3 +24,10 @@ body {
 #gedcomUrl {
   width: 400px;
 }
+
+.container {
+  max-width: 800px;
+  max-height: 600px;
+  display: inline-block;
+  overflow: auto;
+}

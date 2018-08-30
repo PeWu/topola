@@ -19,6 +19,10 @@
           svgSelector: '#graph',
           chartType: topola.HourglassChart,
           renderer: topola.DetailedRenderer,
+        }).then((info) => {
+          var parent = document.getElementById('graph').parentElement;
+          parent.scrollLeft = info.origin[0] - parent.clientWidth / 2;
+          parent.scrollTop = info.origin[1] - parent.clientHeight / 2;
         });
       }
 
@@ -112,7 +116,9 @@
           <button onclick="download('graph')">Download SVG</button>
           <button onclick="print('graph')">Print</button>
       </div>
-      <svg class="graph" id="graph"/>
+      <div class="container">
+        <svg class="graph" id="graph"/>
+      </div>
     </div>
   </body>
 </html>
