@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {Chart, ChartOptions, Fam, Indi, TreeNode} from './api';
+import {Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode} from './api';
 import {ChartUtil} from './chart-util';
 
 
@@ -85,9 +85,11 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
    * Renders the tree, calling the provided renderer to draw boxes for
    * individuals.
    */
-  render(): void {
+  render(): ChartInfo {
     const root = this.createHierarchy();
     const nodes = this.util.renderChart(root, true);
-    this.util.updateSvgDimensions(nodes);
+    const info = this.util.getChartInfo(nodes);
+    this.util.updateSvgDimensions(info);
+    return info;
   }
 }

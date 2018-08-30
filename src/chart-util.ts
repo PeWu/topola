@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {flextree} from 'd3-flextree';
 
-import {ChartOptions, TreeIndi, TreeNode} from './api';
+import {ChartInfo, ChartOptions, TreeIndi, TreeNode} from './api';
 
 /** Horizontal distance between boxes. */
 const H_SPACING = 15;
@@ -18,7 +18,7 @@ export class ChartUtil {
   constructor(readonly options: ChartOptions) {}
 
   /** Returns the horizontal size. */
-  getHSize(node: TreeNode): number {
+  private getHSize(node: TreeNode): number {
     if (this.options.horizontal) {
       return (node.indi && node.indi.height || 0) +
           (node.spouse && node.spouse.height || 0);
@@ -29,11 +29,11 @@ export class ChartUtil {
   }
 
   /** Returns the vertical size. */
-  getVSize(node: TreeNode): number {
+  private getVSize(node: TreeNode): number {
     return this.getIndiVSize(node) + this.getFamVSize(node);
   }
 
-  getFamVSize(node: TreeNode): number {
+  private getFamVSize(node: TreeNode): number {
     if (this.options.horizontal) {
       return node.family && node.family.width || 0;
     }
@@ -41,7 +41,7 @@ export class ChartUtil {
   }
 
   /** Returns the vertical size of individual boxes. */
-  getIndiVSize(node: TreeNode): number {
+  private getIndiVSize(node: TreeNode): number {
     if (this.options.horizontal) {
       return d3.max(
           [node.indi && node.indi.width, node.spouse && node.spouse.width]);
@@ -51,7 +51,7 @@ export class ChartUtil {
   }
 
   /** Creates a path from parent to the child node (horizontal layout). */
-  linkHorizontal(
+  private linkHorizontal(
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
     const midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
     const sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
@@ -72,7 +72,7 @@ export class ChartUtil {
   }
 
   /** Creates a path from parent to the child node (vertical layout). */
-  linkVertical(
+  private linkVertical(
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
     const midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
     const sx = s.x -
@@ -92,7 +92,7 @@ export class ChartUtil {
               ${dx} ${dy}`;
   }
 
-  linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
+  private linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
     const nodeIndex = node.parent.children.findIndex((n) => n.id === node.id);
     // Assert nodeIndex > 0.
     const siblingNode = node.parent.children[nodeIndex - 1];
@@ -106,7 +106,7 @@ export class ChartUtil {
             L ${dx}, ${dy}`;
   }
 
-  setPreferredIndiSize(indi: TreeIndi|undefined): void {
+  private setPreferredIndiSize(indi: TreeIndi|undefined): void {
     if (!indi) {
       return;
     }
@@ -114,20 +114,21 @@ export class ChartUtil {
         this.options.renderer.getPreferredIndiSize(indi.id);
   }
 
-  updateSvgDimensions(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const selector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
-
+  getChartInfo(nodes: Array<d3.HierarchyPointNode<TreeNode>>): ChartInfo {
     // Calculate chart boundaries.
-    const x0 = d3.min(nodes.map((d) => d.x - d.data.width / 2));
-    const y0 = d3.min(nodes.map((d) => d.y - d.data.height / 2));
-    const x1 = d3.max(nodes.map((d) => d.x + d.data.width / 2));
-    const y1 = d3.max(nodes.map((d) => d.y + d.data.height / 2));
+    const x0 = d3.min(nodes.map((d) => d.x - d.data.width / 2)) - MARGIN;
+    const y0 = d3.min(nodes.map((d) => d.y - d.data.height / 2)) - MARGIN;
+    const x1 = d3.max(nodes.map((d) => d.x + d.data.width / 2)) + MARGIN;
+    const y1 = d3.max(nodes.map((d) => d.y + d.data.height / 2)) + MARGIN;
+    return {size: [x1 - x0, y1 - y0], origin: [-x0, -y0]};
+  }
 
-    d3.select(selector)
-        .attr('width', x1 - x0 + 2 * MARGIN)
-        .attr('height', y1 - y0 + 2 * MARGIN);
-    d3.select(selector).select('g').attr(
-        'transform', `translate(${- x0 + MARGIN}, ${- y0 + MARGIN})`);
+  updateSvgDimensions(chartInfo: ChartInfo) {
+    const svg = d3.select(this.options.svgSelector || DEFAULT_SVG_SELECTOR);
+    svg.attr('width', chartInfo.size[0]).attr('height', chartInfo.size[1]);
+    svg.select('g').attr(
+        'transform',
+        `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`);
   }
 
   renderChart(root: d3.HierarchyNode<TreeNode>, flipVertically = false):

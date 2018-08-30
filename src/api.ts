@@ -88,8 +88,16 @@ export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
 }
 
 
+export interface ChartInfo {
+  // Chart size.
+  size: [number, number];
+  // The coordinates of the start indi or fam.
+  origin: [number, number];
+}
+
+
 export interface Chart {
-  render(): void;
+  render(): ChartInfo;
 }
 
 

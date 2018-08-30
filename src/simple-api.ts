@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {Chart, ChartOptions, Renderer, RendererOptions} from './api';
+import {Chart, ChartInfo, ChartOptions, Renderer, RendererOptions} from './api';
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
 
 
@@ -61,17 +61,16 @@ function createChartOptions(options: RenderOptions): ChartOptions {
 
 
 /** A simplified API for rendering a chart based on the given RenderOptions. */
-export function renderChart(options: RenderOptions): void {
+export function renderChart(options: RenderOptions): Promise<ChartInfo> {
   if (!options.json) {
     // First, load the data.
-    d3.json(options.jsonUrl).then((json: JsonGedcomData) => {
+    return d3.json(options.jsonUrl).then((json: JsonGedcomData) => {
       options.json = json;
-      renderChart(options);
+      return renderChart(options);
     });
-    return;
   }
 
   const chartOptions = createChartOptions(options);
   const chart = new options.chartType(chartOptions);
-  chart.render();
+  return Promise.resolve(chart.render());
 }

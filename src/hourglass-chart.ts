@@ -1,5 +1,5 @@
 import {AncestorChart} from './ancestor-chart';
-import {Chart, ChartOptions, Fam, Indi} from './api';
+import {Chart, ChartInfo, ChartOptions, Fam, Indi} from './api';
 import {ChartUtil} from './chart-util';
 import {DescendantChart} from './descendant-chart';
 
@@ -16,7 +16,7 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
     this.util = new ChartUtil(options);
   }
 
-  render(): void {
+  render(): ChartInfo {
     // If the start individual is set and this person has children, start with
     // the family instead.
     if (this.options.startIndi) {
@@ -37,6 +37,8 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
     const descendantNodes = this.util.renderChart(descendantsRoot);
 
     const nodes = ancestorNodes.concat(descendantNodes);
-    this.util.updateSvgDimensions(nodes);
+    const info = this.util.getChartInfo(nodes);
+    this.util.updateSvgDimensions(info);
+    return info;
   }
 }
