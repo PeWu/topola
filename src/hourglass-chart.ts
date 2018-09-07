@@ -30,13 +30,16 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
 
     const ancestors = new AncestorChart(this.options);
     const ancestorsRoot = ancestors.createHierarchy();
-    const ancestorNodes = this.util.renderChart(ancestorsRoot, true);
+    const ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
 
     const descendants = new DescendantChart(this.options);
     const descendantsRoot = descendants.createHierarchy();
-    const descendantNodes = this.util.renderChart(descendantsRoot);
+    const descendantNodes = this.util.layOutChart(descendantsRoot);
 
-    const nodes = ancestorNodes.concat(descendantNodes);
+    // slice(1) removes the duplicated start node.
+    const nodes = ancestorNodes.slice(1).concat(descendantNodes);
+    this.util.renderChart(nodes);
+
     const info = this.util.getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
     return info;

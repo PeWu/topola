@@ -131,9 +131,12 @@ export class ChartUtil {
         `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`);
   }
 
-  renderChart(root: d3.HierarchyNode<TreeNode>, flipVertically = false):
+  layOutChart(root: d3.HierarchyNode<TreeNode>, flipVertically = false):
       Array<d3.HierarchyPointNode<TreeNode>> {
+    // Add styles so that calculating text size is correct.
     const svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
+    d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
+
     const treemap =
         flextree<TreeNode>()
             .nodeSize((node) => {
@@ -153,9 +156,6 @@ export class ChartUtil {
               ];
             })
             .spacing((a, b) => H_SPACING);
-
-    d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
-    d3.select(svgSelector).append('g');
 
     // Assign generation number.
     root.each((node) => {
@@ -233,21 +233,29 @@ export class ChartUtil {
         [node.x, node.y] = [node.y, node.x];
       }
     });
+    return nodes;
+  }
+
+  renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+    const svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
+    d3.select(svgSelector).append('g');
 
     // Render nodes.
-    const nodeEnter =
+    const boundNodes =
         d3.select(svgSelector)
             .select('g')
             .selectAll('g.node')
-            .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id)
-            .enter()
-            .append('g')
-            .attr('class', (node) => `node generation${node.data.generation}`)
-            .attr(
-                'transform',
-                (node) => `translate(${node.x - node.data.width / 2}, ${
-                    node.y - node.data.height / 2})`);
-    this.options.renderer.render(nodeEnter);
+            .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id);
+
+    const nodeEnter = boundNodes.enter().append('g');
+    const nodeUpdate = nodeEnter.merge(boundNodes);
+    nodeUpdate.attr('class', (node) => `node generation${node.data.generation}`)
+        .attr(
+            'transform',
+            (node) => `translate(${node.x - node.data.width / 2}, ${
+                node.y - node.data.height / 2})`);
+    this.options.renderer.render(nodeEnter, nodeUpdate);
+    boundNodes.exit().remove();
 
     const link =
         (parent: d3.HierarchyPointNode<TreeNode>,
@@ -255,6 +263,7 @@ export class ChartUtil {
           if (child.data.additionalMarriage) {
             return this.linkAdditionalMarriage(child);
           }
+          const flipVertically = parent.data.generation > child.data.generation;
           if (this.options.horizontal) {
             if (flipVertically) {
               return this.linkHorizontal(child, parent);
@@ -268,12 +277,13 @@ export class ChartUtil {
         };
 
     // Render links.
-    const links = nodes.slice(1);
-    d3.select(svgSelector)
-        .select('g')
-        .selectAll('path.link')
-        .data(links, (d: d3.HierarchyPointNode<Node>) => d.id)
-        .enter()
+    const links = nodes.filter(n => !!n.parent);
+    const boundLinks =
+        d3.select(svgSelector)
+            .select('g')
+            .selectAll('path.link')
+            .data(links, (d: d3.HierarchyPointNode<Node>) => d.id);
+    boundLinks.enter()
         .insert('path', 'g')
         .attr(
             'class',
@@ -281,6 +291,6 @@ export class ChartUtil {
                 'link additional-marriage' :
                 'link')
         .attr('d', (node) => link(node.parent, node));
-    return nodes;
+    boundLinks.exit().remove();
   }
 }

@@ -74,7 +74,7 @@ export type TreeNodeSelection =
 export interface Renderer {
   getPreferredIndiSize(id: string): [number, number];
   getPreferredFamSize(id: string): [number, number];
-  render(selection: TreeNodeSelection): void;
+  render(enter: TreeNodeSelection, update: TreeNodeSelection): void;
   getCss(): string;
 }
 

@@ -145,26 +145,29 @@ export class DetailedRenderer implements Renderer {
     return [width, height];
   }
 
-  render(selection: TreeNodeSelection): void {
-    selection = selection.append('g').attr('class', 'detailed');
-    const indiSelection = selection.filter((node) => !!node.data.indi);
-    this.renderIndi(indiSelection, (node) => node.indi);
-    const spouseSelection =
-        selection.filter((node) => !!node.data.spouse)
-            .append('g')
-            .attr(
-                'transform',
-                (node) => this.options.horizontal ?
-                    `translate(0, ${
-                        node.data.indi && node.data.indi.height || 0})` :
-                    `translate(${
-                        node.data.indi && node.data.indi.width || 0}, 0)`);
-    this.renderIndi(spouseSelection, (node) => node.spouse);
-    const familySelection =
-        selection.filter((node) => !!node.data.family)
-            .append('g')
-            .attr('transform', (node) => this.getFamTransform(node.data));
-    this.renderFamily(familySelection);
+  render(enter: TreeNodeSelection, update: TreeNodeSelection): void {
+    enter = enter.append('g').attr('class', 'detailed');
+    update = update.select('g');
+    const indiEnter = enter.filter((node) => !!node.data.indi).append('g');
+    const indiUpdate = update.filter((node) => !!node.data.indi).select('g');
+    this.renderIndi(indiEnter, indiUpdate, (node) => node.indi);
+
+    const spouseEnter = enter.filter((node) => !!node.data.spouse).append('g');
+    const spouseUpdate = enter.filter((node) => !!node.data.spouse).select('g');
+    spouseEnter.merge(spouseUpdate)
+        .attr(
+            'transform',
+            (node) => this.options.horizontal ?
+                `translate(0, ${
+                    node.data.indi && node.data.indi.height || 0})` :
+                `translate(${node.data.indi && node.data.indi.width || 0}, 0)`);
+    this.renderIndi(spouseEnter, spouseUpdate, (node) => node.spouse);
+
+    const familyEnter = enter.filter((node) => !!node.data.family).append('g');
+    const familyUpdate = update.filter((node) => !!node.data.family).select('g');
+    familyEnter.merge(familyUpdate)
+        .attr('transform', (node) => this.getFamTransform(node.data));
+    this.renderFamily(familyEnter, familyUpdate);
   }
 
   getCss() {
@@ -295,29 +298,32 @@ export class DetailedRenderer implements Renderer {
   }
 
   private renderIndi(
-      selection: TreeNodeSelection,
+      enter: TreeNodeSelection, update: TreeNodeSelection,
       indiFunc: (node: TreeNode) => TreeIndi): void {
     // Optionally add a link.
-    const group = this.options.indiHrefFunc ?
-        selection.append('a').attr(
+    enter = this.options.indiHrefFunc ?
+        enter.append('a').attr(
             'href',
             (node) => this.options.indiHrefFunc(indiFunc(node.data).id)) :
-        selection;
+        enter;
+    update = this.options.indiHrefFunc ? update.select('a') : update;
 
+    const group = enter.merge(update);
     // Box.
-    group.append('rect')
-        .attr('rx', 5)
-        .attr('stroke-width', 0)
+    enter.append('rect').attr('rx', 5).attr('stroke-width', 0);
+    group.select('rect')
         .attr('width', (node) => indiFunc(node.data).width)
         .attr('height', (node) => indiFunc(node.data).height);
 
     // Clip path.
     const getClipId = (node: TreeNode) =>
         `clip-${node.id}-${indiFunc(node).id}`;
-    group.append('clipPath')
+    enter.append('clipPath')
         .attr('id', (node) => getClipId(node.data))
         .append('rect')
-        .attr('rx', 5)
+        .attr('rx', 5);
+    group.select('clipPath')
+        .select('rect')
         .attr('width', (node) => indiFunc(node.data).width)
         .attr('height', (node) => indiFunc(node.data).height);
 
@@ -329,9 +335,8 @@ export class DetailedRenderer implements Renderer {
         (getIndi(node).getImageUrl() ? IMAGE_WIDTH : 0);
 
     // Name.
-    group.append('text')
-        .attr('text-anchor', 'middle')
-        .attr('class', 'name')
+    enter.append('text').attr('text-anchor', 'middle').attr('class', 'name');
+    group.select('text')
         .attr(
             'transform',
             (node) => `translate(${getDetailsWidth(node) / 2}, 17)`)
@@ -406,7 +411,8 @@ export class DetailedRenderer implements Renderer {
         .attr('height', (node) => indiFunc(node.data).height);
   }
 
-  private renderFamily(selection: TreeNodeSelection) {
+  private renderFamily(enter: TreeNodeSelection, update: TreeNodeSelection) {
+    let selection = enter.merge(update);
     selection = selection.append('g').attr('class', 'detailed');
     const group = this.options.famHrefFunc ?
         selection.append('a').attr(

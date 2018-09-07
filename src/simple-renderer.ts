@@ -57,8 +57,8 @@ export class SimpleRenderer implements Renderer {
     return [0, 0];
   }
 
-  render(selection: TreeNodeSelection): void {
-    selection = selection.append('g').attr('class', 'simple');
+  render(enter: TreeNodeSelection, update: TreeNodeSelection): void {
+    const selection = enter.merge(update).append('g').attr('class', 'simple');
     this.renderIndi(selection, (node) => node.indi);
     const spouseSelection =
         selection.filter((node) => !!node.data.spouse)

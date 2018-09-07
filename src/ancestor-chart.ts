@@ -87,7 +87,9 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
    */
   render(): ChartInfo {
     const root = this.createHierarchy();
-    const nodes = this.util.renderChart(root, true);
+    const nodes = this.util.layOutChart(root, true);
+    this.util.renderChart(nodes);
+
     const info = this.util.getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
     return info;
