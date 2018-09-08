@@ -24,6 +24,8 @@ export interface RenderOptions {
   startFam?: string;
   indiUrl?: string;
   famUrl?: string;
+  indiCallback?: (id: string) => void;
+  famCallback?: (id: string) => void;
   svgSelector?: string;
   chartType: ChartType;
   renderer: RendererType;
@@ -50,6 +52,8 @@ function createChartOptions(options: RenderOptions): ChartOptions {
       data,
       indiHrefFunc,
       famHrefFunc,
+      indiCallback: options.indiCallback,
+      famCallback: options.famCallback,
       horizontal: options.horizontal,
     }),
     startIndi: options.startIndi,

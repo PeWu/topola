@@ -164,7 +164,8 @@ export class DetailedRenderer implements Renderer {
     this.renderIndi(spouseEnter, spouseUpdate, (node) => node.spouse);
 
     const familyEnter = enter.filter((node) => !!node.data.family).append('g');
-    const familyUpdate = update.filter((node) => !!node.data.family).select('g');
+    const familyUpdate =
+        update.filter((node) => !!node.data.family).select('g');
     familyEnter.merge(familyUpdate)
         .attr('transform', (node) => this.getFamTransform(node.data));
     this.renderFamily(familyEnter, familyUpdate);
@@ -306,6 +307,10 @@ export class DetailedRenderer implements Renderer {
             'href',
             (node) => this.options.indiHrefFunc(indiFunc(node.data).id)) :
         enter;
+    if (this.options.indiCallback) {
+      enter.on(
+          'click', (node) => this.options.indiCallback(indiFunc(node.data).id));
+    }
     update = this.options.indiHrefFunc ? update.select('a') : update;
 
     const group = enter.merge(update);
@@ -418,6 +423,10 @@ export class DetailedRenderer implements Renderer {
         selection.append('a').attr(
             'href', (node) => this.options.famHrefFunc(node.data.family.id)) :
         selection;
+    if (this.options.famCallback) {
+      enter.on(
+          'click', (node) => this.options.famCallback(node.data.family.id));
+    }
 
     // Box.
     group.append('rect')
