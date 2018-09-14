@@ -56,6 +56,13 @@ interface DetailsLine {
 }
 
 
+interface OffsetIndi {
+  indi: TreeIndi;
+  xOffset: number;
+  yOffset: number;
+}
+
+
 /** Extracts lines of details for a person. */
 function getIndiDetails(indi: IndiDetails): DetailsLine[] {
   const detailsList: DetailsLine[] = [];
@@ -148,24 +155,46 @@ export class DetailedRenderer implements Renderer {
   render(enter: TreeNodeSelection, update: TreeNodeSelection): void {
     enter = enter.append('g').attr('class', 'detailed');
     update = update.select('g');
-    const indiEnter = enter.filter((node) => !!node.data.indi).append('g');
-    const indiUpdate = update.filter((node) => !!node.data.indi).select('g');
-    this.renderIndi(indiEnter, indiUpdate, (node) => node.indi);
 
-    const spouseEnter = enter.filter((node) => !!node.data.spouse).append('g');
-    const spouseUpdate = enter.filter((node) => !!node.data.spouse).select('g');
-    spouseEnter.merge(spouseUpdate)
+    const indiUpdate = enter.merge(update).selectAll('g.indi').data((node) => {
+      const result: OffsetIndi[] = [];
+      if (node.data.indi) {
+        result.push({indi: node.data.indi, xOffset: 0, yOffset: 0});
+      }
+      if (node.data.spouse) {
+        result.push({
+          indi: node.data.spouse,
+          xOffset: (!this.options.horizontal && node.data.indi) ?
+              node.data.indi.width :
+              0,
+          yOffset: (this.options.horizontal && node.data.indi) ?
+              node.data.indi.height :
+              0
+        });
+      }
+      return result;
+    }, (data: OffsetIndi) => data.indi.id);
+
+    const indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
+    indiEnter.merge(indiUpdate)
         .attr(
             'transform',
-            (node) => this.options.horizontal ?
-                `translate(0, ${
-                    node.data.indi && node.data.indi.height || 0})` :
-                `translate(${node.data.indi && node.data.indi.width || 0}, 0)`);
-    this.renderIndi(spouseEnter, spouseUpdate, (node) => node.spouse);
+            (node) => `translate(${node.xOffset}, ${node.yOffset})`);
 
-    const familyEnter = enter.filter((node) => !!node.data.family).append('g');
-    const familyUpdate =
-        update.filter((node) => !!node.data.family).select('g');
+    this.renderIndi(indiEnter, indiUpdate);
+
+    const familyEnter = enter
+                            .select(function(node) {
+                              return node.data.family ? this : null;
+                            })
+                            .append('g')
+                            .attr('class', 'family');
+    const familyUpdate = update
+                             .select(function(node) {
+                               return node.data.family ? this : null;
+                             })
+                             .select('g.family');
+
     familyEnter.merge(familyUpdate)
         .attr('transform', (node) => this.getFamTransform(node.data));
     this.renderFamily(familyEnter, familyUpdate);
@@ -299,137 +328,134 @@ export class DetailedRenderer implements Renderer {
   }
 
   private renderIndi(
-      enter: TreeNodeSelection, update: TreeNodeSelection,
-      indiFunc: (node: TreeNode) => TreeIndi): void {
-    // Optionally add a link.
-    enter = this.options.indiHrefFunc ?
-        enter.append('a').attr(
-            'href',
-            (node) => this.options.indiHrefFunc(indiFunc(node.data).id)) :
-        enter;
-    if (this.options.indiCallback) {
-      enter.on(
-          'click', (node) => this.options.indiCallback(indiFunc(node.data).id));
+      enter: d3.Selection<d3.BaseType, OffsetIndi, d3.BaseType, {}>,
+      update: d3.Selection<d3.BaseType, OffsetIndi, d3.BaseType, {}>) {
+    if (this.options.indiHrefFunc) {
+      enter = enter.append('a').attr(
+          'href', (data) => this.options.indiHrefFunc(data.indi.id));
+      update = update.select('a');
     }
-    update = this.options.indiHrefFunc ? update.select('a') : update;
-
-    const group = enter.merge(update);
-    // Box.
-    enter.append('rect').attr('rx', 5).attr('stroke-width', 0);
-    group.select('rect')
-        .attr('width', (node) => indiFunc(node.data).width)
-        .attr('height', (node) => indiFunc(node.data).height);
+    if (this.options.indiCallback) {
+      enter.on('click', (data) => this.options.indiCallback(data.indi.id));
+    }
+    // Background.
+    enter.append('rect')
+        .attr('rx', 5)
+        .attr('stroke-width', 0)
+        .attr('class', 'background')
+        .merge(update.select('rect.background'))
+        .attr('width', (node) => node.indi.width)
+        .attr('height', (node) => node.indi.height);
 
     // Clip path.
-    const getClipId = (node: TreeNode) =>
-        `clip-${node.id}-${indiFunc(node).id}`;
+    const getClipId = (id: string) => `clip-${id}`;
     enter.append('clipPath')
-        .attr('id', (node) => getClipId(node.data))
+        .attr('id', (node) => getClipId(node.indi.id))
         .append('rect')
-        .attr('rx', 5);
-    group.select('clipPath')
-        .select('rect')
-        .attr('width', (node) => indiFunc(node.data).width)
-        .attr('height', (node) => indiFunc(node.data).height);
+        .attr('rx', 5)
+        .merge(update.select('clipPath rect'))
+        .attr('width', (node) => node.indi.width)
+        .attr('height', (node) => node.indi.height);
 
-    const getIndi = (node: d3.HierarchyPointNode<TreeNode>) =>
-        this.options.data.getIndi(indiFunc(node.data).id);
+    const getIndi = (data: OffsetIndi) =>
+        this.options.data.getIndi(data.indi.id);
 
-    const getDetailsWidth = (node: d3.HierarchyPointNode<TreeNode>) =>
-        indiFunc(node.data).width -
-        (getIndi(node).getImageUrl() ? IMAGE_WIDTH : 0);
+    const getDetailsWidth = (data: OffsetIndi) =>
+        data.indi.width - (getIndi(data).getImageUrl() ? IMAGE_WIDTH : 0);
+
 
     // Name.
-    enter.append('text').attr('text-anchor', 'middle').attr('class', 'name');
-    group.select('text')
+    enter.append('text')
+        .attr('text-anchor', 'middle')
+        .attr('class', 'name')
         .attr(
             'transform',
             (node) => `translate(${getDetailsWidth(node) / 2}, 17)`)
         .text((node) => getIndi(node).getFirstName());
-    group.append('text')
+    enter.append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'name')
         .attr(
             'transform',
             (node) => `translate(${getDetailsWidth(node) / 2}, 33)`)
         .text((node) => getIndi(node).getLastName());
+
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
-    group.each((node) => {
-      const indiId = indiFunc(node.data).id;
-      const indi = this.options.data.getIndi(indiId);
+    enter.each((node) => {
+      const indi = getIndi(node);
       const detailsList = getIndiDetails(indi);
-      details.set(indiId, detailsList);
+      details.set(node.indi.id, detailsList);
     });
 
     const maxDetails = d3.max(Array.from(details.values(), (v) => v.length));
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
-      const lineGroup = group.filter(
-          (node) => details.get(indiFunc(node.data).id).length > i);
+      const lineGroup =
+          enter.filter((data) => details.get(data.indi.id).length > i);
       lineGroup.append('text')
           .attr('text-anchor', 'middle')
           .attr('class', 'details')
           .attr('transform', `translate(9, ${49 + i * 14})`)
-          .text((node) => details.get(indiFunc(node.data).id)[i].symbol);
+          .text((data) => details.get(data.indi.id)[i].symbol);
       lineGroup.append('text')
           .attr('class', 'details')
           .attr('transform', `translate(15, ${49 + i * 14})`)
-          .text((node) => details.get(indiFunc(node.data).id)[i].text);
+          .text((data) => details.get(data.indi.id)[i].text);
     }
 
     // Render id.
-    group.append('text')
+    enter.append('text')
         .attr('class', 'id')
-        .attr(
-            'transform',
-            (node) => `translate(9, ${indiFunc(node.data).height - 5})`)
-        .text((node) => indiFunc(node.data).id);
+        .text((data) => data.indi.id)
+        .merge(update.select('text.id'))
+        .attr('transform', (data) => `translate(9, ${data.indi.height - 5})`);
 
     // Render sex.
-    group.append('text')
-        .attr('class', 'details')
+    enter.append('text')
+        .attr('class', 'details sex')
         .attr('text-anchor', 'end')
+        .text((data) => SEX_SYMBOLS.get(getIndi(data).getSex()))
+        .merge(update.select('text.sex'))
         .attr(
             'transform',
-            (node) => `translate(${getDetailsWidth(node) - 5}, ${
-                indiFunc(node.data).height - 5})`)
-        .text((node) => SEX_SYMBOLS.get(getIndi(node).getSex()));
+            (data) => `translate(${getDetailsWidth(data) - 5}, ${
+                data.indi.height - 5})`);
+
 
     // Image.
-    group.filter((node) => !!getIndi(node).getImageUrl())
+    enter.filter((data) => !!getIndi(data).getImageUrl())
         .append('image')
         .attr('width', IMAGE_WIDTH)
         .attr(
             'transform',
-            (node) =>
-                `translate(${indiFunc(node.data).width - IMAGE_WIDTH}, 0)`)
-        .attr('clip-path', (node) => `url(#${getClipId(node.data)})`)
-        .attr('href', (node) => getIndi(node).getImageUrl());
+            (data) => `translate(${data.indi.width - IMAGE_WIDTH}, 0)`)
+        .attr('clip-path', (data) => `url(#${getClipId(data.indi.id)})`)
+        .attr('href', (data) => getIndi(data).getImageUrl());
 
     // Border on top.
-    group.append('rect')
+    enter.append('rect')
         .attr('rx', 5)
         .attr('fill-opacity', 0)
-        .attr('width', (node) => indiFunc(node.data).width)
-        .attr('height', (node) => indiFunc(node.data).height);
+        .attr('class', 'border')
+        .merge(update.select('rect.border'))
+        .attr('width', (data) => data.indi.width)
+        .attr('height', (data) => data.indi.height);
   }
 
   private renderFamily(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    let selection = enter.merge(update);
-    selection = selection.append('g').attr('class', 'detailed');
-    const group = this.options.famHrefFunc ?
-        selection.append('a').attr(
-            'href', (node) => this.options.famHrefFunc(node.data.family.id)) :
-        selection;
+    if (this.options.famHrefFunc) {
+      enter = enter.append('a').attr(
+          'href', (node) => this.options.famHrefFunc(node.data.family.id));
+    }
     if (this.options.famCallback) {
       enter.on(
           'click', (node) => this.options.famCallback(node.data.family.id));
     }
 
     // Box.
-    group.append('rect')
+    enter.append('rect')
         .attr('rx', 5)
         .attr('ry', 5)
         .attr('width', (node) => node.data.family.width)
@@ -437,7 +463,7 @@ export class DetailedRenderer implements Renderer {
 
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
-    group.each((node) => {
+    enter.each((node) => {
       const famId = node.data.family.id;
       const fam = this.options.data.getFam(famId);
       const detailsList = getFamDetails(fam);
@@ -448,7 +474,7 @@ export class DetailedRenderer implements Renderer {
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
       const lineGroup =
-          group.filter((node) => details.get(node.data.family.id).length > i);
+          enter.filter((node) => details.get(node.data.family.id).length > i);
       lineGroup.append('text')
           .attr('text-anchor', 'middle')
           .attr('class', 'details')

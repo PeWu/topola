@@ -248,13 +248,13 @@ export class ChartUtil {
             .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id);
 
     const nodeEnter = boundNodes.enter().append('g');
-    const nodeUpdate = nodeEnter.merge(boundNodes);
-    nodeUpdate.attr('class', (node) => `node generation${node.data.generation}`)
+    nodeEnter.merge(boundNodes)
+        .attr('class', (node) => `node generation${node.data.generation}`)
         .attr(
             'transform',
             (node) => `translate(${node.x - node.data.width / 2}, ${
                 node.y - node.data.height / 2})`);
-    this.options.renderer.render(nodeEnter, nodeUpdate);
+    this.options.renderer.render(nodeEnter, boundNodes);
     boundNodes.exit().remove();
 
     const link =
