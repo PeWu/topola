@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import {Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode} from './api';
 import {ChartUtil} from './chart-util';
+import {IdGenerator} from './id-generator';
 
 
 /** Renders an ancestors chart. */
@@ -36,12 +37,11 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
       });
     }
 
+    const idGenerator = new IdGenerator();
     while (stack.length) {
       const entry = stack.pop();
       const fam = this.options.data.getFam(entry.id);
-      // Assign random ID to the node so that parts of the tree can be repeated.
-      // TODO: Figure out how to make stable IDs for animations.
-      entry.id = `${Math.random()}`;
+      entry.id = idGenerator.getId(entry.id);
       if (!fam) {
         continue;
       }

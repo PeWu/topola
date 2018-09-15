@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 
 import {Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode} from './api';
 import {ChartUtil} from './chart-util';
+import {IdGenerator} from './id-generator';
 
 
 /** Returns the spouse of the given individual in the given family. */
@@ -88,6 +89,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
         stack.push(node);
       }
     });
+    const idGenerator = new IdGenerator();
     while (stack.length) {
       const entry = stack.pop();
       const fam = this.options.data.getFam(entry.family.id);
@@ -97,10 +99,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
         childNodes.forEach((node) => {
           node.parentId = entry.id;
           if (node.family) {
-            // Assign random ID to the node so that parts of the tree can be
-            // repeated.
-            // TODO: Figure out how to make stable IDs for animations.
-            node.id = `${Math.random()}`;
+            node.id = `${idGenerator.getId(node.family.id)}`;
             stack.push(node);
           }
         });
