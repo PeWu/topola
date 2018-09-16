@@ -158,17 +158,23 @@ export class DetailedRenderer implements Renderer {
 
     const indiUpdate = enter.merge(update).selectAll('g.indi').data((node) => {
       const result: OffsetIndi[] = [];
+      const famXOffset = !this.options.horizontal && node.data.family ?
+          d3.max([-this.getFamPositionVertical(node.data), 0]) :
+          0;
+      const famYOffset = this.options.horizontal && node.data.family ?
+          d3.max([-this.getFamPositionHorizontal(node.data), 0]) :
+          0;
       if (node.data.indi) {
-        result.push({indi: node.data.indi, xOffset: 0, yOffset: 0});
+        result.push({indi: node.data.indi, xOffset: famXOffset, yOffset: 0});
       }
       if (node.data.spouse) {
         result.push({
           indi: node.data.spouse,
           xOffset: (!this.options.horizontal && node.data.indi) ?
-              node.data.indi.width :
+              node.data.indi.width + famXOffset :
               0,
           yOffset: (this.options.horizontal && node.data.indi) ?
-              node.data.indi.height :
+              node.data.indi.height + famYOffset :
               0
         });
       }
@@ -321,9 +327,9 @@ export class DetailedRenderer implements Renderer {
   private getFamTransform(node: TreeNode): string {
     if (this.options.horizontal) {
       return `translate(${node.indi && node.indi.width || node.spouse.width}, ${
-          this.getFamPositionHorizontal(node)})`;
+          d3.max([this.getFamPositionHorizontal(node), 0])})`;
     }
-    return `translate(${this.getFamPositionVertical(node)}, ${
+    return `translate(${d3.max([this.getFamPositionVertical(node), 0])}, ${
         node.indi && node.indi.height || node.spouse.height})`;
   }
 
