@@ -19629,6 +19629,7 @@ var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
+var id_generator_1 = require("./id-generator");
 /** Renders an ancestors chart. */
 var AncestorChart = /** @class */ (function () {
     function AncestorChart(options) {
@@ -19657,12 +19658,11 @@ var AncestorChart = /** @class */ (function () {
                 family: { id: this.options.startFam },
             });
         }
+        var idGenerator = new id_generator_1.IdGenerator();
         while (stack.length) {
             var entry = stack.pop();
             var fam = this.options.data.getFam(entry.id);
-            // Assign random ID to the node so that parts of the tree can be repeated.
-            // TODO: Figure out how to make stable IDs for animations.
-            entry.id = "" + Math.random();
+            entry.id = idGenerator.getId(entry.id);
             if (!fam) {
                 continue;
             }
@@ -19707,7 +19707,8 @@ var AncestorChart = /** @class */ (function () {
      */
     AncestorChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = this.util.renderChart(root, true);
+        var nodes = this.util.layOutChart(root, true);
+        this.util.renderChart(nodes);
         var info = this.util.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
         return info;
@@ -19716,7 +19717,7 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":38,"d3":33}],38:[function(require,module,exports){
+},{"./chart-util":38,"./id-generator":44,"d3":33}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19824,10 +19825,12 @@ var ChartUtil = /** @class */ (function () {
         svg.attr('width', chartInfo.size[0]).attr('height', chartInfo.size[1]);
         svg.select('g').attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
     };
-    ChartUtil.prototype.renderChart = function (root, flipVertically) {
+    ChartUtil.prototype.layOutChart = function (root, flipVertically) {
         var _this = this;
         if (flipVertically === void 0) { flipVertically = false; }
+        // Add styles so that calculating text size is correct.
         var svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
+        d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
         var treemap = d3_flextree_1.flextree()
             .nodeSize(function (node) {
             if (_this.options.horizontal) {
@@ -19844,8 +19847,6 @@ var ChartUtil = /** @class */ (function () {
             ];
         })
             .spacing(function (a, b) { return H_SPACING; });
-        d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
-        d3.select(svgSelector).append('g');
         // Assign generation number.
         root.each(function (node) {
             node.data.generation = node.depth * (flipVertically ? -1 : 1);
@@ -19917,20 +19918,28 @@ var ChartUtil = /** @class */ (function () {
                 _a = [node.y, node.x], node.x = _a[0], node.y = _a[1];
             }
         });
+        return nodes;
+    };
+    ChartUtil.prototype.renderChart = function (nodes) {
+        var _this = this;
+        var svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
+        d3.select(svgSelector).append('g');
         // Render nodes.
-        var nodeEnter = d3.select(svgSelector)
+        var boundNodes = d3.select(svgSelector)
             .select('g')
             .selectAll('g.node')
-            .data(nodes, function (d) { return d.id; })
-            .enter()
-            .append('g')
+            .data(nodes, function (d) { return d.id; });
+        var nodeEnter = boundNodes.enter().append('g');
+        nodeEnter.merge(boundNodes)
             .attr('class', function (node) { return "node generation" + node.data.generation; })
             .attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
-        this.options.renderer.render(nodeEnter);
+        this.options.renderer.render(nodeEnter, boundNodes);
+        boundNodes.exit().remove();
         var link = function (parent, child) {
             if (child.data.additionalMarriage) {
                 return _this.linkAdditionalMarriage(child);
             }
+            var flipVertically = parent.data.generation > child.data.generation;
             if (_this.options.horizontal) {
                 if (flipVertically) {
                     return _this.linkHorizontal(child, parent);
@@ -19943,18 +19952,18 @@ var ChartUtil = /** @class */ (function () {
             return _this.linkVertical(parent, child);
         };
         // Render links.
-        var links = nodes.slice(1);
-        d3.select(svgSelector)
+        var links = nodes.filter(function (n) { return !!n.parent; });
+        var boundLinks = d3.select(svgSelector)
             .select('g')
             .selectAll('path.link')
-            .data(links, function (d) { return d.id; })
-            .enter()
+            .data(links, function (d) { return d.id; });
+        boundLinks.enter()
             .insert('path', 'g')
             .attr('class', function (node) { return node.data.additionalMarriage ?
             'link additional-marriage' :
             'link'; })
             .attr('d', function (node) { return link(node.parent, node); });
-        return nodes;
+        boundLinks.exit().remove();
     };
     return ChartUtil;
 }());
@@ -20056,6 +20065,7 @@ exports.JsonDataProvider = JsonDataProvider;
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
+var id_generator_1 = require("./id-generator");
 /** Returns the spouse of the given individual in the given family. */
 function getSpouse(indiId, fam) {
     if (fam.getFather() === indiId) {
@@ -20132,6 +20142,7 @@ var DescendantChart = /** @class */ (function () {
                 stack.push(node);
             }
         });
+        var idGenerator = new id_generator_1.IdGenerator();
         var _loop_1 = function () {
             var entry = stack.pop();
             var fam = this_1.options.data.getFam(entry.family.id);
@@ -20141,10 +20152,7 @@ var DescendantChart = /** @class */ (function () {
                 childNodes.forEach(function (node) {
                     node.parentId = entry.id;
                     if (node.family) {
-                        // Assign random ID to the node so that parts of the tree can be
-                        // repeated.
-                        // TODO: Figure out how to make stable IDs for animations.
-                        node.id = "" + Math.random();
+                        node.id = "" + idGenerator.getId(node.family.id);
                         stack.push(node);
                     }
                 });
@@ -20163,7 +20171,8 @@ var DescendantChart = /** @class */ (function () {
      */
     DescendantChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = this.util.renderChart(root);
+        var nodes = this.util.layOutChart(root);
+        this.util.renderChart(nodes);
         var info = this.util.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
         return info;
@@ -20172,7 +20181,7 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":38,"d3":33}],41:[function(require,module,exports){
+},{"./chart-util":38,"./id-generator":44,"d3":33}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20292,21 +20301,52 @@ var DetailedRenderer = /** @class */ (function () {
         var width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
         return [width, height];
     };
-    DetailedRenderer.prototype.render = function (selection) {
+    DetailedRenderer.prototype.render = function (enter, update) {
         var _this = this;
-        selection = selection.append('g').attr('class', 'detailed');
-        var indiSelection = selection.filter(function (node) { return !!node.data.indi; });
-        this.renderIndi(indiSelection, function (node) { return node.indi; });
-        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
+        enter = enter.append('g').attr('class', 'detailed');
+        update = update.select('g');
+        var indiUpdate = enter.merge(update).selectAll('g.indi').data(function (node) {
+            var result = [];
+            var famXOffset = !_this.options.horizontal && node.data.family ?
+                d3.max([-_this.getFamPositionVertical(node.data), 0]) :
+                0;
+            var famYOffset = _this.options.horizontal && node.data.family ?
+                d3.max([-_this.getFamPositionHorizontal(node.data), 0]) :
+                0;
+            if (node.data.indi) {
+                result.push({ indi: node.data.indi, xOffset: famXOffset, yOffset: 0 });
+            }
+            if (node.data.spouse) {
+                result.push({
+                    indi: node.data.spouse,
+                    xOffset: (!_this.options.horizontal && node.data.indi) ?
+                        node.data.indi.width + famXOffset :
+                        0,
+                    yOffset: (_this.options.horizontal && node.data.indi) ?
+                        node.data.indi.height + famYOffset :
+                        0
+                });
+            }
+            return result;
+        }, function (data) { return data.indi.id; });
+        var indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
+        indiEnter.merge(indiUpdate)
+            .attr('transform', function (node) { return "translate(" + node.xOffset + ", " + node.yOffset + ")"; });
+        this.renderIndi(indiEnter, indiUpdate);
+        var familyEnter = enter
+            .select(function (node) {
+            return node.data.family ? this : null;
+        })
             .append('g')
-            .attr('transform', function (node) { return _this.options.horizontal ?
-            "translate(0, " + (node.data.indi && node.data.indi.height || 0) + ")" :
-            "translate(" + (node.data.indi && node.data.indi.width || 0) + ", 0)"; });
-        this.renderIndi(spouseSelection, function (node) { return node.spouse; });
-        var familySelection = selection.filter(function (node) { return !!node.data.family; })
-            .append('g')
+            .attr('class', 'family');
+        var familyUpdate = update
+            .select(function (node) {
+            return node.data.family ? this : null;
+        })
+            .select('g.family');
+        familyEnter.merge(familyUpdate)
             .attr('transform', function (node) { return _this.getFamTransform(node.data); });
-        this.renderFamily(familySelection);
+        this.renderFamily(familyEnter, familyUpdate);
     };
     DetailedRenderer.prototype.getCss = function () {
         return "\n.detailed text {\n  font: 12px verdana;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
@@ -20343,117 +20383,123 @@ var DetailedRenderer = /** @class */ (function () {
     };
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
-            return "translate(" + (node.indi && node.indi.width || node.spouse.width) + ", " + this.getFamPositionHorizontal(node) + ")";
+            return "translate(" + (node.indi && node.indi.width || node.spouse.width) + ", " + d3.max([this.getFamPositionHorizontal(node), 0]) + ")";
         }
-        return "translate(" + this.getFamPositionVertical(node) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
+        return "translate(" + d3.max([this.getFamPositionVertical(node), 0]) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
     };
-    DetailedRenderer.prototype.renderIndi = function (selection, indiFunc) {
+    DetailedRenderer.prototype.renderIndi = function (enter, update) {
         var _this = this;
-        // Optionally add a link.
-        var group = this.options.indiHrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.options.indiHrefFunc(indiFunc(node.data).id); }) :
-            selection;
-        // Box.
-        group.append('rect')
+        if (this.options.indiHrefFunc) {
+            enter = enter.append('a').attr('href', function (data) { return _this.options.indiHrefFunc(data.indi.id); });
+            update = update.select('a');
+        }
+        if (this.options.indiCallback) {
+            enter.on('click', function (data) { return _this.options.indiCallback(data.indi.id); });
+        }
+        // Background.
+        enter.append('rect')
             .attr('rx', 5)
             .attr('stroke-width', 0)
-            .attr('width', function (node) { return indiFunc(node.data).width; })
-            .attr('height', function (node) { return indiFunc(node.data).height; });
+            .attr('class', 'background')
+            .merge(update.select('rect.background'))
+            .attr('width', function (node) { return node.indi.width; })
+            .attr('height', function (node) { return node.indi.height; });
         // Clip path.
-        var getClipId = function (node) {
-            return "clip-" + node.id + "-" + indiFunc(node).id;
-        };
-        group.append('clipPath')
-            .attr('id', function (node) { return getClipId(node.data); })
+        var getClipId = function (id) { return "clip-" + id; };
+        enter.append('clipPath')
+            .attr('id', function (node) { return getClipId(node.indi.id); })
             .append('rect')
             .attr('rx', 5)
-            .attr('width', function (node) { return indiFunc(node.data).width; })
-            .attr('height', function (node) { return indiFunc(node.data).height; });
-        var getIndi = function (node) {
-            return _this.options.data.getIndi(indiFunc(node.data).id);
+            .merge(update.select('clipPath rect'))
+            .attr('width', function (node) { return node.indi.width; })
+            .attr('height', function (node) { return node.indi.height; });
+        var getIndi = function (data) {
+            return _this.options.data.getIndi(data.indi.id);
         };
-        var getDetailsWidth = function (node) {
-            return indiFunc(node.data).width -
-                (getIndi(node).getImageUrl() ? IMAGE_WIDTH : 0);
+        var getDetailsWidth = function (data) {
+            return data.indi.width - (getIndi(data).getImageUrl() ? IMAGE_WIDTH : 0);
         };
         // Name.
-        group.append('text')
+        enter.append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 17)"; })
             .text(function (node) { return getIndi(node).getFirstName(); });
-        group.append('text')
+        enter.append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 33)"; })
             .text(function (node) { return getIndi(node).getLastName(); });
         // Extract details.
         var details = new Map();
-        group.each(function (node) {
-            var indiId = indiFunc(node.data).id;
-            var indi = _this.options.data.getIndi(indiId);
+        enter.each(function (node) {
+            var indi = getIndi(node);
             var detailsList = getIndiDetails(indi);
-            details.set(indiId, detailsList);
+            details.set(node.indi.id, detailsList);
         });
         var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
         var _loop_1 = function (i) {
-            var lineGroup = group.filter(function (node) { return details.get(indiFunc(node.data).id).length > i; });
+            var lineGroup = enter.filter(function (data) { return details.get(data.indi.id).length > i; });
             lineGroup.append('text')
                 .attr('text-anchor', 'middle')
                 .attr('class', 'details')
                 .attr('transform', "translate(9, " + (49 + i * 14) + ")")
-                .text(function (node) { return details.get(indiFunc(node.data).id)[i].symbol; });
+                .text(function (data) { return details.get(data.indi.id)[i].symbol; });
             lineGroup.append('text')
                 .attr('class', 'details')
                 .attr('transform', "translate(15, " + (49 + i * 14) + ")")
-                .text(function (node) { return details.get(indiFunc(node.data).id)[i].text; });
+                .text(function (data) { return details.get(data.indi.id)[i].text; });
         };
         // Render details.
         for (var i = 0; i < maxDetails; ++i) {
             _loop_1(i);
         }
         // Render id.
-        group.append('text')
+        enter.append('text')
             .attr('class', 'id')
-            .attr('transform', function (node) { return "translate(9, " + (indiFunc(node.data).height - 5) + ")"; })
-            .text(function (node) { return indiFunc(node.data).id; });
+            .text(function (data) { return data.indi.id; })
+            .merge(update.select('text.id'))
+            .attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
         // Render sex.
-        group.append('text')
-            .attr('class', 'details')
+        enter.append('text')
+            .attr('class', 'details sex')
             .attr('text-anchor', 'end')
-            .attr('transform', function (node) { return "translate(" + (getDetailsWidth(node) - 5) + ", " + (indiFunc(node.data).height - 5) + ")"; })
-            .text(function (node) { return SEX_SYMBOLS.get(getIndi(node).getSex()); });
+            .text(function (data) { return SEX_SYMBOLS.get(getIndi(data).getSex()); })
+            .merge(update.select('text.sex'))
+            .attr('transform', function (data) { return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")"; });
         // Image.
-        group.filter(function (node) { return !!getIndi(node).getImageUrl(); })
+        enter.filter(function (data) { return !!getIndi(data).getImageUrl(); })
             .append('image')
             .attr('width', IMAGE_WIDTH)
-            .attr('transform', function (node) {
-            return "translate(" + (indiFunc(node.data).width - IMAGE_WIDTH) + ", 0)";
-        })
-            .attr('clip-path', function (node) { return "url(#" + getClipId(node.data) + ")"; })
-            .attr('href', function (node) { return getIndi(node).getImageUrl(); });
+            .attr('transform', function (data) { return "translate(" + (data.indi.width - IMAGE_WIDTH) + ", 0)"; })
+            .attr('clip-path', function (data) { return "url(#" + getClipId(data.indi.id) + ")"; })
+            .attr('href', function (data) { return getIndi(data).getImageUrl(); });
         // Border on top.
-        group.append('rect')
+        enter.append('rect')
             .attr('rx', 5)
             .attr('fill-opacity', 0)
-            .attr('width', function (node) { return indiFunc(node.data).width; })
-            .attr('height', function (node) { return indiFunc(node.data).height; });
+            .attr('class', 'border')
+            .merge(update.select('rect.border'))
+            .attr('width', function (data) { return data.indi.width; })
+            .attr('height', function (data) { return data.indi.height; });
     };
-    DetailedRenderer.prototype.renderFamily = function (selection) {
+    DetailedRenderer.prototype.renderFamily = function (enter, update) {
         var _this = this;
-        selection = selection.append('g').attr('class', 'detailed');
-        var group = this.options.famHrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); }) :
-            selection;
+        if (this.options.famHrefFunc) {
+            enter = enter.append('a').attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); });
+        }
+        if (this.options.famCallback) {
+            enter.on('click', function (node) { return _this.options.famCallback(node.data.family.id); });
+        }
         // Box.
-        group.append('rect')
+        enter.append('rect')
             .attr('rx', 5)
             .attr('ry', 5)
             .attr('width', function (node) { return node.data.family.width; })
             .attr('height', function (node) { return node.data.family.height; });
         // Extract details.
         var details = new Map();
-        group.each(function (node) {
+        enter.each(function (node) {
             var famId = node.data.family.id;
             var fam = _this.options.data.getFam(famId);
             var detailsList = getFamDetails(fam);
@@ -20461,7 +20507,7 @@ var DetailedRenderer = /** @class */ (function () {
         });
         var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
         var _loop_2 = function (i) {
-            var lineGroup = group.filter(function (node) { return details.get(node.data.family.id).length > i; });
+            var lineGroup = enter.filter(function (node) { return details.get(node.data.family.id).length > i; });
             lineGroup.append('text')
                 .attr('text-anchor', 'middle')
                 .attr('class', 'details')
@@ -20707,11 +20753,13 @@ var HourglassChart = /** @class */ (function () {
         }
         var ancestors = new ancestor_chart_1.AncestorChart(this.options);
         var ancestorsRoot = ancestors.createHierarchy();
-        var ancestorNodes = this.util.renderChart(ancestorsRoot, true);
+        var ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
         var descendants = new descendant_chart_1.DescendantChart(this.options);
         var descendantsRoot = descendants.createHierarchy();
-        var descendantNodes = this.util.renderChart(descendantsRoot);
-        var nodes = ancestorNodes.concat(descendantNodes);
+        var descendantNodes = this.util.layOutChart(descendantsRoot);
+        // slice(1) removes the duplicated start node.
+        var nodes = ancestorNodes.slice(1).concat(descendantNodes);
+        this.util.renderChart(nodes);
         var info = this.util.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
         return info;
@@ -20721,6 +20769,31 @@ var HourglassChart = /** @class */ (function () {
 exports.HourglassChart = HourglassChart;
 
 },{"./ancestor-chart":37,"./chart-util":38,"./descendant-chart":40}],44:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/** Provides unique identifiers. */
+var IdGenerator = /** @class */ (function () {
+    function IdGenerator() {
+        this.ids = new Map();
+    }
+    /**
+     * Returns the given identifier if it wasn't used before. Otherwise, appends
+     * a number to the given identifier to make it unique.
+     */
+    IdGenerator.prototype.getId = function (id) {
+        if (this.ids.has(id)) {
+            var num = this.ids.get(id);
+            this.ids.set(id, num + 1);
+            return id + ":" + num;
+        }
+        this.ids.set(id, 1);
+        return id;
+    };
+    return IdGenerator;
+}());
+exports.IdGenerator = IdGenerator;
+
+},{}],45:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -20736,7 +20809,7 @@ __export(require("./hourglass-chart"));
 __export(require("./simple-api"));
 __export(require("./simple-renderer"));
 
-},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./descendant-chart":40,"./detailed-renderer":41,"./gedcom":42,"./hourglass-chart":43,"./simple-api":45,"./simple-renderer":46}],45:[function(require,module,exports){
+},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./descendant-chart":40,"./detailed-renderer":41,"./gedcom":42,"./hourglass-chart":43,"./simple-api":46,"./simple-renderer":47}],46:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20759,6 +20832,8 @@ function createChartOptions(options) {
             data: data,
             indiHrefFunc: indiHrefFunc,
             famHrefFunc: famHrefFunc,
+            indiCallback: options.indiCallback,
+            famCallback: options.famCallback,
             horizontal: options.horizontal,
         }),
         startIndi: options.startIndi,
@@ -20782,7 +20857,7 @@ function renderChart(options) {
 }
 exports.renderChart = renderChart;
 
-},{"./data":39,"d3":33}],46:[function(require,module,exports){
+},{"./data":39,"d3":33}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20828,8 +20903,8 @@ var SimpleRenderer = /** @class */ (function () {
         // No family box in the simple renderer.
         return [0, 0];
     };
-    SimpleRenderer.prototype.render = function (selection) {
-        selection = selection.append('g').attr('class', 'simple');
+    SimpleRenderer.prototype.render = function (enter, update) {
+        var selection = enter.merge(update).append('g').attr('class', 'simple');
         this.renderIndi(selection, function (node) { return node.indi; });
         var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
             .append('g')
@@ -20869,5 +20944,5 @@ var SimpleRenderer = /** @class */ (function () {
 }());
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"d3":33}]},{},[44])(44)
+},{"d3":33}]},{},[45])(45)
 });
