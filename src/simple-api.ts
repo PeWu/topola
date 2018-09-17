@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-import {Chart, ChartInfo, ChartOptions, Renderer, RendererOptions} from './api';
+import {Chart, ChartInfo, ChartOptions, FamInfo, IndiInfo, Renderer, RendererOptions} from './api';
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
 
 
@@ -24,8 +24,8 @@ export interface RenderOptions {
   startFam?: string;
   indiUrl?: string;
   famUrl?: string;
-  indiCallback?: (id: string) => void;
-  famCallback?: (id: string) => void;
+  indiCallback?: (id: IndiInfo) => void;
+  famCallback?: (id: FamInfo) => void;
   svgSelector?: string;
   chartType: ChartType;
   renderer: RendererType;

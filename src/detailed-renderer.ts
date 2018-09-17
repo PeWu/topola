@@ -58,6 +58,7 @@ interface DetailsLine {
 
 interface OffsetIndi {
   indi: TreeIndi;
+  generation: number;
   xOffset: number;
   yOffset: number;
 }
@@ -165,11 +166,17 @@ export class DetailedRenderer implements Renderer {
           d3.max([-this.getFamPositionHorizontal(node.data), 0]) :
           0;
       if (node.data.indi) {
-        result.push({indi: node.data.indi, xOffset: famXOffset, yOffset: 0});
+        result.push({
+          indi: node.data.indi,
+          generation: node.data.generation,
+          xOffset: famXOffset,
+          yOffset: 0
+        });
       }
       if (node.data.spouse) {
         result.push({
           indi: node.data.spouse,
+          generation: node.data.generation,
           xOffset: (!this.options.horizontal && node.data.indi) ?
               node.data.indi.width + famXOffset :
               0,
@@ -342,7 +349,10 @@ export class DetailedRenderer implements Renderer {
       update = update.select('a');
     }
     if (this.options.indiCallback) {
-      enter.on('click', (data) => this.options.indiCallback(data.indi.id));
+      enter.on(
+          'click',
+          (data) => this.options.indiCallback(
+              {id: data.indi.id, generation: data.generation}));
     }
     // Background.
     enter.append('rect')
@@ -457,7 +467,9 @@ export class DetailedRenderer implements Renderer {
     }
     if (this.options.famCallback) {
       enter.on(
-          'click', (node) => this.options.famCallback(node.data.family.id));
+          'click',
+          (node) => this.options.famCallback(
+              {id: node.data.family.id, generation: node.data.generation}));
     }
 
     // Box.
