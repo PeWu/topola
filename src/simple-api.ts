@@ -4,6 +4,9 @@ import {Chart, ChartInfo, ChartOptions, FamInfo, IndiInfo, Renderer, RendererOpt
 import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
 
 
+const DEFAULT_SVG_SELECTOR = 'svg';
+
+
 export interface ChartType {
   new(options: ChartOptions): Chart;
 }
@@ -63,7 +66,7 @@ function createChartOptions(options: RenderOptions): ChartOptions {
     }),
     startIndi: options.startIndi,
     startFam: options.startFam,
-    svgSelector: options.svgSelector,
+    svgSelector: options.svgSelector || DEFAULT_SVG_SELECTOR,
     horizontal: options.horizontal,
     baseGeneration: options.baseGeneration,
   };
@@ -82,5 +85,9 @@ export function renderChart(options: RenderOptions): Promise<ChartInfo> {
 
   const chartOptions = createChartOptions(options);
   const chart = new options.chartType(chartOptions);
-  return Promise.resolve(chart.render());
+  const info = chart.render();
+  d3.select(chartOptions.svgSelector)
+      .attr('width', info.size[0])
+      .attr('height', info.size[1]);
+  return Promise.resolve(info);
 }

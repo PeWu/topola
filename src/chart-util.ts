@@ -10,8 +10,6 @@ const V_SPACING = 30;
 /** Margin around the whole drawing. */
 const MARGIN = 15;
 
-const DEFAULT_SVG_SELECTOR = 'svg';
-
 
 /** Utility class with common code for all chart types. */
 export class ChartUtil {
@@ -124,7 +122,7 @@ export class ChartUtil {
   }
 
   updateSvgDimensions(chartInfo: ChartInfo) {
-    const svg = d3.select(this.options.svgSelector || DEFAULT_SVG_SELECTOR);
+    const svg = d3.select(this.options.svgSelector);
     svg.attr('width', chartInfo.size[0]).attr('height', chartInfo.size[1]);
     svg.select('g').attr(
         'transform',
@@ -134,8 +132,9 @@ export class ChartUtil {
   layOutChart(root: d3.HierarchyNode<TreeNode>, flipVertically = false):
       Array<d3.HierarchyPointNode<TreeNode>> {
     // Add styles so that calculating text size is correct.
-    const svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
-    d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
+    d3.select(this.options.svgSelector)
+        .append('style')
+        .text(this.options.renderer.getCss());
 
     const treemap =
         flextree<TreeNode>()
@@ -238,12 +237,11 @@ export class ChartUtil {
   }
 
   renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
-    d3.select(svgSelector).append('g');
+    d3.select(this.options.svgSelector).append('g');
 
     // Render nodes.
     const boundNodes =
-        d3.select(svgSelector)
+        d3.select(this.options.svgSelector)
             .select('g')
             .selectAll('g.node')
             .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id);
@@ -280,7 +278,7 @@ export class ChartUtil {
     // Render links.
     const links = nodes.filter(n => !!n.parent);
     const boundLinks =
-        d3.select(svgSelector)
+        d3.select(this.options.svgSelector)
             .select('g')
             .selectAll('path.link')
             .data(links, (d: d3.HierarchyPointNode<Node>) => d.id);

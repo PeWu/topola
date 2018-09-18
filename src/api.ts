@@ -120,12 +120,12 @@ export interface ChartOptions {
   data: DataProvider<Indi, Fam>;
   // Renderer for individual data.
   renderer: Renderer;
+  // CSS selector of the SVG tag to draw in. If not provided, the chart will be
+  // rendered in the first SVG tag.
+  svgSelector: string;
   // The ID of the root individual or family. Set either startIndi or startFam.
   startIndi?: string;
   startFam?: string;
-  // CSS selector of the SVG tag to draw in. If not provided, the chart will be
-  // rendered in the first SVG tag.
-  svgSelector?: string;
   horizontal?: boolean;
   // Generation number of the startIndi or startFam. Used when rendering.
   baseGeneration?: number;
