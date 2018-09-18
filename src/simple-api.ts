@@ -20,16 +20,21 @@ export interface RenderOptions {
   // If `jsonUrl` is provided but not `json`, data is loaded from `jsonUrl`
   // first.
   jsonUrl?: string;
+  // The ID of the root individual or family. Set either startIndi or startFam.
   startIndi?: string;
   startFam?: string;
   indiUrl?: string;
   famUrl?: string;
   indiCallback?: (id: IndiInfo) => void;
   famCallback?: (id: FamInfo) => void;
+  // CSS selector of the SVG tag to draw in. If not provided, the chart will be
+  // rendered in the first SVG tag.
   svgSelector?: string;
   chartType: ChartType;
   renderer: RendererType;
   horizontal?: boolean;
+  // Generation number of the startIndi or startFam. Used when rendering.
+  baseGeneration?: number;
 }
 
 
@@ -60,6 +65,7 @@ function createChartOptions(options: RenderOptions): ChartOptions {
     startFam: options.startFam,
     svgSelector: options.svgSelector,
     horizontal: options.horizontal,
+    baseGeneration: options.baseGeneration,
   };
 }
 

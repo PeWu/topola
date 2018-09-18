@@ -159,7 +159,8 @@ export class ChartUtil {
 
     // Assign generation number.
     root.each((node) => {
-      node.data.generation = node.depth * (flipVertically ? -1 : 1);
+      node.data.generation = node.depth * (flipVertically ? -1 : 1) +
+          (this.options.baseGeneration || 0);
     });
 
     // Set preferred sizes.

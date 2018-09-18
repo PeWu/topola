@@ -127,4 +127,6 @@ export interface ChartOptions {
   // rendered in the first SVG tag.
   svgSelector?: string;
   horizontal?: boolean;
+  // Generation number of the startIndi or startFam. Used when rendering.
+  baseGeneration?: number;
 }
