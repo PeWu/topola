@@ -92,13 +92,15 @@ export interface FamInfo {
 
 
 export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
-  /** Creates HTTP link based on ID. */
+  // Creates HTTP link based on ID.
   indiHrefFunc?: (id: string) => string;
   famHrefFunc?: (id: string) => string;
   indiCallback?: (id: IndiInfo) => void;
   famCallback?: (id: FamInfo) => void;
   data: DataProvider<IndiT, FamT>;
   horizontal?: boolean;
+  // Animate showing and transforming charts.
+  animate?: boolean;
 }
 
 
@@ -129,4 +131,6 @@ export interface ChartOptions {
   horizontal?: boolean;
   // Generation number of the startIndi or startFam. Used when rendering.
   baseGeneration?: number;
+  // Animate showing and transforming charts.
+  animate?: boolean;
 }

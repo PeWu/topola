@@ -189,10 +189,11 @@ export class DetailedRenderer implements Renderer {
     }, (data: OffsetIndi) => data.indi.id);
 
     const indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
-    indiEnter.merge(indiUpdate)
-        .attr(
-            'transform',
-            (node) => `translate(${node.xOffset}, ${node.yOffset})`);
+    const indiMerged = indiEnter.merge(indiUpdate);
+    const indiTransition =
+        this.options.animate ? indiMerged.transition() : indiMerged;
+    indiTransition.attr(
+        'transform', (node) => `translate(${node.xOffset}, ${node.yOffset})`);
 
     this.renderIndi(indiEnter, indiUpdate);
 
@@ -208,8 +209,11 @@ export class DetailedRenderer implements Renderer {
                              })
                              .select('g.family');
 
-    familyEnter.merge(familyUpdate)
-        .attr('transform', (node) => this.getFamTransform(node.data));
+    const familyMerged = familyEnter.merge(familyUpdate);
+    const familyTransition =
+        this.options.animate ? familyMerged.transition() : familyMerged;
+    familyTransition.attr(
+        'transform', (node) => this.getFamTransform(node.data));
     this.renderFamily(familyEnter, familyUpdate);
   }
 
@@ -355,12 +359,14 @@ export class DetailedRenderer implements Renderer {
               {id: data.indi.id, generation: data.generation}));
     }
     // Background.
-    enter.append('rect')
-        .attr('rx', 5)
-        .attr('stroke-width', 0)
-        .attr('class', 'background')
-        .merge(update.select('rect.background'))
-        .attr('width', (node) => node.indi.width)
+    const background = enter.append('rect')
+                           .attr('rx', 5)
+                           .attr('stroke-width', 0)
+                           .attr('class', 'background')
+                           .merge(update.select('rect.background'));
+    const backgroundTransition =
+        this.options.animate ? background.transition() : background;
+    backgroundTransition.attr('width', (node) => node.indi.width)
         .attr('height', (node) => node.indi.height);
 
     // Clip path.
@@ -422,22 +428,25 @@ export class DetailedRenderer implements Renderer {
     }
 
     // Render id.
-    enter.append('text')
-        .attr('class', 'id')
-        .text((data) => data.indi.id)
-        .merge(update.select('text.id'))
-        .attr('transform', (data) => `translate(9, ${data.indi.height - 5})`);
+    const id = enter.append('text')
+                   .attr('class', 'id')
+                   .text((data) => data.indi.id)
+                   .merge(update.select('text.id'));
+    const idTransition = this.options.animate ? id.transition() : id;
+    idTransition.attr(
+        'transform', (data) => `translate(9, ${data.indi.height - 5})`);
 
     // Render sex.
-    enter.append('text')
-        .attr('class', 'details sex')
-        .attr('text-anchor', 'end')
-        .text((data) => SEX_SYMBOLS.get(getIndi(data).getSex()))
-        .merge(update.select('text.sex'))
-        .attr(
-            'transform',
-            (data) => `translate(${getDetailsWidth(data) - 5}, ${
-                data.indi.height - 5})`);
+    const sex = enter.append('text')
+                    .attr('class', 'details sex')
+                    .attr('text-anchor', 'end')
+                    .text((data) => SEX_SYMBOLS.get(getIndi(data).getSex()))
+                    .merge(update.select('text.sex'));
+    const sexTransition = this.options.animate ? sex.transition() : sex;
+    sexTransition.attr(
+        'transform',
+        (data) =>
+            `translate(${getDetailsWidth(data) - 5}, ${data.indi.height - 5})`);
 
 
     // Image.
@@ -451,12 +460,14 @@ export class DetailedRenderer implements Renderer {
         .attr('href', (data) => getIndi(data).getImageUrl());
 
     // Border on top.
-    enter.append('rect')
-        .attr('rx', 5)
-        .attr('fill-opacity', 0)
-        .attr('class', 'border')
-        .merge(update.select('rect.border'))
-        .attr('width', (data) => data.indi.width)
+    const border = enter.append('rect')
+                       .attr('rx', 5)
+                       .attr('fill-opacity', 0)
+                       .attr('class', 'border')
+                       .merge(update.select('rect.border'));
+    const borderTransition =
+        this.options.animate ? border.transition() : border;
+    borderTransition.attr('width', (data) => data.indi.width)
         .attr('height', (data) => data.indi.height);
   }
 

@@ -38,6 +38,10 @@ export interface RenderOptions {
   horizontal?: boolean;
   // Generation number of the startIndi or startFam. Used when rendering.
   baseGeneration?: number;
+  // Animate showing and transforming charts.
+  animate?: boolean;
+  // Update the width and height of the selected SVG. Defaults to true.
+  updateSvgSize?: boolean;
 }
 
 
@@ -63,12 +67,14 @@ function createChartOptions(options: RenderOptions): ChartOptions {
       indiCallback: options.indiCallback,
       famCallback: options.famCallback,
       horizontal: options.horizontal,
+      animate: options.animate,
     }),
     startIndi: options.startIndi,
     startFam: options.startFam,
     svgSelector: options.svgSelector || DEFAULT_SVG_SELECTOR,
     horizontal: options.horizontal,
     baseGeneration: options.baseGeneration,
+    animate: options.animate,
   };
 }
 
@@ -86,8 +92,10 @@ export function renderChart(options: RenderOptions): Promise<ChartInfo> {
   const chartOptions = createChartOptions(options);
   const chart = new options.chartType(chartOptions);
   const info = chart.render();
-  d3.select(chartOptions.svgSelector)
-      .attr('width', info.size[0])
-      .attr('height', info.size[1]);
+  if (options.updateSvgSize !== false) {
+    d3.select(chartOptions.svgSelector)
+        .attr('width', info.size[0])
+        .attr('height', info.size[1]);
+  }
   return Promise.resolve(info);
 }

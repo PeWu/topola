@@ -10,6 +10,9 @@ const V_SPACING = 30;
 /** Margin around the whole drawing. */
 const MARGIN = 15;
 
+const HIDE_TIME_MS = 200;
+const MOVE_TIME_MS = 500;
+
 
 /** Utility class with common code for all chart types. */
 export class ChartUtil {
@@ -123,8 +126,11 @@ export class ChartUtil {
 
   updateSvgDimensions(chartInfo: ChartInfo) {
     const svg = d3.select(this.options.svgSelector);
-    svg.attr('width', chartInfo.size[0]).attr('height', chartInfo.size[1]);
-    svg.select('g').attr(
+    const group = svg.select('g');
+    const transition = this.options.animate ?
+        group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
+        group;
+    transition.attr(
         'transform',
         `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`);
   }
@@ -248,13 +254,35 @@ export class ChartUtil {
 
     const nodeEnter = boundNodes.enter().append('g');
     nodeEnter.merge(boundNodes)
-        .attr('class', (node) => `node generation${node.data.generation}`)
-        .attr(
-            'transform',
-            (node) => `translate(${node.x - node.data.width / 2}, ${
-                node.y - node.data.height / 2})`);
+        .attr('class', (node) => `node generation${node.data.generation}`);
+    nodeEnter.attr(
+        'transform',
+        (node) => `translate(${node.x - node.data.width / 2}, ${
+            node.y - node.data.height / 2})`);
+    if (this.options.animate) {
+      nodeEnter.style('opacity', 0)
+          .transition()
+          .delay(HIDE_TIME_MS + MOVE_TIME_MS)
+          .duration(HIDE_TIME_MS)
+          .style('opacity', 1);
+    }
+    const updateTransition = this.options.animate ?
+        boundNodes.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
+        boundNodes;
+    updateTransition.attr(
+        'transform',
+        (node) => `translate(${node.x - node.data.width / 2}, ${
+            node.y - node.data.height / 2})`);
     this.options.renderer.render(nodeEnter, boundNodes);
-    boundNodes.exit().remove();
+    if (this.options.animate) {
+      boundNodes.exit()
+          .transition()
+          .duration(HIDE_TIME_MS)
+          .style('opacity', 0)
+          .remove();
+    } else {
+      boundNodes.exit().remove();
+    }
 
     const link =
         (parent: d3.HierarchyPointNode<TreeNode>,
@@ -282,14 +310,25 @@ export class ChartUtil {
             .select('g')
             .selectAll('path.link')
             .data(links, (d: d3.HierarchyPointNode<Node>) => d.id);
-    boundLinks.enter()
-        .insert('path', 'g')
-        .attr(
-            'class',
-            (node) => node.data.additionalMarriage ?
-                'link additional-marriage' :
-                'link')
-        .attr('d', (node) => link(node.parent, node));
-    boundLinks.exit().remove();
+    const path = boundLinks.enter()
+                     .insert('path', 'g')
+                     .attr(
+                         'class',
+                         (node) => node.data.additionalMarriage ?
+                             'link additional-marriage' :
+                             'link')
+                     .attr('d', (node) => link(node.parent, node));
+    if (this.options.animate) {
+      path.style('opacity', 0)
+          .transition()
+          .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
+          .duration(0)
+          .style('opacity', 1);
+    }
+    if (this.options.animate) {
+      boundLinks.exit().transition().duration(0).style('opacity', 0).remove();
+    } else {
+      boundLinks.exit().remove();
+    }
   }
 }
