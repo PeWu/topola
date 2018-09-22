@@ -14,6 +14,14 @@ const HIDE_TIME_MS = 200;
 const MOVE_TIME_MS = 500;
 
 
+/** Assigns an identifier to a link. */
+function linkId(node: d3.HierarchyPointNode<TreeNode>) {
+  return node.data.generation > node.parent.data.generation ?
+      `${node.parent.id}:${node.id}` :
+      `${node.id}:${node.parent.id}`;
+}
+
+
 /** Utility class with common code for all chart types. */
 export class ChartUtil {
   constructor(readonly options: ChartOptions) {}
@@ -138,9 +146,10 @@ export class ChartUtil {
   layOutChart(root: d3.HierarchyNode<TreeNode>, flipVertically = false):
       Array<d3.HierarchyPointNode<TreeNode>> {
     // Add styles so that calculating text size is correct.
-    d3.select(this.options.svgSelector)
-        .append('style')
-        .text(this.options.renderer.getCss());
+    const svg = d3.select(this.options.svgSelector);
+    if (svg.select('style').empty()) {
+      svg.append('style').text(this.options.renderer.getCss());
+    }
 
     const treemap =
         flextree<TreeNode>()
@@ -243,14 +252,14 @@ export class ChartUtil {
   }
 
   renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    d3.select(this.options.svgSelector).append('g');
+    const svg = d3.select(this.options.svgSelector);
+    if (svg.select('g').empty()) {
+      svg.append('g');
+    }
 
     // Render nodes.
-    const boundNodes =
-        d3.select(this.options.svgSelector)
-            .select('g')
-            .selectAll('g.node')
-            .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id);
+    const boundNodes = svg.select('g').selectAll('g.node').data(
+        nodes, (d: d3.HierarchyPointNode<Node>) => d.id);
 
     const nodeEnter = boundNodes.enter().append('g');
     nodeEnter.merge(boundNodes)
@@ -306,10 +315,7 @@ export class ChartUtil {
     // Render links.
     const links = nodes.filter(n => !!n.parent);
     const boundLinks =
-        d3.select(this.options.svgSelector)
-            .select('g')
-            .selectAll('path.link')
-            .data(links, (d: d3.HierarchyPointNode<Node>) => d.id);
+        svg.select('g').selectAll('path.link').data(links, linkId);
     const path = boundLinks.enter()
                      .insert('path', 'g')
                      .attr(
@@ -318,6 +324,12 @@ export class ChartUtil {
                              'link additional-marriage' :
                              'link')
                      .attr('d', (node) => link(node.parent, node));
+
+    const linkTransition = this.options.animate ?
+        boundLinks.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
+        boundLinks;
+    linkTransition.attr('d', (node) => link(node.parent, node));
+
     if (this.options.animate) {
       path.style('opacity', 0)
           .transition()

@@ -12,6 +12,10 @@ const IMAGE_WIDTH = 70;
 const IMAGE_HEIGHT = 90;
 
 
+const ANIMATION_DELAY_MS = 200;
+const ANIMATION_DURATION_MS = 500;
+
+
 /** Calculates the length of the given text in pixels when rendered. */
 export function getLength(text: string, textClass: string) {
   const g = d3.select('svg').append('g').attr('class', 'detailed node');
@@ -189,11 +193,10 @@ export class DetailedRenderer implements Renderer {
     }, (data: OffsetIndi) => data.indi.id);
 
     const indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
-    const indiMerged = indiEnter.merge(indiUpdate);
-    const indiTransition =
-        this.options.animate ? indiMerged.transition() : indiMerged;
-    indiTransition.attr(
-        'transform', (node) => `translate(${node.xOffset}, ${node.yOffset})`);
+    this.transition(indiEnter.merge(indiUpdate))
+        .attr(
+            'transform',
+            (node) => `translate(${node.xOffset}, ${node.yOffset})`);
 
     this.renderIndi(indiEnter, indiUpdate);
 
@@ -209,11 +212,8 @@ export class DetailedRenderer implements Renderer {
                              })
                              .select('g.family');
 
-    const familyMerged = familyEnter.merge(familyUpdate);
-    const familyTransition =
-        this.options.animate ? familyMerged.transition() : familyMerged;
-    familyTransition.attr(
-        'transform', (node) => this.getFamTransform(node.data));
+    this.transition(familyEnter.merge(familyUpdate))
+        .attr('transform', (node) => this.getFamTransform(node.data));
     this.renderFamily(familyEnter, familyUpdate);
   }
 
@@ -303,6 +303,14 @@ export class DetailedRenderer implements Renderer {
 }`;
   }
 
+  private transition<T>(selection:
+                            d3.Selection<d3.BaseType, T, d3.BaseType, {}>) {
+    return this.options.animate ? selection.transition()
+                                      .delay(ANIMATION_DELAY_MS)
+                                      .duration(ANIMATION_DURATION_MS) :
+                                  selection;
+  }
+
   /**
    * Returns the relative position of the family box for the vertical layout.
    */
@@ -364,9 +372,8 @@ export class DetailedRenderer implements Renderer {
                            .attr('stroke-width', 0)
                            .attr('class', 'background')
                            .merge(update.select('rect.background'));
-    const backgroundTransition =
-        this.options.animate ? background.transition() : background;
-    backgroundTransition.attr('width', (node) => node.indi.width)
+    this.transition(background)
+        .attr('width', (node) => node.indi.width)
         .attr('height', (node) => node.indi.height);
 
     // Clip path.
@@ -432,8 +439,7 @@ export class DetailedRenderer implements Renderer {
                    .attr('class', 'id')
                    .text((data) => data.indi.id)
                    .merge(update.select('text.id'));
-    const idTransition = this.options.animate ? id.transition() : id;
-    idTransition.attr(
+    this.transition(id).attr(
         'transform', (data) => `translate(9, ${data.indi.height - 5})`);
 
     // Render sex.
@@ -442,8 +448,7 @@ export class DetailedRenderer implements Renderer {
                     .attr('text-anchor', 'end')
                     .text((data) => SEX_SYMBOLS.get(getIndi(data).getSex()))
                     .merge(update.select('text.sex'));
-    const sexTransition = this.options.animate ? sex.transition() : sex;
-    sexTransition.attr(
+    this.transition(sex).attr(
         'transform',
         (data) =>
             `translate(${getDetailsWidth(data) - 5}, ${data.indi.height - 5})`);
@@ -465,9 +470,8 @@ export class DetailedRenderer implements Renderer {
                        .attr('fill-opacity', 0)
                        .attr('class', 'border')
                        .merge(update.select('rect.border'));
-    const borderTransition =
-        this.options.animate ? border.transition() : border;
-    borderTransition.attr('width', (data) => data.indi.width)
+    this.transition(border)
+        .attr('width', (data) => data.indi.width)
         .attr('height', (data) => data.indi.height);
   }
 
