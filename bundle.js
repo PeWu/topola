@@ -19728,7 +19728,14 @@ var H_SPACING = 15;
 var V_SPACING = 30;
 /** Margin around the whole drawing. */
 var MARGIN = 15;
-var DEFAULT_SVG_SELECTOR = 'svg';
+var HIDE_TIME_MS = 200;
+var MOVE_TIME_MS = 500;
+/** Assigns an identifier to a link. */
+function linkId(node) {
+    return node.data.generation > node.parent.data.generation ?
+        node.parent.id + ":" + node.id :
+        node.id + ":" + node.parent.id;
+}
 /** Utility class with common code for all chart types. */
 var ChartUtil = /** @class */ (function () {
     function ChartUtil(options) {
@@ -19821,16 +19828,21 @@ var ChartUtil = /** @class */ (function () {
         return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
     };
     ChartUtil.prototype.updateSvgDimensions = function (chartInfo) {
-        var svg = d3.select(this.options.svgSelector || DEFAULT_SVG_SELECTOR);
-        svg.attr('width', chartInfo.size[0]).attr('height', chartInfo.size[1]);
-        svg.select('g').attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
+        var svg = d3.select(this.options.svgSelector);
+        var group = svg.select('g');
+        var transition = this.options.animate ?
+            group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
+            group;
+        transition.attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
     };
     ChartUtil.prototype.layOutChart = function (root, flipVertically) {
         var _this = this;
         if (flipVertically === void 0) { flipVertically = false; }
         // Add styles so that calculating text size is correct.
-        var svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
-        d3.select(svgSelector).append('style').text(this.options.renderer.getCss());
+        var svg = d3.select(this.options.svgSelector);
+        if (svg.select('style').empty()) {
+            svg.append('style').text(this.options.renderer.getCss());
+        }
         var treemap = d3_flextree_1.flextree()
             .nodeSize(function (node) {
             if (_this.options.horizontal) {
@@ -19849,7 +19861,8 @@ var ChartUtil = /** @class */ (function () {
             .spacing(function (a, b) { return H_SPACING; });
         // Assign generation number.
         root.each(function (node) {
-            node.data.generation = node.depth * (flipVertically ? -1 : 1);
+            node.data.generation = node.depth * (flipVertically ? -1 : 1) +
+                (_this.options.baseGeneration || 0);
         });
         // Set preferred sizes.
         root.each(function (node) {
@@ -19922,19 +19935,38 @@ var ChartUtil = /** @class */ (function () {
     };
     ChartUtil.prototype.renderChart = function (nodes) {
         var _this = this;
-        var svgSelector = this.options.svgSelector || DEFAULT_SVG_SELECTOR;
-        d3.select(svgSelector).append('g');
+        var svg = d3.select(this.options.svgSelector);
+        if (svg.select('g').empty()) {
+            svg.append('g');
+        }
         // Render nodes.
-        var boundNodes = d3.select(svgSelector)
-            .select('g')
-            .selectAll('g.node')
-            .data(nodes, function (d) { return d.id; });
+        var boundNodes = svg.select('g').selectAll('g.node').data(nodes, function (d) { return d.id; });
         var nodeEnter = boundNodes.enter().append('g');
         nodeEnter.merge(boundNodes)
-            .attr('class', function (node) { return "node generation" + node.data.generation; })
-            .attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
+            .attr('class', function (node) { return "node generation" + node.data.generation; });
+        nodeEnter.attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
+        if (this.options.animate) {
+            nodeEnter.style('opacity', 0)
+                .transition()
+                .delay(HIDE_TIME_MS + MOVE_TIME_MS)
+                .duration(HIDE_TIME_MS)
+                .style('opacity', 1);
+        }
+        var updateTransition = this.options.animate ?
+            boundNodes.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
+            boundNodes;
+        updateTransition.attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
         this.options.renderer.render(nodeEnter, boundNodes);
-        boundNodes.exit().remove();
+        if (this.options.animate) {
+            boundNodes.exit()
+                .transition()
+                .duration(HIDE_TIME_MS)
+                .style('opacity', 0)
+                .remove();
+        }
+        else {
+            boundNodes.exit().remove();
+        }
         var link = function (parent, child) {
             if (child.data.additionalMarriage) {
                 return _this.linkAdditionalMarriage(child);
@@ -19953,17 +19985,30 @@ var ChartUtil = /** @class */ (function () {
         };
         // Render links.
         var links = nodes.filter(function (n) { return !!n.parent; });
-        var boundLinks = d3.select(svgSelector)
-            .select('g')
-            .selectAll('path.link')
-            .data(links, function (d) { return d.id; });
-        boundLinks.enter()
+        var boundLinks = svg.select('g').selectAll('path.link').data(links, linkId);
+        var path = boundLinks.enter()
             .insert('path', 'g')
             .attr('class', function (node) { return node.data.additionalMarriage ?
             'link additional-marriage' :
             'link'; })
             .attr('d', function (node) { return link(node.parent, node); });
-        boundLinks.exit().remove();
+        var linkTransition = this.options.animate ?
+            boundLinks.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
+            boundLinks;
+        linkTransition.attr('d', function (node) { return link(node.parent, node); });
+        if (this.options.animate) {
+            path.style('opacity', 0)
+                .transition()
+                .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
+                .duration(0)
+                .style('opacity', 1);
+        }
+        if (this.options.animate) {
+            boundLinks.exit().transition().duration(0).style('opacity', 0).remove();
+        }
+        else {
+            boundLinks.exit().remove();
+        }
     };
     return ChartUtil;
 }());
@@ -20192,6 +20237,8 @@ var FAM_MIN_WIDTH = 15;
 var IMAGE_WIDTH = 70;
 /** Minimum box height when an image is present. */
 var IMAGE_HEIGHT = 90;
+var ANIMATION_DELAY_MS = 200;
+var ANIMATION_DURATION_MS = 500;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text, textClass) {
     var g = d3.select('svg').append('g').attr('class', 'detailed node');
@@ -20314,11 +20361,17 @@ var DetailedRenderer = /** @class */ (function () {
                 d3.max([-_this.getFamPositionHorizontal(node.data), 0]) :
                 0;
             if (node.data.indi) {
-                result.push({ indi: node.data.indi, xOffset: famXOffset, yOffset: 0 });
+                result.push({
+                    indi: node.data.indi,
+                    generation: node.data.generation,
+                    xOffset: famXOffset,
+                    yOffset: 0
+                });
             }
             if (node.data.spouse) {
                 result.push({
                     indi: node.data.spouse,
+                    generation: node.data.generation,
                     xOffset: (!_this.options.horizontal && node.data.indi) ?
                         node.data.indi.width + famXOffset :
                         0,
@@ -20330,7 +20383,7 @@ var DetailedRenderer = /** @class */ (function () {
             return result;
         }, function (data) { return data.indi.id; });
         var indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
-        indiEnter.merge(indiUpdate)
+        this.transition(indiEnter.merge(indiUpdate))
             .attr('transform', function (node) { return "translate(" + node.xOffset + ", " + node.yOffset + ")"; });
         this.renderIndi(indiEnter, indiUpdate);
         var familyEnter = enter
@@ -20344,12 +20397,18 @@ var DetailedRenderer = /** @class */ (function () {
             return node.data.family ? this : null;
         })
             .select('g.family');
-        familyEnter.merge(familyUpdate)
+        this.transition(familyEnter.merge(familyUpdate))
             .attr('transform', function (node) { return _this.getFamTransform(node.data); });
         this.renderFamily(familyEnter, familyUpdate);
     };
     DetailedRenderer.prototype.getCss = function () {
         return "\n.detailed text {\n  font: 12px verdana;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
+    };
+    DetailedRenderer.prototype.transition = function (selection) {
+        return this.options.animate ? selection.transition()
+            .delay(ANIMATION_DELAY_MS)
+            .duration(ANIMATION_DURATION_MS) :
+            selection;
     };
     /**
      * Returns the relative position of the family box for the vertical layout.
@@ -20394,14 +20453,15 @@ var DetailedRenderer = /** @class */ (function () {
             update = update.select('a');
         }
         if (this.options.indiCallback) {
-            enter.on('click', function (data) { return _this.options.indiCallback(data.indi.id); });
+            enter.on('click', function (data) { return _this.options.indiCallback({ id: data.indi.id, generation: data.generation }); });
         }
         // Background.
-        enter.append('rect')
+        var background = enter.append('rect')
             .attr('rx', 5)
             .attr('stroke-width', 0)
             .attr('class', 'background')
-            .merge(update.select('rect.background'))
+            .merge(update.select('rect.background'));
+        this.transition(background)
             .attr('width', function (node) { return node.indi.width; })
             .attr('height', function (node) { return node.indi.height; });
         // Clip path.
@@ -20455,18 +20515,20 @@ var DetailedRenderer = /** @class */ (function () {
             _loop_1(i);
         }
         // Render id.
-        enter.append('text')
+        var id = enter.append('text')
             .attr('class', 'id')
             .text(function (data) { return data.indi.id; })
-            .merge(update.select('text.id'))
-            .attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
+            .merge(update.select('text.id'));
+        this.transition(id).attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
         // Render sex.
-        enter.append('text')
+        var sex = enter.append('text')
             .attr('class', 'details sex')
             .attr('text-anchor', 'end')
             .text(function (data) { return SEX_SYMBOLS.get(getIndi(data).getSex()); })
-            .merge(update.select('text.sex'))
-            .attr('transform', function (data) { return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")"; });
+            .merge(update.select('text.sex'));
+        this.transition(sex).attr('transform', function (data) {
+            return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")";
+        });
         // Image.
         enter.filter(function (data) { return !!getIndi(data).getImageUrl(); })
             .append('image')
@@ -20475,11 +20537,12 @@ var DetailedRenderer = /** @class */ (function () {
             .attr('clip-path', function (data) { return "url(#" + getClipId(data.indi.id) + ")"; })
             .attr('href', function (data) { return getIndi(data).getImageUrl(); });
         // Border on top.
-        enter.append('rect')
+        var border = enter.append('rect')
             .attr('rx', 5)
             .attr('fill-opacity', 0)
             .attr('class', 'border')
-            .merge(update.select('rect.border'))
+            .merge(update.select('rect.border'));
+        this.transition(border)
             .attr('width', function (data) { return data.indi.width; })
             .attr('height', function (data) { return data.indi.height; });
     };
@@ -20489,7 +20552,7 @@ var DetailedRenderer = /** @class */ (function () {
             enter = enter.append('a').attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); });
         }
         if (this.options.famCallback) {
-            enter.on('click', function (node) { return _this.options.famCallback(node.data.family.id); });
+            enter.on('click', function (node) { return _this.options.famCallback({ id: node.data.family.id, generation: node.data.generation }); });
         }
         // Box.
         enter.append('rect')
@@ -20814,6 +20877,7 @@ __export(require("./simple-renderer"));
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var data_1 = require("./data");
+var DEFAULT_SVG_SELECTOR = 'svg';
 function createChartOptions(options) {
     var data = new data_1.JsonDataProvider(options.json);
     var indiHrefFunc = options.indiUrl ?
@@ -20835,11 +20899,14 @@ function createChartOptions(options) {
             indiCallback: options.indiCallback,
             famCallback: options.famCallback,
             horizontal: options.horizontal,
+            animate: options.animate,
         }),
         startIndi: options.startIndi,
         startFam: options.startFam,
-        svgSelector: options.svgSelector,
+        svgSelector: options.svgSelector || DEFAULT_SVG_SELECTOR,
         horizontal: options.horizontal,
+        baseGeneration: options.baseGeneration,
+        animate: options.animate,
     };
 }
 /** A simplified API for rendering a chart based on the given RenderOptions. */
@@ -20853,7 +20920,13 @@ function renderChart(options) {
     }
     var chartOptions = createChartOptions(options);
     var chart = new options.chartType(chartOptions);
-    return Promise.resolve(chart.render());
+    var info = chart.render();
+    if (options.updateSvgSize !== false) {
+        d3.select(chartOptions.svgSelector)
+            .attr('width', info.size[0])
+            .attr('height', info.size[1]);
+    }
+    return Promise.resolve(info);
 }
 exports.renderChart = renderChart;
 
