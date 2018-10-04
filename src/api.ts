@@ -1,3 +1,5 @@
+import * as d3 from 'd3';
+
 /** Individual ID with dimensions. */
 export interface TreeIndi {
   id: string;
