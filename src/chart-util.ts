@@ -16,9 +16,12 @@ const MOVE_TIME_MS = 500;
 
 /** Assigns an identifier to a link. */
 function linkId(node: d3.HierarchyPointNode<TreeNode>) {
-  return node.data.generation > node.parent.data.generation ?
-      `${node.parent.id}:${node.id}` :
-      `${node.id}:${node.parent.id}`;
+  const [parent, child] = node.data.generation > node.parent.data.generation ?
+      [node.data, node.parent.data] :
+      [node.parent.data, node.data];
+
+  const suffix = child.additionalMarriage ? ':A' : '';
+  return `${parent.id}:${child.id}${suffix}`;
 }
 
 
