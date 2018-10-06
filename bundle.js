@@ -19732,9 +19732,11 @@ var HIDE_TIME_MS = 200;
 var MOVE_TIME_MS = 500;
 /** Assigns an identifier to a link. */
 function linkId(node) {
-    return node.data.generation > node.parent.data.generation ?
-        node.parent.id + ":" + node.id :
-        node.id + ":" + node.parent.id;
+    var _a = node.data.generation > node.parent.data.generation ?
+        [node.data, node.parent.data] :
+        [node.parent.data, node.data], parent = _a[0], child = _a[1];
+    var suffix = child.additionalMarriage ? ':A' : '';
+    return parent.id + ":" + child.id + suffix;
 }
 /** Utility class with common code for all chart types. */
 var ChartUtil = /** @class */ (function () {
