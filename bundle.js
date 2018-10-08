@@ -19734,7 +19734,7 @@ var MOVE_TIME_MS = 500;
 function linkId(node) {
     var _a = node.data.generation > node.parent.data.generation ?
         [node.data, node.parent.data] :
-        [node.parent.data, node.data], parent = _a[0], child = _a[1];
+        [node.parent.data, node.data], child = _a[0], parent = _a[1];
     var suffix = child.additionalMarriage ? ':A' : '';
     return parent.id + ":" + child.id + suffix;
 }
