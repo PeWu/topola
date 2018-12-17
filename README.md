@@ -7,7 +7,23 @@ Implemented chart types:
 * Descendants
 * Hourglass chart (both ancestors and descendants)
 
+## Examples
+
+Open the StackBlitz examples to play around with the code.
+
+Basic usage: [StackBlitz](https://stackblitz.com/edit/topola-basic)
+
+Using GEDCOM content: [StackBlitz](https://stackblitz.com/edit/topola-gedcom)
+
+Displaying more data: [StackBlitz](https://stackblitz.com/edit/topola-moredata)
+
+Animations: [StackBlitz](https://stackblitz.com/edit/topola-animations)
+
+## Demo
+
 Have a look at the [demo page](https://pewu.github.io/topola/) to see the current visualization possibilities.
+
+Try it with your own GEDCOM file: https://pewu.github.io/topola/upload
 
 ## Running
 To run the demo, run these commands:
@@ -15,12 +31,6 @@ To run the demo, run these commands:
 npm install
 npm start
 ```
-
-## Demo
-
-https://pewu.github.io/topola/
-
-Try it with your own GEDCOM file: https://pewu.github.io/topola/upload
 
 # Future
 
