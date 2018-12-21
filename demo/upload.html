@@ -7,58 +7,48 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
-      function render(json, initialRender) {
-        return (info) => {
-          return topola.renderChart({
-            json,
-            startIndi: info.id,
-            baseGeneration: info.generation,
-            svgSelector: '#graph',
-            chartType: topola.HourglassChart,
-            renderer: topola.DetailedRenderer,
-            indiCallback: render(json, false),
-            animate: !initialRender,
-            updateSvgSize: false,
-          }).then((info) => {
-            const svg = d3.select('#graph');
-            const parent = svg.node().parentElement;
+      function render(chart, indiInfo) {
+        const info = chart.render({
+          startIndi: indiInfo && indiInfo.id,
+          baseGeneration: indiInfo && indiInfo.generation,
+        });
+        const svg = d3.select('#graph');
+        const parent = svg.node().parentElement;
 
-            const scrollTopTween = (scrollTop) => {
-              return () => {
-                const i = d3.interpolateNumber(parent.scrollTop, scrollTop);
-                return (t) => {
-                  parent.scrollTop = i(t);
-                };
-              };
+        const scrollTopTween = (scrollTop) => {
+          return () => {
+            const i = d3.interpolateNumber(parent.scrollTop, scrollTop);
+            return (t) => {
+              parent.scrollTop = i(t);
             };
-            const scrollLeftTween = (scrollLeft) => {
-              return () => {
-                const i = d3.interpolateNumber(parent.scrollLeft, scrollLeft);
-                console.log(parent.scrollLeft, scrollLeft);
-                return (t) => {
-                  parent.scrollLeft = i(t);
-                };
-              };
+          };
+        };
+        const scrollLeftTween = (scrollLeft) => {
+          return () => {
+            const i = d3.interpolateNumber(parent.scrollLeft, scrollLeft);
+            return (t) => {
+              parent.scrollLeft = i(t);
             };
+          };
+        };
 
-            const dx = parent.clientWidth / 2 - info.origin[0];
-            const dy = parent.clientHeight / 2 - info.origin[1];
-            const svgTransition = svg.transition().delay(200).duration(500);
-            const transition = initialRender ? svg : svgTransition;
-            transition
-                .attr(
-                    'transform', `translate(${d3.max([dx, 0])}, ${d3.max([dy, 0])})`)
-                .attr('width', info.size[0])
-                .attr('height', info.size[1]);
-            if (initialRender) {
-              parent.scrollLeft = -dx;
-              parent.scrollTop = -dy;
-            } else {
-              svgTransition
-                  .tween('scrollLeft', scrollLeftTween(-dx))
-                  .tween('scrollTop', scrollTopTween(-dy));
-            }
-          });
+        const initialRender = !indiInfo;
+        const dx = parent.clientWidth / 2 - info.origin[0];
+        const dy = parent.clientHeight / 2 - info.origin[1];
+        const svgTransition = svg.transition().delay(200).duration(500);
+        const transition = initialRender ? svg : svgTransition;
+        transition
+            .attr(
+                'transform', `translate(${d3.max([dx, 0])}, ${d3.max([dy, 0])})`)
+            .attr('width', info.size[0])
+            .attr('height', info.size[1]);
+        if (initialRender) {
+          parent.scrollLeft = -dx;
+          parent.scrollTop = -dy;
+        } else {
+          svgTransition
+              .tween('scrollLeft', scrollLeftTween(-dx))
+              .tween('scrollTop', scrollTopTween(-dy));
         }
       }
 
@@ -69,8 +59,17 @@
         // Clear previous chart.
         document.getElementById('graph').innerHTML = '';
         var json = topola.gedcomToJson(gedcom);
-        render(json, true)({}).then(() =>
-            document.getElementById('chart').scrollIntoView());
+        const chart = topola.createChart({
+            json,
+            svgSelector: '#graph',
+            chartType: topola.HourglassChart,
+            renderer: topola.DetailedRenderer,
+            indiCallback: (info) => render(chart, info),
+            updateSvgSize: false,
+            animate: true,
+          });
+        render(chart);
+        document.getElementById('chart').scrollIntoView();
       }
 
       function handleFiles(files) {

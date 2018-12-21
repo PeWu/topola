@@ -17,15 +17,20 @@ export interface RendererType {
 }
 
 
+/** Options when rendering or rerendering a chart. */
 export interface RenderOptions {
-  // Data to be rendered.
-  json?: JsonGedcomData;
-  // If `jsonUrl` is provided but not `json`, data is loaded from `jsonUrl`
-  // first.
-  jsonUrl?: string;
   // The ID of the root individual or family. Set either startIndi or startFam.
   startIndi?: string;
   startFam?: string;
+  // Generation number of the startIndi or startFam. Used when rendering.
+  baseGeneration?: number;
+}
+
+
+/** Options when initializing a chart. */
+export interface SimpleChartOptions {
+  // Data to be rendered.
+  json?: JsonGedcomData;
   indiUrl?: string;
   famUrl?: string;
   indiCallback?: (id: IndiInfo) => void;
@@ -36,66 +41,76 @@ export interface RenderOptions {
   chartType: ChartType;
   renderer: RendererType;
   horizontal?: boolean;
-  // Generation number of the startIndi or startFam. Used when rendering.
-  baseGeneration?: number;
-  // Animate showing and transforming charts.
+  // Animate when transforming chart.
   animate?: boolean;
   // Update the width and height of the selected SVG. Defaults to true.
   updateSvgSize?: boolean;
 }
 
 
-function createChartOptions(options: RenderOptions): ChartOptions {
-  const data = new JsonDataProvider(options.json);
-  const indiHrefFunc = options.indiUrl ?
-      (id: string) => options.indiUrl.replace('${id}', id) :
+function createChartOptions(
+    chartOptions: SimpleChartOptions, renderOptions: RenderOptions,
+    options: {initialRender: boolean}): ChartOptions {
+  const data = new JsonDataProvider(chartOptions.json);
+  const indiHrefFunc = chartOptions.indiUrl ?
+      (id: string) => chartOptions.indiUrl.replace('${id}', id) :
       undefined;
-  const famHrefFunc = options.famUrl ?
-      (id: string) => options.famUrl.replace('${id}', id) :
+  const famHrefFunc = chartOptions.famUrl ?
+      (id: string) => chartOptions.famUrl.replace('${id}', id) :
       undefined;
 
   // If startIndi nor startFam is provided, select the first indi in the data.
-  if (!options.startIndi && !options.startFam) {
-    options.startIndi = options.json.indis[0].id;
+  if (!renderOptions.startIndi && !renderOptions.startFam) {
+    renderOptions.startIndi = chartOptions.json.indis[0].id;
   }
+  const animate = !options.initialRender && chartOptions.animate;
   return {
     data,
-    renderer: new options.renderer({
+    renderer: new chartOptions.renderer({
       data,
       indiHrefFunc,
       famHrefFunc,
-      indiCallback: options.indiCallback,
-      famCallback: options.famCallback,
-      horizontal: options.horizontal,
-      animate: options.animate,
+      indiCallback: chartOptions.indiCallback,
+      famCallback: chartOptions.famCallback,
+      horizontal: chartOptions.horizontal,
+      animate,
     }),
-    startIndi: options.startIndi,
-    startFam: options.startFam,
-    svgSelector: options.svgSelector || DEFAULT_SVG_SELECTOR,
-    horizontal: options.horizontal,
-    baseGeneration: options.baseGeneration,
-    animate: options.animate,
+    startIndi: renderOptions.startIndi,
+    startFam: renderOptions.startFam,
+    svgSelector: chartOptions.svgSelector || DEFAULT_SVG_SELECTOR,
+    horizontal: chartOptions.horizontal,
+    baseGeneration: renderOptions.baseGeneration,
+    animate,
   };
 }
 
 
-/** A simplified API for rendering a chart based on the given RenderOptions. */
-export function renderChart(options: RenderOptions): Promise<ChartInfo> {
-  if (!options.json) {
-    // First, load the data.
-    return d3.json(options.jsonUrl).then((json: JsonGedcomData) => {
-      options.json = json;
-      return renderChart(options);
-    });
-  }
+export interface ChartHandle {
+  render(data?: RenderOptions): ChartInfo;
+}
 
-  const chartOptions = createChartOptions(options);
-  const chart = new options.chartType(chartOptions);
-  const info = chart.render();
-  if (options.updateSvgSize !== false) {
-    d3.select(chartOptions.svgSelector)
-        .attr('width', info.size[0])
-        .attr('height', info.size[1]);
+
+class SimpleChartHandle implements ChartHandle {
+  private initialRender = true;
+
+  constructor(readonly options: SimpleChartOptions) {}
+
+  render(renderOptions: RenderOptions = {}): ChartInfo {
+    const chartOptions = createChartOptions(
+        this.options, renderOptions, {initialRender: this.initialRender});
+    this.initialRender = false;
+    const chart = new this.options.chartType(chartOptions);
+    const info = chart.render();
+    if (this.options.updateSvgSize !== false) {
+      d3.select(chartOptions.svgSelector)
+          .attr('width', info.size[0])
+          .attr('height', info.size[1]);
+    }
+    return info;
   }
-  return Promise.resolve(info);
+}
+
+
+export function createChart(options: SimpleChartOptions): ChartHandle {
+  return new SimpleChartHandle(options);
 }
