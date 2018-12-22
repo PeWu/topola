@@ -1,6 +1,6 @@
 {
   "name": "topola",
-  "version": "1.1.4",
+  "version": "2.0.0",
   "description": "Topola – online genealogy visualization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
