@@ -25,6 +25,41 @@ function linkId(node: d3.HierarchyPointNode<TreeNode>) {
 }
 
 
+
+/**
+ * Returns the relative position of the family box for the vertical layout.
+ */
+export function getFamPositionVertical(node: TreeNode): number {
+  const indiWidth = node.indi && node.indi.width || 0;
+  const spouseWidth = node.spouse && node.spouse.width || 0;
+  const familyWidth = node.family.width;
+  if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
+    return (indiWidth + spouseWidth - familyWidth) / 2;
+  }
+  if (familyWidth / 2 >= spouseWidth) {
+    return indiWidth + spouseWidth - familyWidth;
+  }
+  if (familyWidth / 2 >= indiWidth) {
+    return 0;
+  }
+  return indiWidth - familyWidth / 2;
+}
+
+
+/**
+ * Returns the relative position of the family box for the horizontal layout.
+ */
+export function getFamPositionHorizontal(node: TreeNode): number {
+  const indiHeight = node.indi && node.indi.height || 0;
+  const spouseHeight = node.spouse && node.spouse.height || 0;
+  const familyHeight = node.family.height;
+  if (!node.indi || !node.spouse) {
+    return (indiHeight + spouseHeight - familyHeight) / 2;
+  }
+  return indiHeight - familyHeight / 2;
+}
+
+
 /** Utility class with common code for all chart types. */
 export class ChartUtil {
   constructor(readonly options: ChartOptions) {}
@@ -67,10 +102,13 @@ export class ChartUtil {
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
     const midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
     const sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
+    const famYOffset =
+        s.data.family ? d3.max([-getFamPositionHorizontal(s.data), 0]) : 0;
     const sy = s.y -
         (s.data.indi && s.data.spouse &&
              (s.data.height / 2 - s.data.indi.height) ||
-         0);
+         0) +
+        famYOffset;
     const dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
     const dy = d.data.spouse ?
         (s.data.parentsOfSpouse ?
@@ -87,10 +125,13 @@ export class ChartUtil {
   private linkVertical(
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
     const midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
+    const famXOffset =
+        s.data.family ? d3.max([-getFamPositionVertical(s.data), 0]) : 0;
     const sx = s.x -
         (s.data.indi && s.data.spouse &&
              (s.data.width / 2 - s.data.indi.width) ||
-         0);
+         0) +
+        famXOffset;
     const sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
     const dx = d.data.spouse ?
         (s.data.parentsOfSpouse ?

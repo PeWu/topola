@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
 
 import {Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
+import {getFamPositionHorizontal, getFamPositionVertical} from './chart-util';
 import {Date, FamDetails, IndiDetails} from './data';
 
 const INDI_MIN_HEIGHT = 58;
@@ -164,10 +165,10 @@ export class DetailedRenderer implements Renderer {
     const indiUpdate = enter.merge(update).selectAll('g.indi').data((node) => {
       const result: OffsetIndi[] = [];
       const famXOffset = !this.options.horizontal && node.data.family ?
-          d3.max([-this.getFamPositionVertical(node.data), 0]) :
+          d3.max([-getFamPositionVertical(node.data), 0]) :
           0;
       const famYOffset = this.options.horizontal && node.data.family ?
-          d3.max([-this.getFamPositionHorizontal(node.data), 0]) :
+          d3.max([-getFamPositionHorizontal(node.data), 0]) :
           0;
       if (node.data.indi) {
         result.push({
@@ -311,44 +312,12 @@ export class DetailedRenderer implements Renderer {
                                   selection;
   }
 
-  /**
-   * Returns the relative position of the family box for the vertical layout.
-   */
-  private getFamPositionVertical(node: TreeNode): number {
-    const indiWidth = node.indi && node.indi.width || 0;
-    const spouseWidth = node.spouse && node.spouse.width || 0;
-    const familyWidth = node.family.width;
-    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
-      return (indiWidth + spouseWidth - familyWidth) / 2;
-    }
-    if (familyWidth / 2 >= spouseWidth) {
-      return indiWidth + spouseWidth - familyWidth;
-    }
-    if (familyWidth / 2 >= indiWidth) {
-      return 0;
-    }
-    return indiWidth - familyWidth / 2;
-  }
-
-  /**
-   * Returns the relative position of the family box for the horizontal layout.
-   */
-  private getFamPositionHorizontal(node: TreeNode): number {
-    const indiHeight = node.indi && node.indi.height || 0;
-    const spouseHeight = node.spouse && node.spouse.height || 0;
-    const familyHeight = node.family.height;
-    if (!node.indi || !node.spouse) {
-      return (indiHeight + spouseHeight - familyHeight) / 2;
-    }
-    return indiHeight - familyHeight / 2;
-  }
-
   private getFamTransform(node: TreeNode): string {
     if (this.options.horizontal) {
       return `translate(${node.indi && node.indi.width || node.spouse.width}, ${
-          d3.max([this.getFamPositionHorizontal(node), 0])})`;
+          d3.max([getFamPositionHorizontal(node), 0])})`;
     }
-    return `translate(${d3.max([this.getFamPositionVertical(node), 0])}, ${
+    return `translate(${d3.max([getFamPositionVertical(node), 0])}, ${
         node.indi && node.indi.height || node.spouse.height})`;
   }
 
