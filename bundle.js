@@ -19738,6 +19738,38 @@ function linkId(node) {
     var suffix = child.additionalMarriage ? ':A' : '';
     return parent.id + ":" + child.id + suffix;
 }
+/**
+ * Returns the relative position of the family box for the vertical layout.
+ */
+function getFamPositionVertical(node) {
+    var indiWidth = node.indi && node.indi.width || 0;
+    var spouseWidth = node.spouse && node.spouse.width || 0;
+    var familyWidth = node.family.width;
+    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
+        return (indiWidth + spouseWidth - familyWidth) / 2;
+    }
+    if (familyWidth / 2 >= spouseWidth) {
+        return indiWidth + spouseWidth - familyWidth;
+    }
+    if (familyWidth / 2 >= indiWidth) {
+        return 0;
+    }
+    return indiWidth - familyWidth / 2;
+}
+exports.getFamPositionVertical = getFamPositionVertical;
+/**
+ * Returns the relative position of the family box for the horizontal layout.
+ */
+function getFamPositionHorizontal(node) {
+    var indiHeight = node.indi && node.indi.height || 0;
+    var spouseHeight = node.spouse && node.spouse.height || 0;
+    var familyHeight = node.family.height;
+    if (!node.indi || !node.spouse) {
+        return (indiHeight + spouseHeight - familyHeight) / 2;
+    }
+    return indiHeight - familyHeight / 2;
+}
+exports.getFamPositionHorizontal = getFamPositionHorizontal;
 /** Utility class with common code for all chart types. */
 var ChartUtil = /** @class */ (function () {
     function ChartUtil(options) {
@@ -19774,10 +19806,12 @@ var ChartUtil = /** @class */ (function () {
     ChartUtil.prototype.linkHorizontal = function (s, d) {
         var midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
         var sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
+        var famYOffset = s.data.family ? d3.max([-getFamPositionHorizontal(s.data), 0]) : 0;
         var sy = s.y -
             (s.data.indi && s.data.spouse &&
                 (s.data.height / 2 - s.data.indi.height) ||
-                0);
+                0) +
+            famYOffset;
         var dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
         var dy = d.data.spouse ?
             (s.data.parentsOfSpouse ?
@@ -19789,10 +19823,12 @@ var ChartUtil = /** @class */ (function () {
     /** Creates a path from parent to the child node (vertical layout). */
     ChartUtil.prototype.linkVertical = function (s, d) {
         var midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
+        var famXOffset = s.data.family ? d3.max([-getFamPositionVertical(s.data), 0]) : 0;
         var sx = s.x -
             (s.data.indi && s.data.spouse &&
                 (s.data.width / 2 - s.data.indi.width) ||
-                0);
+                0) +
+            famXOffset;
         var sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
         var dx = d.data.spouse ?
             (s.data.parentsOfSpouse ?
@@ -20232,6 +20268,7 @@ exports.DescendantChart = DescendantChart;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
+var chart_util_1 = require("./chart-util");
 var INDI_MIN_HEIGHT = 58;
 var INDI_MIN_WIDTH = 64;
 var FAM_MIN_HEIGHT = 10;
@@ -20357,10 +20394,10 @@ var DetailedRenderer = /** @class */ (function () {
         var indiUpdate = enter.merge(update).selectAll('g.indi').data(function (node) {
             var result = [];
             var famXOffset = !_this.options.horizontal && node.data.family ?
-                d3.max([-_this.getFamPositionVertical(node.data), 0]) :
+                d3.max([-chart_util_1.getFamPositionVertical(node.data), 0]) :
                 0;
             var famYOffset = _this.options.horizontal && node.data.family ?
-                d3.max([-_this.getFamPositionHorizontal(node.data), 0]) :
+                d3.max([-chart_util_1.getFamPositionHorizontal(node.data), 0]) :
                 0;
             if (node.data.indi) {
                 result.push({
@@ -20412,41 +20449,11 @@ var DetailedRenderer = /** @class */ (function () {
             .duration(ANIMATION_DURATION_MS) :
             selection;
     };
-    /**
-     * Returns the relative position of the family box for the vertical layout.
-     */
-    DetailedRenderer.prototype.getFamPositionVertical = function (node) {
-        var indiWidth = node.indi && node.indi.width || 0;
-        var spouseWidth = node.spouse && node.spouse.width || 0;
-        var familyWidth = node.family.width;
-        if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
-            return (indiWidth + spouseWidth - familyWidth) / 2;
-        }
-        if (familyWidth / 2 >= spouseWidth) {
-            return indiWidth + spouseWidth - familyWidth;
-        }
-        if (familyWidth / 2 >= indiWidth) {
-            return 0;
-        }
-        return indiWidth - familyWidth / 2;
-    };
-    /**
-     * Returns the relative position of the family box for the horizontal layout.
-     */
-    DetailedRenderer.prototype.getFamPositionHorizontal = function (node) {
-        var indiHeight = node.indi && node.indi.height || 0;
-        var spouseHeight = node.spouse && node.spouse.height || 0;
-        var familyHeight = node.family.height;
-        if (!node.indi || !node.spouse) {
-            return (indiHeight + spouseHeight - familyHeight) / 2;
-        }
-        return indiHeight - familyHeight / 2;
-    };
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
-            return "translate(" + (node.indi && node.indi.width || node.spouse.width) + ", " + d3.max([this.getFamPositionHorizontal(node), 0]) + ")";
+            return "translate(" + (node.indi && node.indi.width || node.spouse.width) + ", " + d3.max([chart_util_1.getFamPositionHorizontal(node), 0]) + ")";
         }
-        return "translate(" + d3.max([this.getFamPositionVertical(node), 0]) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
+        return "translate(" + d3.max([chart_util_1.getFamPositionVertical(node), 0]) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
     };
     DetailedRenderer.prototype.renderIndi = function (enter, update) {
         var _this = this;
@@ -20593,7 +20600,7 @@ var DetailedRenderer = /** @class */ (function () {
 }());
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"d3":33}],42:[function(require,module,exports){
+},{"./chart-util":38,"d3":33}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var parse_gedcom_1 = require("parse-gedcom");
@@ -20880,57 +20887,62 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var data_1 = require("./data");
 var DEFAULT_SVG_SELECTOR = 'svg';
-function createChartOptions(options) {
-    var data = new data_1.JsonDataProvider(options.json);
-    var indiHrefFunc = options.indiUrl ?
-        function (id) { return options.indiUrl.replace('${id}', id); } :
+function createChartOptions(chartOptions, renderOptions, options) {
+    var data = new data_1.JsonDataProvider(chartOptions.json);
+    var indiHrefFunc = chartOptions.indiUrl ?
+        function (id) { return chartOptions.indiUrl.replace('${id}', id); } :
         undefined;
-    var famHrefFunc = options.famUrl ?
-        function (id) { return options.famUrl.replace('${id}', id); } :
+    var famHrefFunc = chartOptions.famUrl ?
+        function (id) { return chartOptions.famUrl.replace('${id}', id); } :
         undefined;
     // If startIndi nor startFam is provided, select the first indi in the data.
-    if (!options.startIndi && !options.startFam) {
-        options.startIndi = options.json.indis[0].id;
+    if (!renderOptions.startIndi && !renderOptions.startFam) {
+        renderOptions.startIndi = chartOptions.json.indis[0].id;
     }
+    var animate = !options.initialRender && chartOptions.animate;
     return {
         data: data,
-        renderer: new options.renderer({
+        renderer: new chartOptions.renderer({
             data: data,
             indiHrefFunc: indiHrefFunc,
             famHrefFunc: famHrefFunc,
-            indiCallback: options.indiCallback,
-            famCallback: options.famCallback,
-            horizontal: options.horizontal,
-            animate: options.animate,
+            indiCallback: chartOptions.indiCallback,
+            famCallback: chartOptions.famCallback,
+            horizontal: chartOptions.horizontal,
+            animate: animate,
         }),
-        startIndi: options.startIndi,
-        startFam: options.startFam,
-        svgSelector: options.svgSelector || DEFAULT_SVG_SELECTOR,
-        horizontal: options.horizontal,
-        baseGeneration: options.baseGeneration,
-        animate: options.animate,
+        startIndi: renderOptions.startIndi,
+        startFam: renderOptions.startFam,
+        svgSelector: chartOptions.svgSelector || DEFAULT_SVG_SELECTOR,
+        horizontal: chartOptions.horizontal,
+        baseGeneration: renderOptions.baseGeneration,
+        animate: animate,
     };
 }
-/** A simplified API for rendering a chart based on the given RenderOptions. */
-function renderChart(options) {
-    if (!options.json) {
-        // First, load the data.
-        return d3.json(options.jsonUrl).then(function (json) {
-            options.json = json;
-            return renderChart(options);
-        });
+var SimpleChartHandle = /** @class */ (function () {
+    function SimpleChartHandle(options) {
+        this.options = options;
+        this.initialRender = true;
     }
-    var chartOptions = createChartOptions(options);
-    var chart = new options.chartType(chartOptions);
-    var info = chart.render();
-    if (options.updateSvgSize !== false) {
-        d3.select(chartOptions.svgSelector)
-            .attr('width', info.size[0])
-            .attr('height', info.size[1]);
-    }
-    return Promise.resolve(info);
+    SimpleChartHandle.prototype.render = function (renderOptions) {
+        if (renderOptions === void 0) { renderOptions = {}; }
+        var chartOptions = createChartOptions(this.options, renderOptions, { initialRender: this.initialRender });
+        this.initialRender = false;
+        var chart = new this.options.chartType(chartOptions);
+        var info = chart.render();
+        if (this.options.updateSvgSize !== false) {
+            d3.select(chartOptions.svgSelector)
+                .attr('width', info.size[0])
+                .attr('height', info.size[1]);
+        }
+        return info;
+    };
+    return SimpleChartHandle;
+}());
+function createChart(options) {
+    return new SimpleChartHandle(options);
 }
-exports.renderChart = renderChart;
+exports.createChart = createChart;
 
 },{"./data":39,"d3":33}],47:[function(require,module,exports){
 "use strict";

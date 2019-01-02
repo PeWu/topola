@@ -7,41 +7,51 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
-      topola.renderChart({
-        jsonUrl: 'data/data.json',
-        startFam: 'F3047',
-        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
-        famUrl: 'http://kielakowie.pl/tng/familygroup.php?tree=tree381&familyID=${id}',
-        svgSelector: '#hourglass',
-        chartType: topola.HourglassChart,
-        renderer: topola.DetailedRenderer,
+      d3.json('data/data.json', (json) => {
+        topola.createChart({
+          json,
+          indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+          famUrl: 'http://kielakowie.pl/tng/familygroup.php?tree=tree381&familyID=${id}',
+          svgSelector: '#hourglass',
+          chartType: topola.HourglassChart,
+          renderer: topola.DetailedRenderer,
+        }).render({
+          startFam: 'F3047',
+        });
+
+        topola.createChart({
+          json,
+          indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+          famUrl: 'http://kielakowie.pl/tng/familygroup.php?tree=tree381&familyID=${id}',
+          svgSelector: '#ancestors',
+          chartType: topola.HourglassChart,
+          renderer: topola.DetailedRenderer,
+          horizontal: true,
+        }).render({
+          startIndi: 'I46464',
+        });
+
+        topola.createChart({
+          json,
+          indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
+          famUrl: 'http://kielakowie.pl/tng/familygroup.php?tree=tree381&familyID=${id}',
+          svgSelector: '#descendants',
+          chartType: topola.DescendantChart,
+          renderer: topola.SimpleRenderer,
+          horizontal: true,
+        }).render({
+          startFam: 'F23172',
+        });
       });
-      topola.renderChart({
-        jsonUrl: 'data/data.json',
-        startIndi: 'I46464',
-        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
-        famUrl: 'http://kielakowie.pl/tng/familygroup.php?tree=tree381&familyID=${id}',
-        svgSelector: '#ancestors',
-        chartType: topola.HourglassChart,
-        renderer: topola.DetailedRenderer,
-        horizontal: true,
-      });
-      topola.renderChart({
-        jsonUrl: 'data/tudor.json',
-        startFam: 'F15',
-        svgSelector: '#tudor',
-        chartType: topola.AncestorChart,
-        renderer: topola.DetailedRenderer,
-      });
-      topola.renderChart({
-        jsonUrl: 'data/data.json',
-        startFam: 'F23172',
-        indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
-        famUrl: 'http://kielakowie.pl/tng/familygroup.php?tree=tree381&familyID=${id}',
-        svgSelector: '#descendants',
-        chartType: topola.DescendantChart,
-        renderer: topola.SimpleRenderer,
-        horizontal: true,
+      d3.json('data/tudor.json', (json) => {
+        topola.createChart({
+          json,
+          svgSelector: '#tudor',
+          chartType: topola.AncestorChart,
+          renderer: topola.DetailedRenderer,
+        }).render({
+          startFam: 'F15',
+        });
       });
 
       function download(elementId) {
