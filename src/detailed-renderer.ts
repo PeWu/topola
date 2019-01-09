@@ -50,7 +50,11 @@ const SEX_SYMBOLS: Map<string, string> =
 /** Simple date formatter. */
 function formatDate(date: Date) {
   return [
-    date.qualifier, date.day, date.month && MONTHS.get(date.month), date.year
+    date.qualifier,
+    date.day,
+    date.month && MONTHS.get(date.month),
+    date.year,
+    date.text,
   ].join(' ');
 }
 

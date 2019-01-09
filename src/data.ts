@@ -6,6 +6,8 @@ export interface Date {
   day?: number;
   month?: number;
   year?: number;
+  // Free-form representation of the date, not meant to be parsed.
+  text?: string;
 }
 
 

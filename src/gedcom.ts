@@ -58,6 +58,12 @@ function parseDate(parts: string[]): Date|undefined {
   }
   const result: Date = {};
   const firstPart = parts[0].toLowerCase();
+
+  if (firstPart.startsWith('(') && parts[parts.length - 1].endsWith(')')) {
+    result.text = parts.join(' ');
+    result.text = result.text.substring(1, result.text.length - 1);
+    return result;
+  }
   if (firstPart === 'cal' || firstPart === 'abt' || firstPart === 'est') {
     result.qualifier = firstPart;
     parts = parts.slice(1);
