@@ -6,9 +6,8 @@ import {JsonDataProvider, JsonGedcomData} from '../src/data';
 
 import {FakeRenderer} from './fake_renderer';
 
+// Initialize DOM.
 (jsdomGlobal as any)();  // tslint:disable-line
-document.body.innerHTML = '<svg></svg>';
-
 
 describe('Ancestor chart', () => {
   beforeEach(() => {
@@ -22,6 +21,7 @@ describe('Ancestor chart', () => {
       data,
       startIndi: 'I1',
       renderer: new FakeRenderer(),
+      svgSelector: 'svg',
     });
     chart.render();
     expect(document.querySelectorAll('g.node').length).toEqual(1);
@@ -58,6 +58,7 @@ describe('Ancestor chart', () => {
       data,
       startFam: 'F1',
       renderer: new FakeRenderer(),
+      svgSelector: 'svg',
     });
     chart.render();
   });

@@ -1,3 +1,4 @@
+/// <reference path="./jsdom-global.d.ts" />
 import * as jsdomGlobal from 'jsdom-global';
 
 import {JsonDataProvider, JsonGedcomData} from '../src/data';
@@ -7,7 +8,6 @@ import {FakeRenderer} from './fake_renderer';
 
 // Initialize DOM.
 (jsdomGlobal as any)();  // tslint:disable-line
-
 
 describe('Descendant chart', () => {
   beforeEach(() => {
@@ -21,6 +21,7 @@ describe('Descendant chart', () => {
       data,
       startIndi: 'I1',
       renderer: new FakeRenderer(),
+      svgSelector: 'svg',
     });
     chart.render();
     expect(document.querySelectorAll('g.node').length).toEqual(1);
@@ -54,6 +55,7 @@ describe('Descendant chart', () => {
       data,
       startFam: 'F1',
       renderer: new FakeRenderer(),
+      svgSelector: 'svg',
     });
     chart.render();
   });
