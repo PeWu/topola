@@ -19666,8 +19666,10 @@ var AncestorChart = /** @class */ (function () {
             if (!fam) {
                 continue;
             }
-            var father = fam.getFather();
-            var mother = fam.getMother();
+            var _a = (entry.id === this.options.startFam &&
+                this.options.swapStartSpouses) ?
+                [fam.getMother(), fam.getFather()] :
+                [fam.getFather(), fam.getMother()], father = _a[0], mother = _a[1];
             if (!father && !mother) {
                 continue;
             }
@@ -19732,11 +19734,16 @@ var HIDE_TIME_MS = 200;
 var MOVE_TIME_MS = 500;
 /** Assigns an identifier to a link. */
 function linkId(node) {
+    if (!node.parent) {
+        return node.id + ":A";
+    }
     var _a = node.data.generation > node.parent.data.generation ?
         [node.data, node.parent.data] :
         [node.parent.data, node.data], child = _a[0], parent = _a[1];
-    var suffix = child.additionalMarriage ? ':A' : '';
-    return parent.id + ":" + child.id + suffix;
+    if (child.additionalMarriage) {
+        return child.id + ":A";
+    }
+    return parent.id + ":" + child.id;
 }
 /**
  * Returns the relative position of the family box for the vertical layout.
@@ -19798,9 +19805,9 @@ var ChartUtil = /** @class */ (function () {
     /** Returns the vertical size of individual boxes. */
     ChartUtil.prototype.getIndiVSize = function (node) {
         if (this.options.horizontal) {
-            return d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width]);
+            return d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width, 0]);
         }
-        return d3.max([node.indi && node.indi.height, node.spouse && node.spouse.height]);
+        return d3.max([node.indi && node.indi.height, node.spouse && node.spouse.height, 0]);
     };
     /** Creates a path from parent to the child node (horizontal layout). */
     ChartUtil.prototype.linkHorizontal = function (s, d) {
@@ -20022,7 +20029,7 @@ var ChartUtil = /** @class */ (function () {
             return _this.linkVertical(parent, child);
         };
         // Render links.
-        var links = nodes.filter(function (n) { return !!n.parent; });
+        var links = nodes.filter(function (n) { return !!n.parent || n.data.additionalMarriage; });
         var boundLinks = svg.select('g').selectAll('path.link').data(links, linkId);
         var path = boundLinks.enter()
             .insert('path', 'g')
@@ -20149,6 +20156,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
+var DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
 /** Returns the spouse of the given individual in the given family. */
 function getSpouse(indiId, fam) {
     if (fam.getFather() === indiId) {
@@ -20156,6 +20164,27 @@ function getSpouse(indiId, fam) {
     }
     return fam.getFather();
 }
+/** Removes the dummy root node if it was added in createHierarchy(). */
+function removeDummyNode(allNodes) {
+    if (allNodes[0].id !== DUMMY_ROOT_NODE_ID) {
+        return allNodes;
+    }
+    var nodes = allNodes.slice(1);
+    // Move first node to (0, 0) coordinates.
+    var dx = -nodes[0].x;
+    var dy = -nodes[0].y;
+    nodes.forEach(function (node) {
+        if (node.parent && node.parent.id === DUMMY_ROOT_NODE_ID &&
+            !node.data.additionalMarriage) {
+            delete node.parent;
+        }
+        node.x += dx;
+        node.y += dy;
+        node.data.generation--;
+    });
+    return nodes;
+}
+exports.removeDummyNode = removeDummyNode;
 /** Renders a descendants chart. */
 var DescendantChart = /** @class */ (function () {
     function DescendantChart(options) {
@@ -20218,6 +20247,18 @@ var DescendantChart = /** @class */ (function () {
         var nodes = this.options.startIndi ?
             this.getNodes(this.options.startIndi) :
             [this.getFamNode(this.options.startFam)];
+        // If there are multiple root nodes, i.e. the start individual has multiple
+        // marriages, create a dummy root node.
+        // After layout is complete, the dummy node will be removed.
+        if (nodes.length > 1) {
+            var dummyNode_1 = {
+                id: DUMMY_ROOT_NODE_ID,
+                height: 1,
+                width: 1,
+            };
+            parents.push(dummyNode_1);
+            nodes.forEach((function (node) { return node.parentId = dummyNode_1.id; }));
+        }
         parents.push.apply(parents, nodes);
         var stack = [];
         nodes.forEach(function (node) {
@@ -20254,7 +20295,7 @@ var DescendantChart = /** @class */ (function () {
      */
     DescendantChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = this.util.layOutChart(root);
+        var nodes = removeDummyNode(this.util.layOutChart(root));
         this.util.renderChart(nodes);
         var info = this.util.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
@@ -20305,7 +20346,11 @@ var SEX_SYMBOLS = new Map([['F', '\u2640'], ['M', '\u2642']]);
 /** Simple date formatter. */
 function formatDate(date) {
     return [
-        date.qualifier, date.day, date.month && MONTHS.get(date.month), date.year
+        date.qualifier,
+        date.day,
+        date.month && MONTHS.get(date.month),
+        date.year,
+        date.text,
     ].join(' ');
 }
 /** Extracts lines of details for a person. */
@@ -20649,6 +20694,11 @@ function parseDate(parts) {
     }
     var result = {};
     var firstPart = parts[0].toLowerCase();
+    if (firstPart.startsWith('(') && parts[parts.length - 1].endsWith(')')) {
+        result.text = parts.join(' ');
+        result.text = result.text.substring(1, result.text.length - 1);
+        return result;
+    }
     if (firstPart === 'cal' || firstPart === 'abt' || firstPart === 'est') {
         result.qualifier = firstPart;
         parts = parts.slice(1);
@@ -20799,6 +20849,14 @@ exports.gedcomToJson = gedcomToJson;
 
 },{"parse-gedcom":35}],43:[function(require,module,exports){
 "use strict";
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var ancestor_chart_1 = require("./ancestor-chart");
 var chart_util_1 = require("./chart-util");
@@ -20812,23 +20870,35 @@ var HourglassChart = /** @class */ (function () {
         this.options = options;
         this.util = new chart_util_1.ChartUtil(options);
     }
+    HourglassChart.prototype.getFamilies = function (indiId) {
+        return this.options.data.getIndi(this.options.startIndi)
+            .getFamiliesAsSpouse();
+    };
     HourglassChart.prototype.render = function () {
-        // If the start individual is set and this person has children, start with
-        // the family instead.
-        if (this.options.startIndi) {
-            var indi = this.options.data.getIndi(this.options.startIndi);
-            var fams = indi.getFamiliesAsSpouse();
-            if (fams.length) {
-                this.options.startFam = fams[0];
-                this.options.startIndi = undefined;
+        var ancestorChartOptions = __assign({}, this.options);
+        var startIndiFamilies = this.options.startIndi && this.getFamilies(this.options.startIndi) ||
+            [];
+        // If the start individual is set and this person has at least one spouse,
+        // start with the family instead.
+        if (startIndiFamilies.length) {
+            ancestorChartOptions.startFam = startIndiFamilies[0];
+            ancestorChartOptions.startIndi = undefined;
+            var fam = this.options.data.getFam(startIndiFamilies[0]);
+            if (fam.getMother() === this.options.startIndi) {
+                ancestorChartOptions.swapStartSpouses = true;
             }
         }
-        var ancestors = new ancestor_chart_1.AncestorChart(this.options);
+        var ancestors = new ancestor_chart_1.AncestorChart(ancestorChartOptions);
         var ancestorsRoot = ancestors.createHierarchy();
+        // Remove spouse's ancestors if there are multiple spouses
+        // to avoid showing ancestors of just one spouse.
+        if (startIndiFamilies.length > 1 && ancestorsRoot.children.length > 1) {
+            ancestorsRoot.children.pop();
+        }
         var ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
         var descendants = new descendant_chart_1.DescendantChart(this.options);
         var descendantsRoot = descendants.createHierarchy();
-        var descendantNodes = this.util.layOutChart(descendantsRoot);
+        var descendantNodes = descendant_chart_1.removeDummyNode(this.util.layOutChart(descendantsRoot));
         // slice(1) removes the duplicated start node.
         var nodes = ancestorNodes.slice(1).concat(descendantNodes);
         this.util.renderChart(nodes);
