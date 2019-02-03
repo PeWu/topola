@@ -12,7 +12,9 @@
     "start": "concurrently \"npm run watch\" \"npm run server\"",
     "fix": "gts fix",
     "test": "jasmine-ts \"tests/**/*.spec.ts\"",
-    "watch-test": "nodemon --ext ts --exec 'jasmine-ts \"tests/**/*.spec.ts\"'"
+    "watch-test": "nodemon --ext ts --exec 'jasmine-ts \"tests/**/*.spec.ts\"'",
+    "predeploy": "npm run build-demo",
+    "deploy": "gh-pages -d demo"
   },
   "author": "Przemek Wiech",
   "license": "Apache 2.0",
@@ -22,6 +24,7 @@
     "browser-sync": "^2.24.4",
     "browserify": "^16.2.2",
     "concurrently": "^3.5.1",
+    "gh-pages": "^2.0.1",
     "gts": "^0.6.0",
     "jasmine-ts": "^0.2.1",
     "jsdom": "^11.11.0",
