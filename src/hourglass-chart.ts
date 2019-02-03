@@ -1,7 +1,7 @@
 import {AncestorChart} from './ancestor-chart';
 import {Chart, ChartInfo, ChartOptions, Fam, Indi} from './api';
 import {ChartUtil} from './chart-util';
-import {DescendantChart} from './descendant-chart';
+import {DescendantChart, removeDummyNode} from './descendant-chart';
 
 
 /**
@@ -16,25 +16,42 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
     this.util = new ChartUtil(options);
   }
 
+  getFamilies(indiId: string) {
+    return this.options.data.getIndi(this.options.startIndi)
+        .getFamiliesAsSpouse();
+  }
+
   render(): ChartInfo {
-    // If the start individual is set and this person has children, start with
-    // the family instead.
-    if (this.options.startIndi) {
-      const indi = this.options.data.getIndi(this.options.startIndi);
-      const fams = indi.getFamiliesAsSpouse();
-      if (fams.length) {
-        this.options.startFam = fams[0];
-        this.options.startIndi = undefined;
+    const ancestorChartOptions = {...this.options};
+
+    const startIndiFamilies =
+        this.options.startIndi && this.getFamilies(this.options.startIndi) ||
+        [];
+    // If the start individual is set and this person has at least one spouse,
+    // start with the family instead.
+    if (startIndiFamilies.length) {
+      ancestorChartOptions.startFam = startIndiFamilies[0];
+      ancestorChartOptions.startIndi = undefined;
+
+      const fam = this.options.data.getFam(startIndiFamilies[0]);
+      if (fam.getMother() === this.options.startIndi) {
+        ancestorChartOptions.swapStartSpouses = true;
       }
     }
 
-    const ancestors = new AncestorChart(this.options);
+    const ancestors = new AncestorChart(ancestorChartOptions);
     const ancestorsRoot = ancestors.createHierarchy();
+    // Remove spouse's ancestors if there are multiple spouses
+    // to avoid showing ancestors of just one spouse.
+    if (startIndiFamilies.length > 1 && ancestorsRoot.children.length > 1) {
+      ancestorsRoot.children.pop();
+    }
     const ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
 
     const descendants = new DescendantChart(this.options);
     const descendantsRoot = descendants.createHierarchy();
-    const descendantNodes = this.util.layOutChart(descendantsRoot);
+    const descendantNodes =
+        removeDummyNode(this.util.layOutChart(descendantsRoot));
 
     // slice(1) removes the duplicated start node.
     const nodes = ancestorNodes.slice(1).concat(descendantNodes);

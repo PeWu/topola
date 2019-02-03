@@ -4,6 +4,7 @@ import {Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode} from './api';
 import {ChartUtil} from './chart-util';
 import {IdGenerator} from './id-generator';
 
+const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
 
 /** Returns the spouse of the given individual in the given family. */
 function getSpouse(indiId: string, fam: Fam): string {
@@ -11,6 +12,29 @@ function getSpouse(indiId: string, fam: Fam): string {
     return fam.getMother();
   }
   return fam.getFather();
+}
+
+
+/** Removes the dummy root node if it was added in createHierarchy(). */
+export function removeDummyNode(
+    allNodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+  if (allNodes[0].id !== DUMMY_ROOT_NODE_ID) {
+    return allNodes;
+  }
+  const nodes = allNodes.slice(1);
+  // Move first node to (0, 0) coordinates.
+  const dx = -nodes[0].x;
+  const dy = -nodes[0].y;
+  nodes.forEach((node) => {
+    if (node.parent && node.parent.id === DUMMY_ROOT_NODE_ID &&
+        !node.data.additionalMarriage) {
+      delete node.parent;
+    }
+    node.x += dx;
+    node.y += dy;
+    node.data.generation--;
+  });
+  return nodes;
 }
 
 
@@ -81,6 +105,19 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
         this.getNodes(this.options.startIndi) :
         [this.getFamNode(this.options.startFam)];
 
+    // If there are multiple root nodes, i.e. the start individual has multiple
+    // marriages, create a dummy root node.
+    // After layout is complete, the dummy node will be removed.
+    if (nodes.length > 1) {
+      const dummyNode = {
+        id: DUMMY_ROOT_NODE_ID,
+        height: 1,
+        width: 1,
+      };
+      parents.push(dummyNode);
+      nodes.forEach((node => node.parentId = dummyNode.id));
+    }
+
     parents.push(...nodes);
 
     const stack: TreeNode[] = [];
@@ -115,7 +152,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
    */
   render(): ChartInfo {
     const root = this.createHierarchy();
-    const nodes = this.util.layOutChart(root);
+    const nodes = removeDummyNode(this.util.layOutChart(root));
     this.util.renderChart(nodes);
 
     const info = this.util.getChartInfo(nodes);

@@ -45,8 +45,10 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam> implements
       if (!fam) {
         continue;
       }
-      const father = fam.getFather();
-      const mother = fam.getMother();
+      const [father, mother] = (entry.id === this.options.startFam &&
+                                this.options.swapStartSpouses) ?
+          [fam.getMother(), fam.getFather()] :
+          [fam.getFather(), fam.getMother()];
       if (!father && !mother) {
         continue;
       }

@@ -130,6 +130,8 @@ export interface ChartOptions {
   // The ID of the root individual or family. Set either startIndi or startFam.
   startIndi?: string;
   startFam?: string;
+  // When starting with a family, make spouses swap places.
+  swapStartSpouses?: boolean;
   horizontal?: boolean;
   // Generation number of the startIndi or startFam. Used when rendering.
   baseGeneration?: number;

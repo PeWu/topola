@@ -16,12 +16,17 @@ const MOVE_TIME_MS = 500;
 
 /** Assigns an identifier to a link. */
 function linkId(node: d3.HierarchyPointNode<TreeNode>) {
+  if (!node.parent) {
+    return `${node.id}:A`;
+  }
   const [child, parent] = node.data.generation > node.parent.data.generation ?
       [node.data, node.parent.data] :
       [node.parent.data, node.data];
 
-  const suffix = child.additionalMarriage ? ':A' : '';
-  return `${parent.id}:${child.id}${suffix}`;
+  if (child.additionalMarriage) {
+    return `${child.id}:A`;
+  }
+  return `${parent.id}:${child.id}`;
 }
 
 
@@ -91,10 +96,10 @@ export class ChartUtil {
   private getIndiVSize(node: TreeNode): number {
     if (this.options.horizontal) {
       return d3.max(
-          [node.indi && node.indi.width, node.spouse && node.spouse.width]);
+          [node.indi && node.indi.width, node.spouse && node.spouse.width, 0]);
     }
     return d3.max(
-        [node.indi && node.indi.height, node.spouse && node.spouse.height]);
+        [node.indi && node.indi.height, node.spouse && node.spouse.height, 0]);
   }
 
   /** Creates a path from parent to the child node (horizontal layout). */
@@ -357,7 +362,7 @@ export class ChartUtil {
         };
 
     // Render links.
-    const links = nodes.filter(n => !!n.parent);
+    const links = nodes.filter(n => !!n.parent || n.data.additionalMarriage);
     const boundLinks =
         svg.select('g').selectAll('path.link').data(links, linkId);
     const path = boundLinks.enter()
