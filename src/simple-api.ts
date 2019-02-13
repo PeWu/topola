@@ -45,6 +45,7 @@ export interface SimpleChartOptions {
   animate?: boolean;
   // Update the width and height of the selected SVG. Defaults to true.
   updateSvgSize?: boolean;
+  locale?: string;
 }
 
 
@@ -74,6 +75,7 @@ function createChartOptions(
       famCallback: chartOptions.famCallback,
       horizontal: chartOptions.horizontal,
       animate,
+      locale: chartOptions.locale,
     }),
     startIndi: renderOptions.startIndi,
     startFam: renderOptions.startFam,

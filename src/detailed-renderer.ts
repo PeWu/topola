@@ -2,7 +2,9 @@ import * as d3 from 'd3';
 
 import {Renderer, RendererOptions, TreeIndi, TreeNode, TreeNodeSelection} from './api';
 import {getFamPositionHorizontal, getFamPositionVertical} from './chart-util';
-import {Date, FamDetails, IndiDetails} from './data';
+import {FamDetails, IndiDetails} from './data';
+import {formatDate} from './date-format';
+
 
 const INDI_MIN_HEIGHT = 58;
 const INDI_MIN_WIDTH = 64;
@@ -27,36 +29,8 @@ export function getLength(text: string, textClass: string) {
 }
 
 
-const MONTHS: Map<number, string> = new Map([
-  [1, 'Jan'],
-  [2, 'Feb'],
-  [3, 'Mar'],
-  [4, 'Apr'],
-  [5, 'May'],
-  [6, 'Jun'],
-  [7, 'Jul'],
-  [8, 'Aug'],
-  [9, 'Sep'],
-  [10, 'Oct'],
-  [11, 'Nov'],
-  [12, 'Dec'],
-]);
-
-
 const SEX_SYMBOLS: Map<string, string> =
     new Map([['F', '\u2640'], ['M', '\u2642']]);
-
-
-/** Simple date formatter. */
-function formatDate(date: Date) {
-  return [
-    date.qualifier,
-    date.day,
-    date.month && MONTHS.get(date.month),
-    date.year,
-    date.text,
-  ].join(' ');
-}
 
 
 interface DetailsLine {
@@ -73,57 +47,6 @@ interface OffsetIndi {
 }
 
 
-/** Extracts lines of details for a person. */
-function getIndiDetails(indi: IndiDetails): DetailsLine[] {
-  const detailsList: DetailsLine[] = [];
-  const birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
-      formatDate(indi.getBirthDate().date);
-  const birthPlace = indi.getBirthPlace();
-  const deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
-      formatDate(indi.getDeathDate().date);
-  const deathPlace = indi.getDeathPlace();
-  if (birthDate) {
-    detailsList.push({symbol: '', text: birthDate});
-  }
-  if (birthPlace) {
-    detailsList.push({symbol: '', text: birthPlace});
-  }
-  if (birthDate || birthPlace) {
-    detailsList[0].symbol = '*';
-  }
-  const listIndex = detailsList.length;
-  if (deathDate) {
-    detailsList.push({symbol: '', text: deathDate});
-  }
-  if (deathPlace) {
-    detailsList.push({symbol: '', text: deathPlace});
-  }
-  if (deathDate || deathPlace) {
-    detailsList[listIndex].symbol = '+';
-  }
-  return detailsList;
-}
-
-
-/** Extracts lines of details for a family. */
-function getFamDetails(fam: FamDetails): DetailsLine[] {
-  const detailsList: DetailsLine[] = [];
-  const marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
-      formatDate(fam.getMarriageDate().date);
-  const marriagePlace = fam.getMarriagePlace();
-  if (marriageDate) {
-    detailsList.push({symbol: '', text: marriageDate});
-  }
-  if (marriagePlace) {
-    detailsList.push({symbol: '', text: marriagePlace});
-  }
-  if (marriageDate || marriagePlace) {
-    detailsList[0].symbol = '\u26AD';
-  }
-  return detailsList;
-}
-
-
 /**
  * Renders some details about a person such as date and place of birth
  * and death.
@@ -131,9 +54,59 @@ function getFamDetails(fam: FamDetails): DetailsLine[] {
 export class DetailedRenderer implements Renderer {
   constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {}
 
+  /** Extracts lines of details for a person. */
+  private getIndiDetails(indi: IndiDetails): DetailsLine[] {
+    const detailsList: DetailsLine[] = [];
+    const birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
+        formatDate(indi.getBirthDate().date, this.options.locale);
+    const birthPlace = indi.getBirthPlace();
+    const deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
+        formatDate(indi.getDeathDate().date, this.options.locale);
+    const deathPlace = indi.getDeathPlace();
+    if (birthDate) {
+      detailsList.push({symbol: '', text: birthDate});
+    }
+    if (birthPlace) {
+      detailsList.push({symbol: '', text: birthPlace});
+    }
+    if (birthDate || birthPlace) {
+      detailsList[0].symbol = '*';
+    }
+    const listIndex = detailsList.length;
+    if (deathDate) {
+      detailsList.push({symbol: '', text: deathDate});
+    }
+    if (deathPlace) {
+      detailsList.push({symbol: '', text: deathPlace});
+    }
+    if (deathDate || deathPlace) {
+      detailsList[listIndex].symbol = '+';
+    }
+    return detailsList;
+  }
+
+
+  /** Extracts lines of details for a family. */
+  private getFamDetails(fam: FamDetails): DetailsLine[] {
+    const detailsList: DetailsLine[] = [];
+    const marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
+        formatDate(fam.getMarriageDate().date, this.options.locale);
+    const marriagePlace = fam.getMarriagePlace();
+    if (marriageDate) {
+      detailsList.push({symbol: '', text: marriageDate});
+    }
+    if (marriagePlace) {
+      detailsList.push({symbol: '', text: marriagePlace});
+    }
+    if (marriageDate || marriagePlace) {
+      detailsList[0].symbol = '\u26AD';
+    }
+    return detailsList;
+  }
+
   getPreferredIndiSize(id: string): [number, number] {
     const indi = this.options.data.getIndi(id);
-    const details = getIndiDetails(indi);
+    const details = this.getIndiDetails(indi);
 
     const height = d3.max([
       INDI_MIN_HEIGHT + details.length * 14,
@@ -153,7 +126,7 @@ export class DetailedRenderer implements Renderer {
 
   getPreferredFamSize(id: string): [number, number] {
     const fam = this.options.data.getFam(id);
-    const details = getFamDetails(fam);
+    const details = this.getFamDetails(fam);
 
     const height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
     const maxDetailsWidth =
@@ -386,7 +359,7 @@ export class DetailedRenderer implements Renderer {
     const details = new Map<string, DetailsLine[]>();
     enter.each((node) => {
       const indi = getIndi(node);
-      const detailsList = getIndiDetails(indi);
+      const detailsList = this.getIndiDetails(indi);
       details.set(node.indi.id, detailsList);
     });
 
@@ -472,7 +445,7 @@ export class DetailedRenderer implements Renderer {
     enter.each((node) => {
       const famId = node.data.family.id;
       const fam = this.options.data.getFam(famId);
-      const detailsList = getFamDetails(fam);
+      const detailsList = this.getFamDetails(fam);
       details.set(famId, detailsList);
     });
     const maxDetails = d3.max(Array.from(details.values(), (v) => v.length));

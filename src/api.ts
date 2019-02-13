@@ -103,6 +103,7 @@ export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   horizontal?: boolean;
   // Animate showing and transforming charts.
   animate?: boolean;
+  locale?: string;
 }
 
 
