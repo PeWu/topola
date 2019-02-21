@@ -19719,7 +19719,7 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":38,"./id-generator":44,"d3":33}],38:[function(require,module,exports){
+},{"./chart-util":38,"./id-generator":45,"d3":33}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20153,6 +20153,57 @@ exports.JsonDataProvider = JsonDataProvider;
 },{}],40:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var MONTHS_EN = new Map([
+    [1, 'Jan'],
+    [2, 'Feb'],
+    [3, 'Mar'],
+    [4, 'Apr'],
+    [5, 'May'],
+    [6, 'Jun'],
+    [7, 'Jul'],
+    [8, 'Aug'],
+    [9, 'Sep'],
+    [10, 'Oct'],
+    [11, 'Nov'],
+    [12, 'Dec'],
+]);
+/** Translations of the GEDCOM date qualifiers. */
+var QUALIFIERS_I18N = new Map([
+    [
+        'pl', new Map([
+            ['cal', 'wyl.'],
+            ['abt', 'ok.'],
+            ['est', 'szac.'],
+        ])
+    ],
+]);
+function getShortMonth(month, locale) {
+    if (!Intl || !Intl.DateTimeFormat) {
+        return MONTHS_EN.get(month);
+    }
+    return new Intl.DateTimeFormat(locale, { month: 'short' })
+        .format(new Date(2000, month - 1));
+}
+function getQualifier(qualifier, locale) {
+    var language = locale && locale.split(/[-_]/)[0];
+    var languageMap = QUALIFIERS_I18N.get(language);
+    return languageMap && languageMap.get(qualifier) || qualifier;
+}
+/** Simple date formatter. */
+function formatDate(date, locale) {
+    return [
+        getQualifier(date.qualifier, locale),
+        date.day,
+        date.month && getShortMonth(date.month, locale),
+        date.year,
+        date.text,
+    ].join(' ');
+}
+exports.formatDate = formatDate;
+
+},{}],41:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
@@ -20305,11 +20356,12 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":38,"./id-generator":44,"d3":33}],41:[function(require,module,exports){
+},{"./chart-util":38,"./id-generator":45,"d3":33}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
+var date_format_1 = require("./date-format");
 var INDI_MIN_HEIGHT = 58;
 var INDI_MIN_WIDTH = 64;
 var FAM_MIN_HEIGHT = 10;
@@ -20328,78 +20380,7 @@ function getLength(text, textClass) {
     return w;
 }
 exports.getLength = getLength;
-var MONTHS = new Map([
-    [1, 'Jan'],
-    [2, 'Feb'],
-    [3, 'Mar'],
-    [4, 'Apr'],
-    [5, 'May'],
-    [6, 'Jun'],
-    [7, 'Jul'],
-    [8, 'Aug'],
-    [9, 'Sep'],
-    [10, 'Oct'],
-    [11, 'Nov'],
-    [12, 'Dec'],
-]);
 var SEX_SYMBOLS = new Map([['F', '\u2640'], ['M', '\u2642']]);
-/** Simple date formatter. */
-function formatDate(date) {
-    return [
-        date.qualifier,
-        date.day,
-        date.month && MONTHS.get(date.month),
-        date.year,
-        date.text,
-    ].join(' ');
-}
-/** Extracts lines of details for a person. */
-function getIndiDetails(indi) {
-    var detailsList = [];
-    var birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
-        formatDate(indi.getBirthDate().date);
-    var birthPlace = indi.getBirthPlace();
-    var deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
-        formatDate(indi.getDeathDate().date);
-    var deathPlace = indi.getDeathPlace();
-    if (birthDate) {
-        detailsList.push({ symbol: '', text: birthDate });
-    }
-    if (birthPlace) {
-        detailsList.push({ symbol: '', text: birthPlace });
-    }
-    if (birthDate || birthPlace) {
-        detailsList[0].symbol = '*';
-    }
-    var listIndex = detailsList.length;
-    if (deathDate) {
-        detailsList.push({ symbol: '', text: deathDate });
-    }
-    if (deathPlace) {
-        detailsList.push({ symbol: '', text: deathPlace });
-    }
-    if (deathDate || deathPlace) {
-        detailsList[listIndex].symbol = '+';
-    }
-    return detailsList;
-}
-/** Extracts lines of details for a family. */
-function getFamDetails(fam) {
-    var detailsList = [];
-    var marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
-        formatDate(fam.getMarriageDate().date);
-    var marriagePlace = fam.getMarriagePlace();
-    if (marriageDate) {
-        detailsList.push({ symbol: '', text: marriageDate });
-    }
-    if (marriagePlace) {
-        detailsList.push({ symbol: '', text: marriagePlace });
-    }
-    if (marriageDate || marriagePlace) {
-        detailsList[0].symbol = '\u26AD';
-    }
-    return detailsList;
-}
 /**
  * Renders some details about a person such as date and place of birth
  * and death.
@@ -20408,9 +20389,56 @@ var DetailedRenderer = /** @class */ (function () {
     function DetailedRenderer(options) {
         this.options = options;
     }
+    /** Extracts lines of details for a person. */
+    DetailedRenderer.prototype.getIndiDetails = function (indi) {
+        var detailsList = [];
+        var birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
+            date_format_1.formatDate(indi.getBirthDate().date, this.options.locale);
+        var birthPlace = indi.getBirthPlace();
+        var deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
+            date_format_1.formatDate(indi.getDeathDate().date, this.options.locale);
+        var deathPlace = indi.getDeathPlace();
+        if (birthDate) {
+            detailsList.push({ symbol: '', text: birthDate });
+        }
+        if (birthPlace) {
+            detailsList.push({ symbol: '', text: birthPlace });
+        }
+        if (birthDate || birthPlace) {
+            detailsList[0].symbol = '*';
+        }
+        var listIndex = detailsList.length;
+        if (deathDate) {
+            detailsList.push({ symbol: '', text: deathDate });
+        }
+        if (deathPlace) {
+            detailsList.push({ symbol: '', text: deathPlace });
+        }
+        if (deathDate || deathPlace) {
+            detailsList[listIndex].symbol = '+';
+        }
+        return detailsList;
+    };
+    /** Extracts lines of details for a family. */
+    DetailedRenderer.prototype.getFamDetails = function (fam) {
+        var detailsList = [];
+        var marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
+            date_format_1.formatDate(fam.getMarriageDate().date, this.options.locale);
+        var marriagePlace = fam.getMarriagePlace();
+        if (marriageDate) {
+            detailsList.push({ symbol: '', text: marriageDate });
+        }
+        if (marriagePlace) {
+            detailsList.push({ symbol: '', text: marriagePlace });
+        }
+        if (marriageDate || marriagePlace) {
+            detailsList[0].symbol = '\u26AD';
+        }
+        return detailsList;
+    };
     DetailedRenderer.prototype.getPreferredIndiSize = function (id) {
         var indi = this.options.data.getIndi(id);
-        var details = getIndiDetails(indi);
+        var details = this.getIndiDetails(indi);
         var height = d3.max([
             INDI_MIN_HEIGHT + details.length * 14,
             indi.getImageUrl() && IMAGE_HEIGHT,
@@ -20426,7 +20454,7 @@ var DetailedRenderer = /** @class */ (function () {
     };
     DetailedRenderer.prototype.getPreferredFamSize = function (id) {
         var fam = this.options.data.getFam(id);
-        var details = getFamDetails(fam);
+        var details = this.getFamDetails(fam);
         var height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
         var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text, 'details'); }));
         var width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
@@ -20486,7 +20514,7 @@ var DetailedRenderer = /** @class */ (function () {
         this.renderFamily(familyEnter, familyUpdate);
     };
     DetailedRenderer.prototype.getCss = function () {
-        return "\n.detailed text {\n  font: 12px verdana;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
+        return "\n.detailed text {\n  font-family: verdana;\n  font-size: 12px;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
     };
     DetailedRenderer.prototype.transition = function (selection) {
         return this.options.animate ? selection.transition()
@@ -20548,7 +20576,7 @@ var DetailedRenderer = /** @class */ (function () {
         var details = new Map();
         enter.each(function (node) {
             var indi = getIndi(node);
-            var detailsList = getIndiDetails(indi);
+            var detailsList = _this.getIndiDetails(indi);
             details.set(node.indi.id, detailsList);
         });
         var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
@@ -20619,7 +20647,7 @@ var DetailedRenderer = /** @class */ (function () {
         enter.each(function (node) {
             var famId = node.data.family.id;
             var fam = _this.options.data.getFam(famId);
-            var detailsList = getFamDetails(fam);
+            var detailsList = _this.getFamDetails(fam);
             details.set(famId, detailsList);
         });
         var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
@@ -20631,7 +20659,7 @@ var DetailedRenderer = /** @class */ (function () {
                 .attr('transform', "translate(9, " + (16 + i * 14) + ")")
                 .text(function (node) { return details.get(node.data.family.id)[i].symbol; });
             lineGroup.append('text')
-                .attr('text-anchor', 'left')
+                .attr('text-anchor', 'start')
                 .attr('class', 'details')
                 .attr('transform', "translate(15, " + (16 + i * 14) + ")")
                 .text(function (node) { return details.get(node.data.family.id)[i].text; });
@@ -20645,7 +20673,7 @@ var DetailedRenderer = /** @class */ (function () {
 }());
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"./chart-util":38,"d3":33}],42:[function(require,module,exports){
+},{"./chart-util":38,"./date-format":40,"d3":33}],43:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var parse_gedcom_1 = require("parse-gedcom");
@@ -20847,7 +20875,7 @@ function gedcomToJson(gedcomContents) {
 }
 exports.gedcomToJson = gedcomToJson;
 
-},{"parse-gedcom":35}],43:[function(require,module,exports){
+},{"parse-gedcom":35}],44:[function(require,module,exports){
 "use strict";
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -20910,7 +20938,7 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"./ancestor-chart":37,"./chart-util":38,"./descendant-chart":40}],44:[function(require,module,exports){
+},{"./ancestor-chart":37,"./chart-util":38,"./descendant-chart":41}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Provides unique identifiers. */
@@ -20935,7 +20963,7 @@ var IdGenerator = /** @class */ (function () {
 }());
 exports.IdGenerator = IdGenerator;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -20951,7 +20979,7 @@ __export(require("./hourglass-chart"));
 __export(require("./simple-api"));
 __export(require("./simple-renderer"));
 
-},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./descendant-chart":40,"./detailed-renderer":41,"./gedcom":42,"./hourglass-chart":43,"./simple-api":46,"./simple-renderer":47}],46:[function(require,module,exports){
+},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./descendant-chart":41,"./detailed-renderer":42,"./gedcom":43,"./hourglass-chart":44,"./simple-api":47,"./simple-renderer":48}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20980,6 +21008,7 @@ function createChartOptions(chartOptions, renderOptions, options) {
             famCallback: chartOptions.famCallback,
             horizontal: chartOptions.horizontal,
             animate: animate,
+            locale: chartOptions.locale,
         }),
         startIndi: renderOptions.startIndi,
         startFam: renderOptions.startFam,
@@ -21014,7 +21043,7 @@ function createChart(options) {
 }
 exports.createChart = createChart;
 
-},{"./data":39,"d3":33}],47:[function(require,module,exports){
+},{"./data":39,"d3":33}],48:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -21101,5 +21130,5 @@ var SimpleRenderer = /** @class */ (function () {
 }());
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"d3":33}]},{},[45])(45)
+},{"d3":33}]},{},[46])(46)
 });
