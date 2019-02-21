@@ -198,7 +198,8 @@ export class DetailedRenderer implements Renderer {
   getCss() {
     return `
 .detailed text {
-  font: 12px verdana;
+  font-family: verdana;
+  font-size: 12px;
 }
 
 .detailed .name {
@@ -460,7 +461,7 @@ export class DetailedRenderer implements Renderer {
           .attr('transform', `translate(9, ${16 + i * 14})`)
           .text((node) => details.get(node.data.family.id)[i].symbol);
       lineGroup.append('text')
-          .attr('text-anchor', 'left')
+          .attr('text-anchor', 'start')
           .attr('class', 'details')
           .attr('transform', `translate(15, ${16 + i * 14})`)
           .text((node) => details.get(node.data.family.id)[i].text);
