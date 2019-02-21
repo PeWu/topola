@@ -35,11 +35,11 @@
         const initialRender = !indiInfo;
         const dx = parent.clientWidth / 2 - info.origin[0];
         const dy = parent.clientHeight / 2 - info.origin[1];
-        const svgTransition = svg.transition().delay(200).duration(500);
+        const offsetX = d3.max([0, (parent.clientWidth - info.size[0]) / 2]);
+        const offsetY = d3.max([0, (parent.clientHeight - info.size[1]) / 2]);        const svgTransition = svg.transition().delay(200).duration(500);
         const transition = initialRender ? svg : svgTransition;
         transition
-            .attr(
-                'transform', `translate(${d3.max([dx, 0])}, ${d3.max([dy, 0])})`)
+            .attr('transform', `translate(${offsetX}, ${offsetY})`)
             .attr('width', info.size[0])
             .attr('height', info.size[1]);
         if (initialRender) {
