@@ -64,13 +64,25 @@
       }
 
       function print(elementId) {
-        var contents = document.getElementById(elementId).outerHTML;
-        var printWindow = window.open('', 'PRINT');
-
-        printWindow.document.write(contents);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
+        var printWindow = document.createElement('iframe');
+        printWindow.style.position = 'absolute';
+        printWindow.style.top = '-1000px';
+        printWindow.style.left = '-1000px';
+        printWindow.onload = () => {
+          const svg = document.getElementById(elementId).cloneNode(true);
+          svg.removeAttribute('transform');
+          const contents = svg.outerHTML;
+          printWindow.contentDocument.open();
+          printWindow.contentDocument.write(contents);
+          printWindow.contentDocument.close();
+          // Doesn't work on Firefox without the setTimeout.
+          setTimeout(() => {
+            printWindow.contentWindow.focus();
+            printWindow.contentWindow.print();
+            printWindow.parentNode.removeChild(printWindow);
+          }, 500);
+        };
+        document.body.appendChild(printWindow);
       }
     </script>
   </head>
