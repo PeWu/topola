@@ -226,7 +226,11 @@ function createFam(entry: GedcomEntry): JsonFam {
 
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
 export function gedcomToJson(gedcomContents: string): JsonGedcomData {
-  const gedcom = parseGedcom(gedcomContents);
+  return gedcomEntriesToJson(parseGedcom(gedcomContents));
+}
+
+/** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
+export function gedcomEntriesToJson(gedcom: GedcomEntry[]): JsonGedcomData {
   const indis = findTags(gedcom, 'INDI').map(createIndi);
   const fams = findTags(gedcom, 'FAM').map(createFam);
   return {indis, fams};
