@@ -154,10 +154,17 @@ export class ChartUtil {
     const nodeIndex = node.parent.children.findIndex((n) => n.id === node.id);
     // Assert nodeIndex > 0.
     const siblingNode = node.parent.children[nodeIndex - 1];
-    const sx = node.x + (node.data.indi.width - node.data.width) / 2;
+    const sFamXOffset =
+        node.data.family ? d3.max([-getFamPositionVertical(node.data), 0]) : 0;
+    const sx =
+        node.x + (node.data.indi.width - node.data.width) / 2 + sFamXOffset;
     const sy = node.y + (node.data.indi.height - node.data.height) / 2;
+    const dFamXOffset = siblingNode.data.family ?
+        d3.max([-getFamPositionVertical(siblingNode.data), 0]) :
+        0;
     const dx = siblingNode.x +
-        (siblingNode.data.indi.width - siblingNode.data.width) / 2;
+        (siblingNode.data.indi.width - siblingNode.data.width) / 2 +
+        dFamXOffset;
     const dy = siblingNode.y +
         (siblingNode.data.indi.height - siblingNode.data.height) / 2;
     return `M ${sx}, ${sy}
