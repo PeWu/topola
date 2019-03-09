@@ -19849,10 +19849,15 @@ var ChartUtil = /** @class */ (function () {
         var nodeIndex = node.parent.children.findIndex(function (n) { return n.id === node.id; });
         // Assert nodeIndex > 0.
         var siblingNode = node.parent.children[nodeIndex - 1];
-        var sx = node.x + (node.data.indi.width - node.data.width) / 2;
+        var sFamXOffset = node.data.family ? d3.max([-getFamPositionVertical(node.data), 0]) : 0;
+        var sx = node.x + (node.data.indi.width - node.data.width) / 2 + sFamXOffset;
         var sy = node.y + (node.data.indi.height - node.data.height) / 2;
+        var dFamXOffset = siblingNode.data.family ?
+            d3.max([-getFamPositionVertical(siblingNode.data), 0]) :
+            0;
         var dx = siblingNode.x +
-            (siblingNode.data.indi.width - siblingNode.data.width) / 2;
+            (siblingNode.data.indi.width - siblingNode.data.width) / 2 +
+            dFamXOffset;
         var dy = siblingNode.y +
             (siblingNode.data.indi.height - siblingNode.data.height) / 2;
         return "M " + sx + ", " + sy + "\n            L " + dx + ", " + dy;
@@ -20748,11 +20753,8 @@ function parseDate(parts) {
     return result;
 }
 /** Parses a GEDCOM date or date range. */
-function getDate(dateTag) {
-    if (!dateTag || !dateTag.data) {
-        return undefined;
-    }
-    var parts = dateTag.data.split(' ');
+function getDate(gedcomDate) {
+    var parts = gedcomDate.split(' ');
     var firstPart = parts[0].toLowerCase();
     if (firstPart === 'bet') {
         var i = parts.findIndex(function (x) { return x.toLowerCase() === 'and'; });
@@ -20773,6 +20775,7 @@ function getDate(dateTag) {
     }
     return undefined;
 }
+exports.getDate = getDate;
 /**
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
@@ -20782,7 +20785,7 @@ function createEvent(entry) {
         return undefined;
     }
     var dateTag = findTag(entry.tree, 'DATE');
-    var date = getDate(dateTag);
+    var date = dateTag && dateTag.data && getDate(dateTag.data);
     var placeTag = findTag(entry.tree, 'PLAC');
     var place = placeTag && placeTag.data;
     if (date || place) {
@@ -20868,12 +20871,16 @@ function createFam(entry) {
 }
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
 function gedcomToJson(gedcomContents) {
-    var gedcom = parse_gedcom_1.parse(gedcomContents);
+    return gedcomEntriesToJson(parse_gedcom_1.parse(gedcomContents));
+}
+exports.gedcomToJson = gedcomToJson;
+/** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
+function gedcomEntriesToJson(gedcom) {
     var indis = findTags(gedcom, 'INDI').map(createIndi);
     var fams = findTags(gedcom, 'FAM').map(createFam);
     return { indis: indis, fams: fams };
 }
-exports.gedcomToJson = gedcomToJson;
+exports.gedcomEntriesToJson = gedcomEntriesToJson;
 
 },{"parse-gedcom":35}],44:[function(require,module,exports){
 "use strict";
@@ -20920,7 +20927,8 @@ var HourglassChart = /** @class */ (function () {
         var ancestorsRoot = ancestors.createHierarchy();
         // Remove spouse's ancestors if there are multiple spouses
         // to avoid showing ancestors of just one spouse.
-        if (startIndiFamilies.length > 1 && ancestorsRoot.children.length > 1) {
+        if (startIndiFamilies.length > 1 && ancestorsRoot.children &&
+            ancestorsRoot.children.length > 1) {
             ancestorsRoot.children.pop();
         }
         var ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
@@ -20972,6 +20980,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./ancestor-chart"));
 __export(require("./chart-util"));
 __export(require("./data"));
+__export(require("./date-format"));
 __export(require("./descendant-chart"));
 __export(require("./detailed-renderer"));
 __export(require("./gedcom"));
@@ -20979,7 +20988,7 @@ __export(require("./hourglass-chart"));
 __export(require("./simple-api"));
 __export(require("./simple-renderer"));
 
-},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./descendant-chart":41,"./detailed-renderer":42,"./gedcom":43,"./hourglass-chart":44,"./simple-api":47,"./simple-renderer":48}],47:[function(require,module,exports){
+},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./date-format":40,"./descendant-chart":41,"./detailed-renderer":42,"./gedcom":43,"./hourglass-chart":44,"./simple-api":47,"./simple-renderer":48}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
