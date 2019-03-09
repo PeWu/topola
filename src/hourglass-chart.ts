@@ -43,7 +43,8 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
     const ancestorsRoot = ancestors.createHierarchy();
     // Remove spouse's ancestors if there are multiple spouses
     // to avoid showing ancestors of just one spouse.
-    if (startIndiFamilies.length > 1 && ancestorsRoot.children.length > 1) {
+    if (startIndiFamilies.length > 1 && ancestorsRoot.children &&
+        ancestorsRoot.children.length > 1) {
       ancestorsRoot.children.pop();
     }
     const ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
