@@ -87,11 +87,8 @@ function parseDate(parts: string[]): Date|undefined {
 
 
 /** Parses a GEDCOM date or date range. */
-function getDate(dateTag: GedcomEntry): DateOrRange|undefined {
-  if (!dateTag || !dateTag.data) {
-    return undefined;
-  }
-  const parts = dateTag.data.split(' ');
+export function getDate(gedcomDate: string): DateOrRange|undefined {
+  const parts = gedcomDate.split(' ');
   const firstPart = parts[0].toLowerCase();
   if (firstPart === 'bet') {
     const i = parts.findIndex((x) => x.toLowerCase() === 'and');
@@ -123,7 +120,7 @@ function createEvent(entry: GedcomEntry): JsonEvent|undefined {
     return undefined;
   }
   const dateTag = findTag(entry.tree, 'DATE');
-  const date = getDate(dateTag);
+  const date = dateTag && dateTag.data && getDate(dateTag.data);
   const placeTag = findTag(entry.tree, 'PLAC');
   const place = placeTag && placeTag.data;
   if (date || place) {
