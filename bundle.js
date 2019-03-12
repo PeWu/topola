@@ -20620,6 +20620,8 @@ var DetailedRenderer = /** @class */ (function () {
         enter.filter(function (data) { return !!getIndi(data).getImageUrl(); })
             .append('image')
             .attr('width', IMAGE_WIDTH)
+            .attr('height', function (data) { return data.indi.height; })
+            .attr('preserveAspectRatio', 'xMidYMin')
             .attr('transform', function (data) { return "translate(" + (data.indi.width - IMAGE_WIDTH) + ", 0)"; })
             .attr('clip-path', function (data) { return "url(#" + getClipId(data.indi.id) + ")"; })
             .attr('href', function (data) { return getIndi(data).getImageUrl(); });
