@@ -405,6 +405,8 @@ export class DetailedRenderer implements Renderer {
     enter.filter((data) => !!getIndi(data).getImageUrl())
         .append('image')
         .attr('width', IMAGE_WIDTH)
+        .attr('height', (data) => data.indi.height)
+        .attr('preserveAspectRatio', 'xMidYMin')
         .attr(
             'transform',
             (data) => `translate(${data.indi.width - IMAGE_WIDTH}, 0)`)
