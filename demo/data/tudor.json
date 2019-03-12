@@ -1666,7 +1666,7 @@
       "id": "I1",
       "lastName": "Tudor",
       "sex": "M",
-      "imageUrl": "http://www.marileecody.com/h7death.jpg"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Enrique_VII_de_Inglaterra%2C_por_un_artista_an%C3%B3nimo.jpg"
     },
     {
       "birth": {
@@ -1747,7 +1747,7 @@
       "id": "I4",
       "lastName": "Beaufort",
       "sex": "F",
-      "imageUrl": "http://www.marileecody.com/beaufort.jpg"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Lady_Margaret_Beaufort_from_NPG.jpg"
     },
     {
       "fams": [
@@ -1949,7 +1949,7 @@
       "id": "I17",
       "lastName": "Cleves",
       "sex": "F",
-      "imageUrl": "http://www.marileecody.com/christin.jpg"
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/AnneCleves.jpg/800px-AnneCleves.jpg"
     },
     {
       "death": {
