@@ -20182,12 +20182,19 @@ var QUALIFIERS_I18N = new Map([
         ])
     ],
 ]);
+var shortMonthCache = new Map();
 function getShortMonth(month, locale) {
     if (!Intl || !Intl.DateTimeFormat) {
         return MONTHS_EN.get(month);
     }
-    return new Intl.DateTimeFormat(locale, { month: 'short' })
+    var cacheKey = month + "|" + (locale || '');
+    if (shortMonthCache.has(cacheKey)) {
+        return shortMonthCache.get(cacheKey);
+    }
+    var result = new Intl.DateTimeFormat(locale, { month: 'short' })
         .format(new Date(2000, month - 1));
+    shortMonthCache.set(cacheKey, result);
+    return result;
 }
 function getQualifier(qualifier, locale) {
     var language = locale && locale.split(/[-_]/)[0];
@@ -20376,13 +20383,19 @@ var IMAGE_WIDTH = 70;
 var IMAGE_HEIGHT = 90;
 var ANIMATION_DELAY_MS = 200;
 var ANIMATION_DURATION_MS = 500;
+var textLengthCache = new Map();
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text, textClass) {
+    var cacheKey = text + "|" + textClass;
+    if (textLengthCache.has(cacheKey)) {
+        return textLengthCache.get(cacheKey);
+    }
     var g = d3.select('svg').append('g').attr('class', 'detailed node');
     var x = g.append('text').attr('class', textClass).text(text);
-    var w = x.node().getComputedTextLength();
+    var length = x.node().getComputedTextLength();
     g.remove();
-    return w;
+    textLengthCache.set(cacheKey, length);
+    return length;
 }
 exports.getLength = getLength;
 var SEX_SYMBOLS = new Map([['F', '\u2640'], ['M', '\u2642']]);
