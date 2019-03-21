@@ -26,12 +26,20 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
   ],
 ]);
 
+const shortMonthCache = new Map<string, string>();
+
 function getShortMonth(month: number, locale?: string) {
   if (!Intl || !Intl.DateTimeFormat) {
     return MONTHS_EN.get(month);
   }
-  return new Intl.DateTimeFormat(locale, {month: 'short'})
+  const cacheKey = `${month}|${locale || ''}`;
+  if (shortMonthCache.has(cacheKey)) {
+    return shortMonthCache.get(cacheKey);
+  }
+  const result = new Intl.DateTimeFormat(locale, {month: 'short'})
       .format(new Date(2000, month - 1));
+  shortMonthCache.set(cacheKey, result);
+  return result;
 }
 
 function getQualifier(qualifier: string, locale?: string) {
