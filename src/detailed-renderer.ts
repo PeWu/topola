@@ -19,13 +19,20 @@ const ANIMATION_DELAY_MS = 200;
 const ANIMATION_DURATION_MS = 500;
 
 
+const textLengthCache = new Map<string, number>();
+
 /** Calculates the length of the given text in pixels when rendered. */
 export function getLength(text: string, textClass: string) {
+  const cacheKey = `${text}|${textClass}`;
+  if (textLengthCache.has(cacheKey)) {
+    return textLengthCache.get(cacheKey);
+  }
   const g = d3.select('svg').append('g').attr('class', 'detailed node');
   const x = g.append('text').attr('class', textClass).text(text);
-  const w = (x.node() as SVGTextContentElement).getComputedTextLength();
+  const length = (x.node() as SVGTextContentElement).getComputedTextLength();
   g.remove();
-  return w;
+  textLengthCache.set(cacheKey, length);
+  return length;
 }
 
 
