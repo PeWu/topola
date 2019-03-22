@@ -19199,6 +19199,8 @@ function getName(p) {
         var nameNode = (p.tree.filter(hasTag('NAME')) || [])[0];
         if (nameNode) {
             return nameNode.data.replace(/\//g, '');
+        } else {
+            return '?';
         }
     } else {
         return 'Family';
@@ -19240,7 +19242,7 @@ function familyLinks(family) {
 module.exports = d3ize;
 
 },{}],35:[function(require,module,exports){
-var traverse = require('traverse');
+var crawl = require('tree-crawl');
 
 // from https://github.com/madprime/python-gedcom/blob/master/gedcom/__init__.py
 // * Level must start with nonnegative int, no leading zeros.
@@ -19254,16 +19256,15 @@ function parse(input) {
     var start = { root: { tree: [] }, level: 0 };
     start.pointer = start.root;
 
-    return traverse(input
+    var data = input
         .split('\n')
         .map(mapLine)
         .filter(function(_) { return _; })
         .reduce(buildTree, start)
-        .root.tree).map(function(node) {
-            delete node.up;
-            delete node.level;
-            this.update(node);
-        });
+        .root;
+
+    crawl(data, cleanUp, { getChildren });
+    return data.tree;
 
     // the basic trick of this module is turning the suggested tree
     // structure of a GEDCOM file into a tree in JSON. This reduction
@@ -19299,330 +19300,326 @@ function parse(input) {
             level: parseInt(match[1], 10),
             pointer: match[2].trim(),
             tag: match[3].trim(),
-            data: match[4].trim(),
+            data: match[4].trimLeft(),
             tree: []
         };
+    }
+
+    function cleanUp(node) {
+        delete node.up;
+        delete node.level;
+    }
+
+    function getChildren(node) {
+        return node.tree;
     }
 }
 
 module.exports.parse = parse;
 module.exports.d3ize = require('./d3ize');
 
-},{"./d3ize":34,"traverse":36}],36:[function(require,module,exports){
-var traverse = module.exports = function (obj) {
-    return new Traverse(obj);
-};
+},{"./d3ize":34,"tree-crawl":36}],36:[function(require,module,exports){
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(global.crawl = factory());
+}(this, (function () { 'use strict';
 
-function Traverse (obj) {
-    this.value = obj;
+function Context(flags, cursor) {
+  this.flags = flags;
+  this.cursor = cursor;
+}
+Context.prototype = {
+  skip: function skip() {
+    this.flags.skip = true;
+  },
+  break: function _break() {
+    this.flags.break = true;
+  },
+  remove: function remove() {
+    this.flags.remove = true;
+  },
+  replace: function replace(node) {
+    this.flags.replace = node;
+  },
+  get parent() {
+    return this.cursor.parent;
+  },
+  get depth() {
+    return this.cursor.depth;
+  },
+  get level() {
+    return this.cursor.depth + 1;
+  },
+  get index() {
+    return this.cursor.index;
+  }
+};
+function ContextFactory(flags, cursor) {
+  return new Context(flags, cursor);
 }
 
-Traverse.prototype.get = function (ps) {
-    var node = this.value;
-    for (var i = 0; i < ps.length; i ++) {
-        var key = ps[i];
-        if (!node || !hasOwnProperty.call(node, key)) {
-            node = undefined;
-            break;
-        }
-        node = node[key];
+function Stack(initial) {
+  this.xs = [initial];
+  this.top = 0;
+}
+Stack.prototype = {
+  push: function push(x) {
+    this.top++;
+    if (this.top < this.xs.length) {
+      this.xs[this.top] = x;
+    } else {
+      this.xs.push(x);
     }
-    return node;
-};
-
-Traverse.prototype.has = function (ps) {
-    var node = this.value;
-    for (var i = 0; i < ps.length; i ++) {
-        var key = ps[i];
-        if (!node || !hasOwnProperty.call(node, key)) {
-            return false;
-        }
-        node = node[key];
+  },
+  pushArrayReverse: function pushArrayReverse(xs) {
+    for (var i = xs.length - 1; i >= 0; i--) {
+      this.push(xs[i]);
     }
-    return true;
+  },
+  pop: function pop() {
+    var x = this.peek();
+    this.top--;
+    return x;
+  },
+  peek: function peek() {
+    return this.xs[this.top];
+  },
+  isEmpty: function isEmpty() {
+    return -1 === this.top;
+  }
 };
-
-Traverse.prototype.set = function (ps, value) {
-    var node = this.value;
-    for (var i = 0; i < ps.length - 1; i ++) {
-        var key = ps[i];
-        if (!hasOwnProperty.call(node, key)) node[key] = {};
-        node = node[key];
-    }
-    node[ps[i]] = value;
-    return value;
-};
-
-Traverse.prototype.map = function (cb) {
-    return walk(this.value, cb, true);
-};
-
-Traverse.prototype.forEach = function (cb) {
-    this.value = walk(this.value, cb, false);
-    return this.value;
-};
-
-Traverse.prototype.reduce = function (cb, init) {
-    var skip = arguments.length === 1;
-    var acc = skip ? this.value : init;
-    this.forEach(function (x) {
-        if (!this.isRoot || !skip) {
-            acc = cb.call(this, acc, x);
-        }
-    });
-    return acc;
-};
-
-Traverse.prototype.paths = function () {
-    var acc = [];
-    this.forEach(function (x) {
-        acc.push(this.path); 
-    });
-    return acc;
-};
-
-Traverse.prototype.nodes = function () {
-    var acc = [];
-    this.forEach(function (x) {
-        acc.push(this.node);
-    });
-    return acc;
-};
-
-Traverse.prototype.clone = function () {
-    var parents = [], nodes = [];
-    
-    return (function clone (src) {
-        for (var i = 0; i < parents.length; i++) {
-            if (parents[i] === src) {
-                return nodes[i];
-            }
-        }
-        
-        if (typeof src === 'object' && src !== null) {
-            var dst = copy(src);
-            
-            parents.push(src);
-            nodes.push(dst);
-            
-            forEach(objectKeys(src), function (key) {
-                dst[key] = clone(src[key]);
-            });
-            
-            parents.pop();
-            nodes.pop();
-            return dst;
-        }
-        else {
-            return src;
-        }
-    })(this.value);
-};
-
-function walk (root, cb, immutable) {
-    var path = [];
-    var parents = [];
-    var alive = true;
-    
-    return (function walker (node_) {
-        var node = immutable ? copy(node_) : node_;
-        var modifiers = {};
-        
-        var keepGoing = true;
-        
-        var state = {
-            node : node,
-            node_ : node_,
-            path : [].concat(path),
-            parent : parents[parents.length - 1],
-            parents : parents,
-            key : path.slice(-1)[0],
-            isRoot : path.length === 0,
-            level : path.length,
-            circular : null,
-            update : function (x, stopHere) {
-                if (!state.isRoot) {
-                    state.parent.node[state.key] = x;
-                }
-                state.node = x;
-                if (stopHere) keepGoing = false;
-            },
-            'delete' : function (stopHere) {
-                delete state.parent.node[state.key];
-                if (stopHere) keepGoing = false;
-            },
-            remove : function (stopHere) {
-                if (isArray(state.parent.node)) {
-                    state.parent.node.splice(state.key, 1);
-                }
-                else {
-                    delete state.parent.node[state.key];
-                }
-                if (stopHere) keepGoing = false;
-            },
-            keys : null,
-            before : function (f) { modifiers.before = f },
-            after : function (f) { modifiers.after = f },
-            pre : function (f) { modifiers.pre = f },
-            post : function (f) { modifiers.post = f },
-            stop : function () { alive = false },
-            block : function () { keepGoing = false }
-        };
-        
-        if (!alive) return state;
-        
-        function updateState() {
-            if (typeof state.node === 'object' && state.node !== null) {
-                if (!state.keys || state.node_ !== state.node) {
-                    state.keys = objectKeys(state.node)
-                }
-                
-                state.isLeaf = state.keys.length == 0;
-                
-                for (var i = 0; i < parents.length; i++) {
-                    if (parents[i].node_ === node_) {
-                        state.circular = parents[i];
-                        break;
-                    }
-                }
-            }
-            else {
-                state.isLeaf = true;
-                state.keys = null;
-            }
-            
-            state.notLeaf = !state.isLeaf;
-            state.notRoot = !state.isRoot;
-        }
-        
-        updateState();
-        
-        // use return values to update if defined
-        var ret = cb.call(state, state.node);
-        if (ret !== undefined && state.update) state.update(ret);
-        
-        if (modifiers.before) modifiers.before.call(state, state.node);
-        
-        if (!keepGoing) return state;
-        
-        if (typeof state.node == 'object'
-        && state.node !== null && !state.circular) {
-            parents.push(state);
-            
-            updateState();
-            
-            forEach(state.keys, function (key, i) {
-                path.push(key);
-                
-                if (modifiers.pre) modifiers.pre.call(state, state.node[key], key);
-                
-                var child = walker(state.node[key]);
-                if (immutable && hasOwnProperty.call(state.node, key)) {
-                    state.node[key] = child.node;
-                }
-                
-                child.isLast = i == state.keys.length - 1;
-                child.isFirst = i == 0;
-                
-                if (modifiers.post) modifiers.post.call(state, child);
-                
-                path.pop();
-            });
-            parents.pop();
-        }
-        
-        if (modifiers.after) modifiers.after.call(state, state.node);
-        
-        return state;
-    })(root).node;
+function QueueFactory(initial) {
+  return new Stack(initial);
 }
 
-function copy (src) {
-    if (typeof src === 'object' && src !== null) {
-        var dst;
-        
-        if (isArray(src)) {
-            dst = [];
-        }
-        else if (isDate(src)) {
-            dst = new Date(src.getTime ? src.getTime() : src);
-        }
-        else if (isRegExp(src)) {
-            dst = new RegExp(src);
-        }
-        else if (isError(src)) {
-            dst = { message: src.message };
-        }
-        else if (isBoolean(src)) {
-            dst = new Boolean(src);
-        }
-        else if (isNumber(src)) {
-            dst = new Number(src);
-        }
-        else if (isString(src)) {
-            dst = new String(src);
-        }
-        else if (Object.create && Object.getPrototypeOf) {
-            dst = Object.create(Object.getPrototypeOf(src));
-        }
-        else if (src.constructor === Object) {
-            dst = {};
-        }
-        else {
-            var proto =
-                (src.constructor && src.constructor.prototype)
-                || src.__proto__
-                || {}
-            ;
-            var T = function () {};
-            T.prototype = proto;
-            dst = new T;
-        }
-        
-        forEach(objectKeys(src), function (key) {
-            dst[key] = src[key];
-        });
-        return dst;
-    }
-    else return src;
+function DfsCursor() {
+  this.depth = 0;
+  this.stack = QueueFactory({ node: null, index: -1 });
+}
+DfsCursor.prototype = {
+  moveDown: function moveDown(node) {
+    this.depth++;
+    this.stack.push({ node: node, index: 0 });
+  },
+  moveUp: function moveUp() {
+    this.depth--;
+    this.stack.pop();
+  },
+  moveNext: function moveNext() {
+    this.stack.peek().index++;
+  },
+  get parent() {
+    return this.stack.peek().node;
+  },
+  get index() {
+    return this.stack.peek().index;
+  }
+};
+function CursorFactory() {
+  return new DfsCursor();
 }
 
-var objectKeys = Object.keys || function keys (obj) {
-    var res = [];
-    for (var key in obj) res.push(key)
-    return res;
+function Flags() {
+  this.break = false;
+  this.skip = false;
+  this.remove = false;
+  this.replace = null;
+}
+Flags.prototype = {
+  reset: function reset() {
+    this.break = false;
+    this.skip = false;
+    this.remove = false;
+    this.replace = null;
+  }
 };
+function FlagsFactory() {
+  return new Flags();
+}
 
-function toS (obj) { return Object.prototype.toString.call(obj) }
-function isDate (obj) { return toS(obj) === '[object Date]' }
-function isRegExp (obj) { return toS(obj) === '[object RegExp]' }
-function isError (obj) { return toS(obj) === '[object Error]' }
-function isBoolean (obj) { return toS(obj) === '[object Boolean]' }
-function isNumber (obj) { return toS(obj) === '[object Number]' }
-function isString (obj) { return toS(obj) === '[object String]' }
+function isNotEmpty(xs) {
+  return xs && 0 !== xs.length;
+}
 
-var isArray = Array.isArray || function isArray (xs) {
-    return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-var forEach = function (xs, fn) {
-    if (xs.forEach) return xs.forEach(fn)
-    else for (var i = 0; i < xs.length; i++) {
-        fn(xs[i], i, xs);
+function dfsPre(root, iteratee, getChildren) {
+  var flags = FlagsFactory();
+  var cursor = CursorFactory();
+  var context = ContextFactory(flags, cursor);
+  var stack = QueueFactory(root);
+  var dummy = Object.assign({}, root);
+  while (!stack.isEmpty()) {
+    var node = stack.pop();
+    if (node === dummy) {
+      cursor.moveUp();
+      continue;
     }
-};
+    flags.reset();
+    iteratee(node, context);
+    if (flags.break) break;
+    if (flags.remove) continue;
+    cursor.moveNext();
+    if (!flags.skip) {
+      if (flags.replace) {
+        node = flags.replace;
+      }
+      var children = getChildren(node);
+      if (isNotEmpty(children)) {
+        stack.push(dummy);
+        stack.pushArrayReverse(children);
+        cursor.moveDown(node);
+      }
+    }
+  }
+}
 
-forEach(objectKeys(Traverse.prototype), function (key) {
-    traverse[key] = function (obj) {
-        var args = [].slice.call(arguments, 1);
-        var t = new Traverse(obj);
-        return t[key].apply(t, args);
-    };
-});
+function dfsPost(root, iteratee, getChildren) {
+  var flags = FlagsFactory();
+  var cursor = CursorFactory();
+  var context = ContextFactory(flags, cursor);
+  var stack = QueueFactory(root);
+  var ancestors = QueueFactory(null);
+  while (!stack.isEmpty()) {
+    var node = stack.peek();
+    var parent = ancestors.peek();
+    var children = getChildren(node);
+    flags.reset();
+    if (node === parent || !isNotEmpty(children)) {
+      if (node === parent) {
+        ancestors.pop();
+        cursor.moveUp();
+      }
+      stack.pop();
+      iteratee(node, context);
+      if (flags.break) break;
+      if (flags.remove) continue;
+      cursor.moveNext();
+    } else {
+      ancestors.push(node);
+      cursor.moveDown(node);
+      stack.pushArrayReverse(children);
+    }
+  }
+}
 
-var hasOwnProperty = Object.hasOwnProperty || function (obj, key) {
-    return key in obj;
+var THRESHOLD = 32768;
+function Queue(initial) {
+  this.xs = [initial];
+  this.top = 0;
+  this.maxLength = 0;
+}
+Queue.prototype = {
+  enqueue: function enqueue(x) {
+    this.xs.push(x);
+  },
+  enqueueMultiple: function enqueueMultiple(xs) {
+    for (var i = 0, len = xs.length; i < len; i++) {
+      this.enqueue(xs[i]);
+    }
+  },
+  dequeue: function dequeue() {
+    var x = this.peek();
+    this.top++;
+    if (this.top === THRESHOLD) {
+      this.xs = this.xs.slice(this.top);
+      this.top = 0;
+    }
+    return x;
+  },
+  peek: function peek() {
+    return this.xs[this.top];
+  },
+  isEmpty: function isEmpty() {
+    return this.top === this.xs.length;
+  }
 };
+function QueueFactory$1(initial) {
+  return new Queue(initial);
+}
+
+function BfsCursor() {
+  this.depth = 0;
+  this.index = -1;
+  this.queue = QueueFactory$1({ node: null, arity: 1 });
+  this.levelNodes = 1;
+  this.nextLevelNodes = 0;
+}
+BfsCursor.prototype = {
+  store: function store(node, arity) {
+    this.queue.enqueue({ node: node, arity: arity });
+    this.nextLevelNodes += arity;
+  },
+  moveNext: function moveNext() {
+    this.index++;
+  },
+  moveForward: function moveForward() {
+    this.queue.peek().arity--;
+    this.levelNodes--;
+    if (0 === this.queue.peek().arity) {
+      this.index = 0;
+      this.queue.dequeue();
+    }
+    if (0 === this.levelNodes) {
+      this.depth++;
+      this.levelNodes = this.nextLevelNodes;
+      this.nextLevelNodes = 0;
+    }
+  },
+  get parent() {
+    return this.queue.peek().node;
+  }
+};
+function CursorFactory$1() {
+  return new BfsCursor();
+}
+
+function bfs(root, iteratee, getChildren) {
+  var flags = FlagsFactory();
+  var cursor = CursorFactory$1();
+  var context = ContextFactory(flags, cursor);
+  var queue = QueueFactory$1(root);
+  while (!queue.isEmpty()) {
+    var node = queue.dequeue();
+    flags.reset();
+    iteratee(node, context);
+    if (flags.break) break;
+    if (!flags.remove) {
+      cursor.moveNext();
+      if (flags.replace) {
+        node = flags.replace;
+      }
+      if (!flags.skip) {
+        var children = getChildren(node);
+        if (isNotEmpty(children)) {
+          queue.enqueueMultiple(children);
+          cursor.store(node, children.length);
+        }
+      }
+    }
+    cursor.moveForward();
+  }
+}
+
+var defaultGetChildren = function defaultGetChildren(node) {
+  return node.children;
+};
+function crawl(root, iteratee, options) {
+  if (null == root) return;
+  options = options || {};
+  var order = options.order || 'pre';
+  var getChildren = options.getChildren || defaultGetChildren;
+  if ('pre' === order) {
+    dfsPre(root, iteratee, getChildren);
+  } else if ('post' === order) {
+    dfsPost(root, iteratee, getChildren);
+  } else if ('bfs' === order) {
+    bfs(root, iteratee, getChildren);
+  }
+}
+
+return crawl;
+
+})));
 
 },{}],37:[function(require,module,exports){
 "use strict";
