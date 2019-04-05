@@ -177,7 +177,7 @@ export class DetailedRenderer implements Renderer {
       return result;
     }, (data: OffsetIndi) => data.indi.id);
 
-    const indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
+    const indiEnter = indiUpdate.enter().append('g' as string).attr('class', 'indi');
     this.transition(indiEnter.merge(indiUpdate))
         .attr(
             'transform',
@@ -189,7 +189,7 @@ export class DetailedRenderer implements Renderer {
                             .select(function(node) {
                               return node.data.family ? this : null;
                             })
-                            .append('g')
+                            .append('g' as string)
                             .attr('class', 'family');
     const familyUpdate = update
                              .select(function(node) {
