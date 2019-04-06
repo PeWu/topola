@@ -1,5 +1,7 @@
 # Topola – online genealogy visualization
 
+[![Build Status](https://travis-ci.com/PeWu/topola.svg?branch=master)](https://travis-ci.com/PeWu/topola)
+
 Topola is a Typescript/Javascript library for embedding genealogy tree visualizations on web pags. The library uses [D3](https://d3js.org/) under the hood for rendering SVG images.
 
 Implemented chart types:
@@ -24,6 +26,8 @@ Animations: [StackBlitz](https://stackblitz.com/edit/topola-animations)
 Have a look at the [demo page](https://pewu.github.io/topola/) to see the current visualization possibilities.
 
 Try it with your own GEDCOM file: https://pewu.github.io/topola/upload
+
+[Topola Genealogy Viewer](https://pewu.github.io/topola/) is a complete web application build around this library.
 
 ## Running
 To run the demo, run these commands:
