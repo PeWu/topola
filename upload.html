@@ -93,7 +93,7 @@
       function download(elementId) {
         var contents = document.getElementById(elementId).outerHTML;
         var hiddenElement = document.createElement('a');
-        hiddenElement.href = 'data:attachment/text,' + encodeURI(contents);
+        hiddenElement.href = 'data:attachment/text,' + encodeURIComponent(contents);
         hiddenElement.target = '_blank';
         hiddenElement.download = elementId + '.svg';
         hiddenElement.click();
