@@ -205,7 +205,7 @@ export class DetailedRenderer implements Renderer {
   getCss() {
     return `
 .detailed text {
-  font-family: verdana;
+  font-family: verdana, arial, sans-serif;
   font-size: 12px;
 }
 
