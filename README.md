@@ -28,6 +28,7 @@ Have a look at the [demo page](https://pewu.github.io/topola/) to see the curren
 Try it with your own GEDCOM file: https://pewu.github.io/topola/upload
 
 [Topola Genealogy Viewer](https://pewu.github.io/topola/) is a complete web application build around this library.
+It can also be used as a [Webtrees addon](https://github.com/PeWu/topola-webtrees).
 
 ## Running
 To run the demo, run these commands:
