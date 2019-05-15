@@ -13,6 +13,7 @@ export interface TreeNode {
   // Family ID when represents family, or
   // indi ID when represents single individual.
   id: string;
+  // Parent in the tree structure sense, not neceserily in the family sense.
   parentId?: string;
 
   indi?: TreeIndi;
@@ -29,7 +30,9 @@ export interface TreeNode {
 
   // If true, the links to children of this family will be attached to
   // the spouse box of the child node.
-  parentsOfSpouse?: boolean;
+  // parentsOfSpouse?: boolean;
+  indiParentNodeId?: string;
+  spouseParentNodeId?: string;
 
   // If true, this marriage will be rendered as an additional marriage
   // of an existing child.

@@ -1,23 +1,19 @@
 import * as d3 from 'd3';
 
 import {Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode} from './api';
-import {ChartUtil} from './chart-util';
+import {ChartUtil, getChartInfo} from './chart-util';
 import {IdGenerator} from './id-generator';
 
 const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
 
-/** Returns the spouse of the given individual in the given family. */
-function getSpouse(indiId: string, fam: Fam): string {
-  if (fam.getFather() === indiId) {
-    return fam.getMother();
-  }
-  return fam.getFather();
+export function layOutDescendants(options: ChartOptions) {
+  const descendants = new DescendantChart(options);
+  const descendantsRoot = descendants.createHierarchy();
+  return removeDummyNode(new ChartUtil(options).layOutChart(descendantsRoot));
 }
 
-
 /** Removes the dummy root node if it was added in createHierarchy(). */
-export function removeDummyNode(
-    allNodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+function removeDummyNode(allNodes: Array<d3.HierarchyPointNode<TreeNode>>) {
   if (allNodes[0].id !== DUMMY_ROOT_NODE_ID) {
     return allNodes;
   }
@@ -37,6 +33,13 @@ export function removeDummyNode(
   return nodes;
 }
 
+/** Returns the spouse of the given individual in the given family. */
+function getSpouse(indiId: string, fam: Fam): string {
+  if (fam.getFather() === indiId) {
+    return fam.getMother();
+  }
+  return fam.getFather();
+}
 
 /** Renders a descendants chart. */
 export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
@@ -155,7 +158,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam> implements
     const nodes = removeDummyNode(this.util.layOutChart(root));
     this.util.renderChart(nodes);
 
-    const info = this.util.getChartInfo(nodes);
+    const info = getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
     return info;
   }

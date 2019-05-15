@@ -5,10 +5,11 @@
 
 Topola is a Typescript/Javascript library for embedding genealogy tree visualizations on web pags. The library uses [D3](https://d3js.org/) under the hood for rendering SVG images.
 
-Implemented chart types:
+Available chart types:
 * Ancestors
 * Descendants
 * Hourglass chart (both ancestors and descendants)
+* Relatives chart (descendants, ancestors and descendants of ancestors), based on the [All-in-one report](http://genj.sourceforge.net/wiki/en/reports/graphicaltree) in GenealogyJ
 
 ## Examples
 

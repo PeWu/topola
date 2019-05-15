@@ -4,9 +4,9 @@ import {flextree} from 'd3-flextree';
 import {ChartInfo, ChartOptions, TreeIndi, TreeNode} from './api';
 
 /** Horizontal distance between boxes. */
-const H_SPACING = 15;
+export const H_SPACING = 15;
 /** Vertical distance between boxes. */
-const V_SPACING = 30;
+export const V_SPACING = 30;
 /** Margin around the whole drawing. */
 const MARGIN = 15;
 
@@ -30,13 +30,32 @@ function linkId(node: d3.HierarchyPointNode<TreeNode>) {
 }
 
 
+export function getChartInfo(nodes: Array<d3.HierarchyPointNode<TreeNode>>):
+    ChartInfo {
+  // Calculate chart boundaries.
+  const x0 = d3.min(nodes.map((d) => d.x - d.data.width / 2)) - MARGIN;
+  const y0 = d3.min(nodes.map((d) => d.y - d.data.height / 2)) - MARGIN;
+  const x1 = d3.max(nodes.map((d) => d.x + d.data.width / 2)) + MARGIN;
+  const y1 = d3.max(nodes.map((d) => d.y + d.data.height / 2)) + MARGIN;
+  return {size: [x1 - x0, y1 - y0], origin: [-x0, -y0]};
+}
+
+export function getChartInfoWithoutMargin(
+    nodes: Array<d3.HierarchyPointNode<TreeNode>>): ChartInfo {
+  // Calculate chart boundaries.
+  const x0 = d3.min(nodes.map((d) => d.x - d.data.width / 2));
+  const y0 = d3.min(nodes.map((d) => d.y - d.data.height / 2));
+  const x1 = d3.max(nodes.map((d) => d.x + d.data.width / 2));
+  const y1 = d3.max(nodes.map((d) => d.y + d.data.height / 2));
+  return {size: [x1 - x0, y1 - y0], origin: [-x0, -y0]};
+}
 
 /**
  * Returns the relative position of the family box for the vertical layout.
  */
 export function getFamPositionVertical(node: TreeNode): number {
-  const indiWidth = node.indi && node.indi.width || 0;
-  const spouseWidth = node.spouse && node.spouse.width || 0;
+  const indiWidth = node.indi ? node.indi.width : 0;
+  const spouseWidth = node.spouse ? node.spouse.width : 0;
   const familyWidth = node.family.width;
   if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
     return (indiWidth + spouseWidth - familyWidth) / 2;
@@ -55,8 +74,8 @@ export function getFamPositionVertical(node: TreeNode): number {
  * Returns the relative position of the family box for the horizontal layout.
  */
 export function getFamPositionHorizontal(node: TreeNode): number {
-  const indiHeight = node.indi && node.indi.height || 0;
-  const spouseHeight = node.spouse && node.spouse.height || 0;
+  const indiHeight = node.indi ? node.indi.height : 0;
+  const spouseHeight = node.spouse ? node.spouse.height : 0;
   const familyHeight = node.family.height;
   if (!node.indi || !node.spouse) {
     return (indiHeight + spouseHeight - familyHeight) / 2;
@@ -72,11 +91,11 @@ export class ChartUtil {
   /** Returns the horizontal size. */
   private getHSize(node: TreeNode): number {
     if (this.options.horizontal) {
-      return (node.indi && node.indi.height || 0) +
-          (node.spouse && node.spouse.height || 0);
+      return (node.indi ? node.indi.height : 0) +
+          (node.spouse ? node.spouse.height : 0);
     }
-    const indiHSize = (node.indi && node.indi.width || 0) +
-        (node.spouse && node.spouse.width || 0);
+    const indiHSize = (node.indi ? node.indi.width : 0) +
+        (node.spouse ? node.spouse.width : 0);
     return d3.max([indiHSize, node.family && node.family.width]);
   }
 
@@ -87,9 +106,9 @@ export class ChartUtil {
 
   private getFamVSize(node: TreeNode): number {
     if (this.options.horizontal) {
-      return node.family && node.family.width || 0;
+      return node.family ? node.family.width : 0;
     }
-    return node.family && node.family.height || 0;
+    return node.family ? node.family.height : 0;
   }
 
   /** Returns the vertical size of individual boxes. */
@@ -110,14 +129,13 @@ export class ChartUtil {
     const famYOffset =
         s.data.family ? d3.max([-getFamPositionHorizontal(s.data), 0]) : 0;
     const sy = s.y -
-        (s.data.indi && s.data.spouse &&
-             (s.data.height / 2 - s.data.indi.height) ||
-         0) +
+        (s.data.indi && s.data.spouse ? s.data.height / 2 - s.data.indi.height :
+                                        0) +
         famYOffset;
     const dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
     const dy = d.data.spouse ?
-        (s.data.parentsOfSpouse ?
-             d.y + (d.data.indi && (d.data.indi.height / 2) || 0) :
+        (s.id === d.data.spouseParentNodeId ?
+             d.y + (d.data.indi ? d.data.indi.height / 2 : 0) :
              d.y - d.data.spouse.height / 2) :
         d.y;
     return `M ${sx} ${sy}
@@ -129,18 +147,18 @@ export class ChartUtil {
   /** Creates a path from parent to the child node (vertical layout). */
   private linkVertical(
       s: d3.HierarchyPointNode<TreeNode>, d: d3.HierarchyPointNode<TreeNode>) {
-    const midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
+    // console.log('#7a', s, d);
+    const midY = s.y + s.data.height / 2 + V_SPACING / 2;
     const famXOffset =
         s.data.family ? d3.max([-getFamPositionVertical(s.data), 0]) : 0;
     const sx = s.x -
-        (s.data.indi && s.data.spouse &&
-             (s.data.width / 2 - s.data.indi.width) ||
-         0) +
+        (s.data.indi && s.data.spouse ? s.data.width / 2 - s.data.indi.width :
+                                        0) +
         famXOffset;
     const sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
     const dx = d.data.spouse ?
-        (s.data.parentsOfSpouse ?
-             d.x + (d.data.indi && (d.data.indi.width / 2) || 0) :
+        (s.id === d.data.spouseParentNodeId ?
+             d.x + (d.data.indi ? (d.data.indi.width / 2) : 0) :
              d.x - d.data.spouse.width / 2) :
         d.x;
     const dy = d.y - d.data.height / 2 + this.getIndiVSize(d.data) / 2;
@@ -177,15 +195,6 @@ export class ChartUtil {
     }
     [indi.width, indi.height] =
         this.options.renderer.getPreferredIndiSize(indi.id);
-  }
-
-  getChartInfo(nodes: Array<d3.HierarchyPointNode<TreeNode>>): ChartInfo {
-    // Calculate chart boundaries.
-    const x0 = d3.min(nodes.map((d) => d.x - d.data.width / 2)) - MARGIN;
-    const y0 = d3.min(nodes.map((d) => d.y - d.data.height / 2)) - MARGIN;
-    const x1 = d3.max(nodes.map((d) => d.x + d.data.width / 2)) + MARGIN;
-    const y1 = d3.max(nodes.map((d) => d.y + d.data.height / 2)) + MARGIN;
-    return {size: [x1 - x0, y1 - y0], origin: [-x0, -y0]};
   }
 
   updateSvgDimensions(chartInfo: ChartInfo) {
