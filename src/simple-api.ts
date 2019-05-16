@@ -1,21 +1,30 @@
 import * as d3 from 'd3';
 
-import {Chart, ChartInfo, ChartOptions, FamInfo, IndiInfo, Renderer, RendererOptions} from './api';
-import {FamDetails, IndiDetails, JsonDataProvider, JsonGedcomData} from './data';
-
+import {
+  Chart,
+  ChartInfo,
+  ChartOptions,
+  FamInfo,
+  IndiInfo,
+  Renderer,
+  RendererOptions,
+} from './api';
+import {
+  FamDetails,
+  IndiDetails,
+  JsonDataProvider,
+  JsonGedcomData,
+} from './data';
 
 const DEFAULT_SVG_SELECTOR = 'svg';
 
-
 export interface ChartType {
-  new(options: ChartOptions): Chart;
+  new (options: ChartOptions): Chart;
 }
-
 
 export interface RendererType {
-  new(options: RendererOptions<IndiDetails, FamDetails>): Renderer;
+  new (options: RendererOptions<IndiDetails, FamDetails>): Renderer;
 }
-
 
 /** Options when rendering or rerendering a chart. */
 export interface RenderOptions {
@@ -25,7 +34,6 @@ export interface RenderOptions {
   // Generation number of the startIndi or startFam. Used when rendering.
   baseGeneration?: number;
 }
-
 
 /** Options when initializing a chart. */
 export interface SimpleChartOptions {
@@ -48,17 +56,18 @@ export interface SimpleChartOptions {
   locale?: string;
 }
 
-
 function createChartOptions(
-    chartOptions: SimpleChartOptions, renderOptions: RenderOptions,
-    options: {initialRender: boolean}): ChartOptions {
+  chartOptions: SimpleChartOptions,
+  renderOptions: RenderOptions,
+  options: { initialRender: boolean }
+): ChartOptions {
   const data = new JsonDataProvider(chartOptions.json);
-  const indiHrefFunc = chartOptions.indiUrl ?
-      (id: string) => chartOptions.indiUrl.replace('${id}', id) :
-      undefined;
-  const famHrefFunc = chartOptions.famUrl ?
-      (id: string) => chartOptions.famUrl.replace('${id}', id) :
-      undefined;
+  const indiHrefFunc = chartOptions.indiUrl
+    ? (id: string) => chartOptions.indiUrl.replace('${id}', id)
+    : undefined;
+  const famHrefFunc = chartOptions.famUrl
+    ? (id: string) => chartOptions.famUrl.replace('${id}', id)
+    : undefined;
 
   // If startIndi nor startFam is provided, select the first indi in the data.
   if (!renderOptions.startIndi && !renderOptions.startFam) {
@@ -86,11 +95,9 @@ function createChartOptions(
   };
 }
 
-
 export interface ChartHandle {
   render(data?: RenderOptions): ChartInfo;
 }
-
 
 class SimpleChartHandle implements ChartHandle {
   private initialRender = true;
@@ -98,20 +105,20 @@ class SimpleChartHandle implements ChartHandle {
   constructor(readonly options: SimpleChartOptions) {}
 
   render(renderOptions: RenderOptions = {}): ChartInfo {
-    const chartOptions = createChartOptions(
-        this.options, renderOptions, {initialRender: this.initialRender});
+    const chartOptions = createChartOptions(this.options, renderOptions, {
+      initialRender: this.initialRender,
+    });
     this.initialRender = false;
     const chart = new this.options.chartType(chartOptions);
     const info = chart.render();
     if (this.options.updateSvgSize !== false) {
       d3.select(chartOptions.svgSelector)
-          .attr('width', info.size[0])
-          .attr('height', info.size[1]);
+        .attr('width', info.size[0])
+        .attr('height', info.size[1]);
     }
     return info;
   }
 }
-
 
 export function createChart(options: SimpleChartOptions): ChartHandle {
   return new SimpleChartHandle(options);

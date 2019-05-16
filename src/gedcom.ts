@@ -1,19 +1,23 @@
-import {GedcomEntry, parse as parseGedcom} from 'parse-gedcom';
+import { GedcomEntry, parse as parseGedcom } from 'parse-gedcom';
 
-import {Date, DateOrRange, JsonEvent, JsonFam, JsonGedcomData, JsonIndi} from './data';
-
+import {
+  Date,
+  DateOrRange,
+  JsonEvent,
+  JsonFam,
+  JsonGedcomData,
+  JsonIndi,
+} from './data';
 
 /** Returns the first entry with the given tag or undefined if not found. */
 function findTag(tree: GedcomEntry[], tag: string): GedcomEntry {
-  return tree.find((entry) => entry.tag === tag);
+  return tree.find(entry => entry.tag === tag);
 }
-
 
 /** Returns all entries with the given tag. */
 function findTags(tree: GedcomEntry[], tag: string): GedcomEntry[] {
-  return tree.filter((entry) => entry.tag === tag);
+  return tree.filter(entry => entry.tag === tag);
 }
-
 
 /**
  * Returns the identifier extracted from a pointer string.
@@ -23,16 +27,14 @@ function pointerToId(pointer: string): string {
   return pointer.substring(1, pointer.length - 1);
 }
 
-
 /** Extracts the first and last name from a GEDCOM name field. */
-function extractName(name: string): {firstName?: string, lastName?: string} {
+function extractName(name: string): { firstName?: string; lastName?: string } {
   const arr = name.split('/');
   if (arr.length === 1) {
-    return {firstName: arr[0].trim()};
+    return { firstName: arr[0].trim() };
   }
-  return {firstName: arr[0].trim(), lastName: arr[1].trim()};
+  return { firstName: arr[0].trim(), lastName: arr[1].trim() };
 }
-
 
 /** Maps month abbreviations used in GEDCOM to month numbers. */
 const MONTHS: Map<string, number> = new Map([
@@ -50,9 +52,8 @@ const MONTHS: Map<string, number> = new Map([
   ['dec', 12],
 ]);
 
-
 /** Parses the GEDCOM date into the Date structure. */
-function parseDate(parts: string[]): Date|undefined {
+function parseDate(parts: string[]): Date | undefined {
   if (!parts || !parts.length) {
     return undefined;
   }
@@ -85,37 +86,35 @@ function parseDate(parts: string[]): Date|undefined {
   return result;
 }
 
-
 /** Parses a GEDCOM date or date range. */
-export function getDate(gedcomDate: string): DateOrRange|undefined {
+export function getDate(gedcomDate: string): DateOrRange | undefined {
   const parts = gedcomDate.split(' ');
   const firstPart = parts[0].toLowerCase();
   if (firstPart === 'bet') {
-    const i = parts.findIndex((x) => x.toLowerCase() === 'and');
+    const i = parts.findIndex(x => x.toLowerCase() === 'and');
     const from = parseDate(parts.slice(1, i));
     const to = parseDate(parts.slice(i + 1));
-    return {dateRange: {from, to}};
+    return { dateRange: { from, to } };
   }
   if (firstPart === 'bef' || firstPart === 'aft') {
     const date = parseDate(parts.slice(1));
     if (firstPart === 'bef') {
-      return {dateRange: {to: date}};
+      return { dateRange: { to: date } };
     }
-    return {dateRange: {from: date}};
+    return { dateRange: { from: date } };
   }
   const date = parseDate(parts);
   if (date) {
-    return {date};
+    return { date };
   }
   return undefined;
 }
-
 
 /**
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
  */
-function createEvent(entry: GedcomEntry): JsonEvent|undefined {
+function createEvent(entry: GedcomEntry): JsonEvent | undefined {
   if (!entry) {
     return undefined;
   }
@@ -132,23 +131,23 @@ function createEvent(entry: GedcomEntry): JsonEvent|undefined {
     return result;
   }
   if (entry.data && entry.data.toLowerCase() === 'y') {
-    return {confirmed: true};
+    return { confirmed: true };
   }
   return undefined;
 }
 
-
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
 function createIndi(entry: GedcomEntry): JsonIndi {
   const id = pointerToId(entry.pointer);
-  const fams =
-      findTags(entry.tree, 'FAMS').map((entry) => pointerToId(entry.data));
-  const indi: JsonIndi = {id, fams};
+  const fams = findTags(entry.tree, 'FAMS').map(entry =>
+    pointerToId(entry.data)
+  );
+  const indi: JsonIndi = { id, fams };
 
   // Name.
   const nameTag = findTag(entry.tree, 'NAME');
   if (nameTag) {
-    const {firstName, lastName} = extractName(nameTag.data);
+    const { firstName, lastName } = extractName(nameTag.data);
     if (firstName) {
       indi.firstName = firstName;
     }
@@ -192,13 +191,13 @@ function createIndi(entry: GedcomEntry): JsonIndi {
   return indi;
 }
 
-
 /** Creates a JsonFam object from an FAM entry in GEDCOM. */
 function createFam(entry: GedcomEntry): JsonFam {
   const id = pointerToId(entry.pointer);
-  const children =
-      findTags(entry.tree, 'CHIL').map((entry) => pointerToId(entry.data));
-  const fam: JsonFam = {id, children};
+  const children = findTags(entry.tree, 'CHIL').map(entry =>
+    pointerToId(entry.data)
+  );
+  const fam: JsonFam = { id, children };
 
   // Husband.
   const husbTag = findTag(entry.tree, 'HUSB');
@@ -220,7 +219,6 @@ function createFam(entry: GedcomEntry): JsonFam {
   return fam;
 }
 
-
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
 export function gedcomToJson(gedcomContents: string): JsonGedcomData {
   return gedcomEntriesToJson(parseGedcom(gedcomContents));
@@ -230,5 +228,5 @@ export function gedcomToJson(gedcomContents: string): JsonGedcomData {
 export function gedcomEntriesToJson(gedcom: GedcomEntry[]): JsonGedcomData {
   const indis = findTags(gedcom, 'INDI').map(createIndi);
   const fams = findTags(gedcom, 'FAM').map(createFam);
-  return {indis, fams};
+  return { indis, fams };
 }

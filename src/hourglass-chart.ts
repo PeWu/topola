@@ -1,14 +1,14 @@
-import {getAncestorsTree} from './ancestor-chart';
-import {Chart, ChartInfo, ChartOptions, Fam, Indi} from './api';
-import {ChartUtil, getChartInfo} from './chart-util';
-import {layOutDescendants} from './descendant-chart';
+import { getAncestorsTree } from './ancestor-chart';
+import { Chart, ChartInfo, ChartOptions, Fam, Indi } from './api';
+import { ChartUtil, getChartInfo } from './chart-util';
+import { layOutDescendants } from './descendant-chart';
 
 /**
  * Renders an hourglass chart. It consists of an ancestor chart and
  * a descendant chart for a family.
  */
-export class HourglassChart<IndiT extends Indi, FamT extends Fam> implements
-    Chart {
+export class HourglassChart<IndiT extends Indi, FamT extends Fam>
+  implements Chart {
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
