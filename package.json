@@ -21,11 +21,11 @@
   "devDependencies": {
     "@types/d3": "^5.0.0",
     "@types/jasmine": "^2.8.8",
-    "browser-sync": "^2.24.4",
-    "browserify": "^16.2.2",
+    "browser-sync": "^2.26.5",
+    "browserify": "^16.2.3",
     "concurrently": "^3.5.1",
     "gh-pages": "^2.0.1",
-    "gts": "^0.6.0",
+    "gts": "^1.0.0",
     "jasmine-ts": "^0.2.1",
     "jsdom": "^11.11.0",
     "jsdom-global": "^3.0.2",
@@ -33,7 +33,7 @@
     "ts-loader": "^4.3.0",
     "tsify": "^4.0.0",
     "typescript": "^2.8.3",
-    "watchify": "^3.11.0"
+    "watchify": "^3.11.1"
   },
   "dependencies": {
     "d3": "^5.4.0",
