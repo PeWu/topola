@@ -104,7 +104,8 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
         descendantOptions.data,
         child
       );
-      descendantOptions.baseGeneration = -node.depth;
+      descendantOptions.baseGeneration =
+        (this.options.baseGeneration || 0) - node.depth;
 
       const descendantNodes = layOutDescendants(descendantOptions);
       // The id could be modified because of duplicates. This can happen when
