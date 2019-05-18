@@ -18,6 +18,7 @@ import {
   V_SPACING,
 } from './chart-util';
 import { layOutDescendants } from './descendant-chart';
+import { IdGenerator } from './id-generator';
 
 /** A view of a family that hides one child individual. */
 class FilterChildFam implements Fam {
@@ -32,7 +33,7 @@ class FilterChildFam implements Fam {
     return this.fam.getMother();
   }
   getChildren(): string[] {
-    const children = this.fam.getChildren();
+    const children = [...this.fam.getChildren()];
     const index = children.indexOf(this.childId);
     if (index !== -1) {
       children.splice(index, 1);
@@ -77,6 +78,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
   constructor(readonly options: ChartOptions) {
     this.util = new ChartUtil(options);
+    this.options.idGenerator = this.options.idGenerator || new IdGenerator();
   }
 
   layOutAncestorDescendants(
@@ -105,10 +107,13 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       descendantOptions.baseGeneration = -node.depth;
 
       const descendantNodes = layOutDescendants(descendantOptions);
+      // The id could be modified because of duplicates. This can happen when
+      // drawing one family in multiple places of the chart).
+      node.data.id = descendantNodes[0].id;
       const chartInfo = getChartInfoWithoutMargin(descendantNodes);
 
       const parentData = (node.children || []).map(childNode =>
-        ancestorData.get(childNode.id)
+        ancestorData.get(childNode.data.id)
       );
       const parentHeight = parentData
         .map(data => data.height)
@@ -121,15 +126,15 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
         x: chartInfo.origin[0],
         y: chartInfo.origin[1] + parentHeight,
       };
-      ancestorData.set(node.id, data);
+      ancestorData.set(node.data.id, data);
     });
 
     ancestorsRoot.each(node => {
       if (!node.parent) {
         return;
       }
-      const data = ancestorData.get(node.id);
-      const parentData = ancestorData.get(node.parent.id);
+      const data = ancestorData.get(node.data.id);
+      const parentData = ancestorData.get(node.parent.data.id);
 
       data.left =
         parentData && !parentData.middle
@@ -140,29 +145,36 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
     });
 
     ancestorsRoot.each(node => {
-      const data = ancestorData.get(node.id);
-      const equivalentNode = data ? data.descendantNodes[0] : focusedNode;
+      const data = ancestorData.get(node.data.id);
+      const thisNode = data ? data.descendantNodes[0] : focusedNode;
       (node.children || []).forEach(child => {
-        const childNode = ancestorData.get(child.id).descendantNodes[0];
-        childNode.parent = equivalentNode;
+        const childNode = ancestorData.get(child.data.id).descendantNodes[0];
+        childNode.parent = thisNode;
       });
-      equivalentNode.data.indiParentNodeId = node.data.indiParentNodeId;
-      equivalentNode.data.spouseParentNodeId = node.data.spouseParentNodeId;
+
+      if (node.data.indiParentNodeId) {
+        thisNode.data.indiParentNodeId = node.children.find(
+          childNode => childNode.id === node.data.indiParentNodeId
+        ).data.id;
+      }
+      if (node.data.spouseParentNodeId) {
+        thisNode.data.spouseParentNodeId = node.children.find(
+          childNode => childNode.id === node.data.spouseParentNodeId
+        ).data.id;
+      }
     });
 
     ancestorsRoot.each(node => {
-      const nodeData = ancestorData.get(node.id);
+      const nodeData = ancestorData.get(node.data.id);
       // Lay out the nodes produced by laying out descendants of ancestors
       // instead of the ancestor nodes from ancestorsRoot.
       const thisNode = nodeData ? nodeData.descendantNodes[0] : focusedNode;
       const indiParent =
         node.children &&
-        node.children.find(parent => parent.id === node.data.indiParentNodeId);
+        node.children.find(child => child.id === node.data.indiParentNodeId);
       const spouseParent =
         node.children &&
-        node.children.find(
-          parent => parent.id === node.data.spouseParentNodeId
-        );
+        node.children.find(child => child.id === node.data.spouseParentNodeId);
       const nodeX = thisNode.x;
       const nodeY = thisNode.y;
       const nodeWidth = thisNode.data.width;
@@ -172,11 +184,11 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
       // Lay out the individual's ancestors and their descendants.
       if (indiParent) {
-        const data = ancestorData.get(indiParent.id);
+        const data = ancestorData.get(indiParent.data.id);
         const parentNode = data.descendantNodes[0];
         const parentData = parentNode.data;
         const spouseTreeHeight = spouseParent
-          ? ancestorData.get(spouseParent.id).height + V_SPACING
+          ? ancestorData.get(spouseParent.data.id).height + V_SPACING
           : 0;
 
         const dx =
@@ -228,11 +240,11 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
       // Lay out the spouse's ancestors and their descendants.
       if (spouseParent) {
-        const data = ancestorData.get(spouseParent.id);
+        const data = ancestorData.get(spouseParent.data.id);
         const parentNode = data.descendantNodes[0];
         const parentData = parentNode.data;
         const indiTreeHeight = indiParent
-          ? ancestorData.get(indiParent.id).height + V_SPACING
+          ? ancestorData.get(indiParent.data.id).height + V_SPACING
           : 0;
 
         const dx =
@@ -286,7 +298,11 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
   render(): ChartInfo {
     const descendantNodes = layOutDescendants(this.options);
-    const ancestorsRoot = getAncestorsTree(this.options);
+    // Don't use common id generator because these nodes will not be drawn.
+    const ancestorOptions = Object.assign({}, this.options, {
+      idGenerator: undefined,
+    });
+    const ancestorsRoot = getAncestorsTree(ancestorOptions);
     const ancestorDescentants = this.layOutAncestorDescendants(
       ancestorsRoot,
       descendantNodes[0]

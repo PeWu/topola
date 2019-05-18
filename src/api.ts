@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { IdGenerator } from './id-generator';
 
 /** Individual ID with dimensions. */
 export interface TreeIndi {
@@ -133,4 +134,6 @@ export interface ChartOptions {
   baseGeneration?: number;
   // Animate showing and transforming charts.
   animate?: boolean;
+  // Pass an instance of an id generator if this is a part of a larger.
+  idGenerator?: { getId: (id: string) => string };
 }

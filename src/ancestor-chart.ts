@@ -49,7 +49,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
   createHierarchy(): d3.HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
     const stack: TreeNode[] = [];
-    const idGenerator = new IdGenerator();
+    const idGenerator = this.options.idGenerator || new IdGenerator();
     if (this.options.startIndi) {
       const indi = this.options.data.getIndi(this.options.startIndi);
       const famc = indi.getFamilyAsChild();
@@ -100,7 +100,6 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
           });
         }
       }
-      // const newId = idGenerator.getId(entry.id);
       if (father) {
         entry.indi = { id: father };
         const indi = this.options.data.getIndi(father);

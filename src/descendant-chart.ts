@@ -113,6 +113,9 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       ? this.getNodes(this.options.startIndi)
       : [this.getFamNode(this.options.startFam)];
 
+    const idGenerator = this.options.idGenerator || new IdGenerator();
+    nodes.forEach(node => (node.id = idGenerator.getId(node.id)));
+
     // If there are multiple root nodes, i.e. the start individual has multiple
     // marriages, create a dummy root node.
     // After layout is complete, the dummy node will be removed.
@@ -134,7 +137,6 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
         stack.push(node);
       }
     });
-    const idGenerator = new IdGenerator();
     while (stack.length) {
       const entry = stack.pop();
       const fam = this.options.data.getFam(entry.family.id);
