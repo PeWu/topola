@@ -11,6 +11,13 @@
         var json = topola.gedcomToJson(gedcom);
         topola.createChart({
           json,
+          svgSelector: '#kinship',
+          chartType: topola.KinshipChart,
+          renderer: topola.DetailedRenderer,
+        }).render();
+
+        topola.createChart({
+          json,
           svgSelector: '#relatives',
           chartType: topola.RelativesChart,
           renderer: topola.DetailedRenderer,
@@ -96,6 +103,13 @@
     </script>
   </head>
   <body>
+    <h1>Kinship chart</h1>
+    <div>
+        <button onclick="download('kinship')">Download SVG</button>
+        <button onclick="print('kinship')">Print</button>
+    </div>
+    <svg class="graph" id="kinship"/>
+
     <h1>Relatives chart</h1>
     <div>
         <button onclick="download('relatives')">Download SVG</button>
