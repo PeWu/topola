@@ -7,6 +7,15 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
+      d3.text('data/family.ged', (gedcom) => {
+        var json = topola.gedcomToJson(gedcom);
+        topola.createChart({
+          json,
+          svgSelector: '#relatives',
+          chartType: topola.RelativesChart,
+          renderer: topola.DetailedRenderer,
+        }).render();
+      });
       d3.json('data/data.json', (json) => {
         topola.createChart({
           json,
@@ -87,24 +96,34 @@
     </script>
   </head>
   <body>
+    <h1>Relatives chart</h1>
+    <div>
+        <button onclick="download('relatives')">Download SVG</button>
+        <button onclick="print('relatives')">Print</button>
+    </div>
+    <svg class="graph" id="relatives"/>
+
     <h1>Hourglass – vertical layout</h1>
     <div>
         <button onclick="download('hourglass')">Download SVG</button>
         <button onclick="print('hourglass')">Print</button>
     </div>
     <svg class="graph" id="hourglass"/>
+
     <h1>Ancestors – horizontal layout</h1>
     <div>
         <button onclick="download('ancestors')">Download SVG</button>
         <button onclick="print('ancestors')">Print</button>
     </div>
     <svg class="graph" id="ancestors"/>
+
     <h1>Tree with images</h1>
     <div>
         <button onclick="download('tudor')">Download SVG</button>
         <button onclick="print('tudor')">Print</button>
     </div>
     <svg class="graph" id="tudor"/>
+
     <h1>Descendants – simple boxes</h1>
     <div>
         <button onclick="download('descendants')">Download SVG</button>

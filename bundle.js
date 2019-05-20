@@ -19603,10 +19603,49 @@ return crawl;
 
 },{}],37:[function(require,module,exports){
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
+function getAncestorsTree(options) {
+    var ancestorChartOptions = __assign({}, options);
+    var startIndiFamilies = options.startIndi
+        ? options.data.getIndi(options.startIndi).getFamiliesAsSpouse()
+        : [];
+    // If the start individual is set and this person has at least one spouse,
+    // start with the family instead.
+    if (startIndiFamilies.length) {
+        ancestorChartOptions.startFam = startIndiFamilies[0];
+        ancestorChartOptions.startIndi = undefined;
+        var fam = options.data.getFam(startIndiFamilies[0]);
+        if (fam.getMother() === options.startIndi) {
+            ancestorChartOptions.swapStartSpouses = true;
+        }
+    }
+    var ancestors = new AncestorChart(ancestorChartOptions);
+    var ancestorsRoot = ancestors.createHierarchy();
+    // Remove spouse's ancestors if there are multiple spouses
+    // to avoid showing ancestors of just one spouse.
+    if (startIndiFamilies.length > 1 &&
+        ancestorsRoot.children &&
+        ancestorsRoot.children.length > 1) {
+        ancestorsRoot.children.pop();
+        ancestorsRoot.data.spouseParentNodeId = undefined;
+    }
+    return ancestorsRoot;
+}
+exports.getAncestorsTree = getAncestorsTree;
 /** Renders an ancestors chart. */
 var AncestorChart = /** @class */ (function () {
     function AncestorChart(options) {
@@ -19617,9 +19656,11 @@ var AncestorChart = /** @class */ (function () {
     AncestorChart.prototype.createHierarchy = function () {
         var parents = [];
         var stack = [];
+        var idGenerator = this.options.idGenerator || new id_generator_1.IdGenerator();
         if (this.options.startIndi) {
             var indi = this.options.data.getIndi(this.options.startIndi);
             var famc = indi.getFamilyAsChild();
+            var id = famc ? idGenerator.getId(famc) : undefined;
             if (famc) {
                 stack.push({
                     id: famc,
@@ -19627,26 +19668,28 @@ var AncestorChart = /** @class */ (function () {
                     family: { id: famc },
                 });
             }
-            parents.push({ id: this.options.startIndi, indi: { id: this.options.startIndi } });
+            parents.push({
+                id: this.options.startIndi,
+                indi: { id: this.options.startIndi },
+                indiParentNodeId: id,
+            });
         }
         else {
             stack.push({
-                id: this.options.startFam,
+                id: idGenerator.getId(this.options.startFam),
                 family: { id: this.options.startFam },
             });
         }
-        var idGenerator = new id_generator_1.IdGenerator();
         while (stack.length) {
             var entry = stack.pop();
-            var fam = this.options.data.getFam(entry.id);
-            entry.id = idGenerator.getId(entry.id);
+            var fam = this.options.data.getFam(entry.family.id);
             if (!fam) {
                 continue;
             }
-            var _a = (entry.id === this.options.startFam &&
-                this.options.swapStartSpouses) ?
-                [fam.getMother(), fam.getFather()] :
-                [fam.getFather(), fam.getMother()], father = _a[0], mother = _a[1];
+            var _a = entry.family.id === this.options.startFam &&
+                this.options.swapStartSpouses
+                ? [fam.getMother(), fam.getFather()]
+                : [fam.getFather(), fam.getMother()], father = _a[0], mother = _a[1];
             if (!father && !mother) {
                 continue;
             }
@@ -19655,10 +19698,11 @@ var AncestorChart = /** @class */ (function () {
                 var indi = this.options.data.getIndi(mother);
                 var famc = indi.getFamilyAsChild();
                 if (famc) {
+                    var id = idGenerator.getId(famc);
+                    entry.spouseParentNodeId = id;
                     stack.push({
-                        id: famc,
+                        id: id,
                         parentId: entry.id,
-                        parentsOfSpouse: true,
                         family: { id: famc },
                     });
                 }
@@ -19668,10 +19712,11 @@ var AncestorChart = /** @class */ (function () {
                 var indi = this.options.data.getIndi(father);
                 var famc = indi.getFamilyAsChild();
                 if (famc) {
+                    var id = idGenerator.getId(famc);
+                    entry.indiParentNodeId = id;
                     stack.push({
-                        id: famc,
+                        id: id,
                         parentId: entry.id,
-                        parentsOfSpouse: false,
                         family: { id: famc },
                     });
                 }
@@ -19688,7 +19733,7 @@ var AncestorChart = /** @class */ (function () {
         var root = this.createHierarchy();
         var nodes = this.util.layOutChart(root, true);
         this.util.renderChart(nodes);
-        var info = this.util.getChartInfo(nodes);
+        var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
         return info;
     };
@@ -19702,9 +19747,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var d3_flextree_1 = require("d3-flextree");
 /** Horizontal distance between boxes. */
-var H_SPACING = 15;
+exports.H_SPACING = 15;
 /** Vertical distance between boxes. */
-var V_SPACING = 30;
+exports.V_SPACING = 30;
 /** Margin around the whole drawing. */
 var MARGIN = 15;
 var HIDE_TIME_MS = 200;
@@ -19714,20 +19759,38 @@ function linkId(node) {
     if (!node.parent) {
         return node.id + ":A";
     }
-    var _a = node.data.generation > node.parent.data.generation ?
-        [node.data, node.parent.data] :
-        [node.parent.data, node.data], child = _a[0], parent = _a[1];
+    var _a = node.data.generation > node.parent.data.generation
+        ? [node.data, node.parent.data]
+        : [node.parent.data, node.data], child = _a[0], parent = _a[1];
     if (child.additionalMarriage) {
         return child.id + ":A";
     }
     return parent.id + ":" + child.id;
 }
+function getChartInfo(nodes) {
+    // Calculate chart boundaries.
+    var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.width / 2; })) - MARGIN;
+    var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.height / 2; })) - MARGIN;
+    var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.width / 2; })) + MARGIN;
+    var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.height / 2; })) + MARGIN;
+    return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
+}
+exports.getChartInfo = getChartInfo;
+function getChartInfoWithoutMargin(nodes) {
+    // Calculate chart boundaries.
+    var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.width / 2; }));
+    var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.height / 2; }));
+    var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.width / 2; }));
+    var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.height / 2; }));
+    return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
+}
+exports.getChartInfoWithoutMargin = getChartInfoWithoutMargin;
 /**
  * Returns the relative position of the family box for the vertical layout.
  */
 function getFamPositionVertical(node) {
-    var indiWidth = node.indi && node.indi.width || 0;
-    var spouseWidth = node.spouse && node.spouse.width || 0;
+    var indiWidth = node.indi ? node.indi.width : 0;
+    var spouseWidth = node.spouse ? node.spouse.width : 0;
     var familyWidth = node.family.width;
     if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
         return (indiWidth + spouseWidth - familyWidth) / 2;
@@ -19745,8 +19808,8 @@ exports.getFamPositionVertical = getFamPositionVertical;
  * Returns the relative position of the family box for the horizontal layout.
  */
 function getFamPositionHorizontal(node) {
-    var indiHeight = node.indi && node.indi.height || 0;
-    var spouseHeight = node.spouse && node.spouse.height || 0;
+    var indiHeight = node.indi ? node.indi.height : 0;
+    var spouseHeight = node.spouse ? node.spouse.height : 0;
     var familyHeight = node.family.height;
     if (!node.indi || !node.spouse) {
         return (indiHeight + spouseHeight - familyHeight) / 2;
@@ -19762,11 +19825,10 @@ var ChartUtil = /** @class */ (function () {
     /** Returns the horizontal size. */
     ChartUtil.prototype.getHSize = function (node) {
         if (this.options.horizontal) {
-            return (node.indi && node.indi.height || 0) +
-                (node.spouse && node.spouse.height || 0);
+            return ((node.indi ? node.indi.height : 0) +
+                (node.spouse ? node.spouse.height : 0));
         }
-        var indiHSize = (node.indi && node.indi.width || 0) +
-            (node.spouse && node.spouse.width || 0);
+        var indiHSize = (node.indi ? node.indi.width : 0) + (node.spouse ? node.spouse.width : 0);
         return d3.max([indiHSize, node.family && node.family.width]);
     };
     /** Returns the vertical size. */
@@ -19775,50 +19837,63 @@ var ChartUtil = /** @class */ (function () {
     };
     ChartUtil.prototype.getFamVSize = function (node) {
         if (this.options.horizontal) {
-            return node.family && node.family.width || 0;
+            return node.family ? node.family.width : 0;
         }
-        return node.family && node.family.height || 0;
+        return node.family ? node.family.height : 0;
     };
     /** Returns the vertical size of individual boxes. */
     ChartUtil.prototype.getIndiVSize = function (node) {
         if (this.options.horizontal) {
-            return d3.max([node.indi && node.indi.width, node.spouse && node.spouse.width, 0]);
+            return d3.max([
+                node.indi && node.indi.width,
+                node.spouse && node.spouse.width,
+                0,
+            ]);
         }
-        return d3.max([node.indi && node.indi.height, node.spouse && node.spouse.height, 0]);
+        return d3.max([
+            node.indi && node.indi.height,
+            node.spouse && node.spouse.height,
+            0,
+        ]);
     };
     /** Creates a path from parent to the child node (horizontal layout). */
     ChartUtil.prototype.linkHorizontal = function (s, d) {
         var midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
         var sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
-        var famYOffset = s.data.family ? d3.max([-getFamPositionHorizontal(s.data), 0]) : 0;
+        var famYOffset = s.data.family
+            ? d3.max([-getFamPositionHorizontal(s.data), 0])
+            : 0;
         var sy = s.y -
-            (s.data.indi && s.data.spouse &&
-                (s.data.height / 2 - s.data.indi.height) ||
-                0) +
+            (s.data.indi && s.data.spouse
+                ? s.data.height / 2 - s.data.indi.height
+                : 0) +
             famYOffset;
         var dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
-        var dy = d.data.spouse ?
-            (s.data.parentsOfSpouse ?
-                d.y + (d.data.indi && (d.data.indi.height / 2) || 0) :
-                d.y - d.data.spouse.height / 2) :
-            d.y;
+        var dy = d.data.spouse
+            ? s.id === d.data.spouseParentNodeId
+                ? d.y + (d.data.indi ? d.data.indi.height / 2 : 0)
+                : d.y - d.data.spouse.height / 2
+            : d.y;
         return "M " + sx + " " + sy + "\n            L " + midX + " " + sy + ",\n              " + midX + " " + dy + ",\n              " + dx + " " + dy;
     };
     /** Creates a path from parent to the child node (vertical layout). */
     ChartUtil.prototype.linkVertical = function (s, d) {
-        var midY = (s.y + s.data.height / 2 + d.y - d.data.height / 2) / 2;
-        var famXOffset = s.data.family ? d3.max([-getFamPositionVertical(s.data), 0]) : 0;
+        // console.log('#7a', s, d);
+        var midY = s.y + s.data.height / 2 + exports.V_SPACING / 2;
+        var famXOffset = s.data.family
+            ? d3.max([-getFamPositionVertical(s.data), 0])
+            : 0;
         var sx = s.x -
-            (s.data.indi && s.data.spouse &&
-                (s.data.width / 2 - s.data.indi.width) ||
-                0) +
+            (s.data.indi && s.data.spouse
+                ? s.data.width / 2 - s.data.indi.width
+                : 0) +
             famXOffset;
         var sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
-        var dx = d.data.spouse ?
-            (s.data.parentsOfSpouse ?
-                d.x + (d.data.indi && (d.data.indi.width / 2) || 0) :
-                d.x - d.data.spouse.width / 2) :
-            d.x;
+        var dx = d.data.spouse
+            ? s.id === d.data.spouseParentNodeId
+                ? d.x + (d.data.indi ? d.data.indi.width / 2 : 0)
+                : d.x - d.data.spouse.width / 2
+            : d.x;
         var dy = d.y - d.data.height / 2 + this.getIndiVSize(d.data) / 2;
         return "M " + sx + " " + sy + "\n            L " + sx + " " + midY + ",\n              " + dx + " " + midY + ",\n              " + dx + " " + dy;
     };
@@ -19826,12 +19901,14 @@ var ChartUtil = /** @class */ (function () {
         var nodeIndex = node.parent.children.findIndex(function (n) { return n.id === node.id; });
         // Assert nodeIndex > 0.
         var siblingNode = node.parent.children[nodeIndex - 1];
-        var sFamXOffset = node.data.family ? d3.max([-getFamPositionVertical(node.data), 0]) : 0;
+        var sFamXOffset = node.data.family
+            ? d3.max([-getFamPositionVertical(node.data), 0])
+            : 0;
         var sx = node.x + (node.data.indi.width - node.data.width) / 2 + sFamXOffset;
         var sy = node.y + (node.data.indi.height - node.data.height) / 2;
-        var dFamXOffset = siblingNode.data.family ?
-            d3.max([-getFamPositionVertical(siblingNode.data), 0]) :
-            0;
+        var dFamXOffset = siblingNode.data.family
+            ? d3.max([-getFamPositionVertical(siblingNode.data), 0])
+            : 0;
         var dx = siblingNode.x +
             (siblingNode.data.indi.width - siblingNode.data.width) / 2 +
             dFamXOffset;
@@ -19846,20 +19923,15 @@ var ChartUtil = /** @class */ (function () {
         }
         _a = this.options.renderer.getPreferredIndiSize(indi.id), indi.width = _a[0], indi.height = _a[1];
     };
-    ChartUtil.prototype.getChartInfo = function (nodes) {
-        // Calculate chart boundaries.
-        var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.width / 2; })) - MARGIN;
-        var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.height / 2; })) - MARGIN;
-        var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.width / 2; })) + MARGIN;
-        var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.height / 2; })) + MARGIN;
-        return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
-    };
     ChartUtil.prototype.updateSvgDimensions = function (chartInfo) {
         var svg = d3.select(this.options.svgSelector);
         var group = svg.select('g');
-        var transition = this.options.animate ?
-            group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
-            group;
+        var transition = this.options.animate
+            ? group
+                .transition()
+                .delay(HIDE_TIME_MS)
+                .duration(MOVE_TIME_MS)
+            : group;
         transition.attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
     };
     ChartUtil.prototype.layOutChart = function (root, flipVertically) {
@@ -19876,20 +19948,21 @@ var ChartUtil = /** @class */ (function () {
                 var maxChildSize_1 = d3.max(node.children || [], function (n) { return n.data.width; }) || 0;
                 return [
                     node.data.height,
-                    (maxChildSize_1 + node.data.width) / 2 + V_SPACING
+                    (maxChildSize_1 + node.data.width) / 2 + exports.V_SPACING,
                 ];
             }
             var maxChildSize = d3.max(node.children || [], function (n) { return n.data.height; }) || 0;
             return [
                 node.data.width,
-                (maxChildSize + node.data.height) / 2 + V_SPACING
+                (maxChildSize + node.data.height) / 2 + exports.V_SPACING,
             ];
         })
-            .spacing(function (a, b) { return H_SPACING; });
+            .spacing(function (a, b) { return exports.H_SPACING; });
         // Assign generation number.
         root.each(function (node) {
-            node.data.generation = node.depth * (flipVertically ? -1 : 1) +
-                (_this.options.baseGeneration || 0);
+            node.data.generation =
+                node.depth * (flipVertically ? -1 : 1) +
+                    (_this.options.baseGeneration || 0);
         });
         // Set preferred sizes.
         root.each(function (node) {
@@ -19932,7 +20005,10 @@ var ChartUtil = /** @class */ (function () {
         var vSizePerDepth = new Map();
         root.each(function (node) {
             var depth = node.depth;
-            var maxVSize = d3.max([_this.getVSize(node.data), vSizePerDepth.get(depth)]);
+            var maxVSize = d3.max([
+                _this.getVSize(node.data),
+                vSizePerDepth.get(depth),
+            ]);
             vSizePerDepth.set(depth, maxVSize);
         });
         // Set sizes of whole nodes.
@@ -19967,25 +20043,40 @@ var ChartUtil = /** @class */ (function () {
             svg.append('g');
         }
         // Render nodes.
-        var boundNodes = svg.select('g').selectAll('g.node').data(nodes, function (d) { return d.id; });
+        var boundNodes = svg
+            .select('g')
+            .selectAll('g.node')
+            .data(nodes, function (d) { return d.id; });
         var nodeEnter = boundNodes.enter().append('g');
-        nodeEnter.merge(boundNodes)
+        nodeEnter
+            .merge(boundNodes)
             .attr('class', function (node) { return "node generation" + node.data.generation; });
-        nodeEnter.attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
+        nodeEnter.attr('transform', function (node) {
+            return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
+                node.data.height / 2) + ")";
+        });
         if (this.options.animate) {
-            nodeEnter.style('opacity', 0)
+            nodeEnter
+                .style('opacity', 0)
                 .transition()
                 .delay(HIDE_TIME_MS + MOVE_TIME_MS)
                 .duration(HIDE_TIME_MS)
                 .style('opacity', 1);
         }
-        var updateTransition = this.options.animate ?
-            boundNodes.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
-            boundNodes;
-        updateTransition.attr('transform', function (node) { return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")"; });
+        var updateTransition = this.options.animate
+            ? boundNodes
+                .transition()
+                .delay(HIDE_TIME_MS)
+                .duration(MOVE_TIME_MS)
+            : boundNodes;
+        updateTransition.attr('transform', function (node) {
+            return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
+                node.data.height / 2) + ")";
+        });
         this.options.renderer.render(nodeEnter, boundNodes);
         if (this.options.animate) {
-            boundNodes.exit()
+            boundNodes
+                .exit()
                 .transition()
                 .duration(HIDE_TIME_MS)
                 .style('opacity', 0)
@@ -20012,26 +20103,39 @@ var ChartUtil = /** @class */ (function () {
         };
         // Render links.
         var links = nodes.filter(function (n) { return !!n.parent || n.data.additionalMarriage; });
-        var boundLinks = svg.select('g').selectAll('path.link').data(links, linkId);
-        var path = boundLinks.enter()
+        var boundLinks = svg
+            .select('g')
+            .selectAll('path.link')
+            .data(links, linkId);
+        var path = boundLinks
+            .enter()
             .insert('path', 'g')
-            .attr('class', function (node) { return node.data.additionalMarriage ?
-            'link additional-marriage' :
-            'link'; })
+            .attr('class', function (node) {
+            return node.data.additionalMarriage ? 'link additional-marriage' : 'link';
+        })
             .attr('d', function (node) { return link(node.parent, node); });
-        var linkTransition = this.options.animate ?
-            boundLinks.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS) :
-            boundLinks;
+        var linkTransition = this.options.animate
+            ? boundLinks
+                .transition()
+                .delay(HIDE_TIME_MS)
+                .duration(MOVE_TIME_MS)
+            : boundLinks;
         linkTransition.attr('d', function (node) { return link(node.parent, node); });
         if (this.options.animate) {
-            path.style('opacity', 0)
+            path
+                .style('opacity', 0)
                 .transition()
                 .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
                 .duration(0)
                 .style('opacity', 1);
         }
         if (this.options.animate) {
-            boundLinks.exit().transition().duration(0).style('opacity', 0).remove();
+            boundLinks
+                .exit()
+                .transition()
+                .duration(0)
+                .style('opacity', 0)
+                .remove();
         }
         else {
             boundLinks.exit().remove();
@@ -20068,13 +20172,13 @@ var JsonIndiDetails = /** @class */ (function () {
         return this.json.birth || null;
     };
     JsonIndiDetails.prototype.getBirthPlace = function () {
-        return this.json.birth && this.json.birth.place || null;
+        return (this.json.birth && this.json.birth.place) || null;
     };
     JsonIndiDetails.prototype.getDeathDate = function () {
         return this.json.death || null;
     };
     JsonIndiDetails.prototype.getDeathPlace = function () {
-        return this.json.death && this.json.death.place || null;
+        return (this.json.death && this.json.death.place) || null;
     };
     JsonIndiDetails.prototype.isConfirmedDeath = function () {
         return this.json.death && this.json.death.confirmed;
@@ -20108,7 +20212,7 @@ var JsonFamDetails = /** @class */ (function () {
         return this.json.marriage;
     };
     JsonFamDetails.prototype.getMarriagePlace = function () {
-        return this.json.marriage && this.json.marriage.place || null;
+        return (this.json.marriage && this.json.marriage.place) || null;
     };
     return JsonFamDetails;
 }());
@@ -20119,7 +20223,9 @@ var JsonDataProvider = /** @class */ (function () {
         this.json = json;
         this.indis = new Map();
         this.fams = new Map();
-        json.indis.forEach(function (indi) { return _this.indis.set(indi.id, new JsonIndiDetails(indi)); });
+        json.indis.forEach(function (indi) {
+            return _this.indis.set(indi.id, new JsonIndiDetails(indi));
+        });
         json.fams.forEach(function (fam) { return _this.fams.set(fam.id, new JsonFamDetails(fam)); });
     }
     JsonDataProvider.prototype.getIndi = function (id) {
@@ -20151,13 +20257,7 @@ var MONTHS_EN = new Map([
 ]);
 /** Translations of the GEDCOM date qualifiers. */
 var QUALIFIERS_I18N = new Map([
-    [
-        'pl', new Map([
-            ['cal', 'wyl.'],
-            ['abt', 'ok.'],
-            ['est', 'szac.'],
-        ])
-    ],
+    ['pl', new Map([['cal', 'wyl.'], ['abt', 'ok.'], ['est', 'szac.']])],
 ]);
 var shortMonthCache = new Map();
 function getShortMonth(month, locale) {
@@ -20168,15 +20268,14 @@ function getShortMonth(month, locale) {
     if (shortMonthCache.has(cacheKey)) {
         return shortMonthCache.get(cacheKey);
     }
-    var result = new Intl.DateTimeFormat(locale, { month: 'short' })
-        .format(new Date(2000, month - 1));
+    var result = new Intl.DateTimeFormat(locale, { month: 'short' }).format(new Date(2000, month - 1));
     shortMonthCache.set(cacheKey, result);
     return result;
 }
 function getQualifier(qualifier, locale) {
     var language = locale && locale.split(/[-_]/)[0];
     var languageMap = QUALIFIERS_I18N.get(language);
-    return languageMap && languageMap.get(qualifier) || qualifier;
+    return languageMap ? languageMap.get(qualifier) : qualifier;
 }
 /** Simple date formatter. */
 function formatDate(date, locale) {
@@ -20197,13 +20296,12 @@ var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
 var DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
-/** Returns the spouse of the given individual in the given family. */
-function getSpouse(indiId, fam) {
-    if (fam.getFather() === indiId) {
-        return fam.getMother();
-    }
-    return fam.getFather();
+function layOutDescendants(options) {
+    var descendants = new DescendantChart(options);
+    var descendantsRoot = descendants.createHierarchy();
+    return removeDummyNode(new chart_util_1.ChartUtil(options).layOutChart(descendantsRoot));
 }
+exports.layOutDescendants = layOutDescendants;
 /** Removes the dummy root node if it was added in createHierarchy(). */
 function removeDummyNode(allNodes) {
     if (allNodes[0].id !== DUMMY_ROOT_NODE_ID) {
@@ -20214,7 +20312,8 @@ function removeDummyNode(allNodes) {
     var dx = -nodes[0].x;
     var dy = -nodes[0].y;
     nodes.forEach(function (node) {
-        if (node.parent && node.parent.id === DUMMY_ROOT_NODE_ID &&
+        if (node.parent &&
+            node.parent.id === DUMMY_ROOT_NODE_ID &&
             !node.data.additionalMarriage) {
             delete node.parent;
         }
@@ -20224,7 +20323,13 @@ function removeDummyNode(allNodes) {
     });
     return nodes;
 }
-exports.removeDummyNode = removeDummyNode;
+/** Returns the spouse of the given individual in the given family. */
+function getSpouse(indiId, fam) {
+    if (fam.getFather() === indiId) {
+        return fam.getMother();
+    }
+    return fam.getFather();
+}
 /** Renders a descendants chart. */
 var DescendantChart = /** @class */ (function () {
     function DescendantChart(options) {
@@ -20237,12 +20342,14 @@ var DescendantChart = /** @class */ (function () {
         var famIds = indi.getFamiliesAsSpouse();
         if (!famIds.length) {
             // Single person.
-            return [{
+            return [
+                {
                     id: id,
                     indi: {
                         id: id,
-                    }
-                }];
+                    },
+                },
+            ];
         }
         // Marriages.
         var nodes = famIds.map(function (famId) {
@@ -20253,7 +20360,7 @@ var DescendantChart = /** @class */ (function () {
                 },
                 family: {
                     id: famId,
-                }
+                },
             };
             var fam = _this.options.data.getFam(famId);
             var spouse = getSpouse(id, fam);
@@ -20284,9 +20391,11 @@ var DescendantChart = /** @class */ (function () {
     DescendantChart.prototype.createHierarchy = function () {
         var _this = this;
         var parents = [];
-        var nodes = this.options.startIndi ?
-            this.getNodes(this.options.startIndi) :
-            [this.getFamNode(this.options.startFam)];
+        var nodes = this.options.startIndi
+            ? this.getNodes(this.options.startIndi)
+            : [this.getFamNode(this.options.startFam)];
+        var idGenerator = this.options.idGenerator || new id_generator_1.IdGenerator();
+        nodes.forEach(function (node) { return (node.id = idGenerator.getId(node.id)); });
         // If there are multiple root nodes, i.e. the start individual has multiple
         // marriages, create a dummy root node.
         // After layout is complete, the dummy node will be removed.
@@ -20297,7 +20406,7 @@ var DescendantChart = /** @class */ (function () {
                 width: 1,
             };
             parents.push(dummyNode_1);
-            nodes.forEach((function (node) { return node.parentId = dummyNode_1.id; }));
+            nodes.forEach(function (node) { return (node.parentId = dummyNode_1.id); });
         }
         parents.push.apply(parents, nodes);
         var stack = [];
@@ -20306,7 +20415,6 @@ var DescendantChart = /** @class */ (function () {
                 stack.push(node);
             }
         });
-        var idGenerator = new id_generator_1.IdGenerator();
         var _loop_1 = function () {
             var entry = stack.pop();
             var fam = this_1.options.data.getFam(entry.family.id);
@@ -20337,7 +20445,7 @@ var DescendantChart = /** @class */ (function () {
         var root = this.createHierarchy();
         var nodes = removeDummyNode(this.util.layOutChart(root));
         this.util.renderChart(nodes);
-        var info = this.util.getChartInfo(nodes);
+        var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
         return info;
     };
@@ -20367,15 +20475,24 @@ function getLength(text, textClass) {
     if (textLengthCache.has(cacheKey)) {
         return textLengthCache.get(cacheKey);
     }
-    var g = d3.select('svg').append('g').attr('class', 'detailed node');
-    var x = g.append('text').attr('class', textClass).text(text);
+    var g = d3
+        .select('svg')
+        .append('g')
+        .attr('class', 'detailed node');
+    var x = g
+        .append('text')
+        .attr('class', textClass)
+        .text(text);
     var length = x.node().getComputedTextLength();
     g.remove();
     textLengthCache.set(cacheKey, length);
     return length;
 }
 exports.getLength = getLength;
-var SEX_SYMBOLS = new Map([['F', '\u2640'], ['M', '\u2642']]);
+var SEX_SYMBOLS = new Map([
+    ['F', '\u2640'],
+    ['M', '\u2642'],
+]);
 /**
  * Renders some details about a person such as date and place of birth
  * and death.
@@ -20387,10 +20504,12 @@ var DetailedRenderer = /** @class */ (function () {
     /** Extracts lines of details for a person. */
     DetailedRenderer.prototype.getIndiDetails = function (indi) {
         var detailsList = [];
-        var birthDate = indi.getBirthDate() && indi.getBirthDate().date &&
+        var birthDate = indi.getBirthDate() &&
+            indi.getBirthDate().date &&
             date_format_1.formatDate(indi.getBirthDate().date, this.options.locale);
         var birthPlace = indi.getBirthPlace();
-        var deathDate = indi.getDeathDate() && indi.getDeathDate().date &&
+        var deathDate = indi.getDeathDate() &&
+            indi.getDeathDate().date &&
             date_format_1.formatDate(indi.getDeathDate().date, this.options.locale);
         var deathPlace = indi.getDeathPlace();
         if (birthDate) {
@@ -20417,7 +20536,8 @@ var DetailedRenderer = /** @class */ (function () {
     /** Extracts lines of details for a family. */
     DetailedRenderer.prototype.getFamDetails = function (fam) {
         var detailsList = [];
-        var marriageDate = fam.getMarriageDate() && fam.getMarriageDate().date &&
+        var marriageDate = fam.getMarriageDate() &&
+            fam.getMarriageDate().date &&
             date_format_1.formatDate(fam.getMarriageDate().date, this.options.locale);
         var marriagePlace = fam.getMarriagePlace();
         if (marriageDate) {
@@ -20459,39 +20579,44 @@ var DetailedRenderer = /** @class */ (function () {
         var _this = this;
         enter = enter.append('g').attr('class', 'detailed');
         update = update.select('g');
-        var indiUpdate = enter.merge(update).selectAll('g.indi').data(function (node) {
+        var indiUpdate = enter
+            .merge(update)
+            .selectAll('g.indi')
+            .data(function (node) {
             var result = [];
-            var famXOffset = !_this.options.horizontal && node.data.family ?
-                d3.max([-chart_util_1.getFamPositionVertical(node.data), 0]) :
-                0;
-            var famYOffset = _this.options.horizontal && node.data.family ?
-                d3.max([-chart_util_1.getFamPositionHorizontal(node.data), 0]) :
-                0;
+            var famXOffset = !_this.options.horizontal && node.data.family
+                ? d3.max([-chart_util_1.getFamPositionVertical(node.data), 0])
+                : 0;
+            var famYOffset = _this.options.horizontal && node.data.family
+                ? d3.max([-chart_util_1.getFamPositionHorizontal(node.data), 0])
+                : 0;
             if (node.data.indi) {
                 result.push({
                     indi: node.data.indi,
                     generation: node.data.generation,
                     xOffset: famXOffset,
-                    yOffset: 0
+                    yOffset: 0,
                 });
             }
             if (node.data.spouse) {
                 result.push({
                     indi: node.data.spouse,
                     generation: node.data.generation,
-                    xOffset: (!_this.options.horizontal && node.data.indi) ?
-                        node.data.indi.width + famXOffset :
-                        0,
-                    yOffset: (_this.options.horizontal && node.data.indi) ?
-                        node.data.indi.height + famYOffset :
-                        0
+                    xOffset: !_this.options.horizontal && node.data.indi
+                        ? node.data.indi.width + famXOffset
+                        : 0,
+                    yOffset: _this.options.horizontal && node.data.indi
+                        ? node.data.indi.height + famYOffset
+                        : 0,
                 });
             }
             return result;
         }, function (data) { return data.indi.id; });
-        var indiEnter = indiUpdate.enter().append('g').attr('class', 'indi');
-        this.transition(indiEnter.merge(indiUpdate))
-            .attr('transform', function (node) { return "translate(" + node.xOffset + ", " + node.yOffset + ")"; });
+        var indiEnter = indiUpdate
+            .enter()
+            .append('g')
+            .attr('class', 'indi');
+        this.transition(indiEnter.merge(indiUpdate)).attr('transform', function (node) { return "translate(" + node.xOffset + ", " + node.yOffset + ")"; });
         this.renderIndi(indiEnter, indiUpdate);
         var familyEnter = enter
             .select(function (node) {
@@ -20504,36 +20629,51 @@ var DetailedRenderer = /** @class */ (function () {
             return node.data.family ? this : null;
         })
             .select('g.family');
-        this.transition(familyEnter.merge(familyUpdate))
-            .attr('transform', function (node) { return _this.getFamTransform(node.data); });
+        this.transition(familyEnter.merge(familyUpdate)).attr('transform', function (node) {
+            return _this.getFamTransform(node.data);
+        });
         this.renderFamily(familyEnter, familyUpdate);
     };
     DetailedRenderer.prototype.getCss = function () {
         return "\n.detailed text {\n  font-family: verdana, arial, sans-serif;\n  font-size: 12px;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
     };
     DetailedRenderer.prototype.transition = function (selection) {
-        return this.options.animate ? selection.transition()
-            .delay(ANIMATION_DELAY_MS)
-            .duration(ANIMATION_DURATION_MS) :
-            selection;
+        return this.options.animate
+            ? selection
+                .transition()
+                .delay(ANIMATION_DELAY_MS)
+                .duration(ANIMATION_DURATION_MS)
+            : selection;
     };
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
-            return "translate(" + (node.indi && node.indi.width || node.spouse.width) + ", " + d3.max([chart_util_1.getFamPositionHorizontal(node), 0]) + ")";
+            return "translate(" + ((node.indi && node.indi.width) ||
+                node.spouse.width) + ", " + d3.max([chart_util_1.getFamPositionHorizontal(node), 0]) + ")";
         }
-        return "translate(" + d3.max([chart_util_1.getFamPositionVertical(node), 0]) + ", " + (node.indi && node.indi.height || node.spouse.height) + ")";
+        return "translate(" + d3.max([
+            chart_util_1.getFamPositionVertical(node),
+            0,
+        ]) + ", " + ((node.indi && node.indi.height) || node.spouse.height) + ")";
     };
     DetailedRenderer.prototype.renderIndi = function (enter, update) {
         var _this = this;
         if (this.options.indiHrefFunc) {
-            enter = enter.append('a').attr('href', function (data) { return _this.options.indiHrefFunc(data.indi.id); });
+            enter = enter
+                .append('a')
+                .attr('href', function (data) { return _this.options.indiHrefFunc(data.indi.id); });
             update = update.select('a');
         }
         if (this.options.indiCallback) {
-            enter.on('click', function (data) { return _this.options.indiCallback({ id: data.indi.id, generation: data.generation }); });
+            enter.on('click', function (data) {
+                return _this.options.indiCallback({
+                    id: data.indi.id,
+                    generation: data.generation,
+                });
+            });
         }
         // Background.
-        var background = enter.append('rect')
+        var background = enter
+            .append('rect')
             .attr('rx', 5)
             .attr('stroke-width', 0)
             .attr('class', 'background')
@@ -20543,7 +20683,8 @@ var DetailedRenderer = /** @class */ (function () {
             .attr('height', function (node) { return node.indi.height; });
         // Clip path.
         var getClipId = function (id) { return "clip-" + id; };
-        enter.append('clipPath')
+        enter
+            .append('clipPath')
             .attr('id', function (node) { return getClipId(node.indi.id); })
             .append('rect')
             .attr('rx', 5)
@@ -20557,12 +20698,14 @@ var DetailedRenderer = /** @class */ (function () {
             return data.indi.width - (getIndi(data).getImageUrl() ? IMAGE_WIDTH : 0);
         };
         // Name.
-        enter.append('text')
+        enter
+            .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 17)"; })
             .text(function (node) { return getIndi(node).getFirstName(); });
-        enter.append('text')
+        enter
+            .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 33)"; })
@@ -20577,12 +20720,14 @@ var DetailedRenderer = /** @class */ (function () {
         var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
         var _loop_1 = function (i) {
             var lineGroup = enter.filter(function (data) { return details.get(data.indi.id).length > i; });
-            lineGroup.append('text')
+            lineGroup
+                .append('text')
                 .attr('text-anchor', 'middle')
                 .attr('class', 'details')
                 .attr('transform', "translate(9, " + (49 + i * 14) + ")")
                 .text(function (data) { return details.get(data.indi.id)[i].symbol; });
-            lineGroup.append('text')
+            lineGroup
+                .append('text')
                 .attr('class', 'details')
                 .attr('transform', "translate(15, " + (49 + i * 14) + ")")
                 .text(function (data) { return details.get(data.indi.id)[i].text; });
@@ -20592,22 +20737,23 @@ var DetailedRenderer = /** @class */ (function () {
             _loop_1(i);
         }
         // Render id.
-        var id = enter.append('text')
+        var id = enter
+            .append('text')
             .attr('class', 'id')
             .text(function (data) { return data.indi.id; })
             .merge(update.select('text.id'));
         this.transition(id).attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
         // Render sex.
-        var sex = enter.append('text')
+        var sex = enter
+            .append('text')
             .attr('class', 'details sex')
             .attr('text-anchor', 'end')
             .text(function (data) { return SEX_SYMBOLS.get(getIndi(data).getSex()); })
             .merge(update.select('text.sex'));
-        this.transition(sex).attr('transform', function (data) {
-            return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")";
-        });
+        this.transition(sex).attr('transform', function (data) { return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")"; });
         // Image.
-        enter.filter(function (data) { return !!getIndi(data).getImageUrl(); })
+        enter
+            .filter(function (data) { return !!getIndi(data).getImageUrl(); })
             .append('image')
             .attr('width', IMAGE_WIDTH)
             .attr('height', function (data) { return data.indi.height; })
@@ -20616,7 +20762,8 @@ var DetailedRenderer = /** @class */ (function () {
             .attr('clip-path', function (data) { return "url(#" + getClipId(data.indi.id) + ")"; })
             .attr('href', function (data) { return getIndi(data).getImageUrl(); });
         // Border on top.
-        var border = enter.append('rect')
+        var border = enter
+            .append('rect')
             .attr('rx', 5)
             .attr('fill-opacity', 0)
             .attr('class', 'border')
@@ -20628,13 +20775,21 @@ var DetailedRenderer = /** @class */ (function () {
     DetailedRenderer.prototype.renderFamily = function (enter, update) {
         var _this = this;
         if (this.options.famHrefFunc) {
-            enter = enter.append('a').attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); });
+            enter = enter
+                .append('a')
+                .attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); });
         }
         if (this.options.famCallback) {
-            enter.on('click', function (node) { return _this.options.famCallback({ id: node.data.family.id, generation: node.data.generation }); });
+            enter.on('click', function (node) {
+                return _this.options.famCallback({
+                    id: node.data.family.id,
+                    generation: node.data.generation,
+                });
+            });
         }
         // Box.
-        enter.append('rect')
+        enter
+            .append('rect')
             .attr('rx', 5)
             .attr('ry', 5)
             .attr('width', function (node) { return node.data.family.width; })
@@ -20650,12 +20805,14 @@ var DetailedRenderer = /** @class */ (function () {
         var maxDetails = d3.max(Array.from(details.values(), function (v) { return v.length; }));
         var _loop_2 = function (i) {
             var lineGroup = enter.filter(function (node) { return details.get(node.data.family.id).length > i; });
-            lineGroup.append('text')
+            lineGroup
+                .append('text')
                 .attr('text-anchor', 'middle')
                 .attr('class', 'details')
                 .attr('transform', "translate(9, " + (16 + i * 14) + ")")
                 .text(function (node) { return details.get(node.data.family.id)[i].symbol; });
-            lineGroup.append('text')
+            lineGroup
+                .append('text')
                 .attr('text-anchor', 'start')
                 .attr('class', 'details')
                 .attr('transform', "translate(15, " + (16 + i * 14) + ")")
@@ -20796,7 +20953,9 @@ function createEvent(entry) {
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
 function createIndi(entry) {
     var id = pointerToId(entry.pointer);
-    var fams = findTags(entry.tree, 'FAMS').map(function (entry) { return pointerToId(entry.data); });
+    var fams = findTags(entry.tree, 'FAMS').map(function (entry) {
+        return pointerToId(entry.data);
+    });
     var indi = { id: id, fams: fams };
     // Name.
     var nameTag = findTag(entry.tree, 'NAME');
@@ -20842,7 +21001,9 @@ function createIndi(entry) {
 /** Creates a JsonFam object from an FAM entry in GEDCOM. */
 function createFam(entry) {
     var id = pointerToId(entry.pointer);
-    var children = findTags(entry.tree, 'CHIL').map(function (entry) { return pointerToId(entry.data); });
+    var children = findTags(entry.tree, 'CHIL').map(function (entry) {
+        return pointerToId(entry.data);
+    });
     var fam = { id: id, children: children };
     // Husband.
     var husbTag = findTag(entry.tree, 'HUSB');
@@ -20876,14 +21037,6 @@ exports.gedcomEntriesToJson = gedcomEntriesToJson;
 
 },{"parse-gedcom":35}],44:[function(require,module,exports){
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var ancestor_chart_1 = require("./ancestor-chart");
 var chart_util_1 = require("./chart-util");
@@ -20898,39 +21051,16 @@ var HourglassChart = /** @class */ (function () {
         this.util = new chart_util_1.ChartUtil(options);
     }
     HourglassChart.prototype.getFamilies = function (indiId) {
-        return this.options.data.getIndi(this.options.startIndi)
-            .getFamiliesAsSpouse();
+        return this.options.data.getIndi(indiId).getFamiliesAsSpouse();
     };
     HourglassChart.prototype.render = function () {
-        var ancestorChartOptions = __assign({}, this.options);
-        var startIndiFamilies = this.options.startIndi && this.getFamilies(this.options.startIndi) ||
-            [];
-        // If the start individual is set and this person has at least one spouse,
-        // start with the family instead.
-        if (startIndiFamilies.length) {
-            ancestorChartOptions.startFam = startIndiFamilies[0];
-            ancestorChartOptions.startIndi = undefined;
-            var fam = this.options.data.getFam(startIndiFamilies[0]);
-            if (fam.getMother() === this.options.startIndi) {
-                ancestorChartOptions.swapStartSpouses = true;
-            }
-        }
-        var ancestors = new ancestor_chart_1.AncestorChart(ancestorChartOptions);
-        var ancestorsRoot = ancestors.createHierarchy();
-        // Remove spouse's ancestors if there are multiple spouses
-        // to avoid showing ancestors of just one spouse.
-        if (startIndiFamilies.length > 1 && ancestorsRoot.children &&
-            ancestorsRoot.children.length > 1) {
-            ancestorsRoot.children.pop();
-        }
+        var ancestorsRoot = ancestor_chart_1.getAncestorsTree(this.options);
         var ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
-        var descendants = new descendant_chart_1.DescendantChart(this.options);
-        var descendantsRoot = descendants.createHierarchy();
-        var descendantNodes = descendant_chart_1.removeDummyNode(this.util.layOutChart(descendantsRoot));
+        var descendantNodes = descendant_chart_1.layOutDescendants(this.options);
         // slice(1) removes the duplicated start node.
         var nodes = ancestorNodes.slice(1).concat(descendantNodes);
         this.util.renderChart(nodes);
-        var info = this.util.getChartInfo(nodes);
+        var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
         return info;
     };
@@ -20977,10 +21107,279 @@ __export(require("./descendant-chart"));
 __export(require("./detailed-renderer"));
 __export(require("./gedcom"));
 __export(require("./hourglass-chart"));
+__export(require("./relatives-chart"));
 __export(require("./simple-api"));
 __export(require("./simple-renderer"));
 
-},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./date-format":40,"./descendant-chart":41,"./detailed-renderer":42,"./gedcom":43,"./hourglass-chart":44,"./simple-api":47,"./simple-renderer":48}],47:[function(require,module,exports){
+},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./date-format":40,"./descendant-chart":41,"./detailed-renderer":42,"./gedcom":43,"./hourglass-chart":44,"./relatives-chart":47,"./simple-api":48,"./simple-renderer":49}],47:[function(require,module,exports){
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+var ancestor_chart_1 = require("./ancestor-chart");
+var chart_util_1 = require("./chart-util");
+var descendant_chart_1 = require("./descendant-chart");
+var id_generator_1 = require("./id-generator");
+/** A view of a family that hides one child individual. */
+var FilterChildFam = /** @class */ (function () {
+    function FilterChildFam(fam, childId) {
+        this.fam = fam;
+        this.childId = childId;
+    }
+    FilterChildFam.prototype.getId = function () {
+        return this.fam.getId();
+    };
+    FilterChildFam.prototype.getFather = function () {
+        return this.fam.getFather();
+    };
+    FilterChildFam.prototype.getMother = function () {
+        return this.fam.getMother();
+    };
+    FilterChildFam.prototype.getChildren = function () {
+        var children = this.fam.getChildren().slice();
+        var index = children.indexOf(this.childId);
+        if (index !== -1) {
+            children.splice(index, 1);
+        }
+        return children;
+    };
+    return FilterChildFam;
+}());
+/** Data provider proxy that filters out a specific child individual. */
+var FilterChildData = /** @class */ (function () {
+    function FilterChildData(data, childId) {
+        this.data = data;
+        this.childId = childId;
+    }
+    FilterChildData.prototype.getIndi = function (id) {
+        return this.data.getIndi(id);
+    };
+    FilterChildData.prototype.getFam = function (id) {
+        return new FilterChildFam(this.data.getFam(id), this.childId);
+    };
+    return FilterChildData;
+}());
+/** Chart layout showing all relatives of a person. */
+var RelativesChart = /** @class */ (function () {
+    function RelativesChart(options) {
+        this.options = options;
+        this.util = new chart_util_1.ChartUtil(options);
+        this.options.idGenerator = this.options.idGenerator || new id_generator_1.IdGenerator();
+    }
+    RelativesChart.prototype.layOutAncestorDescendants = function (ancestorsRoot, focusedNode) {
+        // let ancestorDescentants: Array<d3.HierarchyPointNode<TreeNode>> = [];
+        var _this = this;
+        var ancestorData = new Map();
+        ancestorsRoot.eachAfter(function (node) {
+            if (!node.parent) {
+                return;
+            }
+            var descendantOptions = __assign({}, _this.options);
+            descendantOptions.startFam = node.data.family.id;
+            descendantOptions.startIndi = undefined;
+            var child = node.id === node.parent.data.spouseParentNodeId
+                ? node.parent.data.spouse.id
+                : node.parent.data.indi.id;
+            descendantOptions.data = new FilterChildData(descendantOptions.data, child);
+            descendantOptions.baseGeneration =
+                (_this.options.baseGeneration || 0) - node.depth;
+            var descendantNodes = descendant_chart_1.layOutDescendants(descendantOptions);
+            // The id could be modified because of duplicates. This can happen when
+            // drawing one family in multiple places of the chart).
+            node.data.id = descendantNodes[0].id;
+            var chartInfo = chart_util_1.getChartInfoWithoutMargin(descendantNodes);
+            var parentData = (node.children || []).map(function (childNode) {
+                return ancestorData.get(childNode.data.id);
+            });
+            var parentHeight = parentData
+                .map(function (data) { return data.height; })
+                .reduce(function (a, b) { return a + b + chart_util_1.V_SPACING; }, 0);
+            var data = {
+                descendantNodes: descendantNodes,
+                width: chartInfo.size[0],
+                height: chartInfo.size[1] + parentHeight,
+                x: chartInfo.origin[0],
+                y: chartInfo.origin[1] + parentHeight,
+            };
+            ancestorData.set(node.data.id, data);
+        });
+        ancestorsRoot.each(function (node) {
+            if (!node.parent) {
+                return;
+            }
+            var data = ancestorData.get(node.data.id);
+            var parentData = ancestorData.get(node.parent.data.id);
+            data.left =
+                parentData && !parentData.middle
+                    ? parentData.left
+                    : node.parent.data.indiParentNodeId === node.id;
+            data.middle =
+                (!parentData || parentData.middle) && node.parent.children.length === 1;
+        });
+        ancestorsRoot.each(function (node) {
+            var data = ancestorData.get(node.data.id);
+            var thisNode = data ? data.descendantNodes[0] : focusedNode;
+            (node.children || []).forEach(function (child) {
+                var childNode = ancestorData.get(child.data.id).descendantNodes[0];
+                childNode.parent = thisNode;
+            });
+            if (node.data.indiParentNodeId) {
+                thisNode.data.indiParentNodeId = node.children.find(function (childNode) { return childNode.id === node.data.indiParentNodeId; }).data.id;
+            }
+            if (node.data.spouseParentNodeId) {
+                thisNode.data.spouseParentNodeId = node.children.find(function (childNode) { return childNode.id === node.data.spouseParentNodeId; }).data.id;
+            }
+        });
+        ancestorsRoot.each(function (node) {
+            var nodeData = ancestorData.get(node.data.id);
+            // Lay out the nodes produced by laying out descendants of ancestors
+            // instead of the ancestor nodes from ancestorsRoot.
+            var thisNode = nodeData ? nodeData.descendantNodes[0] : focusedNode;
+            var indiParent = node.children &&
+                node.children.find(function (child) { return child.id === node.data.indiParentNodeId; });
+            var spouseParent = node.children &&
+                node.children.find(function (child) { return child.id === node.data.spouseParentNodeId; });
+            var nodeX = thisNode.x;
+            var nodeY = thisNode.y;
+            var nodeWidth = thisNode.data.width;
+            var nodeHeight = thisNode.data.height;
+            var indiWidth = thisNode.data.indi ? thisNode.data.indi.width : 0;
+            var spouseWidth = thisNode.data.spouse ? thisNode.data.spouse.width : 0;
+            // Lay out the individual's ancestors and their descendants.
+            if (indiParent) {
+                var data = ancestorData.get(indiParent.data.id);
+                var parentNode = data.descendantNodes[0];
+                var parentData = parentNode.data;
+                var spouseTreeHeight = spouseParent
+                    ? ancestorData.get(spouseParent.data.id).height + chart_util_1.V_SPACING
+                    : 0;
+                var dx_1 = nodeX +
+                    data.x -
+                    nodeWidth / 2 +
+                    indiWidth / 2 +
+                    (data.left ? -data.width - chart_util_1.H_SPACING : chart_util_1.H_SPACING);
+                var dy_1 = nodeY +
+                    data.y -
+                    nodeHeight / 2 -
+                    data.height +
+                    (data.left ? -chart_util_1.V_SPACING : -spouseTreeHeight - chart_util_1.V_SPACING);
+                // Move all nodes by (dx, dy). The ancestor node,
+                // ie. data.descendantNodes[0] is now at (0, 0).
+                data.descendantNodes.forEach(function (node) {
+                    node.x += dx_1;
+                    node.y += dy_1;
+                });
+                // Set the ancestor's horizontal position independently.
+                var middleX = indiWidth / 2 -
+                    nodeWidth / 2 +
+                    parentData.width / 2 -
+                    parentData.indi.width;
+                if (data.middle) {
+                    parentNode.x = 0;
+                }
+                else if (!nodeData || nodeData.middle) {
+                    parentNode.x =
+                        -nodeWidth / 2 - parentData.width / 2 + indiWidth - chart_util_1.H_SPACING / 2;
+                }
+                else if (data.left) {
+                    parentNode.x =
+                        nodeX +
+                            d3.min([
+                                nodeWidth / 2 -
+                                    parentData.width / 2 -
+                                    spouseWidth / 2 -
+                                    chart_util_1.H_SPACING,
+                                middleX,
+                            ]);
+                }
+                else {
+                    parentNode.x =
+                        nodeX + d3.max([parentData.width / 2 - nodeWidth / 2, middleX]);
+                }
+            }
+            // Lay out the spouse's ancestors and their descendants.
+            if (spouseParent) {
+                var data = ancestorData.get(spouseParent.data.id);
+                var parentNode = data.descendantNodes[0];
+                var parentData = parentNode.data;
+                var indiTreeHeight = indiParent
+                    ? ancestorData.get(indiParent.data.id).height + chart_util_1.V_SPACING
+                    : 0;
+                var dx_2 = nodeX +
+                    data.x +
+                    nodeWidth / 2 -
+                    spouseWidth / 2 +
+                    (data.left ? -data.width - chart_util_1.H_SPACING : chart_util_1.H_SPACING);
+                var dy_2 = nodeY +
+                    data.y -
+                    nodeHeight / 2 -
+                    data.height +
+                    (data.left ? -indiTreeHeight - chart_util_1.V_SPACING : -chart_util_1.V_SPACING);
+                // Move all nodes by (dx, dy). The ancestor node,
+                // ie. data.descendantNodes[0] is now at (0, 0).
+                data.descendantNodes.forEach(function (node) {
+                    node.x += dx_2;
+                    node.y += dy_2;
+                });
+                // Set the ancestor's horizontal position independently.
+                var middleX = nodeWidth / 2 -
+                    spouseWidth / 2 +
+                    parentData.width / 2 -
+                    parentData.indi.width;
+                if (data.middle) {
+                    parentNode.x = 0;
+                }
+                else if (!nodeData || nodeData.middle) {
+                    parentNode.x =
+                        nodeWidth / 2 + parentData.width / 2 - spouseWidth + chart_util_1.H_SPACING / 2;
+                }
+                else if (data.left) {
+                    parentNode.x =
+                        nodeX + d3.min([nodeWidth / 2 - parentData.width / 2, middleX]);
+                }
+                else {
+                    parentNode.x =
+                        nodeX +
+                            d3.max([
+                                parentData.width / 2 - nodeWidth / 2 + indiWidth / 2 + chart_util_1.H_SPACING,
+                                middleX,
+                            ]);
+                }
+            }
+        });
+        return Array.from(ancestorData.values())
+            .map(function (data) { return data.descendantNodes; })
+            .reduce(function (a, b) { return a.concat(b); }, []);
+    };
+    RelativesChart.prototype.render = function () {
+        var descendantNodes = descendant_chart_1.layOutDescendants(this.options);
+        // Don't use common id generator because these nodes will not be drawn.
+        var ancestorOptions = Object.assign({}, this.options, {
+            idGenerator: undefined,
+        });
+        var ancestorsRoot = ancestor_chart_1.getAncestorsTree(ancestorOptions);
+        var ancestorDescentants = this.layOutAncestorDescendants(ancestorsRoot, descendantNodes[0]);
+        var nodes = descendantNodes.concat(ancestorDescentants);
+        this.util.renderChart(nodes);
+        var info = chart_util_1.getChartInfo(nodes);
+        this.util.updateSvgDimensions(info);
+        return info;
+    };
+    return RelativesChart;
+}());
+exports.RelativesChart = RelativesChart;
+
+},{"./ancestor-chart":37,"./chart-util":38,"./descendant-chart":41,"./id-generator":45,"d3":33}],48:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20988,12 +21387,12 @@ var data_1 = require("./data");
 var DEFAULT_SVG_SELECTOR = 'svg';
 function createChartOptions(chartOptions, renderOptions, options) {
     var data = new data_1.JsonDataProvider(chartOptions.json);
-    var indiHrefFunc = chartOptions.indiUrl ?
-        function (id) { return chartOptions.indiUrl.replace('${id}', id); } :
-        undefined;
-    var famHrefFunc = chartOptions.famUrl ?
-        function (id) { return chartOptions.famUrl.replace('${id}', id); } :
-        undefined;
+    var indiHrefFunc = chartOptions.indiUrl
+        ? function (id) { return chartOptions.indiUrl.replace('${id}', id); }
+        : undefined;
+    var famHrefFunc = chartOptions.famUrl
+        ? function (id) { return chartOptions.famUrl.replace('${id}', id); }
+        : undefined;
     // If startIndi nor startFam is provided, select the first indi in the data.
     if (!renderOptions.startIndi && !renderOptions.startFam) {
         renderOptions.startIndi = chartOptions.json.indis[0].id;
@@ -21026,7 +21425,9 @@ var SimpleChartHandle = /** @class */ (function () {
     }
     SimpleChartHandle.prototype.render = function (renderOptions) {
         if (renderOptions === void 0) { renderOptions = {}; }
-        var chartOptions = createChartOptions(this.options, renderOptions, { initialRender: this.initialRender });
+        var chartOptions = createChartOptions(this.options, renderOptions, {
+            initialRender: this.initialRender,
+        });
         this.initialRender = false;
         var chart = new this.options.chartType(chartOptions);
         var info = chart.render();
@@ -21044,7 +21445,7 @@ function createChart(options) {
 }
 exports.createChart = createChart;
 
-},{"./data":39,"d3":33}],48:[function(require,module,exports){
+},{"./data":39,"d3":33}],49:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -21052,14 +21453,20 @@ var MIN_HEIGHT = 27;
 var MIN_WIDTH = 50;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text) {
-    var g = d3.select('svg').append('g').attr('class', 'simple node');
-    var x = g.append('text').attr('class', 'name').text(text);
+    var g = d3
+        .select('svg')
+        .append('g')
+        .attr('class', 'simple node');
+    var x = g
+        .append('text')
+        .attr('class', 'name')
+        .text(text);
     var w = x.node().getComputedTextLength();
     g.remove();
     return w;
 }
 function getName(indi) {
-    return [(indi.getFirstName() || ''), (indi.getLastName() || '')].join(' ');
+    return [indi.getFirstName() || '', indi.getLastName() || ''].join(' ');
 }
 function getYears(indi) {
     var birthDate = indi.getBirthDate();
@@ -21091,9 +21498,13 @@ var SimpleRenderer = /** @class */ (function () {
         return [0, 0];
     };
     SimpleRenderer.prototype.render = function (enter, update) {
-        var selection = enter.merge(update).append('g').attr('class', 'simple');
+        var selection = enter
+            .merge(update)
+            .append('g')
+            .attr('class', 'simple');
         this.renderIndi(selection, function (node) { return node.indi; });
-        var spouseSelection = selection.filter(function (node) { return !!node.data.spouse; })
+        var spouseSelection = selection
+            .filter(function (node) { return !!node.data.spouse; })
             .append('g')
             .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
@@ -21104,22 +21515,27 @@ var SimpleRenderer = /** @class */ (function () {
     SimpleRenderer.prototype.renderIndi = function (selection, indiFunc) {
         var _this = this;
         // Optionally add a link.
-        var group = this.options.indiHrefFunc ?
-            selection.append('a').attr('href', function (node) { return _this.options.indiHrefFunc(indiFunc(node.data).id); }) :
-            selection;
+        var group = this.options.indiHrefFunc
+            ? selection
+                .append('a')
+                .attr('href', function (node) {
+                return _this.options.indiHrefFunc(indiFunc(node.data).id);
+            })
+            : selection;
         // Box.
-        group.append('rect')
+        group
+            .append('rect')
             .attr('width', function (node) { return indiFunc(node.data).width; })
             .attr('height', function (node) { return indiFunc(node.data).height; });
         // Text.
-        group.append('text')
+        group
+            .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
-            .text(function (node) {
-            return getName(_this.options.data.getIndi(indiFunc(node.data).id));
-        });
-        group.append('text')
+            .text(function (node) { return getName(_this.options.data.getIndi(indiFunc(node.data).id)); });
+        group
+            .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'details')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
