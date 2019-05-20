@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { Chart, ChartInfo, ChartOptions, TreeNode as StandardTreeNode, DataProvider, Indi, Fam } from './api';
+import { Chart, ChartInfo, ChartOptions, TreeNode as BaseTreeNode, DataProvider, Indi, Fam } from './api';
 import { IdGenerator } from './id-generator';
 import { ChartUtil }   from './chart-util';
 import { Direction, Vec2, nonEmpty, last, flatten, zip, deepFreeze, points2pathd } from './utils';
@@ -202,14 +202,14 @@ export class KinshipChart implements Chart {
     ];
   }
 
-  private additionalMarriageLinkPoints(node: d3.HierarchyPointNode<StandardTreeNode>): Vec2[] {
+  private additionalMarriageLinkPoints(node: d3.HierarchyPointNode<BaseTreeNode>): Vec2[] {
     const nodeIndex = node.parent.children.findIndex(n => n.data.id === node.data.id);
     const prevSiblingNode = node.parent.children[nodeIndex - 1];
     const y = this.nodeIndiMidY(node);
     return [{x: prevSiblingNode.x, y: y},  {x: node.x, y: y}]
   }
 
-  private linkAnchorPoints(node: d3.HierarchyPointNode<StandardTreeNode>, type: LinkType, top: boolean): Vec2[] {
+  private linkAnchorPoints(node: d3.HierarchyPointNode<BaseTreeNode>, type: LinkType, top: boolean): Vec2[] {
     const [x, y] = [node.x, node.y];
     const [w, h] = [node.data.width, node.data.height];
     const siblingAnchorY = this.nodeIndiMidY(node) + SIBLING_LINK_ANCHOR_Y_OFFSET * (top ? -1 : 1);
@@ -222,11 +222,11 @@ export class KinshipChart implements Chart {
     }
   }
 
-  private nodeIndiMidY(node: d3.HierarchyPointNode<StandardTreeNode>): number {
+  private nodeIndiMidY(node: d3.HierarchyPointNode<BaseTreeNode>): number {
     return node.y - node.data.height/2 + node.data.indi.height/2;
   }
 
-  private renderRootDummyAdditionalMarriageLinkStub(root: d3.HierarchyPointNode<StandardTreeNode>) {
+  private renderRootDummyAdditionalMarriageLinkStub(root: d3.HierarchyPointNode<BaseTreeNode>) {
     const svgg = this.getSvgForRendering().select("g");
     const y = this.nodeIndiMidY(root);
     const x = root.data.width/2 + 20;
@@ -619,7 +619,7 @@ export class ChildNodes {
 }
 
 
-export interface TreeNode extends StandardTreeNode {
+export interface TreeNode extends BaseTreeNode {
   parentNode: TreeNode;
   childNodes: ChildNodes;
   linkStubs: LinkStub[];
