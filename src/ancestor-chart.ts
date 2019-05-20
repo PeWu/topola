@@ -32,6 +32,7 @@ export function getAncestorsTree(options: ChartOptions) {
     ancestorsRoot.children.length > 1
   ) {
     ancestorsRoot.children.pop();
+    ancestorsRoot.data.spouseParentNodeId = undefined;
   }
   return ancestorsRoot;
 }
@@ -68,7 +69,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       });
     } else {
       stack.push({
-        id: this.options.startFam,
+        id: idGenerator.getId(this.options.startFam),
         family: { id: this.options.startFam },
       });
     }
@@ -80,7 +81,8 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         continue;
       }
       const [father, mother] =
-        entry.id === this.options.startFam && this.options.swapStartSpouses
+        entry.family.id === this.options.startFam &&
+        this.options.swapStartSpouses
           ? [fam.getMother(), fam.getFather()]
           : [fam.getFather(), fam.getMother()];
       if (!father && !mother) {
