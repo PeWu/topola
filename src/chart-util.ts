@@ -186,7 +186,7 @@ export class ChartUtil {
   }
 
   private linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
-    const nodeIndex = node.parent.children.findIndex(n => n.id === node.id);
+    const nodeIndex = node.parent.children.findIndex(n => n.data.id === node.data.id);
     // Assert nodeIndex > 0.
     const siblingNode = node.parent.children[nodeIndex - 1];
     const sFamXOffset = node.data.family
@@ -233,17 +233,17 @@ export class ChartUtil {
     );
   }
 
-  layOutChart(
-    root: d3.HierarchyNode<TreeNode>,
+  layOutChart<N extends TreeNode>(
+    root: d3.HierarchyNode<N>,
     flipVertically = false
-  ): Array<d3.HierarchyPointNode<TreeNode>> {
+  ): Array<d3.HierarchyPointNode<N>> {
     // Add styles so that calculating text size is correct.
     const svg = d3.select(this.options.svgSelector);
     if (svg.select('style').empty()) {
       svg.append('style').text(this.options.renderer.getCss());
     }
 
-    const treemap = flextree<TreeNode>()
+    const treemap = flextree<N>()
       .nodeSize(node => {
         if (this.options.horizontal) {
           const maxChildSize =
@@ -348,12 +348,13 @@ export class ChartUtil {
   }
 
   renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const svg = d3.select(this.options.svgSelector);
-    if (svg.select('g').empty()) {
-      svg.append('g');
-    }
+    this.renderNodes(nodes);
+    this.renderLinks(nodes);
+  }
 
-    // Render nodes.
+  renderNodes(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+    const svg = this.getSvgForRendering();
+
     const boundNodes = svg
       .select('g')
       .selectAll('g.node')
@@ -400,6 +401,10 @@ export class ChartUtil {
     } else {
       boundNodes.exit().remove();
     }
+  }
+
+  renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+    const svg = this.getSvgForRendering();
 
     const link = (
       parent: d3.HierarchyPointNode<TreeNode>,
@@ -421,7 +426,6 @@ export class ChartUtil {
       return this.linkVertical(parent, child);
     };
 
-    // Render links.
     const links = nodes.filter(n => !!n.parent || n.data.additionalMarriage);
     const boundLinks = svg
       .select('g')
@@ -461,5 +465,11 @@ export class ChartUtil {
     } else {
       boundLinks.exit().remove();
     }
+  }
+
+  private getSvgForRendering(): d3.Selection<d3.BaseType, {}, d3.BaseType, {}> {
+    const svg = d3.select(this.options.svgSelector);
+    if (svg.select('g').empty()) svg.append('g');
+    return svg;
   }
 }
