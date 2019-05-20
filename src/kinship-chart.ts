@@ -212,13 +212,19 @@ export class KinshipChart implements Chart {
   private linkAnchorPoints(node: d3.HierarchyPointNode<BaseTreeNode>, type: LinkType, top: boolean): Vec2[] {
     const [x, y] = [node.x, node.y];
     const [w, h] = [node.data.width, node.data.height];
+    const leftEdge  = x - w / 2;
+    const rightEdge = x + w / 2;
+    const [indiW, spouseW, familyW] = [node.data.indi, node.data.spouse, node.data.family].map(e => e ? e.width : 0);
+    const indisW = indiW + spouseW;
+    const indisLeftEdge = x - w/2 + (familyW > indisW ? (familyW - indisW) / 2 : 0);
+    const indisRightEdge = indisLeftEdge + indisW;
     const siblingAnchorY = this.nodeIndiMidY(node) + SIBLING_LINK_ANCHOR_Y_OFFSET * (top ? -1 : 1);
     switch (type) {
-      case LinkType.IndiParents:    return [{x: x - w/2 + PARENT_LINK_ANCHOR_X_OFFSET, y: y - h/2}];
-      case LinkType.SpouseParents:  return [{x: x + w/2 - PARENT_LINK_ANCHOR_X_OFFSET, y: y - h/2}];
-      case LinkType.IndiSiblings:   return [{x: x - w/2, y: siblingAnchorY}, {x: x - w/2 - SIBLING_LINK_STARTER_LENGTH, y: siblingAnchorY}];
-      case LinkType.SpouseSiblings: return [{x: x + w/2, y: siblingAnchorY}, {x: x + w/2 + SIBLING_LINK_STARTER_LENGTH, y: siblingAnchorY}];
-      case LinkType.Children:       return [{x: x - w/2 + node.data.indi.width, y: y}];
+      case LinkType.IndiParents:    return [{x: indisLeftEdge  + PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2}];
+      case LinkType.SpouseParents:  return [{x: indisRightEdge - PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2}];
+      case LinkType.IndiSiblings:   return [{x: indisLeftEdge,  y: siblingAnchorY}, {x: (familyW > indisW && !top ? leftEdge  : indisLeftEdge)  - SIBLING_LINK_STARTER_LENGTH, y: siblingAnchorY}];
+      case LinkType.SpouseSiblings: return [{x: indisRightEdge, y: siblingAnchorY}, {x: (familyW > indisW && !top ? rightEdge : indisRightEdge) + SIBLING_LINK_STARTER_LENGTH, y: siblingAnchorY}];
+      case LinkType.Children:       return [{x: indisLeftEdge + indiW, y: y}];
     }
   }
 
