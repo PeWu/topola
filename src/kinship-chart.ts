@@ -115,10 +115,10 @@ export class KinshipChartRenderer {
     const keyFn = (d: d3.HierarchyPointNode<TreeNode>) => d.data.id;
 
     // Render links
-    const boundLinkNodes = svgg.selectAll("path.link")
+    const boundLinkNodes = svgg.selectAll("path.internode-link")
       .data(nodes.filter(n => !!n.parent), keyFn);
     boundLinkNodes.enter().insert("path" as string, "g")
-        .attr("class", node => node.data.primaryMarriage ? "link additional-marriage" : "link")
+        .attr("class", node => node.data.primaryMarriage ? "link internode-link additional-marriage" : "link internode-link")
       .merge(boundLinkNodes)
         .attr("d", node => {
           const linkPoints = node.data.primaryMarriage ? this.additionalMarriageLinkPoints(node) : this.linkPoints(node.parent, node, node.data.linkFromParentType);
@@ -138,8 +138,8 @@ export class KinshipChartRenderer {
       .data(node => this.nodeToLinkStubsRenderInfos(node), (d: LinkStubRenderInfo) => d.linkType.toString());
     boundLinkStubs.enter().append("g")
         .call(g => g.append("path")
-            .attr("class", "link")
-          .merge(boundLinkStubs.select("path.link"))
+            .attr("class", "link link-stub")
+          .merge(boundLinkStubs.select("path.link-stub"))
             .attr("d", d => points2pathd(d.points))
         )
         .call(g => g.append("circle")
