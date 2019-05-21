@@ -112,10 +112,11 @@ export class KinshipChartRenderer {
 
   private renderLinks(nodes: d3.HierarchyPointNode<TreeNode>[]) {
     const svgg = this.getSvgForRendering().select("g");
+    const keyFn = (d: d3.HierarchyPointNode<TreeNode>) => d.data.id;
 
     // Render links
     const boundLinkNodes = svgg.selectAll("path.link")
-      .data(nodes.filter(n => !!n.parent));
+      .data(nodes.filter(n => !!n.parent), keyFn);
     boundLinkNodes.enter().insert("path" as string, "g")
         .attr("class", node => node.data.primaryMarriage ? "link additional-marriage" : "link")
       .merge(boundLinkNodes)
@@ -127,14 +128,14 @@ export class KinshipChartRenderer {
 
     // Render link stubs container "g" element
     const boundLinkStubNodes = svgg.selectAll("g.link-stubs")
-      .data(nodes.filter(n => n.data.duplicateOf || n.data.primaryMarriage));
+      .data(nodes.filter(n => n.data.duplicateOf || n.data.primaryMarriage), keyFn);
     const linkStubNodesEnter = boundLinkStubNodes.enter().insert("g" as string, "g")
         .attr("class", "link-stubs");
     boundLinkStubNodes.exit().remove();
 
     // Render link stubs
     const boundLinkStubs = linkStubNodesEnter.merge(boundLinkStubNodes).selectAll("g")
-      .data(node => this.nodeToLinkStubsRenderInfos(node));
+      .data(node => this.nodeToLinkStubsRenderInfos(node), (d: LinkStubRenderInfo) => d.linkType.toString());
     boundLinkStubs.enter().append("g")
         .call(g => g.append("path")
             .attr("class", "link")
@@ -161,6 +162,7 @@ export class KinshipChartRenderer {
       const y = node.data.linkYs.children - (2 * LINKS_SEPARATION + 2 * LINK_STUB_CIRCLE_R) * treeDir;
       return {
         treeDir: treeDir,
+        linkType: linkStub.linkType,
         points: [...anchorPoints, {x: last(anchorPoints).x, y: y}]
       } as LinkStubRenderInfo;
     });
@@ -682,5 +684,6 @@ export interface LinkStub {
 
 interface LinkStubRenderInfo {
   treeDir: Direction;
+  linkType: LinkType;
   points: Vec2[];
 }
