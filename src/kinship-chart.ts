@@ -18,37 +18,84 @@ const LINK_STUB_CIRCLE_R = 3;
 
 export class KinshipChart implements Chart {
   readonly data: DataProvider<Indi, Fam>;
-  readonly util: ChartUtil;
+  readonly renderer: KinshipChartRenderer;
 
   constructor(readonly options: ChartOptions) {
     this.data = options.data;
-    this.util = new ChartUtil(this.options);
+    this.renderer = new KinshipChartRenderer(this.options);
   }
 
   render(): ChartInfo {
-    // Add styles so that calculating text size is correct.
+    const hierarchyCreator = new HierarchyCreator(this.data, this.options.startIndi || this.options.startFam);
+    const [upNodes, downNodes] = this.renderer.layOut(hierarchyCreator.getUpRoot(), hierarchyCreator.getDownRoot());
+
+    upNodes.concat(downNodes).forEach(node => {
+      this.setChildNodesGenerationNumber(node);
+    });
+
+    return this.renderer.render(upNodes, downNodes, hierarchyCreator.getRootsCount());
+  }
+
+  private setChildNodesGenerationNumber(node: d3.HierarchyNode<TreeNode>) {
+    const [indiParentsNodes, indiSiblingsNodes, spouseParentsNodes,
+      spouseSiblingsNodes, childrenNodes] = this.getChildNodesByType(node);
+    const setGenerationNumber = (childNode: d3.HierarchyNode<TreeNode>, value: number) =>
+      childNode.data.generation = node.data.generation + value;
+
+    indiParentsNodes.forEach(n =>    setGenerationNumber(n, -1));
+    indiSiblingsNodes.forEach(n =>   setGenerationNumber(n,  0));
+    spouseParentsNodes.forEach(n =>  setGenerationNumber(n, -1));
+    spouseSiblingsNodes.forEach(n => setGenerationNumber(n,  0));
+    childrenNodes.forEach(n =>       setGenerationNumber(n,  1));
+  }
+
+  private getChildNodesByType<N extends d3.HierarchyNode<TreeNode>>(node: N): [N[], N[], N[], N[], N[]] {
+    if (!node || !node.children) return [[], [], [], [], []];
+    const childNodesById = new Map(node.children.map(n => [n.data.id, n] as [string, N]));
+    const node2hnode = (n: TreeNode) => n ? childNodesById.get(n.id) : null;
+    const childNodes = node.data.childNodes;
+    return [
+      childNodes.indiParents.map(node2hnode),
+      childNodes.indiSiblings.map(node2hnode),
+      childNodes.spouseParents.map(node2hnode),
+      childNodes.spouseSiblings.map(node2hnode),
+      childNodes.children.map(node2hnode)
+    ]
+  }
+}
+
+
+export class KinshipChartRenderer {
+  readonly util: ChartUtil;
+
+  constructor(readonly options: ChartOptions) {
+    this.util = new ChartUtil(this.options);
+  }
+
+  layOut(upRoot: d3.HierarchyNode<TreeNode>, downRoot: d3.HierarchyNode<TreeNode>): [d3.HierarchyPointNode<TreeNode>[], d3.HierarchyPointNode<TreeNode>[]] {
     const svg = this.getSvgForRendering();
+    // Add styles so that calculating text size is correct.
     if (svg.select('style').empty())
       svg.append('style').text(this.options.renderer.getCss());
 
-    const hierarchyCreator = new HierarchyCreator(this.data, this.options.startIndi || this.options.startFam);
-    const upNodes = this.util.layOutChart(hierarchyCreator.getUpRoot(), true);
-    const downNodes = this.util.layOutChart(hierarchyCreator.getDownRoot());
+    return [
+      this.util.layOutChart(upRoot, true),
+      this.util.layOutChart(downRoot)
+    ];
+  }
+
+  render(upNodes: d3.HierarchyPointNode<TreeNode>[], downNodes: d3.HierarchyPointNode<TreeNode>[], rootsCount: number): ChartInfo {
     const allNodes = upNodes.concat(downNodes);
     const allNodesDeduped = allNodes.slice(1);  // Remove duplicate start/center node
 
-    upNodes.forEach(node => {
-      this.setChildNodesGenerationNumber(node);
-      this.setLinkYs(node, true);
-    });
-    downNodes.forEach(node => {
-      this.setChildNodesGenerationNumber(node);
-      this.setLinkYs(node, false);
-    });
+    // Prepare for rendering
+    upNodes.forEach(node => this.setLinkYs(node, true));
+    downNodes.forEach(node => this.setLinkYs(node, false));
 
+    // Render chart
     this.util.renderNodes(allNodesDeduped);
     this.renderLinks(allNodes);
-    if (hierarchyCreator.getRootsCount() > 1) this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
+    if (rootsCount > 1) this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
 
     const info = this.getChartInfo(allNodesDeduped);
     this.util.updateSvgDimensions(info);
@@ -258,33 +305,6 @@ export class KinshipChart implements Chart {
     const svg = d3.select(this.options.svgSelector);
     if (svg.select("g").empty()) svg.append("g");
     return svg;
-  }
-
-  private setChildNodesGenerationNumber(node: d3.HierarchyNode<TreeNode>) {
-    const [indiParentsNodes, indiSiblingsNodes, spouseParentsNodes,
-      spouseSiblingsNodes, childrenNodes] = this.getChildNodesByType(node);
-    const setGenerationNumber = (childNode: d3.HierarchyNode<TreeNode>, value: number) =>
-      childNode.data.generation = node.data.generation + value;
-
-    indiParentsNodes.forEach(n =>    setGenerationNumber(n, -1));
-    indiSiblingsNodes.forEach(n =>   setGenerationNumber(n,  0));
-    spouseParentsNodes.forEach(n =>  setGenerationNumber(n, -1));
-    spouseSiblingsNodes.forEach(n => setGenerationNumber(n,  0));
-    childrenNodes.forEach(n =>       setGenerationNumber(n,  1));
-  }
-
-  private getChildNodesByType<N extends d3.HierarchyNode<TreeNode>>(node: N): [N[], N[], N[], N[], N[]] {
-    if (!node || !node.children) return [[], [], [], [], []];
-    const childNodesById = new Map(node.children.map(n => [n.data.id, n] as [string, N]));
-    const node2hnode = (n: TreeNode) => n ? childNodesById.get(n.id) : null;
-    const childNodes = node.data.childNodes;
-    return [
-      childNodes.indiParents.map(node2hnode),
-      childNodes.indiSiblings.map(node2hnode),
-      childNodes.spouseParents.map(node2hnode),
-      childNodes.spouseSiblings.map(node2hnode),
-      childNodes.children.map(node2hnode)
-    ]
   }
 }
 
