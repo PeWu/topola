@@ -96,35 +96,44 @@
     </script>
   </head>
   <body>
-    <h1>Relatives chart</h1>
+    <h1>Table of contents</h1>
+    <ul>
+      <li><a href="#relativesTitle">Relatives chart</a>
+      <li><a href="#hourglassTitle">Hourglass – vertical layout</a>
+      <li><a href="#ancestorsTitle">Ancestors – horizontal layout</a>
+      <li><a href="#tudorTitle">Tree with images</a>
+      <li><a href="#descendantsTitle">Descendants – simple boxes</a>
+    </ul>
+
+    <h1 id="relativesTitle">Relatives chart</h1>
     <div>
         <button onclick="download('relatives')">Download SVG</button>
         <button onclick="print('relatives')">Print</button>
     </div>
     <svg class="graph" id="relatives"/>
 
-    <h1>Hourglass – vertical layout</h1>
+    <h1 id="hourglassTitle">Hourglass – vertical layout</h1>
     <div>
         <button onclick="download('hourglass')">Download SVG</button>
         <button onclick="print('hourglass')">Print</button>
     </div>
     <svg class="graph" id="hourglass"/>
 
-    <h1>Ancestors – horizontal layout</h1>
+    <h1 id="ancestorsTitle">Ancestors – horizontal layout</h1>
     <div>
         <button onclick="download('ancestors')">Download SVG</button>
         <button onclick="print('ancestors')">Print</button>
     </div>
     <svg class="graph" id="ancestors"/>
 
-    <h1>Tree with images</h1>
+    <h1 id="tudorTitle">Tree with images</h1>
     <div>
         <button onclick="download('tudor')">Download SVG</button>
         <button onclick="print('tudor')">Print</button>
     </div>
     <svg class="graph" id="tudor"/>
 
-    <h1>Descendants – simple boxes</h1>
+    <h1 id="descendantsTitle">Descendants – simple boxes</h1>
     <div>
         <button onclick="download('descendants')">Download SVG</button>
         <button onclick="print('descendants')">Print</button>
