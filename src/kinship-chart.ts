@@ -473,7 +473,10 @@ export class HierarchyCreator {
     const indi = this.data.getIndi(indiId);
     const famc = this.data.getFam(indi ? indi.getFamilyAsChild() : null);
     if (!famc) return [false, false];
-    return [true, nonEmpty(famc.getChildren())];
+    return [
+      !!(famc.getFather() || famc.getMother()),
+      famc.getChildren().length > 1
+    ];
   }
 
   private getParentsAndSiblings(indi: Indi): [string[], string[]] {
