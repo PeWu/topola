@@ -155,14 +155,14 @@ export class KinshipChartRenderer {
   }
 
   private nodeToLinkStubsRenderInfos(node: d3.HierarchyPointNode<TreeNode>): LinkStubRenderInfo[] {
-    return node.data.linkStubs.filter(linkStub => linkStub.isPresent).map(linkStub => {
+    return node.data.linkStubs.map(linkType => {
       const isUpTree = node.y < node.parent.y;
       const treeDir = isUpTree ? -1 : 1;
-      const anchorPoints = this.linkAnchorPoints(node, linkStub.linkType, isUpTree);
+      const anchorPoints = this.linkAnchorPoints(node, linkType, isUpTree);
       const y = node.data.linkYs.children - (2 * LINKS_SEPARATION + 2 * LINK_STUB_CIRCLE_R) * treeDir;
       return {
         treeDir: treeDir,
-        linkType: linkStub.linkType,
+        linkType: linkType,
         points: [...anchorPoints, {x: last(anchorPoints).x, y: y}]
       } as LinkStubRenderInfo;
     });
@@ -554,7 +554,7 @@ export class HierarchyCreator {
     return node;
   }
 
-  private createLinkStubs(node: TreeNode): LinkStub[] {
+  private createLinkStubs(node: TreeNode): LinkType[] {
     if (!node.duplicateOf && !node.primaryMarriage) return [];
     const linkTypes = [LinkType.IndiParents, LinkType.IndiSiblings, LinkType.SpouseParents, LinkType.SpouseSiblings, LinkType.Children];
     let arePresent = new Array(linkTypes.length).fill(false);
@@ -576,9 +576,9 @@ export class HierarchyCreator {
       !node.childNodes.get(linkTypes[i]).length
     );
 
-    return zip(arePresent, linkTypes).map(x => {
-      return {isPresent: x[0], linkType: x[1]}
-    });
+    return arePresent.map((isPresent, i) =>
+      isPresent ? linkTypes[i] : null
+    ).filter(x => x != null);
   }
 
   private isChildNodeTypeForbidden(childNodeType: LinkType, parentNode: TreeNode): boolean {
@@ -650,7 +650,10 @@ export class ChildNodes {
 export interface TreeNode extends BaseTreeNode {
   parentNode: TreeNode;
   childNodes: ChildNodes;
-  linkStubs: LinkStub[];
+
+  /** List of link types for which link stub should be rendered **/
+  linkStubs: LinkType[];
+
   /** Type of link from parent node to this node, from the perspective of a parent node **/
   linkFromParentType?: LinkType;
 
@@ -675,11 +678,6 @@ export function otherSideLinkType(type: LinkType): LinkType {
     case LinkType.SpouseSiblings: return LinkType.IndiSiblings;
     case LinkType.Children:       return LinkType.IndiParents;
   }
-}
-
-export interface LinkStub {
-  linkType: LinkType;
-  isPresent: boolean;
 }
 
 interface LinkStubRenderInfo {
