@@ -128,7 +128,7 @@ export class KinshipChartRenderer {
 
     // Render link stubs container "g" element
     const boundLinkStubNodes = svgg.selectAll("g.link-stubs")
-      .data(nodes.filter(n => n.data.duplicateOf || n.data.primaryMarriage), keyFn);
+      .data(nodes.filter(n => n.data.duplicateOf || n.data.duplicated || n.data.primaryMarriage), keyFn);
     const linkStubNodesEnter = boundLinkStubNodes.enter().insert("g" as string, "g")
         .attr("class", "link-stubs");
     boundLinkStubNodes.exit().remove();
@@ -434,14 +434,14 @@ export class HierarchyCreator {
         spouse: spouseId ? {id: spouseId} : null,
         family: {id: fam.getId()},
       });
-      node.childNodes = node.duplicateOf ? ChildNodes.EMPTY : this.childNodesForFam(fam, node, filter);
+      node.childNodes = node.duplicateOf || node.duplicated ? ChildNodes.EMPTY : this.childNodesForFam(fam, node, filter);
     } else {
       const indi = this.data.getIndi(node.id);
       Object.assign(node, {
         id: this.idGenerator.getId(node.id),
         indi: {id: indi.getId()},
       });
-      node.childNodes = node.duplicateOf ? ChildNodes.EMPTY : this.childNodesForIndi(indi, node, filter);
+      node.childNodes = node.duplicateOf || node.duplicated ? ChildNodes.EMPTY : this.childNodesForIndi(indi, node, filter);
     }
     node.linkStubs = this.createLinkStubs(node);
   }
@@ -522,7 +522,8 @@ export class HierarchyCreator {
     });
     famssNodes.forEach((node, i) => {
       if (i != 0) node.primaryMarriage = famssNodes[0];
-      if (!node.duplicateOf) this.queuedNodesById.set(node.id, node);
+      if (node.duplicateOf) node.duplicateOf.duplicated = true;
+      else this.queuedNodesById.set(node.id, node);
     });
     return famssNodes;
   }
@@ -553,12 +554,13 @@ export class HierarchyCreator {
       linkStubs: null,
       duplicateOf: duplicateCheck ? duplicateOf : null
     };
+    if (duplicateOf && duplicateCheck) duplicateOf.duplicated = true;
     if (!duplicateOf) this.queuedNodesById.set(id, node);
     return node;
   }
 
   private createLinkStubs(node: TreeNode): LinkType[] {
-    if (!node.duplicateOf && !node.primaryMarriage) return [];
+    if (!node.duplicateOf && !node.duplicated && !node.primaryMarriage) return [];
     const linkTypes = [LinkType.IndiParents, LinkType.IndiSiblings, LinkType.SpouseParents, LinkType.SpouseSiblings, LinkType.Children];
     let arePresent = new Array(linkTypes.length).fill(false);
 
@@ -665,6 +667,8 @@ export interface TreeNode extends BaseTreeNode {
 
   /** Node, that this node is duplicate of **/
   duplicateOf?: TreeNode;
+  /** If true, then there exist one or more nodes, that are duplicates of this node **/
+  duplicated?: boolean;
 
   /** Y coordinate for different types of outgoing links **/
   linkYs?: {indi: number, spouse: number, children: number};
