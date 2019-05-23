@@ -7,7 +7,7 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
-      d3.text('data/family.ged', (gedcom) => {
+      d3.text('data/family2.ged', (gedcom) => {
         var json = topola.gedcomToJson(gedcom);
         topola.createChart({
           json,
@@ -15,7 +15,9 @@
           chartType: topola.KinshipChart,
           renderer: topola.DetailedRenderer,
         }).render();
-
+      });
+      d3.text('data/family.ged', (gedcom) => {
+        var json = topola.gedcomToJson(gedcom);
         topola.createChart({
           json,
           svgSelector: '#relatives',
