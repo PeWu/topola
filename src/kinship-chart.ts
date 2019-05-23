@@ -52,14 +52,14 @@ export class KinshipChart implements Chart {
   private getChildNodesByType<N extends d3.HierarchyNode<TreeNode>>(node: N): [N[], N[], N[], N[], N[]] {
     if (!node || !node.children) return [[], [], [], [], []];
     const childNodesById = new Map(node.children.map(n => [n.data.id, n] as [string, N]));
-    const node2hnode = (n: TreeNode) => n ? childNodesById.get(n.id) : null;
+    const nodeToHNode = (n: TreeNode) => n ? childNodesById.get(n.id) : null;
     const childNodes = node.data.childNodes;
     return [
-      childNodes.indiParents.map(node2hnode),
-      childNodes.indiSiblings.map(node2hnode),
-      childNodes.spouseParents.map(node2hnode),
-      childNodes.spouseSiblings.map(node2hnode),
-      childNodes.children.map(node2hnode)
+      childNodes.indiParents.map(nodeToHNode),
+      childNodes.indiSiblings.map(nodeToHNode),
+      childNodes.spouseParents.map(nodeToHNode),
+      childNodes.spouseSiblings.map(nodeToHNode),
+      childNodes.children.map(nodeToHNode)
     ]
   }
 }
@@ -135,7 +135,7 @@ export class KinshipChartRenderer {
 
     // Render link stubs
     const boundLinkStubs = linkStubNodesEnter.merge(boundLinkStubNodes).selectAll("g")
-      .data(node => this.nodeToLinkStubsRenderInfos(node), (d: LinkStubRenderInfo) => d.linkType.toString());
+      .data(node => this.nodeToLinkStubRenderInfos(node), (d: LinkStubRenderInfo) => d.linkType.toString());
     boundLinkStubs.enter().append("g")
         .call(g => g.append("path")
             .attr("class", "link link-stub")
@@ -154,7 +154,7 @@ export class KinshipChartRenderer {
     boundLinkStubs.exit().remove();
   }
 
-  private nodeToLinkStubsRenderInfos(node: d3.HierarchyPointNode<TreeNode>): LinkStubRenderInfo[] {
+  private nodeToLinkStubRenderInfos(node: d3.HierarchyPointNode<TreeNode>): LinkStubRenderInfo[] {
     return node.data.linkStubs.map(linkType => {
       const isUpTree = node.y < node.parent.y;
       const treeDir = isUpTree ? -1 : 1;
@@ -182,7 +182,7 @@ export class KinshipChartRenderer {
     const treeDir = isUpTree ? -1 : 1;
     const base = node.y + (node.data.height/2 + LINKS_BASE_OFFSET) * treeDir;
     const offset = LINKS_SEPARATION * treeDir
-    const [indiOffsetDir, spouseOffsetDir] = this.calcLinksOffsetDirs(node);
+    const [indiOffsetDir, spouseOffsetDir] = this.calcLinkOffsetDirs(node);
     node.data.linkYs = {
       indi:   base + offset * indiOffsetDir,
       spouse: base + offset * spouseOffsetDir,
@@ -194,7 +194,7 @@ export class KinshipChartRenderer {
   * Calculates indi (indiParent and indiSiblings) and spouse (spouseParent and spouseSiblings)
   * links offset directions, so they don't merge/collide with children links and with each other.
   ***/
-  private calcLinksOffsetDirs(node: d3.HierarchyPointNode<TreeNode>): [Direction, Direction] {
+  private calcLinkOffsetDirs(node: d3.HierarchyPointNode<TreeNode>): [Direction, Direction] {
     const childNodes = node.data.childNodes;
     if (childNodes.children.length) {
       // Check children-indi and children-spouse links collisions
@@ -254,7 +254,7 @@ export class KinshipChartRenderer {
   private additionalMarriageLinkPoints(node: d3.HierarchyPointNode<BaseTreeNode>): Vec2[] {
     const nodeIndex = node.parent.children.findIndex(n => n.data.id === node.data.id);
     const prevSiblingNode = node.parent.children[nodeIndex - 1];
-    const y = this.nodeIndiMidY(node);
+    const y = this.indiMidY(node);
     return [{x: prevSiblingNode.x, y: y},  {x: node.x, y: y}]
   }
 
@@ -267,7 +267,7 @@ export class KinshipChartRenderer {
     const indisW = indiW + spouseW;
     const indisLeftEdge = x - w/2 + (familyW > indisW ? (familyW - indisW) / 2 : 0);
     const indisRightEdge = indisLeftEdge + indisW;
-    const siblingAnchorY = this.nodeIndiMidY(node) + SIBLING_LINK_ANCHOR_Y_OFFSET * (top ? -1 : 1);
+    const siblingAnchorY = this.indiMidY(node) + SIBLING_LINK_ANCHOR_Y_OFFSET * (top ? -1 : 1);
     switch (type) {
       case LinkType.IndiParents:    return [{x: indisLeftEdge  + PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2}];
       case LinkType.SpouseParents:  return [{x: indisRightEdge - PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2}];
@@ -277,13 +277,13 @@ export class KinshipChartRenderer {
     }
   }
 
-  private nodeIndiMidY(node: d3.HierarchyPointNode<BaseTreeNode>): number {
+  private indiMidY(node: d3.HierarchyPointNode<BaseTreeNode>): number {
     return node.y - node.data.height/2 + node.data.indi.height/2;
   }
 
   private renderRootDummyAdditionalMarriageLinkStub(root: d3.HierarchyPointNode<BaseTreeNode>) {
     const svgg = this.getSvgForRendering().select("g");
-    const y = this.nodeIndiMidY(root);
+    const y = this.indiMidY(root);
     const x = root.data.width/2 + 20;
     const r = 3;
     svgg.selectAll(".root-dummy-additional-marriage").remove();
@@ -366,8 +366,8 @@ export class HierarchyCreator {
     if (startId[0] === FAM_ID_CHAR) return [startId, null];
     const indi = this.data.getIndi(startId);
     if (!indi) return [null, null];
-    const famss = indi.getFamiliesAsSpouse();
-    if (famss.length) return [famss[0], startId];
+    const famsIds = indi.getFamiliesAsSpouse();
+    if (famsIds.length) return [famsIds[0], startId];
     return [startId, null];
   }
 
@@ -453,19 +453,19 @@ export class HierarchyCreator {
     const [spouseParentsFamsIds, spouseSiblingsIds] = this.getParentsAndSiblings(spouse);
     const childrenIds = fam.getChildren();
     return new ChildNodes({
-      indiParents:    filter.indiParents    ? this.famsAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, LinkType.IndiParents)       : [],
-      indiSiblings:   filter.indiSiblings   ? this.indiIdsToFamsAsSpouseNodes(indiSiblingsIds, parentNode, LinkType.IndiSiblings)     : [],
-      spouseParents:  filter.spouseParents  ? this.famsAsSpouseIdsToNodes(spouseParentsFamsIds, parentNode, LinkType.SpouseParents)   : [],
-      spouseSiblings: filter.spouseSiblings ? this.indiIdsToFamsAsSpouseNodes(spouseSiblingsIds, parentNode, LinkType.SpouseSiblings) : [],
-      children:       filter.children       ? this.indiIdsToFamsAsSpouseNodes(childrenIds, parentNode, LinkType.Children)             : []
+      indiParents:    filter.indiParents    ? this.famAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, LinkType.IndiParents)       : [],
+      indiSiblings:   filter.indiSiblings   ? this.indiIdsToFamAsSpouseNodes(indiSiblingsIds, parentNode, LinkType.IndiSiblings)     : [],
+      spouseParents:  filter.spouseParents  ? this.famAsSpouseIdsToNodes(spouseParentsFamsIds, parentNode, LinkType.SpouseParents)   : [],
+      spouseSiblings: filter.spouseSiblings ? this.indiIdsToFamAsSpouseNodes(spouseSiblingsIds, parentNode, LinkType.SpouseSiblings) : [],
+      children:       filter.children       ? this.indiIdsToFamAsSpouseNodes(childrenIds, parentNode, LinkType.Children)             : []
     });
   }
 
   private childNodesForIndi(indi: Indi, parentNode: TreeNode, filter: HierarchyFilter): ChildNodes {
     const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(indi);
     return new ChildNodes({
-      indiParents:    filter.indiParents  ? this.famsAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, LinkType.IndiParents)   : [],
-      indiSiblings:   filter.indiSiblings ? this.indiIdsToFamsAsSpouseNodes(indiSiblingsIds, parentNode, LinkType.IndiSiblings) : []
+      indiParents:    filter.indiParents  ? this.famAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, LinkType.IndiParents)   : [],
+      indiSiblings:   filter.indiSiblings ? this.indiIdsToFamAsSpouseNodes(indiSiblingsIds, parentNode, LinkType.IndiSiblings) : []
     });
   }
 
@@ -497,19 +497,19 @@ export class HierarchyCreator {
     return [parentFamsIds, siblingsIds]
   }
 
-  private indiIdsToFamsAsSpouseNodes(indiIds: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
-    return flatten(indiIds.map(id => this.indiIdToFamsAsSpouseNodes(id, parentNode, childNodeType)));
+  private indiIdsToFamAsSpouseNodes(indiIds: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
+    return flatten(indiIds.map(id => this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType)));
   }
 
-  private indiIdToFamsAsSpouseNodes(indiId: string, parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
+  private indiIdToFamAsSpouseNodes(indiId: string, parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
     if (this.isChildNodeTypeForbidden(childNodeType, parentNode)) return [];
-    const famss = this.data.getIndi(indiId).getFamiliesAsSpouse();
-    if (!famss.length) {
+    const famsIds = this.data.getIndi(indiId).getFamiliesAsSpouse();
+    if (!famsIds.length) {
       const node = this.idToNode(indiId, parentNode, childNodeType);
       return node ? [node] : [];
     }
 
-    const famssNodes: TreeNode[] = famss.map(id => {
+    const famsNodes: TreeNode[] = famsIds.map(id => {
       return {
         id: id,
         indi: {id: indiId},
@@ -520,15 +520,15 @@ export class HierarchyCreator {
         duplicateOf: this.queuedNodesById.get(id)
       };
     });
-    famssNodes.forEach((node, i) => {
-      if (i != 0) node.primaryMarriage = famssNodes[0];
+    famsNodes.forEach((node, i) => {
+      if (i != 0) node.primaryMarriage = famsNodes[0];
       if (node.duplicateOf) node.duplicateOf.duplicated = true;
       else this.queuedNodesById.set(node.id, node);
     });
-    return famssNodes;
+    return famsNodes;
   }
 
-  private famsAsSpouseIdsToNodes(ids: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
+  private famAsSpouseIdsToNodes(ids: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
     const nodes = this.idsToNodes(ids, parentNode, childNodeType);
     nodes.slice(1).forEach(node => node.primaryMarriage = nodes[0]);
     return nodes;
@@ -588,7 +588,21 @@ export class HierarchyCreator {
 
   private isChildNodeTypeForbidden(childNodeType: LinkType, parentNode: TreeNode): boolean {
     if (childNodeType === null || !parentNode) return false;
-    const type = otherSideLinkType(parentNode.linkFromParentType);
+
+    switch (otherSideLinkType(parentNode.linkFromParentType)) {
+      case LinkType.IndiParents:
+        if (childNodeType === LinkType.IndiParents ||
+            childNodeType === LinkType.IndiSiblings) return true;
+        break;
+      case LinkType.IndiSiblings:
+        if (childNodeType === LinkType.IndiSiblings ||
+            childNodeType === LinkType.IndiParents) return true;
+        break;
+      case LinkType.Children:
+        if (!parentNode.primaryMarriage &&
+            childNodeType === LinkType.Children) return true;
+        break;
+    }
 
     if (parentNode.primaryMarriage) {
       // Forbid indi/spouse from parentNode that is also indi/spouse in primaryMarriage from having parents and siblings, as they are already added to primaryMarriage node. This prevents drawing parents/siblings of a person for each marriage of this person.
@@ -602,16 +616,6 @@ export class HierarchyCreator {
             childNodeType == LinkType.SpouseSiblings) return true;
       }
     }
-
-    if (type === LinkType.IndiParents)
-      if (childNodeType === LinkType.IndiParents ||
-          childNodeType === LinkType.IndiSiblings) return true;
-    if (type === LinkType.IndiSiblings)
-      if (childNodeType === LinkType.IndiSiblings ||
-          childNodeType === LinkType.IndiParents) return true;
-    if (type === LinkType.Children)
-      if (!parentNode.primaryMarriage &&
-          childNodeType === LinkType.Children) return true;
     return false;
   }
 }
