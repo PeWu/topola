@@ -118,7 +118,7 @@ export class KinshipChartRenderer {
     const boundLinkNodes = svgg.selectAll("path.internode-link")
       .data(nodes.filter(n => !!n.parent), keyFn);
     boundLinkNodes.enter().insert("path" as string, "g")
-        .attr("class", node => node.data.primaryMarriage ? "link internode-link additional-marriage" : "link internode-link")
+        .attr("class", node => this.cssClassForLink(node))
       .merge(boundLinkNodes)
         .attr("d", node => {
           const linkPoints = node.data.primaryMarriage ? this.additionalMarriageLinkPoints(node) : this.linkPoints(node.parent, node, node.data.linkFromParentType);
@@ -138,7 +138,7 @@ export class KinshipChartRenderer {
       .data(node => this.nodeToLinkStubRenderInfos(node), (d: LinkStubRenderInfo) => d.linkType.toString());
     boundLinkStubs.enter().append("g")
         .call(g => g.append("path")
-            .attr("class", "link link-stub")
+            .attr("class", d => this.cssClassForLinkStub(d.linkType))
           .merge(boundLinkStubs.select("path.link-stub"))
             .attr("d", d => points2pathd(d.points))
         )
@@ -152,6 +152,25 @@ export class KinshipChartRenderer {
             )
         )
     boundLinkStubs.exit().remove();
+  }
+
+  private cssClassForLink(fromNode: d3.HierarchyPointNode<TreeNode>): string {
+    if (fromNode.data.primaryMarriage) return "link internode-link additional-marriage";
+    return "link internode-link " + this.cssClassForLinkType(fromNode.data.linkFromParentType);
+  }
+
+  private cssClassForLinkStub(linkType: LinkType): string {
+    return "link link-stub " + this.cssClassForLinkType(linkType);
+  }
+
+  private cssClassForLinkType(linkType: LinkType): string {
+    switch (linkType) {
+      case LinkType.IndiParents:
+      case LinkType.SpouseParents: return "parents-link";
+      case LinkType.IndiSiblings:
+      case LinkType.SpouseSiblings: return "siblings-link";
+      case LinkType.Children: return "children-link";
+    }
   }
 
   private nodeToLinkStubRenderInfos(node: d3.HierarchyPointNode<TreeNode>): LinkStubRenderInfo[] {
