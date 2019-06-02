@@ -3,11 +3,12 @@ import * as d3 from 'd3';
 import {
   Renderer,
   RendererOptions,
-  TreeIndi,
+  TreeEntry,
   TreeNode,
   TreeNodeSelection,
 } from './api';
 import { FamDetails, IndiDetails } from './data';
+import { CompositeRenderer } from './composite-renderer';
 
 const MIN_HEIGHT = 27;
 const MIN_WIDTH = 50;
@@ -48,8 +49,10 @@ function getYears(indi: IndiDetails) {
  * Simple rendering of an individual box showing only the person's name and
  * years of birth and death.
  */
-export class SimpleRenderer implements Renderer {
-  constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {}
+export class SimpleRenderer extends CompositeRenderer implements Renderer {
+  constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {
+    super(options);
+  }
 
   getPreferredIndiSize(id: string): [number, number] {
     const indi = this.options.data.getIndi(id);
@@ -61,11 +64,6 @@ export class SimpleRenderer implements Renderer {
     );
     const height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
     return [width, height];
-  }
-
-  getPreferredFamSize(id: string): [number, number] {
-    // No family box in the simple renderer.
-    return [0, 0];
   }
 
   render(enter: TreeNodeSelection, update: TreeNodeSelection): void {
@@ -109,7 +107,7 @@ export class SimpleRenderer implements Renderer {
 
   private renderIndi(
     selection: TreeNodeSelection,
-    indiFunc: (node: TreeNode) => TreeIndi
+    indiFunc: (node: TreeNode) => TreeEntry
   ): void {
     // Optionally add a link.
     const group = this.options.indiHrefFunc

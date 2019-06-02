@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
-import { IdGenerator } from './id-generator';
 
-/** Individual ID with dimensions. */
-export interface TreeIndi {
+/** Individual or family ID with dimensions. */
+export interface TreeEntry {
   id: string;
   width?: number;
   height?: number;
@@ -16,9 +15,9 @@ export interface TreeNode {
   // Parent in the tree structure sense, not neceserily in the family sense.
   parentId?: string;
 
-  indi?: TreeIndi;
-  spouse?: TreeIndi;
-  family?: { id: string; width?: number; height?: number };
+  indi?: TreeEntry;
+  spouse?: TreeEntry;
+  family?: TreeEntry;
 
   // Dimensions of the whole tree node for the purpose of laying out.
   width?: number;
@@ -76,10 +75,18 @@ export type TreeNodeSelection = d3.Selection<
 
 /** Interface for rendering data. */
 export interface Renderer {
-  getPreferredIndiSize(id: string): [number, number];
-  getPreferredFamSize(id: string): [number, number];
+  // Renders the node.
   render(enter: TreeNodeSelection, update: TreeNodeSelection): void;
+  // Returns CSS used as a string
   getCss(): string;
+  // Updates node dimensions.
+  updateNodes(nodes: Array<d3.HierarchyNode<TreeNode>>): void;
+  // Returns the family anchor point relative to the node's coordinates.
+  getFamilyAnchor(node: TreeNode): [number, number];
+  // Returns the individual anchor point relative to the node's coordinates.
+  getIndiAnchor(node: TreeNode): [number, number];
+  // Returns the spouse anchor point relative to the node's coordinates.
+  getSpouseAnchor(node: TreeNode): [number, number];
 }
 
 export interface IndiInfo {

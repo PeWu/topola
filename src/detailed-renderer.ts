@@ -3,13 +3,17 @@ import * as d3 from 'd3';
 import {
   Renderer,
   RendererOptions,
-  TreeIndi,
+  TreeEntry,
   TreeNode,
   TreeNodeSelection,
 } from './api';
-import { getFamPositionHorizontal, getFamPositionVertical } from './chart-util';
 import { FamDetails, IndiDetails } from './data';
 import { formatDate } from './date-format';
+import {
+  CompositeRenderer,
+  getFamPositionHorizontal,
+  getFamPositionVertical,
+} from './composite-renderer';
 
 const INDI_MIN_HEIGHT = 58;
 const INDI_MIN_WIDTH = 64;
@@ -55,7 +59,7 @@ interface DetailsLine {
 }
 
 interface OffsetIndi {
-  indi: TreeIndi;
+  indi: TreeEntry;
   generation: number;
   xOffset: number;
   yOffset: number;
@@ -65,8 +69,10 @@ interface OffsetIndi {
  * Renders some details about a person such as date and place of birth
  * and death.
  */
-export class DetailedRenderer implements Renderer {
-  constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {}
+export class DetailedRenderer extends CompositeRenderer implements Renderer {
+  constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {
+    super(options);
+  }
 
   /** Extracts lines of details for a person. */
   private getIndiDetails(indi: IndiDetails): DetailsLine[] {
