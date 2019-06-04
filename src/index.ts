@@ -1,6 +1,7 @@
 export * from './ancestor-chart';
 export * from './api';
 export * from './chart-util';
+export * from './composite-renderer';
 export * from './data';
 export * from './date-format';
 export * from './descendant-chart';

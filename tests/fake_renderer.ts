@@ -1,13 +1,24 @@
-import {Renderer, TreeNodeSelection} from '../src/api';
+import { Renderer, TreeNode, TreeNodeSelection } from '../src/api';
 
 export class FakeRenderer implements Renderer {
   constructor() {}
 
-  getPreferredIndiSize(id: string): [number, number] {
-    return [10, 10];
+  updateNodes(nodes: Array<d3.HierarchyNode<TreeNode>>) {
+    nodes.forEach(node => {
+      node.data.height = 10;
+      node.data.width = 10;
+    });
   }
 
-  getPreferredFamSize(id: string): [number, number] {
+  getFamilyAnchor(node: TreeNode): [number, number] {
+    return [0, 0];
+  }
+
+  getIndiAnchor(node: TreeNode): [number, number] {
+    return [0, 0];
+  }
+
+  getSpouseAnchor(node: TreeNode): [number, number] {
     return [0, 0];
   }
 
