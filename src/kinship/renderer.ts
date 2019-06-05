@@ -1,11 +1,10 @@
 import * as d3 from 'd3';
 import { ChartInfo, ChartOptions, TreeNode as BaseTreeNode} from '../api';
 import { TreeNode, LinkType, otherSideLinkType } from './api';
-import { ChartUtil } from '../chart-util';
+import { ChartUtil, getChartInfo } from '../chart-util';
 import { Direction, Vec2, last, points2pathd } from '../utils';
 
 
-const MARGIN = 15;
 const LINKS_BASE_OFFSET = 17;
 const PARENT_LINK_ANCHOR_X_OFFSET = 15;
 const SIBLING_LINK_ANCHOR_Y_OFFSET = 5;
@@ -47,17 +46,9 @@ export class KinshipChartRenderer {
     this.renderLinks(allNodes);
     if (rootsCount > 1) this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
 
-    const info = this.getChartInfo(allNodesDeduped);
+    const info = getChartInfo(allNodesDeduped);
     this.util.updateSvgDimensions(info);
     return info;
-  }
-
-  private getChartInfo(nodes: Array<d3.HierarchyPointNode<TreeNode>>): ChartInfo {
-    const minX = d3.min(nodes, n => n.x - n.data.width  / 2) - MARGIN;
-    const minY = d3.min(nodes, n => n.y - n.data.height / 2) - MARGIN;
-    const maxX = d3.max(nodes, n => n.x + n.data.width  / 2) + MARGIN;
-    const maxY = d3.max(nodes, n => n.y + n.data.height / 2) + MARGIN;
-    return {size: [maxX - minX, maxY - minY], origin: [-minX, -minY]};
   }
 
   private renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
