@@ -246,7 +246,7 @@ export class KinshipChartRenderer {
       case LinkType.SpouseParents:  return [{x: indisRightEdge - PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2}];
       case LinkType.IndiSiblings:   return [{x: indisLeftEdge,  y: siblingAnchorY}, {x: (familyW > indisW && !top ? leftEdge  : indisLeftEdge)  - SIBLING_LINK_STARTER_LENGTH, y: siblingAnchorY}];
       case LinkType.SpouseSiblings: return [{x: indisRightEdge, y: siblingAnchorY}, {x: (familyW > indisW && !top ? rightEdge : indisRightEdge) + SIBLING_LINK_STARTER_LENGTH, y: siblingAnchorY}];
-      case LinkType.Children:       return [{x: indisLeftEdge + indiW, y}];
+      case LinkType.Children:       return [{x: indisLeftEdge + (node.data.spouse ? indiW : indiW / 2), y}];
     }
   }
 
