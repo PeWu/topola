@@ -3,7 +3,7 @@ export interface Vec2 {x: number; y: number;}
 
 
 export function nonEmpty<T>(array: T[]): boolean {
-  return !(array == null || array.length === 0);
+  return !!(array && array.length);
 }
 
 export function last<T>(array: T[]): T {
