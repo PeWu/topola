@@ -45,7 +45,6 @@ export class HierarchyCreator {
   static readonly DOWN_FILTER = HierarchyFilter.allRejecting().modify({children: true});
   static readonly ALL_ACCEPTING_FILTER = HierarchyFilter.allAccepting();
 
-  readonly data: DataProvider<Indi, Fam>;
   readonly startId: string;
   readonly startFamIndi: string;
   readonly queuedNodesById = new Map<string, TreeNode>();
@@ -53,8 +52,7 @@ export class HierarchyCreator {
   private upRoot: d3.HierarchyNode<TreeNode> = undefined;
   private downRoot: d3.HierarchyNode<TreeNode> = undefined;
 
-  constructor(data: DataProvider<Indi, Fam>, startId: string) {
-    this.data = data;
+  constructor(readonly data: DataProvider<Indi, Fam>, startId: string) {
     [this.startId, this.startFamIndi] = this.expandStartId(startId);
   }
 
