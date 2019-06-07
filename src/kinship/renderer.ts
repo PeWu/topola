@@ -21,7 +21,7 @@ export class KinshipChartRenderer {
   }
 
   layOut(upRoot: d3.HierarchyNode<TreeNode>, downRoot: d3.HierarchyNode<TreeNode>): [Array<d3.HierarchyPointNode<TreeNode>>, Array<d3.HierarchyPointNode<TreeNode>>] {
-    const svg = this.getSvgForRendering();
+    const svg = this.util.getSvgForRendering();
     // Add styles so that calculating text size is correct.
     if (svg.select('style').empty()) {
       svg.append('style').text(this.options.renderer.getCss());
@@ -42,7 +42,7 @@ export class KinshipChartRenderer {
     downNodes.forEach(node => this.setLinkYs(node, false));
 
     // Render chart
-    this.util.renderNodes(allNodesDeduped);
+    this.util.renderNodes(allNodesDeduped, this.util.getSvgForRendering());
     this.renderLinks(allNodes);
     if (rootsCount > 1) this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
 
@@ -52,7 +52,7 @@ export class KinshipChartRenderer {
   }
 
   private renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const svgg = this.getSvgForRendering().select("g");
+    const svgg = this.util.getSvgForRendering().select("g");
     const keyFn = (d: d3.HierarchyPointNode<TreeNode>) => d.data.id;
 
     // Render links
@@ -246,7 +246,7 @@ export class KinshipChartRenderer {
   }
 
   private renderRootDummyAdditionalMarriageLinkStub(root: d3.HierarchyPointNode<BaseTreeNode>) {
-    const svgg = this.getSvgForRendering().select("g");
+    const svgg = this.util.getSvgForRendering().select("g");
     const y = this.indiMidY(root);
     const x = root.data.width/2 + 20;
     const r = 3;
@@ -265,12 +265,6 @@ export class KinshipChartRenderer {
               .style("stroke", "black")
               .style("fill", "black")
         );
-  }
-
-  private getSvgForRendering(): d3.Selection<d3.BaseType, {}, d3.BaseType, {}> {
-    const svg = d3.select(this.options.svgSelector);
-    if (svg.select("g").empty()) svg.append("g");
-    return svg;
   }
 }
 

@@ -3,6 +3,8 @@ import { flextree } from 'd3-flextree';
 
 import { ChartInfo, ChartOptions, TreeNode } from './api';
 
+type SVGSelection = d3.Selection<d3.BaseType, {}, d3.BaseType, {}>;
+
 /** Horizontal distance between boxes. */
 export const H_SPACING = 15;
 /** Vertical distance between boxes. */
@@ -194,13 +196,12 @@ export class ChartUtil {
   }
 
   renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    this.renderNodes(nodes);
-    this.renderLinks(nodes);
+    const svg = this.getSvgForRendering();
+    this.renderNodes(nodes, svg);
+    this.renderLinks(nodes, svg);
   }
 
-  renderNodes(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const svg = this.getSvgForRendering();
-
+  renderNodes(nodes: Array<d3.HierarchyPointNode<TreeNode>>, svg: SVGSelection) {
     const boundNodes = svg
       .select('g')
       .selectAll('g.node')
@@ -249,9 +250,7 @@ export class ChartUtil {
     }
   }
 
-  renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const svg = this.getSvgForRendering();
-
+  renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>, svg: SVGSelection) {
     const link = (
       parent: d3.HierarchyPointNode<TreeNode>,
       child: d3.HierarchyPointNode<TreeNode>
@@ -313,7 +312,7 @@ export class ChartUtil {
     }
   }
 
-  private getSvgForRendering(): d3.Selection<d3.BaseType, {}, d3.BaseType, {}> {
+  getSvgForRendering(): SVGSelection {
     const svg = d3.select(this.options.svgSelector);
     if (svg.select('g').empty()) svg.append('g');
     return svg;
