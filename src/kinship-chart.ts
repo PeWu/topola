@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { Chart, ChartInfo, ChartOptions, DataProvider, Indi, Fam } from './api';
 import { TreeNode } from './kinship/api';
-import { HierarchyCreator } from './kinship/hierarchy-creator';
+import { HierarchyCreator, EntryId } from './kinship/hierarchy-creator';
 import { KinshipChartRenderer } from './kinship/renderer';
 
 
@@ -15,7 +15,7 @@ export class KinshipChart implements Chart {
   }
 
   render(): ChartInfo {
-    const hierarchyCreator = new HierarchyCreator(this.data, this.options.startIndi || this.options.startFam);
+    const hierarchyCreator = new HierarchyCreator(this.data, new EntryId(this.options.startIndi, this.options.startFam));
     const [upNodes, downNodes] = this.renderer.layOut(hierarchyCreator.getUpRoot(), hierarchyCreator.getDownRoot());
 
     upNodes.concat(downNodes).forEach(node => {
