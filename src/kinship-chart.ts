@@ -3,7 +3,7 @@ import { Chart, ChartInfo, ChartOptions, DataProvider, Indi, Fam } from './api';
 import { TreeNode } from './kinship/api';
 import { HierarchyCreator, EntryId } from './kinship/hierarchy-creator';
 import { KinshipChartRenderer } from './kinship/renderer';
-import { deepFreeze } from './utils'
+import { deepFreeze } from './utils';
 
 
 export class KinshipChart implements Chart {

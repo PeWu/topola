@@ -41,21 +41,21 @@ export interface TreeNode extends BaseTreeNode {
   parentNode: TreeNode;
   childNodes: ChildNodes;
 
-  /** List of link types for which link stub should be rendered **/
+  /** List of link types for which link stub should be rendered */
   linkStubs: LinkType[];
 
-  /** Type of link from parent node to this node, from the perspective of a parent node **/
+  /** Type of link from parent node to this node, from the perspective of a parent node */
   linkFromParentType?: LinkType;
 
-  /** Primary marriage fam node, for fam nodes that are additional marriages **/
+  /** Primary marriage fam node, for fam nodes that are additional marriages */
   primaryMarriage?: TreeNode;
 
-  /** Node, that this node is duplicate of **/
+  /** Node, that this node is duplicate of */
   duplicateOf?: TreeNode;
-  /** If true, then there exist one or more nodes, that are duplicates of this node **/
+  /** If true, then there exist one or more nodes, that are duplicates of this node */
   duplicated?: boolean;
 
-  /** Y coordinates for different types of outgoing links **/
+  /** Y coordinates for different types of outgoing links */
   linkYs?: {indi: number, spouse: number, children: number};
 }
 
