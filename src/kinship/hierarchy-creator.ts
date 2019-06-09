@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { DataProvider, Indi, Fam } from '../api';
 import { ChildNodes, TreeNode, LinkType, otherSideLinkType } from './api';
 import { IdGenerator } from '../id-generator';
-import { nonEmpty, flatten } from '../utils';
+import { nonEmpty } from '../utils';
 
 
 export class HierarchyFilter {
@@ -198,7 +198,7 @@ export class HierarchyCreator {
   }
 
   private indiIdsToFamAsSpouseNodes(indiIds: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
-    return flatten(indiIds.map(id => this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType)));
+    return indiIds.flatMap(id => this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType));
   }
 
   private indiIdToFamAsSpouseNodes(indiId: string, parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {

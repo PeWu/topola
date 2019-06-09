@@ -10,10 +10,6 @@ export function last<T>(array: T[]): T {
   return array[array.length - 1];
 }
 
-export function flatten<T>(arrays: T[][]): T[] {
-  return [].concat.apply([], arrays);
-}
-
 export function zip<A, B>(a: A[], b: B[]): Array<[A, B]> {
   return a.map((e, i) => [e, b[i]] as [A, B]);
 }

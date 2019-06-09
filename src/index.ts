@@ -1,3 +1,4 @@
+import 'array-flat-polyfill';
 export * from './ancestor-chart';
 export * from './api';
 export * from './chart-util';
