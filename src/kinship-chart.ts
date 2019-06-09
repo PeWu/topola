@@ -3,7 +3,6 @@ import { Chart, ChartInfo, ChartOptions, DataProvider, Indi, Fam } from './api';
 import { TreeNode } from './kinship/api';
 import { HierarchyCreator, EntryId } from './kinship/hierarchy-creator';
 import { KinshipChartRenderer } from './kinship/renderer';
-import { deepFreeze } from './utils';
 
 
 export class KinshipChart implements Chart {
@@ -60,10 +59,10 @@ interface HierarchyTreeNodes {
   spouseSiblings: Array<d3.HierarchyNode<TreeNode>>;
   children: Array<d3.HierarchyNode<TreeNode>>;
 }
-const EMPTY_HIERARCHY_TREE_NODES: HierarchyTreeNodes = deepFreeze({
+const EMPTY_HIERARCHY_TREE_NODES: HierarchyTreeNodes = {
   indiParents: [],
   indiSiblings: [],
   spouseParents: [],
   spouseSiblings: [],
   children: [],
-});
+};

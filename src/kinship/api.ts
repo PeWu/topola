@@ -1,9 +1,8 @@
 import { TreeNode as BaseTreeNode } from '../api';
-import { deepFreeze } from '../utils';
 
 
 export class ChildNodes {
-  static readonly EMPTY = deepFreeze(new ChildNodes());
+  static readonly EMPTY = new ChildNodes();
 
   indiParents: TreeNode[] = [];
   indiSiblings: TreeNode[] = [];

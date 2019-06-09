@@ -18,11 +18,6 @@ export function zip<A, B>(a: A[], b: B[]): Array<[A, B]> {
   return a.map((e, i) => [e, b[i]] as [A, B]);
 }
 
-export function deepFreeze(obj: any) {
-  Object.getOwnPropertyNames(obj).forEach(prop => deepFreeze(obj[prop]));
-  return Object.freeze(obj);
-}
-
 export function points2pathd(points: Vec2[]): string {
   let result = `M ${points[0].x} ${points[0].y} L`;
   for (const s of points.slice(1)) {
