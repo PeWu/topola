@@ -10,7 +10,7 @@ export class ChildNodes {
   spouseSiblings: TreeNode[] = [];
   children: TreeNode[] = [];
 
-  constructor(overrides: any = {}) {
+  constructor(overrides: ChildNodesOverrides = {}) {
     Object.assign(this, overrides);
   }
 
@@ -33,6 +33,14 @@ export class ChildNodes {
       this.spouseSiblings
     );
   }
+}
+
+interface ChildNodesOverrides {
+  indiParents?: TreeNode[];
+  indiSiblings?: TreeNode[];
+  spouseParents?: TreeNode[];
+  spouseSiblings?: TreeNode[];
+  children?: TreeNode[];
 }
 
 

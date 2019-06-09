@@ -26,14 +26,22 @@ export class HierarchyFilter {
     });
   }
 
-  constructor(overrides: any = {}) {
+  constructor(overrides: HierarchyFilterOverrides = {}) {
     this.modify(overrides);
   }
 
-  modify(overrides: any): HierarchyFilter {
+  modify(overrides: HierarchyFilterOverrides): HierarchyFilter {
     Object.assign(this, overrides);
     return this;
   }
+}
+
+interface HierarchyFilterOverrides {
+  indiParents?: boolean;
+  indiSiblings?: boolean;
+  spouseParents?: boolean;
+  spouseSiblings?: boolean;
+  children?: boolean;
 }
 
 
