@@ -8,7 +8,7 @@ export class IdGenerator {
    */
   getId(id: string): string {
     if (this.ids.has(id)) {
-      const num = this.ids.get(id);
+      const num = this.ids.get(id)!;
       this.ids.set(id, num + 1);
       return `${id}:${num}`;
     }

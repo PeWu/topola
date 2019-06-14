@@ -10,7 +10,7 @@ import {
 } from './data';
 
 /** Returns the first entry with the given tag or undefined if not found. */
-function findTag(tree: GedcomEntry[], tag: string): GedcomEntry {
+function findTag(tree: GedcomEntry[], tag: string): GedcomEntry | undefined {
   return tree.find(entry => entry.tag === tag);
 }
 
@@ -114,7 +114,7 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
  */
-function createEvent(entry: GedcomEntry): JsonEvent | undefined {
+function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
   if (!entry) {
     return undefined;
   }

@@ -102,7 +102,7 @@ class JsonIndiDetails implements IndiDetails {
     return (this.json.death && this.json.death.place) || null;
   }
   isConfirmedDeath() {
-    return this.json.death && this.json.death.confirmed;
+    return !!this.json.death && !!this.json.death.confirmed;
   }
   getSex() {
     return this.json.sex || null;
@@ -128,7 +128,7 @@ class JsonFamDetails implements FamDetails {
     return this.json.children || [];
   }
   getMarriageDate() {
-    return this.json.marriage;
+    return this.json.marriage || null;
   }
   getMarriagePlace() {
     return (this.json.marriage && this.json.marriage.place) || null;

@@ -31,13 +31,13 @@ function removeDummyNode(allNodes: Array<d3.HierarchyPointNode<TreeNode>>) {
     }
     node.x += dx;
     node.y += dy;
-    node.data.generation--;
+    node.data.generation!--;
   });
   return nodes;
 }
 
 /** Returns the spouse of the given individual in the given family. */
-function getSpouse(indiId: string, fam: Fam): string {
+function getSpouse(indiId: string, fam: Fam): string | null {
   if (fam.getFather() === indiId) {
     return fam.getMother();
   }
@@ -54,7 +54,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
   }
 
   private getNodes(id: string): TreeNode[] {
-    const indi = this.options.data.getIndi(id);
+    const indi = this.options.data.getIndi(id)!;
     const famIds = indi.getFamiliesAsSpouse();
     if (!famIds.length) {
       // Single person.
@@ -78,7 +78,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
           id: famId,
         },
       };
-      const fam = this.options.data.getFam(famId);
+      const fam = this.options.data.getFam(famId)!;
       const spouse = getSpouse(id, fam);
       if (spouse) {
         entry.spouse = { id: spouse };
@@ -93,7 +93,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
 
   private getFamNode(famId: string): TreeNode {
     const node: TreeNode = { id: famId, family: { id: famId } };
-    const fam = this.options.data.getFam(famId);
+    const fam = this.options.data.getFam(famId)!;
     const father = fam.getFather();
     if (father) {
       node.indi = { id: father };
@@ -111,7 +111,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
 
     const nodes = this.options.startIndi
       ? this.getNodes(this.options.startIndi)
-      : [this.getFamNode(this.options.startFam)];
+      : [this.getFamNode(this.options.startFam!)];
 
     const idGenerator = this.options.idGenerator || new IdGenerator();
     nodes.forEach(node => (node.id = idGenerator.getId(node.id)));
@@ -138,8 +138,8 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       }
     });
     while (stack.length) {
-      const entry = stack.pop();
-      const fam = this.options.data.getFam(entry.family.id);
+      const entry = stack.pop()!;
+      const fam = this.options.data.getFam(entry.family!.id)!;
       const children = fam.getChildren();
       children.forEach(childId => {
         const childNodes = this.getNodes(childId);

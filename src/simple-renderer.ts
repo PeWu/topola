@@ -55,7 +55,7 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
   }
 
   getPreferredIndiSize(id: string): [number, number] {
-    const indi = this.options.data.getIndi(id);
+    const indi = this.options.data.getIndi(id)!;
     const years = getYears(indi);
     const width = Math.max(
       getLength(getName(indi)) + 8,
@@ -71,12 +71,12 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
       .merge(update)
       .append('g')
       .attr('class', 'simple');
-    this.renderIndi(selection, node => node.indi);
+    this.renderIndi(selection, node => node.indi!);
     const spouseSelection = selection
       .filter(node => !!node.data.spouse)
       .append('g')
-      .attr('transform', node => `translate(0, ${node.data.indi.height})`);
-    this.renderIndi(spouseSelection, node => node.spouse);
+      .attr('transform', node => `translate(0, ${node.data.indi!.height})`);
+    this.renderIndi(spouseSelection, node => node.spouse!);
   }
 
   getCss() {
@@ -114,15 +114,15 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
       ? selection
           .append('a')
           .attr('href', node =>
-            this.options.indiHrefFunc(indiFunc(node.data).id)
+            this.options.indiHrefFunc!(indiFunc(node.data).id)
           )
       : selection;
 
     // Box.
     group
       .append('rect')
-      .attr('width', node => indiFunc(node.data).width)
-      .attr('height', node => indiFunc(node.data).height);
+      .attr('width', node => indiFunc(node.data).width!)
+      .attr('height', node => indiFunc(node.data).height!);
 
     // Text.
     group
@@ -131,19 +131,21 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'name')
       .attr(
         'transform',
-        node => `translate(${indiFunc(node.data).width / 2}, 17)`
+        node => `translate(${indiFunc(node.data).width! / 2}, 17)`
       )
-      .text(node => getName(this.options.data.getIndi(indiFunc(node.data).id)));
+      .text(node =>
+        getName(this.options.data.getIndi(indiFunc(node.data).id)!)
+      );
     group
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('class', 'details')
       .attr(
         'transform',
-        node => `translate(${indiFunc(node.data).width / 2}, 33)`
+        node => `translate(${indiFunc(node.data).width! / 2}, 33)`
       )
       .text(node =>
-        getYears(this.options.data.getIndi(indiFunc(node.data).id))
+        getYears(this.options.data.getIndi(indiFunc(node.data).id)!)
       );
   }
 }

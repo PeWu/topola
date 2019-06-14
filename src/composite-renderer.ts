@@ -34,9 +34,9 @@ export abstract class CompositeRenderer {
 
       const depth = node.depth;
       const maxIndiVSize = d3.max([
-        getIndiVSize(node.data, this.options.horizontal),
-        indiVSizePerDepth.get(depth),
-      ]);
+        getIndiVSize(node.data, !!this.options.horizontal),
+        indiVSizePerDepth.get(depth)!,
+      ])!;
       indiVSizePerDepth.set(depth, maxIndiVSize);
     });
 
@@ -57,8 +57,8 @@ export abstract class CompositeRenderer {
           node.data.spouse.height = indiVSizePerDepth.get(node.depth);
         }
       }
-      const vSize = getVSize(node.data, this.options.horizontal);
-      const hSize = getHSize(node.data, this.options.horizontal);
+      const vSize = getVSize(node.data, !!this.options.horizontal);
+      const hSize = getHSize(node.data, !!this.options.horizontal);
       [node.data.width, node.data.height] = this.options.horizontal
         ? [vSize, hSize]
         : [hSize, vSize];
@@ -68,12 +68,12 @@ export abstract class CompositeRenderer {
   getFamilyAnchor(node: TreeNode): [number, number] {
     if (this.options.horizontal) {
       const x =
-        -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+        -node.width! / 2 + getIndiVSize(node, this.options.horizontal) / 2;
       const famYOffset = node.family
-        ? d3.max([-getFamPositionHorizontal(node), 0])
+        ? d3.max([-getFamPositionHorizontal(node), 0])!
         : 0;
       const y =
-        -(node.indi && node.spouse ? node.height / 2 - node.indi.height : 0) +
+        -(node.indi && node.spouse ? node.height! / 2 - node.indi.height! : 0) +
         famYOffset;
       return [x, y];
     }
@@ -81,36 +81,36 @@ export abstract class CompositeRenderer {
       ? d3.max([-getFamPositionVertical(node), 0])
       : 0;
     const x =
-      -(node.indi && node.spouse ? node.width / 2 - node.indi.width : 0) +
-      famXOffset;
+      -(node.indi && node.spouse ? node.width! / 2 - node.indi.width! : 0) +
+      famXOffset!;
     const y =
-      -node.height / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+      -node.height! / 2 + getIndiVSize(node, this.options.horizontal!) / 2;
     return [x, y];
   }
 
   getSpouseAnchor(node: TreeNode): [number, number] {
     if (this.options.horizontal) {
       const x =
-        -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
-      const y = node.indi ? node.indi.height / 2 : 0;
+        -node.width! / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+      const y = node.indi ? node.indi.height! / 2 : 0;
       return [x, y];
     }
-    const x = node.indi ? node.indi.width / 2 : 0;
+    const x = node.indi ? node.indi.width! / 2 : 0;
     const y =
-      -node.height / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+      -node.height! / 2 + getIndiVSize(node, !!this.options.horizontal) / 2;
     return [x, y];
   }
 
   getIndiAnchor(node: TreeNode): [number, number] {
     if (this.options.horizontal) {
       const x =
-        -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
-      const y = node.spouse ? -node.spouse.height / 2 : 0;
+        -node.width! / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+      const y = node.spouse ? -node.spouse.height! / 2 : 0;
       return [x, y];
     }
-    const x = node.spouse ? -node.spouse.width / 2 : 0;
+    const x = node.spouse ? -node.spouse.width! / 2 : 0;
     const y =
-      -node.height / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+      -node.height! / 2 + getIndiVSize(node, !!this.options.horizontal) / 2;
     return [x, y];
   }
 }
@@ -119,9 +119,9 @@ export abstract class CompositeRenderer {
  * Returns the relative position of the family box for the vertical layout.
  */
 export function getFamPositionVertical(node: TreeNode): number {
-  const indiWidth = node.indi ? node.indi.width : 0;
-  const spouseWidth = node.spouse ? node.spouse.width : 0;
-  const familyWidth = node.family.width;
+  const indiWidth = node.indi ? node.indi.width! : 0;
+  const spouseWidth = node.spouse ? node.spouse.width! : 0;
+  const familyWidth = node.family!.width!;
   if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
     return (indiWidth + spouseWidth - familyWidth) / 2;
   }
@@ -138,9 +138,9 @@ export function getFamPositionVertical(node: TreeNode): number {
  * Returns the relative position of the family box for the horizontal layout.
  */
 export function getFamPositionHorizontal(node: TreeNode): number {
-  const indiHeight = node.indi ? node.indi.height : 0;
-  const spouseHeight = node.spouse ? node.spouse.height : 0;
-  const familyHeight = node.family.height;
+  const indiHeight = node.indi ? node.indi.height! : 0;
+  const spouseHeight = node.spouse ? node.spouse.height! : 0;
+  const familyHeight = node.family!.height!;
   if (!node.indi || !node.spouse) {
     return (indiHeight + spouseHeight - familyHeight) / 2;
   }
@@ -151,36 +151,34 @@ export function getFamPositionHorizontal(node: TreeNode): number {
 function getHSize(node: TreeNode, horizontal: boolean): number {
   if (horizontal) {
     return (
-      (node.indi ? node.indi.height : 0) +
-      (node.spouse ? node.spouse.height : 0)
+      (node.indi ? node.indi.height! : 0) +
+      (node.spouse ? node.spouse.height! : 0)
     );
   }
   const indiHSize =
-    (node.indi ? node.indi.width : 0) + (node.spouse ? node.spouse.width : 0);
-  return d3.max([indiHSize, node.family && node.family.width]);
+    (node.indi ? node.indi.width! : 0) + (node.spouse ? node.spouse.width! : 0);
+  return d3.max([indiHSize, node.family ? node.family.width! : 0])!;
 }
 
 function getFamVSize(node: TreeNode, horizontal: boolean): number {
   if (horizontal) {
-    return node.family ? node.family.width : 0;
+    return node.family ? node.family.width! : 0;
   }
-  return node.family ? node.family.height : 0;
+  return node.family ? node.family.height! : 0;
 }
 
 /** Returns the vertical size of individual boxes. */
 function getIndiVSize(node: TreeNode, horizontal: boolean): number {
   if (horizontal) {
     return d3.max([
-      node.indi && node.indi.width,
-      node.spouse && node.spouse.width,
-      0,
-    ]);
+      node.indi ? node.indi.width! : 0,
+      node.spouse ? node.spouse.width! : 0,
+    ])!;
   }
   return d3.max([
-    node.indi && node.indi.height,
-    node.spouse && node.spouse.height,
-    0,
-  ]);
+    node.indi ? node.indi.height! : 0,
+    node.spouse ? node.spouse.height! : 0,
+  ])!;
 }
 
 /** Returns the vertical size. */

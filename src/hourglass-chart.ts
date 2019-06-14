@@ -16,7 +16,7 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam>
   }
 
   getFamilies(indiId: string) {
-    return this.options.data.getIndi(indiId).getFamiliesAsSpouse();
+    return this.options.data.getIndi(indiId)!.getFamiliesAsSpouse();
   }
 
   render(): ChartInfo {

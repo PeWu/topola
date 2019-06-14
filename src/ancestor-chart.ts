@@ -8,7 +8,7 @@ export function getAncestorsTree(options: ChartOptions) {
   const ancestorChartOptions = { ...options };
 
   const startIndiFamilies = options.startIndi
-    ? options.data.getIndi(options.startIndi).getFamiliesAsSpouse()
+    ? options.data.getIndi(options.startIndi)!.getFamiliesAsSpouse()
     : [];
   // If the start individual is set and this person has at least one spouse,
   // start with the family instead.
@@ -16,7 +16,7 @@ export function getAncestorsTree(options: ChartOptions) {
     ancestorChartOptions.startFam = startIndiFamilies[0];
     ancestorChartOptions.startIndi = undefined;
 
-    const fam = options.data.getFam(startIndiFamilies[0]);
+    const fam = options.data.getFam(startIndiFamilies[0])!;
     if (fam.getMother() === options.startIndi) {
       ancestorChartOptions.swapStartSpouses = true;
     }
@@ -52,7 +52,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
     const stack: TreeNode[] = [];
     const idGenerator = this.options.idGenerator || new IdGenerator();
     if (this.options.startIndi) {
-      const indi = this.options.data.getIndi(this.options.startIndi);
+      const indi = this.options.data.getIndi(this.options.startIndi)!;
       const famc = indi.getFamilyAsChild();
       const id = famc ? idGenerator.getId(famc) : undefined;
       if (famc) {
@@ -69,19 +69,19 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       });
     } else {
       stack.push({
-        id: idGenerator.getId(this.options.startFam),
-        family: { id: this.options.startFam },
+        id: idGenerator.getId(this.options.startFam!),
+        family: { id: this.options.startFam! },
       });
     }
 
     while (stack.length) {
-      const entry = stack.pop();
-      const fam = this.options.data.getFam(entry.family.id);
+      const entry = stack.pop()!;
+      const fam = this.options.data.getFam(entry.family!.id);
       if (!fam) {
         continue;
       }
       const [father, mother] =
-        entry.family.id === this.options.startFam &&
+        entry.family!.id === this.options.startFam &&
         this.options.swapStartSpouses
           ? [fam.getMother(), fam.getFather()]
           : [fam.getFather(), fam.getMother()];
@@ -90,7 +90,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       }
       if (mother) {
         entry.spouse = { id: mother };
-        const indi = this.options.data.getIndi(mother);
+        const indi = this.options.data.getIndi(mother)!;
         const famc = indi.getFamilyAsChild();
         if (famc) {
           const id = idGenerator.getId(famc);
@@ -104,7 +104,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       }
       if (father) {
         entry.indi = { id: father };
-        const indi = this.options.data.getIndi(father);
+        const indi = this.options.data.getIndi(father)!;
         const famc = indi.getFamilyAsChild();
         if (famc) {
           const id = idGenerator.getId(famc);
