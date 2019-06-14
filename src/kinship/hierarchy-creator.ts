@@ -118,7 +118,7 @@ export class HierarchyCreator {
 
   private areParentsAndSiblingsPresent(indiId: string): [boolean, boolean] {
     const indi = this.data.getIndi(indiId);
-    const famc = this.data.getFam(indi ? indi.getFamilyAsChild() : null);
+    const famc = this.data.getFam(indi && indi.getFamilyAsChild());
     if (!famc) return [false, false];
     return [
       !!(famc.getFather() || famc.getMother()),
@@ -192,7 +192,7 @@ export class HierarchyCreator {
     const { id, isFam } = entryId;
     if (isFam) {
       const fam = this.data.getFam(id);
-      if (!fam || !fam.getFather() && !fam.getMother()) return null;  // Don't create fam nodes that are missing both husband and wife
+      if (!fam || (!fam.getFather() && !fam.getMother())) return null;  // Don't create fam nodes that are missing both husband and wife
     }
     const duplicateOf = this.queuedNodesById.get(id);
     const node: TreeNode = {
@@ -243,12 +243,9 @@ export class HierarchyCreator {
 
     switch (otherSideLinkType(parentNode.linkFromParentType)) {
       case LinkType.IndiParents:
+      case LinkType.IndiSiblings:
         if (childNodeType === LinkType.IndiParents ||
             childNodeType === LinkType.IndiSiblings) return true;
-        break;
-      case LinkType.IndiSiblings:
-        if (childNodeType === LinkType.IndiSiblings ||
-            childNodeType === LinkType.IndiParents) return true;
         break;
       case LinkType.Children:
         if (!parentNode.primaryMarriage &&
@@ -258,8 +255,12 @@ export class HierarchyCreator {
 
     if (parentNode.primaryMarriage) {
       // Forbid indi/spouse from parentNode that is also indi/spouse in primaryMarriage from having parents and siblings, as they are already added to primaryMarriage node. This prevents drawing parents/siblings of a person for each marriage of this person.
-      const [indiId, spouseId] = [parentNode.indi.id, parentNode.spouse.id];
-      const [pmIndiId, pmSpouseId] = [parentNode.primaryMarriage.indi.id, parentNode.primaryMarriage.spouse.id];
+      const indiId = parentNode.indi.id;
+      const spouseId = parentNode.spouse.id;
+
+      const pmIndiId = parentNode.primaryMarriage.indi.id;
+      const pmSpouseId = parentNode.primaryMarriage.spouse.id;
+
       if (indiId === pmIndiId || indiId === pmSpouseId) {
         if (childNodeType === LinkType.IndiParents ||
             childNodeType === LinkType.IndiSiblings) return true;

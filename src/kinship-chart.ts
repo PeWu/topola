@@ -25,14 +25,14 @@ export class KinshipChart implements Chart {
 
   private setChildNodesGenerationNumber(node: d3.HierarchyNode<TreeNode>) {
     const childNodes = this.getChildNodesByType(node);
-    const setGenerationNumber = (childNode: d3.HierarchyNode<TreeNode>, value: number) =>
-      childNode.data.generation = node.data.generation + value;
+    const setGenerationNumber = (childNodes: d3.HierarchyNode<TreeNode>[], value: number) =>
+      childNodes.forEach(n => n.data.generation = node.data.generation + value);
 
-    childNodes.indiParents.forEach(n =>    setGenerationNumber(n, -1));
-    childNodes.indiSiblings.forEach(n =>   setGenerationNumber(n,  0));
-    childNodes.spouseParents.forEach(n =>  setGenerationNumber(n, -1));
-    childNodes.spouseSiblings.forEach(n => setGenerationNumber(n,  0));
-    childNodes.children.forEach(n =>       setGenerationNumber(n,  1));
+    setGenerationNumber(childNodes.indiParents, -1);
+    setGenerationNumber(childNodes.indiSiblings, 0);
+    setGenerationNumber(childNodes.spouseParents, -1);
+    setGenerationNumber(childNodes.spouseSiblings, 0);
+    setGenerationNumber(childNodes.children, 1);
   }
 
   private getChildNodesByType(node: d3.HierarchyNode<TreeNode>): HierarchyTreeNodes {
