@@ -1,48 +1,9 @@
 import * as d3 from 'd3';
 import { DataProvider, Indi, Fam } from '../api';
 import { ChildNodes, TreeNode, LinkType, otherSideLinkType } from './api';
+import { HierarchyFilter } from './hierarchy-filter';
 import { IdGenerator } from '../id-generator';
 import { nonEmpty } from '../utils';
-
-
-export class HierarchyFilter {
-  indiParents = true;
-  indiSiblings = true;
-  spouseParents = true;
-  spouseSiblings = true;
-  children = true;
-
-  static allAccepting(): HierarchyFilter {
-    return new HierarchyFilter();
-  }
-
-  static allRejecting(): HierarchyFilter {
-    return new HierarchyFilter().modify({
-      indiParents: false,
-      indiSiblings: false,
-      spouseParents: false,
-      spouseSiblings: false,
-      children: false,
-    });
-  }
-
-  constructor(overrides: HierarchyFilterOverrides = {}) {
-    this.modify(overrides);
-  }
-
-  modify(overrides: HierarchyFilterOverrides): HierarchyFilter {
-    Object.assign(this, overrides);
-    return this;
-  }
-}
-
-interface HierarchyFilterOverrides {
-  indiParents?: boolean;
-  indiSiblings?: boolean;
-  spouseParents?: boolean;
-  spouseSiblings?: boolean;
-  children?: boolean;
-}
 
 
 export class HierarchyCreator {
@@ -50,14 +11,16 @@ export class HierarchyCreator {
   static readonly DOWN_FILTER = HierarchyFilter.allRejecting().modify({children: true});
   static readonly ALL_ACCEPTING_FILTER = HierarchyFilter.allAccepting();
 
+  static createHierarchy(data: DataProvider<Indi, Fam>, startEntryId: EntryId): Hierarchy {
+    return new HierarchyCreator(data, startEntryId).createHierarchy();
+  }
+
   readonly startEntryId: EntryId;
   readonly startFamIndi: string;
   readonly queuedNodesById = new Map<string, TreeNode>();
   readonly idGenerator = new IdGenerator();
-  private upRoot: d3.HierarchyNode<TreeNode> = undefined;
-  private downRoot: d3.HierarchyNode<TreeNode> = undefined;
 
-  constructor(readonly data: DataProvider<Indi, Fam>, startEntryId: EntryId) {
+  private constructor(readonly data: DataProvider<Indi, Fam>, startEntryId: EntryId) {
     [this.startEntryId, this.startFamIndi] = this.expandStartId(startEntryId);
   }
 
@@ -71,25 +34,7 @@ export class HierarchyCreator {
     return [startEntryId, null];
   }
 
-  getUpRoot(): d3.HierarchyNode<TreeNode> {
-    if (this.upRoot === undefined) this.createHierarchy();
-    return this.upRoot;
-  }
-
-  getDownRoot(): d3.HierarchyNode<TreeNode> {
-    if (this.downRoot === undefined) this.createHierarchy();
-    return this.downRoot;
-  }
-
-  getRootsCount(): number {
-    const upRoot = this.getUpRoot();
-    const upIndi = upRoot.data.indi ? this.data.getIndi(upRoot.data.indi.id) : null;
-    const upSpouse = upRoot.data.spouse ? this.data.getIndi(upRoot.data.spouse.id) : null;
-    return (upIndi ? upIndi.getFamiliesAsSpouse().length : 0) +
-           (upSpouse ? upSpouse.getFamiliesAsSpouse().length - 1 : 0);
-  }
-
-  private createHierarchy() {
+  createHierarchy(): Hierarchy {
     const upRoot   = this.idToNode(this.startEntryId, null, null, false);
     const downRoot = this.idToNode(this.startEntryId, null, null, false);
     if (this.startFamIndi) {
@@ -119,8 +64,10 @@ export class HierarchyCreator {
       const childNodes = node.childNodes.getAll();
       return childNodes.length ? childNodes : null;
     };
-    this.upRoot   = d3.hierarchy(upRoot, getChildNodes);
-    this.downRoot = d3.hierarchy(downRoot, getChildNodes);
+    return {
+      upRoot: d3.hierarchy(upRoot, getChildNodes),
+      downRoot: d3.hierarchy(downRoot, getChildNodes),
+    };
   }
 
   private fillNodeData(node: TreeNode, filter: HierarchyFilter) {
@@ -330,6 +277,12 @@ export class HierarchyCreator {
 }
 
 
+export interface Hierarchy {
+  upRoot: d3.HierarchyNode<TreeNode>;
+  downRoot: d3.HierarchyNode<TreeNode>;
+}
+
+
 export class EntryId {
   id: string;
   isFam: boolean;
@@ -346,4 +299,12 @@ export class EntryId {
     this.id = indiId || famId;
     this.isFam = !!famId;
   }
+}
+
+
+export function getRootsCount(upRoot: d3.HierarchyNode<TreeNode>, data: DataProvider<Indi, Fam>): number {
+  const upIndi = upRoot.data.indi && data.getIndi(upRoot.data.indi.id);
+  const upSpouse = upRoot.data.spouse && data.getIndi(upRoot.data.spouse.id);
+  return (upIndi ? upIndi.getFamiliesAsSpouse().length : 0) +
+         (upSpouse ? upSpouse.getFamiliesAsSpouse().length - 1 : 0);
 }

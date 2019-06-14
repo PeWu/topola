@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { Chart, ChartInfo, ChartOptions, DataProvider, Indi, Fam } from './api';
 import { TreeNode } from './kinship/api';
-import { HierarchyCreator, EntryId } from './kinship/hierarchy-creator';
+import { HierarchyCreator, EntryId, getRootsCount } from './kinship/hierarchy-creator';
 import { KinshipChartRenderer } from './kinship/renderer';
 
 
@@ -13,14 +13,14 @@ export class KinshipChart implements Chart {
   }
 
   render(): ChartInfo {
-    const hierarchyCreator = new HierarchyCreator(this.options.data, new EntryId(this.options.startIndi, this.options.startFam));
-    const [upNodes, downNodes] = this.renderer.layOut(hierarchyCreator.getUpRoot(), hierarchyCreator.getDownRoot());
+    const hierarchy = HierarchyCreator.createHierarchy(this.options.data, new EntryId(this.options.startIndi, this.options.startFam));
+    const [upNodes, downNodes] = this.renderer.layOut(hierarchy.upRoot, hierarchy.downRoot);
 
     upNodes.concat(downNodes).forEach(node => {
       this.setChildNodesGenerationNumber(node);
     });
 
-    return this.renderer.render(upNodes, downNodes, hierarchyCreator.getRootsCount());
+    return this.renderer.render(upNodes, downNodes, getRootsCount(hierarchy.upRoot, this.options.data));
   }
 
   private setChildNodesGenerationNumber(node: d3.HierarchyNode<TreeNode>) {
