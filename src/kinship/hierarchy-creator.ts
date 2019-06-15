@@ -15,8 +15,8 @@ export class HierarchyCreator {
     return new HierarchyCreator(data, startEntryId).createHierarchy();
   }
 
-  readonly startEntryId: EntryId;
-  readonly startFamIndi: string;
+  readonly startEntryId: EntryId;  // Id of entry (indi or fam), which is root of the hierarchy
+  readonly startFamIndi: string;  // If startEntryId field is a fam id, then startFamIndi field can indicate which spouse in this family is the starting point of the hierarchy
   readonly queuedNodesById = new Map<string, TreeNode>();
   readonly idGenerator = new IdGenerator();
 
@@ -24,6 +24,7 @@ export class HierarchyCreator {
     [this.startEntryId, this.startFamIndi] = this.expandStartId(startEntryId);
   }
 
+  // Convert entry id to values of startEntryId and startFamIndi fields
   private expandStartId(startEntryId: EntryId): [EntryId, string] {
     if (!startEntryId) return [null, null];
     if (startEntryId.isFam) return [startEntryId, null];
@@ -284,6 +285,7 @@ export interface Hierarchy {
 }
 
 
+/* Id of indi or fam */
 export class EntryId {
   id: string;
   isFam: boolean;
