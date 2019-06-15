@@ -211,32 +211,22 @@ export class HierarchyCreator {
   }
 
   private createLinkStubs(node: TreeNode): LinkType[] {
-    if (!node.duplicateOf && !node.duplicated && !node.primaryMarriage) return [];
-    const linkTypes = [LinkType.IndiParents, LinkType.IndiSiblings, LinkType.SpouseParents, LinkType.SpouseSiblings, LinkType.Children];
-    let arePresent = new Array(linkTypes.length).fill(false);
+    if (!this.isFamNode(node) || (!node.duplicateOf && !node.duplicated && !node.primaryMarriage)) return [];
+    const fam = this.data.getFam(node.family.id);
+    const [areIndiParents, areIndiSiblings] = this.areParentsAndSiblingsPresent(node.indi && node.indi.id);
+    const [areSpouseParents, areSpouseSiblings] = this.areParentsAndSiblingsPresent(node.spouse && node.spouse.id);
+    const areChildren = nonEmpty(fam.getChildren());
 
-    if (this.isFamNode(node)) {
-      const fam = this.data.getFam(node.family.id);
-      if (fam) {
-        arePresent = [
-          ...this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null),
-          ...this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null),
-          nonEmpty(fam.getChildren()),
-        ];
-      }
-    } else {
-      arePresent.splice(0, 2, ...this.areParentsAndSiblingsPresent(node.indi.id));
-    }
-
-    arePresent = arePresent.map((isPresent, i) =>
-      isPresent &&
-      !this.isChildNodeTypeForbidden(linkTypes[i], node) &&
-      !node.childNodes.get(linkTypes[i]).length
+    return [
+      areIndiParents ? [LinkType.IndiParents] : [],
+      areIndiSiblings ? [LinkType.IndiSiblings] : [],
+      areSpouseParents ? [LinkType.SpouseParents] : [],
+      areSpouseSiblings ? [LinkType.SpouseSiblings] : [],
+      areChildren ? [LinkType.Children] : [],
+    ].flat().filter(linkType =>
+      !this.isChildNodeTypeForbidden(linkType, node) &&
+      !node.childNodes.get(linkType).length
     );
-
-    return arePresent.map((isPresent, i) =>
-      isPresent ? linkTypes[i] : null
-    ).filter(x => x != null);
   }
 
   private isChildNodeTypeForbidden(childNodeType: LinkType, parentNode: TreeNode): boolean {
