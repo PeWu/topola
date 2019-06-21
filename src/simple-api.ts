@@ -38,7 +38,7 @@ export interface RenderOptions {
 /** Options when initializing a chart. */
 export interface SimpleChartOptions {
   // Data to be rendered.
-  json?: JsonGedcomData;
+  json: JsonGedcomData;
   indiUrl?: string;
   famUrl?: string;
   indiCallback?: (id: IndiInfo) => void;
@@ -63,10 +63,10 @@ function createChartOptions(
 ): ChartOptions {
   const data = new JsonDataProvider(chartOptions.json);
   const indiHrefFunc = chartOptions.indiUrl
-    ? (id: string) => chartOptions.indiUrl.replace('${id}', id)
+    ? (id: string) => chartOptions.indiUrl!.replace('${id}', id)
     : undefined;
   const famHrefFunc = chartOptions.famUrl
-    ? (id: string) => chartOptions.famUrl.replace('${id}', id)
+    ? (id: string) => chartOptions.famUrl!.replace('${id}', id)
     : undefined;
 
   // If startIndi nor startFam is provided, select the first indi in the data.

@@ -39,14 +39,14 @@ function getShortMonth(month: number, locale?: string) {
 
 function getQualifier(qualifier: string, locale?: string) {
   const language = locale && locale.split(/[-_]/)[0];
-  const languageMap = QUALIFIERS_I18N.get(language);
+  const languageMap = language && QUALIFIERS_I18N.get(language);
   return languageMap ? languageMap.get(qualifier) : qualifier;
 }
 
 /** Simple date formatter. */
 export function formatDate(date: GedcomDate, locale?: string) {
   return [
-    getQualifier(date.qualifier, locale),
+    date.qualifier && getQualifier(date.qualifier, locale),
     date.day,
     date.month && getShortMonth(date.month, locale),
     date.year,

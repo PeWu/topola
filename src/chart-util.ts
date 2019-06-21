@@ -21,7 +21,7 @@ function linkId(node: d3.HierarchyPointNode<TreeNode>) {
     return `${node.id}:A`;
   }
   const [child, parent] =
-    node.data.generation > node.parent.data.generation
+    node.data.generation! > node.parent.data.generation!
       ? [node.data, node.parent.data]
       : [node.parent.data, node.data];
 
@@ -35,10 +35,10 @@ export function getChartInfo(
   nodes: Array<d3.HierarchyPointNode<TreeNode>>
 ): ChartInfo {
   // Calculate chart boundaries.
-  const x0 = d3.min(nodes.map(d => d.x - d.data.width / 2)) - MARGIN;
-  const y0 = d3.min(nodes.map(d => d.y - d.data.height / 2)) - MARGIN;
-  const x1 = d3.max(nodes.map(d => d.x + d.data.width / 2)) + MARGIN;
-  const y1 = d3.max(nodes.map(d => d.y + d.data.height / 2)) + MARGIN;
+  const x0 = d3.min(nodes.map(d => d.x - d.data.width! / 2))! - MARGIN;
+  const y0 = d3.min(nodes.map(d => d.y - d.data.height! / 2))! - MARGIN;
+  const x1 = d3.max(nodes.map(d => d.x + d.data.width! / 2))! + MARGIN;
+  const y1 = d3.max(nodes.map(d => d.y + d.data.height! / 2))! + MARGIN;
   return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 
@@ -46,10 +46,10 @@ export function getChartInfoWithoutMargin(
   nodes: Array<d3.HierarchyPointNode<TreeNode>>
 ): ChartInfo {
   // Calculate chart boundaries.
-  const x0 = d3.min(nodes.map(d => d.x - d.data.width / 2));
-  const y0 = d3.min(nodes.map(d => d.y - d.data.height / 2));
-  const x1 = d3.max(nodes.map(d => d.x + d.data.width / 2));
-  const y1 = d3.max(nodes.map(d => d.y + d.data.height / 2));
+  const x0 = d3.min(nodes.map(d => d.x - d.data.width! / 2))!;
+  const y0 = d3.min(nodes.map(d => d.y - d.data.height! / 2))!;
+  const x1 = d3.max(nodes.map(d => d.x + d.data.width! / 2))!;
+  const y1 = d3.max(nodes.map(d => d.y + d.data.height! / 2))!;
   return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 
@@ -69,7 +69,7 @@ export class ChartUtil {
         : this.options.renderer.getIndiAnchor(d.data);
     const [sx, sy] = [s.x + sAnchor[0], s.y + sAnchor[1]];
     const [dx, dy] = [d.x + dAnchor[0], d.y + dAnchor[1]];
-    const midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
+    const midX = (s.x + s.data.width! / 2 + d.x - d.data.width! / 2) / 2;
     return `M ${sx} ${sy}
             L ${midX} ${sy},
               ${midX} ${dy},
@@ -88,7 +88,7 @@ export class ChartUtil {
         : this.options.renderer.getIndiAnchor(d.data);
     const [sx, sy] = [s.x + sAnchor[0], s.y + sAnchor[1]];
     const [dx, dy] = [d.x + dAnchor[0], d.y + dAnchor[1]];
-    const midY = s.y + s.data.height / 2 + V_SPACING / 2;
+    const midY = s.y + s.data.height! / 2 + V_SPACING / 2;
     return `M ${sx} ${sy}
             L ${sx} ${midY},
               ${dx} ${midY},
@@ -96,9 +96,9 @@ export class ChartUtil {
   }
 
   private linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
-    const nodeIndex = node.parent.children.findIndex(n => n.data.id === node.data.id);
+    const nodeIndex = node.parent!.children!.findIndex(n => n.data.id === node.data.id);
     // Assert nodeIndex > 0.
-    const siblingNode = node.parent.children[nodeIndex - 1];
+    const siblingNode = node.parent!.children![nodeIndex - 1];
     const sAnchor = this.options.renderer.getIndiAnchor(node.data);
     const dAnchor = this.options.renderer.getIndiAnchor(siblingNode.data);
     const [sx, sy] = [node.x + sAnchor[0], node.y + sAnchor[1]];
@@ -146,9 +146,9 @@ export class ChartUtil {
     root.each(node => {
       const depth = node.depth;
       const maxVSize = d3.max([
-        this.options.horizontal ? node.data.width : node.data.height,
-        vSizePerDepth.get(depth),
-      ]);
+        this.options.horizontal ? node.data.width! : node.data.height!,
+        vSizePerDepth.get(depth)!,
+      ])!;
       vSizePerDepth.set(depth, maxVSize);
     });
 
@@ -169,15 +169,15 @@ export class ChartUtil {
           const maxChildSize =
             d3.max(node.children || [], n => n.data.width) || 0;
           return [
-            node.data.height,
-            (maxChildSize + node.data.width) / 2 + V_SPACING,
+            node.data.height!,
+            (maxChildSize + node.data.width!) / 2 + V_SPACING,
           ];
         }
         const maxChildSize =
           d3.max(node.children || [], n => n.data.height) || 0;
         return [
-          node.data.width,
-          (maxChildSize + node.data.height) / 2 + V_SPACING,
+          node.data.width!,
+          (maxChildSize + node.data.height!) / 2 + V_SPACING,
         ];
       })
       .spacing((a, b) => H_SPACING);
@@ -205,17 +205,21 @@ export class ChartUtil {
     const boundNodes = svg
       .select('g')
       .selectAll('g.node')
-      .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id);
+      .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id!);
 
     const nodeEnter = boundNodes.enter().append('g' as string);
     nodeEnter
       .merge(boundNodes)
-      .attr('class', node => `node generation${node.data.generation}`);
+      .attr(
+        'class',
+        (node: d3.HierarchyPointNode<TreeNode>) =>
+          `node generation${node.data.generation}`
+      );
     nodeEnter.attr(
       'transform',
-      node =>
-        `translate(${node.x - node.data.width / 2}, ${node.y -
-          node.data.height / 2})`
+      (node: d3.HierarchyPointNode<TreeNode>) =>
+        `translate(${node.x - node.data.width! / 2}, ${node.y -
+          node.data.height! / 2})`
     );
     if (this.options.animate) {
       nodeEnter
@@ -233,9 +237,9 @@ export class ChartUtil {
       : boundNodes;
     updateTransition.attr(
       'transform',
-      node =>
-        `translate(${node.x - node.data.width / 2}, ${node.y -
-          node.data.height / 2})`
+      (node: d3.HierarchyPointNode<TreeNode>) =>
+        `translate(${node.x - node.data.width! / 2}, ${node.y -
+          node.data.height! / 2})`
     );
     this.options.renderer.render(nodeEnter, boundNodes);
     if (this.options.animate) {
@@ -258,7 +262,7 @@ export class ChartUtil {
       if (child.data.additionalMarriage) {
         return this.linkAdditionalMarriage(child);
       }
-      const flipVertically = parent.data.generation > child.data.generation;
+      const flipVertically = parent.data.generation! > child.data.generation!;
       if (this.options.horizontal) {
         if (flipVertically) {
           return this.linkHorizontal(child, parent);
@@ -282,7 +286,7 @@ export class ChartUtil {
       .attr('class', node =>
         node.data.additionalMarriage ? 'link additional-marriage' : 'link'
       )
-      .attr('d', node => link(node.parent, node));
+      .attr('d', node => link(node.parent!, node));
 
     const linkTransition = this.options.animate
       ? boundLinks
@@ -290,7 +294,7 @@ export class ChartUtil {
           .delay(HIDE_TIME_MS)
           .duration(MOVE_TIME_MS)
       : boundLinks;
-    linkTransition.attr('d', node => link(node.parent, node));
+    linkTransition.attr('d', node => link(node.parent!, node));
 
     if (this.options.animate) {
       path

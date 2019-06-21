@@ -29,10 +29,10 @@ const ANIMATION_DURATION_MS = 500;
 const textLengthCache = new Map<string, number>();
 
 /** Calculates the length of the given text in pixels when rendered. */
-export function getLength(text: string, textClass: string) {
+export function getLength(text: string, textClass: string): number {
   const cacheKey = `${text}|${textClass}`;
   if (textLengthCache.has(cacheKey)) {
-    return textLengthCache.get(cacheKey);
+    return textLengthCache.get(cacheKey)!;
   }
   const g = d3
     .select('svg')
@@ -79,13 +79,13 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const detailsList: DetailsLine[] = [];
     const birthDate =
       indi.getBirthDate() &&
-      indi.getBirthDate().date &&
-      formatDate(indi.getBirthDate().date, this.options.locale);
+      indi.getBirthDate()!.date &&
+      formatDate(indi.getBirthDate()!.date!, this.options.locale);
     const birthPlace = indi.getBirthPlace();
     const deathDate =
       indi.getDeathDate() &&
-      indi.getDeathDate().date &&
-      formatDate(indi.getDeathDate().date, this.options.locale);
+      indi.getDeathDate()!.date &&
+      formatDate(indi.getDeathDate()!.date!, this.options.locale);
     const deathPlace = indi.getDeathPlace();
     if (birthDate) {
       detailsList.push({ symbol: '', text: birthDate });
@@ -114,8 +114,8 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const detailsList: DetailsLine[] = [];
     const marriageDate =
       fam.getMarriageDate() &&
-      fam.getMarriageDate().date &&
-      formatDate(fam.getMarriageDate().date, this.options.locale);
+      fam.getMarriageDate()!.date &&
+      formatDate(fam.getMarriageDate()!.date!, this.options.locale);
     const marriagePlace = fam.getMarriagePlace();
     if (marriageDate) {
       detailsList.push({ symbol: '', text: marriageDate });
@@ -130,36 +130,36 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   }
 
   getPreferredIndiSize(id: string): [number, number] {
-    const indi = this.options.data.getIndi(id);
+    const indi = this.options.data.getIndi(id)!;
     const details = this.getIndiDetails(indi);
 
     const height = d3.max([
       INDI_MIN_HEIGHT + details.length * 14,
-      indi.getImageUrl() && IMAGE_HEIGHT,
-    ]);
+      indi.getImageUrl() ? IMAGE_HEIGHT : 0,
+    ])!;
 
     const maxDetailsWidth = d3.max(
       details.map(x => getLength(x.text, 'details'))
-    );
+    )!;
     const width =
       d3.max([
         maxDetailsWidth + 22,
-        getLength(indi.getFirstName(), 'name') + 8,
-        getLength(indi.getLastName(), 'name') + 8,
+        getLength(indi.getFirstName() || '', 'name') + 8,
+        getLength(indi.getLastName() || '', 'name') + 8,
         INDI_MIN_WIDTH,
-      ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
+      ])! + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
     return [width, height];
   }
 
   getPreferredFamSize(id: string): [number, number] {
-    const fam = this.options.data.getFam(id);
+    const fam = this.options.data.getFam(id)!;
     const details = this.getFamDetails(fam);
 
-    const height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
+    const height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT])!;
     const maxDetailsWidth = d3.max(
       details.map(x => getLength(x.text, 'details'))
-    );
-    const width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
+    )!;
+    const width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH])!;
     return [width, height];
   }
 
@@ -175,16 +175,16 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
           const result: OffsetIndi[] = [];
           const famXOffset =
             !this.options.horizontal && node.data.family
-              ? d3.max([-getFamPositionVertical(node.data), 0])
+              ? d3.max([-getFamPositionVertical(node.data), 0])!
               : 0;
           const famYOffset =
             this.options.horizontal && node.data.family
-              ? d3.max([-getFamPositionHorizontal(node.data), 0])
+              ? d3.max([-getFamPositionHorizontal(node.data), 0])!
               : 0;
           if (node.data.indi) {
             result.push({
               indi: node.data.indi,
-              generation: node.data.generation,
+              generation: node.data.generation!,
               xOffset: famXOffset,
               yOffset: 0,
             });
@@ -192,14 +192,14 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
           if (node.data.spouse) {
             result.push({
               indi: node.data.spouse,
-              generation: node.data.generation,
+              generation: node.data.generation!,
               xOffset:
                 !this.options.horizontal && node.data.indi
-                  ? node.data.indi.width + famXOffset
+                  ? node.data.indi.width! + famXOffset
                   : 0,
               yOffset:
                 this.options.horizontal && node.data.indi
-                  ? node.data.indi.height + famYOffset
+                  ? node.data.indi.height! + famYOffset
                   : 0,
             });
           }
@@ -338,12 +338,12 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   private getFamTransform(node: TreeNode): string {
     if (this.options.horizontal) {
       return `translate(${(node.indi && node.indi.width) ||
-        node.spouse.width}, ${d3.max([getFamPositionHorizontal(node), 0])})`;
+        node.spouse!.width}, ${d3.max([getFamPositionHorizontal(node), 0])})`;
     }
     return `translate(${d3.max([
       getFamPositionVertical(node),
       0,
-    ])}, ${(node.indi && node.indi.height) || node.spouse.height})`;
+    ])}, ${(node.indi && node.indi.height) || node.spouse!.height})`;
   }
 
   private renderIndi(
@@ -353,12 +353,12 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     if (this.options.indiHrefFunc) {
       enter = enter
         .append('a')
-        .attr('href', data => this.options.indiHrefFunc(data.indi.id));
+        .attr('href', data => this.options.indiHrefFunc!(data.indi.id));
       update = update.select('a');
     }
     if (this.options.indiCallback) {
       enter.on('click', data =>
-        this.options.indiCallback({
+        this.options.indiCallback!({
           id: data.indi.id,
           generation: data.generation,
         })
@@ -372,8 +372,8 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'background')
       .merge(update.select('rect.background'));
     this.transition(background)
-      .attr('width', node => node.indi.width)
-      .attr('height', node => node.indi.height);
+      .attr('width', node => node.indi.width!)
+      .attr('height', node => node.indi.height!);
 
     // Clip path.
     const getClipId = (id: string) => `clip-${id}`;
@@ -383,14 +383,14 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('rect')
       .attr('rx', 5)
       .merge(update.select('clipPath rect'))
-      .attr('width', node => node.indi.width)
-      .attr('height', node => node.indi.height);
+      .attr('width', node => node.indi.width!)
+      .attr('height', node => node.indi.height!);
 
     const getIndi = (data: OffsetIndi) =>
       this.options.data.getIndi(data.indi.id);
 
     const getDetailsWidth = (data: OffsetIndi) =>
-      data.indi.width - (getIndi(data).getImageUrl() ? IMAGE_WIDTH : 0);
+      data.indi.width! - (getIndi(data)!.getImageUrl() ? IMAGE_WIDTH : 0);
 
     // Name.
     enter
@@ -398,40 +398,40 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .attr('text-anchor', 'middle')
       .attr('class', 'name')
       .attr('transform', node => `translate(${getDetailsWidth(node) / 2}, 17)`)
-      .text(node => getIndi(node).getFirstName());
+      .text(node => getIndi(node)!.getFirstName());
     enter
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('class', 'name')
       .attr('transform', node => `translate(${getDetailsWidth(node) / 2}, 33)`)
-      .text(node => getIndi(node).getLastName());
+      .text(node => getIndi(node)!.getLastName());
 
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
     enter.each(node => {
-      const indi = getIndi(node);
+      const indi = getIndi(node)!;
       const detailsList = this.getIndiDetails(indi);
       details.set(node.indi.id, detailsList);
     });
 
-    const maxDetails = d3.max(Array.from(details.values(), v => v.length));
+    const maxDetails = d3.max(Array.from(details.values(), v => v.length))!;
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
       const lineGroup = enter.filter(
-        data => details.get(data.indi.id).length > i
+        data => details.get(data.indi.id)!.length > i
       );
       lineGroup
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
         .attr('transform', `translate(9, ${49 + i * 14})`)
-        .text(data => details.get(data.indi.id)[i].symbol);
+        .text(data => details.get(data.indi.id)![i].symbol);
       lineGroup
         .append('text')
         .attr('class', 'details')
         .attr('transform', `translate(15, ${49 + i * 14})`)
-        .text(data => details.get(data.indi.id)[i].text);
+        .text(data => details.get(data.indi.id)![i].text);
     }
 
     // Render id.
@@ -442,7 +442,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .merge(update.select('text.id'));
     this.transition(id).attr(
       'transform',
-      data => `translate(9, ${data.indi.height - 5})`
+      data => `translate(9, ${data.indi.height! - 5})`
     );
 
     // Render sex.
@@ -450,26 +450,27 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('text')
       .attr('class', 'details sex')
       .attr('text-anchor', 'end')
-      .text(data => SEX_SYMBOLS.get(getIndi(data).getSex()))
+      .text(data => SEX_SYMBOLS.get(getIndi(data)!.getSex() || '') || '')
       .merge(update.select('text.sex'));
     this.transition(sex).attr(
       'transform',
-      data => `translate(${getDetailsWidth(data) - 5}, ${data.indi.height - 5})`
+      data =>
+        `translate(${getDetailsWidth(data) - 5}, ${data.indi.height! - 5})`
     );
 
     // Image.
     enter
-      .filter(data => !!getIndi(data).getImageUrl())
+      .filter(data => !!getIndi(data)!.getImageUrl())
       .append('image')
       .attr('width', IMAGE_WIDTH)
-      .attr('height', data => data.indi.height)
+      .attr('height', data => data.indi.height!)
       .attr('preserveAspectRatio', 'xMidYMin')
       .attr(
         'transform',
-        data => `translate(${data.indi.width - IMAGE_WIDTH}, 0)`
+        data => `translate(${data.indi.width! - IMAGE_WIDTH}, 0)`
       )
       .attr('clip-path', data => `url(#${getClipId(data.indi.id)})`)
-      .attr('href', data => getIndi(data).getImageUrl());
+      .attr('href', data => getIndi(data)!.getImageUrl());
 
     // Border on top.
     const border = enter
@@ -479,21 +480,21 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'border')
       .merge(update.select('rect.border'));
     this.transition(border)
-      .attr('width', data => data.indi.width)
-      .attr('height', data => data.indi.height);
+      .attr('width', data => data.indi.width!)
+      .attr('height', data => data.indi.height!);
   }
 
   private renderFamily(enter: TreeNodeSelection, update: TreeNodeSelection) {
     if (this.options.famHrefFunc) {
       enter = enter
         .append('a')
-        .attr('href', node => this.options.famHrefFunc(node.data.family.id));
+        .attr('href', node => this.options.famHrefFunc!(node.data.family!.id));
     }
     if (this.options.famCallback) {
       enter.on('click', node =>
-        this.options.famCallback({
-          id: node.data.family.id,
-          generation: node.data.generation,
+        this.options.famCallback!({
+          id: node.data.family!.id,
+          generation: node.data.generation!,
         })
       );
     }
@@ -503,36 +504,36 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('rect')
       .attr('rx', 5)
       .attr('ry', 5)
-      .attr('width', node => node.data.family.width)
-      .attr('height', node => node.data.family.height);
+      .attr('width', node => node.data.family!.width!)
+      .attr('height', node => node.data.family!.height!);
 
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
     enter.each(node => {
-      const famId = node.data.family.id;
-      const fam = this.options.data.getFam(famId);
+      const famId = node.data.family!.id;
+      const fam = this.options.data.getFam(famId)!;
       const detailsList = this.getFamDetails(fam);
       details.set(famId, detailsList);
     });
-    const maxDetails = d3.max(Array.from(details.values(), v => v.length));
+    const maxDetails = d3.max(Array.from(details.values(), v => v.length))!;
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
       const lineGroup = enter.filter(
-        node => details.get(node.data.family.id).length > i
+        node => details.get(node.data.family!.id)!.length > i
       );
       lineGroup
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
         .attr('transform', `translate(9, ${16 + i * 14})`)
-        .text(node => details.get(node.data.family.id)[i].symbol);
+        .text(node => details.get(node.data.family!.id)![i].symbol);
       lineGroup
         .append('text')
         .attr('text-anchor', 'start')
         .attr('class', 'details')
         .attr('transform', `translate(15, ${16 + i * 14})`)
-        .text(node => details.get(node.data.family.id)[i].text);
+        .text(node => details.get(node.data.family!.id)![i].text);
     }
   }
 }
