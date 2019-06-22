@@ -25,7 +25,7 @@ export class ChildNodes {
   }
 
   getAll(): TreeNode[] {
-    return [].concat(
+    return ([] as TreeNode[]).concat(
       this.indiSiblings,
       this.indiParents,
       this.children,

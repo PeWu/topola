@@ -62,7 +62,7 @@ export class KinshipChartRenderer {
         .attr("class", node => this.cssClassForLink(node))
       .merge(boundLinkNodes)
         .attr("d", node => {
-          const linkPoints = node.data.primaryMarriage ? this.additionalMarriageLinkPoints(node) : this.linkPoints(node.parent, node, node.data.linkFromParentType);
+          const linkPoints = node.data.primaryMarriage ? this.additionalMarriageLinkPoints(node) : this.linkPoints(node.parent!, node, node.data.linkFromParentType!);
           return points2pathd(linkPoints);
         });
     boundLinkNodes.exit().remove();
@@ -97,7 +97,7 @@ export class KinshipChartRenderer {
 
   private cssClassForLink(fromNode: d3.HierarchyPointNode<TreeNode>): string {
     if (fromNode.data.primaryMarriage) return "link internode-link additional-marriage";
-    return "link internode-link " + this.cssClassForLinkType(fromNode.data.linkFromParentType);
+    return "link internode-link " + this.cssClassForLinkType(fromNode.data.linkFromParentType!);
   }
 
   private cssClassForLinkStub(linkType: LinkType): string {
@@ -116,10 +116,10 @@ export class KinshipChartRenderer {
 
   private nodeToLinkStubRenderInfos(node: d3.HierarchyPointNode<TreeNode>): LinkStubRenderInfo[] {
     return node.data.linkStubs.map(linkType => {
-      const isUpTree = node.y < node.parent.y;
+      const isUpTree = node.y < node.parent!.y;
       const treeDir = isUpTree ? -1 : 1;
       const anchorPoints = this.linkAnchorPoints(node, linkType, isUpTree);
-      const y = node.data.linkYs.children - (2 * LINKS_SEPARATION + 2 * LINK_STUB_CIRCLE_R) * treeDir;
+      const y = node.data.linkYs!.children - (2 * LINKS_SEPARATION + 2 * LINK_STUB_CIRCLE_R) * treeDir;
       return {
         treeDir,
         linkType,
@@ -130,17 +130,17 @@ export class KinshipChartRenderer {
 
   private getLinkY(node: d3.HierarchyPointNode<TreeNode>, type: LinkType): number {
     switch (type) {
-      case LinkType.IndiParents:    return node.data.linkYs.indi;
-      case LinkType.IndiSiblings:   return node.data.linkYs.indi;
-      case LinkType.SpouseParents:  return node.data.linkYs.spouse;
-      case LinkType.SpouseSiblings: return node.data.linkYs.spouse;
-      case LinkType.Children:       return node.data.linkYs.children;
+      case LinkType.IndiParents:    return node.data.linkYs!.indi;
+      case LinkType.IndiSiblings:   return node.data.linkYs!.indi;
+      case LinkType.SpouseParents:  return node.data.linkYs!.spouse;
+      case LinkType.SpouseSiblings: return node.data.linkYs!.spouse;
+      case LinkType.Children:       return node.data.linkYs!.children;
     }
   }
 
   private setLinkYs(node: d3.HierarchyPointNode<TreeNode>, isUpTree: boolean) {
     const treeDir = isUpTree ? -1 : 1;
-    const base = node.y + (node.data.height/2 + LINKS_BASE_OFFSET) * treeDir;
+    const base = node.y + (node.data.height!/2 + LINKS_BASE_OFFSET) * treeDir;
     const offset = LINKS_SEPARATION * treeDir;
     const [indiOffsetDir, spouseOffsetDir] = this.calcLinkOffsetDirs(node);
     node.data.linkYs = {
@@ -197,9 +197,9 @@ export class KinshipChartRenderer {
     const dir = isMin ? -1 : 1;
     const childNodesSet = new Set(childNodes);
     return extremeFindingFunction(
-      parentNode.children.filter(n => childNodesSet.has(n.data)),
-      n => n.x + dir * n.data.width/2
-    ) + dir * SIBLING_LINK_STARTER_LENGTH;
+      parentNode.children!.filter(n => childNodesSet.has(n.data)),
+      n => n.x + dir * n.data.width!/2
+    )! + dir * SIBLING_LINK_STARTER_LENGTH;
   }
 
   private linkPoints(from: d3.HierarchyPointNode<TreeNode>, to: d3.HierarchyPointNode<TreeNode>, type: LinkType): Vec2[] {
@@ -216,18 +216,18 @@ export class KinshipChartRenderer {
   }
 
   private additionalMarriageLinkPoints(node: d3.HierarchyPointNode<BaseTreeNode>): Vec2[] {
-    const nodeIndex = node.parent.children.findIndex(n => n.data.id === node.data.id);
-    const prevSiblingNode = node.parent.children[nodeIndex - 1];
+    const nodeIndex = node.parent!.children!.findIndex(n => n.data.id === node.data.id);
+    const prevSiblingNode = node.parent!.children![nodeIndex - 1];
     const y = this.indiMidY(node);
     return [{x: prevSiblingNode.x, y}, {x: node.x, y}];
   }
 
   private linkAnchorPoints(node: d3.HierarchyPointNode<BaseTreeNode>, type: LinkType, top: boolean): Vec2[] {
     const [x, y] = [node.x, node.y];
-    const [w, h] = [node.data.width, node.data.height];
+    const [w, h] = [node.data.width!, node.data.height!];
     const leftEdge  = x - w / 2;
     const rightEdge = x + w / 2;
-    const [indiW, spouseW, familyW] = [node.data.indi, node.data.spouse, node.data.family].map(e => e ? e.width : 0);
+    const [indiW, spouseW, familyW] = [node.data.indi, node.data.spouse, node.data.family].map(e => e ? e.width! : 0);
     const indisW = indiW + spouseW;
     const indisLeftEdge = x - w/2 + (familyW > indisW ? (familyW - indisW) / 2 : 0);
     const indisRightEdge = indisLeftEdge + indisW;
@@ -242,13 +242,13 @@ export class KinshipChartRenderer {
   }
 
   private indiMidY(node: d3.HierarchyPointNode<BaseTreeNode>): number {
-    return node.y - node.data.height/2 + node.data.indi.height/2;
+    return node.y - node.data.height!/2 + node.data.indi!.height!/2;
   }
 
   private renderRootDummyAdditionalMarriageLinkStub(root: d3.HierarchyPointNode<BaseTreeNode>) {
     const svgg = this.util.getSvgForRendering().select("g");
     const y = this.indiMidY(root);
-    const x = root.data.width/2 + 20;
+    const x = root.data.width!/2 + 20;
     const r = 3;
     svgg.selectAll(".root-dummy-additional-marriage").remove();
     svgg.insert("g", "g")
