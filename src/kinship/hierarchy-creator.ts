@@ -5,22 +5,34 @@ import { HierarchyFilter } from './hierarchy-filter';
 import { IdGenerator } from '../id-generator';
 import { nonEmpty } from '../utils';
 
-
 export class HierarchyCreator {
-  static readonly UP_FILTER   = HierarchyFilter.allRejecting().modify({indiParents: true, spouseParents: true, indiSiblings: true, spouseSiblings: true});
-  static readonly DOWN_FILTER = HierarchyFilter.allRejecting().modify({children: true});
+  static readonly UP_FILTER = HierarchyFilter.allRejecting().modify({
+    indiParents: true,
+    spouseParents: true,
+    indiSiblings: true,
+    spouseSiblings: true,
+  });
+  static readonly DOWN_FILTER = HierarchyFilter.allRejecting().modify({
+    children: true,
+  });
   static readonly ALL_ACCEPTING_FILTER = HierarchyFilter.allAccepting();
 
-  static createHierarchy(data: DataProvider<Indi, Fam>, startEntryId: EntryId): Hierarchy {
+  static createHierarchy(
+    data: DataProvider<Indi, Fam>,
+    startEntryId: EntryId
+  ): Hierarchy {
     return new HierarchyCreator(data, startEntryId).createHierarchy();
   }
 
-  readonly startEntryId: EntryId;  // Id of entry (indi or fam), which is root of the hierarchy
-  readonly startFamIndi: string | null;  // If startEntryId field is a fam id, then startFamIndi field can indicate which spouse in this family is the starting point of the hierarchy
+  readonly startEntryId: EntryId; // Id of entry (indi or fam), which is root of the hierarchy
+  readonly startFamIndi: string | null; // If startEntryId field is a fam id, then startFamIndi field can indicate which spouse in this family is the starting point of the hierarchy
   readonly queuedNodesById = new Map<string, TreeNode>();
   readonly idGenerator = new IdGenerator();
 
-  private constructor(readonly data: DataProvider<Indi, Fam>, startEntryId: EntryId) {
+  private constructor(
+    readonly data: DataProvider<Indi, Fam>,
+    startEntryId: EntryId
+  ) {
     [this.startEntryId, this.startFamIndi] = this.expandStartId(startEntryId);
   }
 
@@ -28,37 +40,41 @@ export class HierarchyCreator {
   private expandStartId(startEntryId: EntryId): [EntryId, string | null] {
     if (startEntryId.isFam) return [startEntryId, null];
     const indi = this.data.getIndi(startEntryId.id);
-    if (!indi) throw new Error("Invalid startId");
+    if (!indi) throw new Error('Invalid startId');
     const famsIds = indi.getFamiliesAsSpouse();
     if (famsIds.length) return [EntryId.fam(famsIds[0]), startEntryId.id];
     return [startEntryId, null];
   }
 
   createHierarchy(): Hierarchy {
-    const upRoot   = this.idToNode(this.startEntryId, null, null, false);
+    const upRoot = this.idToNode(this.startEntryId, null, null, false);
     const downRoot = this.idToNode(this.startEntryId, null, null, false);
-    if (!upRoot || !downRoot) throw new Error("Invalid root node");
+    if (!upRoot || !downRoot) throw new Error('Invalid root node');
     if (this.startFamIndi) {
-      upRoot!.indi   = {id: this.startFamIndi};
-      downRoot!.indi = {id: this.startFamIndi};
+      upRoot!.indi = { id: this.startFamIndi };
+      downRoot!.indi = { id: this.startFamIndi };
     }
-    const layerEnd = {id: "LAYER END MARKER"} as TreeNode;
-    let queue      = [ upRoot, layerEnd ];
-    let otherQueue = [ downRoot ];
+    const layerEnd = { id: 'LAYER END MARKER' } as TreeNode;
+    let queue = [upRoot, layerEnd];
+    let otherQueue = [downRoot];
 
     while (queue.length) {
       const node = queue.shift()!;
       if (node !== layerEnd) {
         const filter =
-          node === upRoot   ? HierarchyCreator.UP_FILTER :
-          node === downRoot ? HierarchyCreator.DOWN_FILTER :
-          HierarchyCreator.ALL_ACCEPTING_FILTER;  //TODO: Filter only on root node?
+          node === upRoot
+            ? HierarchyCreator.UP_FILTER
+            : node === downRoot
+            ? HierarchyCreator.DOWN_FILTER
+            : HierarchyCreator.ALL_ACCEPTING_FILTER; //TODO: Filter only on root node?
         this.fillNodeData(node, filter);
         for (const childNode of node.childNodes.getAll()) {
           queue.push(childNode);
         }
       } else {
-        [queue, otherQueue] = otherQueue.length ? [otherQueue, queue] : [queue, otherQueue];
+        [queue, otherQueue] = otherQueue.length
+          ? [otherQueue, queue]
+          : [queue, otherQueue];
         if (queue.length) queue.push(layerEnd);
       }
     }
@@ -76,50 +92,116 @@ export class HierarchyCreator {
   private fillNodeData(node: TreeNode, filter: HierarchyFilter) {
     if (this.isFamNode(node)) {
       const fam = this.data.getFam(node.id);
-      const [indiId, spouseId] = (node.indi && node.indi.id === fam!.getMother()) ?
-        [fam!.getMother(), fam!.getFather()] :
-        [fam!.getFather(), fam!.getMother()];
+      const [indiId, spouseId] =
+        node.indi && node.indi.id === fam!.getMother()
+          ? [fam!.getMother(), fam!.getFather()]
+          : [fam!.getFather(), fam!.getMother()];
       Object.assign(node, {
         id: this.idGenerator.getId(node.id),
-        indi:   indiId   && {id: indiId},
-        spouse: spouseId && {id: spouseId},
+        indi: indiId && { id: indiId },
+        spouse: spouseId && { id: spouseId },
       });
-      if (!node.duplicateOf && !node.duplicated) node.childNodes = this.childNodesForFam(fam!, node, filter);
+      if (!node.duplicateOf && !node.duplicated) {
+        node.childNodes = this.childNodesForFam(fam!, node, filter);
+      }
     } else {
       const indi = this.data.getIndi(node.id);
       Object.assign(node, {
         id: this.idGenerator.getId(node.id),
-        indi: {id: indi!.getId()},
+        indi: { id: indi!.getId() },
       });
-      if (!node.duplicateOf && !node.duplicated) node.childNodes = this.childNodesForIndi(indi!, node, filter);
+      if (!node.duplicateOf && !node.duplicated) {
+        node.childNodes = this.childNodesForIndi(indi!, node, filter);
+      }
     }
     node.linkStubs = this.createLinkStubs(node);
   }
 
-  private childNodesForFam(fam: Fam, parentNode: TreeNode, filter: HierarchyFilter): ChildNodes {
-    const indi   = parentNode.indi   ? this.data.getIndi(parentNode.indi.id) : null;
-    const spouse = parentNode.spouse ? this.data.getIndi(parentNode.spouse.id) : null;
-    const [indiParentsFamsIds, indiSiblingsIds]     = this.getParentsAndSiblings(indi);
-    const [spouseParentsFamsIds, spouseSiblingsIds] = this.getParentsAndSiblings(spouse);
+  private childNodesForFam(
+    fam: Fam,
+    parentNode: TreeNode,
+    filter: HierarchyFilter
+  ): ChildNodes {
+    const indi = parentNode.indi ? this.data.getIndi(parentNode.indi.id) : null;
+    const spouse = parentNode.spouse
+      ? this.data.getIndi(parentNode.spouse.id)
+      : null;
+    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(
+      indi
+    );
+    const [
+      spouseParentsFamsIds,
+      spouseSiblingsIds,
+    ] = this.getParentsAndSiblings(spouse);
     const childrenIds = fam.getChildren();
     return new ChildNodes({
-      indiParents:    filter.indiParents    ? this.famAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, LinkType.IndiParents)       : [],
-      indiSiblings:   filter.indiSiblings   ? this.indiIdsToFamAsSpouseNodes(indiSiblingsIds, parentNode, LinkType.IndiSiblings)     : [],
-      spouseParents:  filter.spouseParents  ? this.famAsSpouseIdsToNodes(spouseParentsFamsIds, parentNode, LinkType.SpouseParents)   : [],
-      spouseSiblings: filter.spouseSiblings ? this.indiIdsToFamAsSpouseNodes(spouseSiblingsIds, parentNode, LinkType.SpouseSiblings) : [],
-      children:       filter.children       ? this.indiIdsToFamAsSpouseNodes(childrenIds, parentNode, LinkType.Children)             : [],
+      indiParents: filter.indiParents
+        ? this.famAsSpouseIdsToNodes(
+            indiParentsFamsIds,
+            parentNode,
+            LinkType.IndiParents
+          )
+        : [],
+      indiSiblings: filter.indiSiblings
+        ? this.indiIdsToFamAsSpouseNodes(
+            indiSiblingsIds,
+            parentNode,
+            LinkType.IndiSiblings
+          )
+        : [],
+      spouseParents: filter.spouseParents
+        ? this.famAsSpouseIdsToNodes(
+            spouseParentsFamsIds,
+            parentNode,
+            LinkType.SpouseParents
+          )
+        : [],
+      spouseSiblings: filter.spouseSiblings
+        ? this.indiIdsToFamAsSpouseNodes(
+            spouseSiblingsIds,
+            parentNode,
+            LinkType.SpouseSiblings
+          )
+        : [],
+      children: filter.children
+        ? this.indiIdsToFamAsSpouseNodes(
+            childrenIds,
+            parentNode,
+            LinkType.Children
+          )
+        : [],
     });
   }
 
-  private childNodesForIndi(indi: Indi, parentNode: TreeNode, filter: HierarchyFilter): ChildNodes {
-    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(indi);
+  private childNodesForIndi(
+    indi: Indi,
+    parentNode: TreeNode,
+    filter: HierarchyFilter
+  ): ChildNodes {
+    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(
+      indi
+    );
     return new ChildNodes({
-      indiParents:    filter.indiParents  ? this.famAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, LinkType.IndiParents)   : [],
-      indiSiblings:   filter.indiSiblings ? this.indiIdsToFamAsSpouseNodes(indiSiblingsIds, parentNode, LinkType.IndiSiblings) : [],
+      indiParents: filter.indiParents
+        ? this.famAsSpouseIdsToNodes(
+            indiParentsFamsIds,
+            parentNode,
+            LinkType.IndiParents
+          )
+        : [],
+      indiSiblings: filter.indiSiblings
+        ? this.indiIdsToFamAsSpouseNodes(
+            indiSiblingsIds,
+            parentNode,
+            LinkType.IndiSiblings
+          )
+        : [],
     });
   }
 
-  private areParentsAndSiblingsPresent(indiId: string | null): [boolean, boolean] {
+  private areParentsAndSiblingsPresent(
+    indiId: string | null
+  ): [boolean, boolean] {
     const indi = indiId && this.data.getIndi(indiId);
     const famcId = indi && indi.getFamilyAsChild();
     const famc = famcId && this.data.getFam(famcId);
@@ -137,35 +219,51 @@ export class HierarchyCreator {
 
     const father = this.data.getIndi(indiFamc.getFather()!);
     const mother = this.data.getIndi(indiFamc.getMother()!);
-    const parentFamsIds = ([] as string[]).concat(
-      father ? father.getFamiliesAsSpouse() : [],
-      mother ? mother.getFamiliesAsSpouse() : []
-    ).filter(id => id !== indiFamcId);
+    const parentFamsIds = ([] as string[])
+      .concat(
+        father ? father.getFamiliesAsSpouse() : [],
+        mother ? mother.getFamiliesAsSpouse() : []
+      )
+      .filter(id => id !== indiFamcId);
     parentFamsIds.unshift(indiFamcId!);
 
     const siblingsIds = Array.from(indiFamc.getChildren());
-    siblingsIds.splice(siblingsIds.indexOf(indi!.getId()), 1);  // Remove indi from indi's siblings
+    siblingsIds.splice(siblingsIds.indexOf(indi!.getId()), 1); // Remove indi from indi's siblings
 
     return [parentFamsIds, siblingsIds];
   }
 
-  private indiIdsToFamAsSpouseNodes(indiIds: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
-    return indiIds.flatMap(id => this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType));
+  private indiIdsToFamAsSpouseNodes(
+    indiIds: string[],
+    parentNode: TreeNode,
+    childNodeType: LinkType
+  ): TreeNode[] {
+    return indiIds.flatMap(id =>
+      this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType)
+    );
   }
 
-  private indiIdToFamAsSpouseNodes(indiId: string, parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
+  private indiIdToFamAsSpouseNodes(
+    indiId: string,
+    parentNode: TreeNode,
+    childNodeType: LinkType
+  ): TreeNode[] {
     if (this.isChildNodeTypeForbidden(childNodeType, parentNode)) return [];
     const famsIds = this.data.getIndi(indiId)!.getFamiliesAsSpouse();
     if (!famsIds.length) {
-      const node = this.idToNode(EntryId.indi(indiId), parentNode, childNodeType);
+      const node = this.idToNode(
+        EntryId.indi(indiId),
+        parentNode,
+        childNodeType
+      );
       return node ? [node] : [];
     }
 
     const famsNodes: TreeNode[] = famsIds.map(id => {
       return {
         id,
-        indi: {id: indiId},
-        family: {id},
+        indi: { id: indiId },
+        family: { id },
         parentNode,
         linkFromParentType: childNodeType,
         childNodes: ChildNodes.EMPTY,
@@ -178,29 +276,49 @@ export class HierarchyCreator {
       if (duplicateOf) {
         node.duplicateOf = duplicateOf;
         duplicateOf.duplicated = true;
-      }
-      else this.queuedNodesById.set(node.id, node);
+      } else this.queuedNodesById.set(node.id, node);
     });
     return famsNodes;
   }
 
-  private famAsSpouseIdsToNodes(famsIds: string[], parentNode: TreeNode, childNodeType: LinkType): TreeNode[] {
-    const nodes = this.idsToNodes(famsIds.map(EntryId.fam), parentNode, childNodeType);
-    nodes.slice(1).forEach(node => node.primaryMarriage = nodes[0]);
+  private famAsSpouseIdsToNodes(
+    famsIds: string[],
+    parentNode: TreeNode,
+    childNodeType: LinkType
+  ): TreeNode[] {
+    const nodes = this.idsToNodes(
+      famsIds.map(EntryId.fam),
+      parentNode,
+      childNodeType
+    );
+    nodes.slice(1).forEach(node => (node.primaryMarriage = nodes[0]));
     return nodes;
   }
 
-  private idsToNodes(entryIds: EntryId[], parentNode: TreeNode | null, childNodeType: LinkType | null, duplicateCheck = true): TreeNode[] {
-    return entryIds.map(entryId => this.idToNode(entryId, parentNode, childNodeType, duplicateCheck))
+  private idsToNodes(
+    entryIds: EntryId[],
+    parentNode: TreeNode | null,
+    childNodeType: LinkType | null,
+    duplicateCheck = true
+  ): TreeNode[] {
+    return entryIds
+      .map(entryId =>
+        this.idToNode(entryId, parentNode, childNodeType, duplicateCheck)
+      )
       .filter(node => node != null) as TreeNode[];
   }
 
-  private idToNode(entryId: EntryId, parentNode: TreeNode | null, childNodeType: LinkType | null, duplicateCheck = true): TreeNode | null {
+  private idToNode(
+    entryId: EntryId,
+    parentNode: TreeNode | null,
+    childNodeType: LinkType | null,
+    duplicateCheck = true
+  ): TreeNode | null {
     if (this.isChildNodeTypeForbidden(childNodeType, parentNode)) return null;
     const { id, isFam } = entryId;
     if (isFam) {
       const fam = this.data.getFam(id);
-      if (!fam || (!fam.getFather() && !fam.getMother())) return null;  // Don't create fam nodes that are missing both husband and wife
+      if (!fam || (!fam.getFather() && !fam.getMother())) return null; // Don't create fam nodes that are missing both husband and wife
     }
     const duplicateOf = this.queuedNodesById.get(id);
     const node: TreeNode = {
@@ -210,7 +328,7 @@ export class HierarchyCreator {
       childNodes: ChildNodes.EMPTY,
       linkStubs: [],
     };
-    if (isFam) node.family = {id};
+    if (isFam) node.family = { id };
     if (duplicateCheck && duplicateOf) {
       node.duplicateOf = duplicateOf;
       duplicateOf.duplicated = true;
@@ -220,10 +338,21 @@ export class HierarchyCreator {
   }
 
   private createLinkStubs(node: TreeNode): LinkType[] {
-    if (!this.isFamNode(node) || (!node.duplicateOf && !node.duplicated && !node.primaryMarriage)) return [];
+    if (
+      !this.isFamNode(node) ||
+      (!node.duplicateOf && !node.duplicated && !node.primaryMarriage)
+    ) {
+      return [];
+    }
     const fam = this.data.getFam(node!.family!.id);
-    const [indiParentsPresent, indiSiblingsPresent] = this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null);
-    const [spouseParentsPresent, spouseSiblingsPresent] = this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null);
+    const [
+      indiParentsPresent,
+      indiSiblingsPresent,
+    ] = this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null);
+    const [
+      spouseParentsPresent,
+      spouseSiblingsPresent,
+    ] = this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null);
     const childrenPresent = nonEmpty(fam!.getChildren());
 
     return [
@@ -232,24 +361,38 @@ export class HierarchyCreator {
       spouseParentsPresent ? [LinkType.SpouseParents] : [],
       spouseSiblingsPresent ? [LinkType.SpouseSiblings] : [],
       childrenPresent ? [LinkType.Children] : [],
-    ].flat().filter(linkType =>
-      !this.isChildNodeTypeForbidden(linkType, node) &&
-      !node.childNodes.get(linkType).length
-    );
+    ]
+      .flat()
+      .filter(
+        linkType =>
+          !this.isChildNodeTypeForbidden(linkType, node) &&
+          !node.childNodes.get(linkType).length
+      );
   }
 
-  private isChildNodeTypeForbidden(childNodeType: LinkType | null, parentNode: TreeNode | null): boolean {
+  private isChildNodeTypeForbidden(
+    childNodeType: LinkType | null,
+    parentNode: TreeNode | null
+  ): boolean {
     if (childNodeType === null || !parentNode) return false;
 
     switch (otherSideLinkType(parentNode.linkFromParentType!)) {
       case LinkType.IndiParents:
       case LinkType.IndiSiblings:
-        if (childNodeType === LinkType.IndiParents ||
-            childNodeType === LinkType.IndiSiblings) return true;
+        if (
+          childNodeType === LinkType.IndiParents ||
+          childNodeType === LinkType.IndiSiblings
+        ) {
+          return true;
+        }
         break;
       case LinkType.Children:
-        if (!parentNode.primaryMarriage &&
-            childNodeType === LinkType.Children) return true;
+        if (
+          !parentNode.primaryMarriage &&
+          childNodeType === LinkType.Children
+        ) {
+          return true;
+        }
         break;
     }
 
@@ -262,11 +405,19 @@ export class HierarchyCreator {
       const pmSpouseId = parentNode!.primaryMarriage!.spouse!.id;
 
       if (indiId === pmIndiId || indiId === pmSpouseId) {
-        if (childNodeType === LinkType.IndiParents ||
-            childNodeType === LinkType.IndiSiblings) return true;
+        if (
+          childNodeType === LinkType.IndiParents ||
+          childNodeType === LinkType.IndiSiblings
+        ) {
+          return true;
+        }
       } else if (spouseId === pmIndiId || spouseId === pmSpouseId) {
-        if (childNodeType === LinkType.SpouseParents ||
-            childNodeType === LinkType.SpouseSiblings) return true;
+        if (
+          childNodeType === LinkType.SpouseParents ||
+          childNodeType === LinkType.SpouseSiblings
+        ) {
+          return true;
+        }
       }
     }
     return false;
@@ -277,12 +428,10 @@ export class HierarchyCreator {
   }
 }
 
-
 export interface Hierarchy {
   upRoot: d3.HierarchyNode<TreeNode>;
   downRoot: d3.HierarchyNode<TreeNode>;
 }
-
 
 /* Id of indi or fam */
 export class EntryId {
@@ -298,16 +447,20 @@ export class EntryId {
   }
 
   constructor(indiId: string | null, famId: string | null) {
-    if (!indiId && !famId) throw new Error("Invalid EntryId");
+    if (!indiId && !famId) throw new Error('Invalid EntryId');
     this.id = (indiId || famId) as string;
     this.isFam = !!famId;
   }
 }
 
-
-export function getRootsCount(upRoot: d3.HierarchyNode<TreeNode>, data: DataProvider<Indi, Fam>): number {
+export function getRootsCount(
+  upRoot: d3.HierarchyNode<TreeNode>,
+  data: DataProvider<Indi, Fam>
+): number {
   const upIndi = upRoot.data.indi && data.getIndi(upRoot.data.indi.id);
   const upSpouse = upRoot.data.spouse && data.getIndi(upRoot.data.spouse.id);
-  return (upIndi ? upIndi.getFamiliesAsSpouse().length : 0) +
-         (upSpouse ? upSpouse.getFamiliesAsSpouse().length - 1 : 0);
+  return (
+    (upIndi ? upIndi.getFamiliesAsSpouse().length : 0) +
+    (upSpouse ? upSpouse.getFamiliesAsSpouse().length - 1 : 0)
+  );
 }

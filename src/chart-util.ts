@@ -96,7 +96,9 @@ export class ChartUtil {
   }
 
   private linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
-    const nodeIndex = node.parent!.children!.findIndex(n => n.data.id === node.data.id);
+    const nodeIndex = node.parent!.children!.findIndex(
+      n => n.data.id === node.data.id
+    );
     // Assert nodeIndex > 0.
     const siblingNode = node.parent!.children![nodeIndex - 1];
     const sAnchor = this.options.renderer.getIndiAnchor(node.data);
@@ -201,7 +203,10 @@ export class ChartUtil {
     this.renderLinks(nodes, svg);
   }
 
-  renderNodes(nodes: Array<d3.HierarchyPointNode<TreeNode>>, svg: SVGSelection) {
+  renderNodes(
+    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
+    svg: SVGSelection
+  ) {
     const boundNodes = svg
       .select('g')
       .selectAll('g.node')
@@ -254,7 +259,10 @@ export class ChartUtil {
     }
   }
 
-  renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>, svg: SVGSelection) {
+  renderLinks(
+    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
+    svg: SVGSelection
+  ) {
     const link = (
       parent: d3.HierarchyPointNode<TreeNode>,
       child: d3.HierarchyPointNode<TreeNode>

@@ -1,6 +1,5 @@
 import { TreeNode as BaseTreeNode } from '../api';
 
-
 export class ChildNodes {
   static readonly EMPTY = new ChildNodes();
 
@@ -16,11 +15,16 @@ export class ChildNodes {
 
   get(type: LinkType): TreeNode[] {
     switch (type) {
-      case LinkType.IndiParents: return this.indiParents;
-      case LinkType.IndiSiblings: return this.indiSiblings;
-      case LinkType.SpouseParents: return this.spouseParents;
-      case LinkType.SpouseSiblings: return this.spouseSiblings;
-      case LinkType.Children: return this.children;
+      case LinkType.IndiParents:
+        return this.indiParents;
+      case LinkType.IndiSiblings:
+        return this.indiSiblings;
+      case LinkType.SpouseParents:
+        return this.spouseParents;
+      case LinkType.SpouseSiblings:
+        return this.spouseSiblings;
+      case LinkType.Children:
+        return this.children;
     }
   }
 
@@ -43,7 +47,6 @@ interface ChildNodesOverrides {
   children?: TreeNode[];
 }
 
-
 export interface TreeNode extends BaseTreeNode {
   parentNode: TreeNode;
   childNodes: ChildNodes;
@@ -63,18 +66,28 @@ export interface TreeNode extends BaseTreeNode {
   duplicated?: boolean;
 
   /** Y coordinates for different types of outgoing links */
-  linkYs?: {indi: number, spouse: number, children: number};
+  linkYs?: { indi: number; spouse: number; children: number };
 }
 
-
-export enum LinkType { IndiParents, IndiSiblings, SpouseParents, SpouseSiblings, Children }
+export enum LinkType {
+  IndiParents,
+  IndiSiblings,
+  SpouseParents,
+  SpouseSiblings,
+  Children,
+}
 
 export function otherSideLinkType(type: LinkType): LinkType {
   switch (type) {
-    case LinkType.IndiParents:    return LinkType.Children;
-    case LinkType.IndiSiblings:   return LinkType.IndiSiblings;
-    case LinkType.SpouseParents:  return LinkType.Children;
-    case LinkType.SpouseSiblings: return LinkType.IndiSiblings;
-    case LinkType.Children:       return LinkType.IndiParents;
+    case LinkType.IndiParents:
+      return LinkType.Children;
+    case LinkType.IndiSiblings:
+      return LinkType.IndiSiblings;
+    case LinkType.SpouseParents:
+      return LinkType.Children;
+    case LinkType.SpouseSiblings:
+      return LinkType.IndiSiblings;
+    case LinkType.Children:
+      return LinkType.IndiParents;
   }
 }

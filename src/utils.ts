@@ -1,6 +1,8 @@
 export type Direction = -1 | 0 | 1;
-export interface Vec2 {x: number; y: number;}
-
+export interface Vec2 {
+  x: number;
+  y: number;
+}
 
 export function nonEmpty<T>(array: T[]): boolean {
   return !!(array && array.length);
