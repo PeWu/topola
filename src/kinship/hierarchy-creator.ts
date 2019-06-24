@@ -54,28 +54,19 @@ export class HierarchyCreator {
       upRoot!.indi = { id: this.startFamIndi };
       downRoot!.indi = { id: this.startFamIndi };
     }
-    const layerEnd = { id: 'LAYER END MARKER' } as TreeNode;
-    let queue = [upRoot, layerEnd];
-    let otherQueue = [downRoot];
+    const queue = [upRoot, downRoot];
 
     while (queue.length) {
       const node = queue.shift()!;
-      if (node !== layerEnd) {
-        const filter =
-          node === upRoot
-            ? HierarchyCreator.UP_FILTER
-            : node === downRoot
-            ? HierarchyCreator.DOWN_FILTER
-            : HierarchyCreator.ALL_ACCEPTING_FILTER; //TODO: Filter only on root node?
-        this.fillNodeData(node, filter);
-        for (const childNode of node.childNodes.getAll()) {
-          queue.push(childNode);
-        }
-      } else {
-        [queue, otherQueue] = otherQueue.length
-          ? [otherQueue, queue]
-          : [queue, otherQueue];
-        if (queue.length) queue.push(layerEnd);
+      const filter =
+        node === upRoot
+          ? HierarchyCreator.UP_FILTER
+          : node === downRoot
+          ? HierarchyCreator.DOWN_FILTER
+          : HierarchyCreator.ALL_ACCEPTING_FILTER; //TODO: Filter only on root node?
+      this.fillNodeData(node, filter);
+      for (const childNode of node.childNodes.getAll()) {
+        queue.push(childNode);
       }
     }
 
