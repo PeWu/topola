@@ -3,6 +3,8 @@ import { flextree } from 'd3-flextree';
 
 import { ChartInfo, ChartOptions, TreeNode } from './api';
 
+type SVGSelection = d3.Selection<d3.BaseType, {}, d3.BaseType, {}>;
+
 /** Horizontal distance between boxes. */
 export const H_SPACING = 15;
 /** Vertical distance between boxes. */
@@ -94,7 +96,9 @@ export class ChartUtil {
   }
 
   private linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
-    const nodeIndex = node.parent!.children!.findIndex(n => n.id === node.id);
+    const nodeIndex = node.parent!.children!.findIndex(
+      n => n.data.id === node.data.id
+    );
     // Assert nodeIndex > 0.
     const siblingNode = node.parent!.children![nodeIndex - 1];
     const sAnchor = this.options.renderer.getIndiAnchor(node.data);
@@ -120,10 +124,10 @@ export class ChartUtil {
     );
   }
 
-  layOutChart(
-    root: d3.HierarchyNode<TreeNode>,
+  layOutChart<N extends TreeNode>(
+    root: d3.HierarchyNode<N>,
     flipVertically = false
-  ): Array<d3.HierarchyPointNode<TreeNode>> {
+  ): Array<d3.HierarchyPointNode<N>> {
     // Add styles so that calculating text size is correct.
     const svg = d3.select(this.options.svgSelector);
     if (svg.select('style').empty()) {
@@ -161,7 +165,7 @@ export class ChartUtil {
     });
 
     // Assigns the x and y position for the nodes.
-    const treemap = flextree<TreeNode>()
+    const treemap = flextree<N>()
       .nodeSize(node => {
         if (this.options.horizontal) {
           const maxChildSize =
@@ -194,12 +198,15 @@ export class ChartUtil {
   }
 
   renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
-    const svg = d3.select(this.options.svgSelector);
-    if (svg.select('g').empty()) {
-      svg.append('g');
-    }
+    const svg = this.getSvgForRendering();
+    this.renderNodes(nodes, svg);
+    this.renderLinks(nodes, svg);
+  }
 
-    // Render nodes.
+  renderNodes(
+    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
+    svg: SVGSelection
+  ) {
     const boundNodes = svg
       .select('g')
       .selectAll('g.node')
@@ -250,7 +257,12 @@ export class ChartUtil {
     } else {
       boundNodes.exit().remove();
     }
+  }
 
+  renderLinks(
+    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
+    svg: SVGSelection
+  ) {
     const link = (
       parent: d3.HierarchyPointNode<TreeNode>,
       child: d3.HierarchyPointNode<TreeNode>
@@ -271,7 +283,6 @@ export class ChartUtil {
       return this.linkVertical(parent, child);
     };
 
-    // Render links.
     const links = nodes.filter(n => !!n.parent || n.data.additionalMarriage);
     const boundLinks = svg
       .select('g')
@@ -311,5 +322,11 @@ export class ChartUtil {
     } else {
       boundLinks.exit().remove();
     }
+  }
+
+  getSvgForRendering(): SVGSelection {
+    const svg = d3.select(this.options.svgSelector);
+    if (svg.select('g').empty()) svg.append('g');
+    return svg;
   }
 }

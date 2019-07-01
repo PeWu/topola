@@ -1,3 +1,4 @@
+import 'array-flat-polyfill';
 export * from './ancestor-chart';
 export * from './api';
 export * from './chart-util';
@@ -8,6 +9,7 @@ export * from './descendant-chart';
 export * from './detailed-renderer';
 export * from './gedcom';
 export * from './hourglass-chart';
+export * from './kinship-chart';
 export * from './relatives-chart';
 export * from './simple-api';
 export * from './simple-renderer';

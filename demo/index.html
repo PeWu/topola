@@ -7,6 +7,15 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="bundle.js"></script>
     <script>
+      d3.text('data/family2.ged', (gedcom) => {
+        var json = topola.gedcomToJson(gedcom);
+        topola.createChart({
+          json,
+          svgSelector: '#kinship',
+          chartType: topola.KinshipChart,
+          renderer: topola.DetailedRenderer,
+        }).render();
+      });
       d3.text('data/family.ged', (gedcom) => {
         var json = topola.gedcomToJson(gedcom);
         topola.createChart({
@@ -98,12 +107,20 @@
   <body>
     <h1>Table of contents</h1>
     <ul>
+      <li><a href="#kinshipTitle">Kinship chart</a>
       <li><a href="#relativesTitle">Relatives chart</a>
       <li><a href="#hourglassTitle">Hourglass – vertical layout</a>
       <li><a href="#ancestorsTitle">Ancestors – horizontal layout</a>
       <li><a href="#tudorTitle">Tree with images</a>
       <li><a href="#descendantsTitle">Descendants – simple boxes</a>
     </ul>
+
+    <h1 id="kinshipTitle">Kinship chart</h1>
+    <div>
+        <button onclick="download('kinship')">Download SVG</button>
+        <button onclick="print('kinship')">Print</button>
+    </div>
+    <svg class="graph" id="kinship"/>
 
     <h1 id="relativesTitle">Relatives chart</h1>
     <div>
