@@ -210,7 +210,7 @@ export class ChartUtil {
     const boundNodes = svg
       .select('g')
       .selectAll('g.node')
-      .data(nodes, (d: d3.HierarchyPointNode<Node>) => d.id!);
+      .data(nodes, (d: d3.HierarchyPointNode<TreeNode>) => d.id!);
 
     const nodeEnter = boundNodes.enter().append('g' as string);
     nodeEnter
