@@ -35,10 +35,10 @@ export function getChartInfo(
   nodes: Array<d3.HierarchyPointNode<TreeNode>>
 ): ChartInfo {
   // Calculate chart boundaries.
-  const x0 = d3.min(nodes.map(d => d.x - d.data.width! / 2))! - MARGIN;
-  const y0 = d3.min(nodes.map(d => d.y - d.data.height! / 2))! - MARGIN;
-  const x1 = d3.max(nodes.map(d => d.x + d.data.width! / 2))! + MARGIN;
-  const y1 = d3.max(nodes.map(d => d.y + d.data.height! / 2))! + MARGIN;
+  const x0 = d3.min(nodes, d => d.x - d.data.width! / 2)! - MARGIN;
+  const y0 = d3.min(nodes, d => d.y - d.data.height! / 2)! - MARGIN;
+  const x1 = d3.max(nodes, d => d.x + d.data.width! / 2)! + MARGIN;
+  const y1 = d3.max(nodes, d => d.y + d.data.height! / 2)! + MARGIN;
   return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 
@@ -46,10 +46,10 @@ export function getChartInfoWithoutMargin(
   nodes: Array<d3.HierarchyPointNode<TreeNode>>
 ): ChartInfo {
   // Calculate chart boundaries.
-  const x0 = d3.min(nodes.map(d => d.x - d.data.width! / 2))!;
-  const y0 = d3.min(nodes.map(d => d.y - d.data.height! / 2))!;
-  const x1 = d3.max(nodes.map(d => d.x + d.data.width! / 2))!;
-  const y1 = d3.max(nodes.map(d => d.y + d.data.height! / 2))!;
+  const x0 = d3.min(nodes, d => d.x - d.data.width! / 2)!;
+  const y0 = d3.min(nodes, d => d.y - d.data.height! / 2)!;
+  const x1 = d3.max(nodes, d => d.x + d.data.width! / 2)!;
+  const y1 = d3.max(nodes, d => d.y + d.data.height! / 2)!;
   return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 
