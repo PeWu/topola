@@ -90,15 +90,15 @@ function parseDate(parts: string[]): Date | undefined {
 export function getDate(gedcomDate: string): DateOrRange | undefined {
   const parts = gedcomDate.split(' ');
   const firstPart = parts[0].toLowerCase();
-  if (firstPart === 'bet') {
+  if (firstPart.startsWith('bet')) {
     const i = parts.findIndex(x => x.toLowerCase() === 'and');
     const from = parseDate(parts.slice(1, i));
     const to = parseDate(parts.slice(i + 1));
     return { dateRange: { from, to } };
   }
-  if (firstPart === 'bef' || firstPart === 'aft') {
+  if (firstPart.startsWith('bef') || firstPart.startsWith('aft')) {
     const date = parseDate(parts.slice(1));
-    if (firstPart === 'bef') {
+    if (firstPart.startsWith('bef')) {
       return { dateRange: { to: date } };
     }
     return { dateRange: { from: date } };
