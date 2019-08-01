@@ -69,7 +69,9 @@
         hiddenElement.href = 'data:attachment/text,' + encodeURIComponent(contents);
         hiddenElement.target = '_blank';
         hiddenElement.download = elementId + '.svg';
+        document.body.appendChild(hiddenElement);
         hiddenElement.click();
+        document.body.removeChild(hiddenElement);
       }
 
       function print(elementId) {
