@@ -1,4 +1,7 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.topola = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+Array.prototype.flat||Object.defineProperty(Array.prototype,"flat",{configurable:!0,value:function r(){var t=isNaN(arguments[0])?1:Number(arguments[0]);return t?Array.prototype.reduce.call(this,function(a,e){return Array.isArray(e)?a.push.apply(a,r.call(e,t-1)):a.push(e),a},[]):Array.prototype.slice.call(this)},writable:!0}),Array.prototype.flatMap||Object.defineProperty(Array.prototype,"flatMap",{configurable:!0,value:function(r){return Array.prototype.map.apply(this,arguments).flat()},writable:!0})
+
+},{}],2:[function(require,module,exports){
 // https://d3js.org/d3-array/ Version 1.2.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -590,7 +593,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 // https://d3js.org/d3-axis/ Version 1.0.9 Copyright 2018 Mike Bostock.
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -785,7 +788,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 // https://d3js.org/d3-brush/ Version 1.0.4. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-dispatch'), require('d3-drag'), require('d3-interpolate'), require('d3-selection'), require('d3-transition')) :
@@ -1354,7 +1357,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-dispatch":8,"d3-drag":9,"d3-interpolate":18,"d3-selection":25,"d3-transition":30}],4:[function(require,module,exports){
+},{"d3-dispatch":9,"d3-drag":10,"d3-interpolate":19,"d3-selection":26,"d3-transition":31}],5:[function(require,module,exports){
 // https://d3js.org/d3-chord/ Version 1.0.4. Copyright 2017 Mike Bostock.
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array'), require('d3-path')) :
@@ -1586,7 +1589,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-array":1,"d3-path":19}],5:[function(require,module,exports){
+},{"d3-array":2,"d3-path":20}],6:[function(require,module,exports){
 // https://d3js.org/d3-collection/ Version 1.0.4. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -1805,7 +1808,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // https://d3js.org/d3-color/ Version 1.2.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -2356,7 +2359,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 // https://d3js.org/d3-contour/ Version 1.3.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array')) :
@@ -2789,7 +2792,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-array":1}],8:[function(require,module,exports){
+},{"d3-array":2}],9:[function(require,module,exports){
 // https://d3js.org/d3-dispatch/ Version 1.0.3. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -2886,7 +2889,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // https://d3js.org/d3-drag/ Version 1.2.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-dispatch'), require('d3-selection')) :
@@ -3122,7 +3125,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-dispatch":8,"d3-selection":25}],10:[function(require,module,exports){
+},{"d3-dispatch":9,"d3-selection":26}],11:[function(require,module,exports){
 // https://d3js.org/d3-dsv/ Version 1.0.8. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -3286,7 +3289,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // https://d3js.org/d3-ease/ Version 1.0.3. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -3547,7 +3550,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 // https://d3js.org/d3-fetch/ Version 1.1.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-dsv')) :
@@ -3651,7 +3654,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-dsv":10}],13:[function(require,module,exports){
+},{"d3-dsv":11}],14:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -4446,7 +4449,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 // https://d3js.org/d3-force/ Version 1.1.0. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-quadtree'), require('d3-collection'), require('d3-dispatch'), require('d3-timer')) :
@@ -5108,7 +5111,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-collection":5,"d3-dispatch":8,"d3-quadtree":21,"d3-timer":29}],15:[function(require,module,exports){
+},{"d3-collection":6,"d3-dispatch":9,"d3-quadtree":22,"d3-timer":30}],16:[function(require,module,exports){
 // https://d3js.org/d3-format/ Version 1.3.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -5432,7 +5435,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // https://d3js.org/d3-geo/ Version 1.10.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array')) :
@@ -8516,7 +8519,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-array":1}],17:[function(require,module,exports){
+},{"d3-array":2}],18:[function(require,module,exports){
 // https://d3js.org/d3-hierarchy/ Version 1.1.6. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -9808,7 +9811,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 // https://d3js.org/d3-interpolate/ Version 1.2.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-color')) :
@@ -10365,7 +10368,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-color":6}],19:[function(require,module,exports){
+},{"d3-color":7}],20:[function(require,module,exports){
 // https://d3js.org/d3-path/ Version 1.0.5. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -10508,7 +10511,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // https://d3js.org/d3-polygon/ Version 1.0.3. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -10660,7 +10663,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 // https://d3js.org/d3-quadtree/ Version 1.0.3. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -11097,7 +11100,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 // https://d3js.org/d3-random/ Version 1.1.0. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -11214,7 +11217,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 // https://d3js.org/d3-scale-chromatic/ Version 1.3.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-interpolate'), require('d3-color')) :
@@ -11714,7 +11717,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-color":6,"d3-interpolate":18}],24:[function(require,module,exports){
+},{"d3-color":7,"d3-interpolate":19}],25:[function(require,module,exports){
 // https://d3js.org/d3-scale/ Version 2.1.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-array'), require('d3-collection'), require('d3-interpolate'), require('d3-format'), require('d3-time'), require('d3-time-format')) :
@@ -12617,7 +12620,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-array":1,"d3-collection":5,"d3-format":15,"d3-interpolate":18,"d3-time":28,"d3-time-format":27}],25:[function(require,module,exports){
+},{"d3-array":2,"d3-collection":6,"d3-format":16,"d3-interpolate":19,"d3-time":29,"d3-time-format":28}],26:[function(require,module,exports){
 // https://d3js.org/d3-selection/ Version 1.3.0. Copyright 2018 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -13614,7 +13617,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 // https://d3js.org/d3-shape/ Version 1.2.0. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-path')) :
@@ -15551,7 +15554,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-path":19}],27:[function(require,module,exports){
+},{"d3-path":20}],28:[function(require,module,exports){
 // https://d3js.org/d3-time-format/ Version 2.1.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-time')) :
@@ -16241,7 +16244,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-time":28}],28:[function(require,module,exports){
+},{"d3-time":29}],29:[function(require,module,exports){
 // https://d3js.org/d3-time/ Version 1.0.8. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -16628,7 +16631,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 // https://d3js.org/d3-timer/ Version 1.0.7. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -16779,7 +16782,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 // https://d3js.org/d3-transition/ Version 1.1.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-dispatch'), require('d3-timer'), require('d3-interpolate'), require('d3-color'), require('d3-ease')) :
@@ -17568,7 +17571,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-color":6,"d3-dispatch":8,"d3-ease":11,"d3-interpolate":18,"d3-selection":25,"d3-timer":29}],31:[function(require,module,exports){
+},{"d3-color":7,"d3-dispatch":9,"d3-ease":12,"d3-interpolate":19,"d3-selection":26,"d3-timer":30}],32:[function(require,module,exports){
 // https://d3js.org/d3-voronoi/ Version 1.1.2. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -18569,7 +18572,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 // https://d3js.org/d3-zoom/ Version 1.7.1. Copyright 2017 Mike Bostock.
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-dispatch'), require('d3-drag'), require('d3-interpolate'), require('d3-selection'), require('d3-transition')) :
@@ -19073,7 +19076,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-},{"d3-dispatch":8,"d3-drag":9,"d3-interpolate":18,"d3-selection":25,"d3-transition":30}],33:[function(require,module,exports){
+},{"d3-dispatch":9,"d3-drag":10,"d3-interpolate":19,"d3-selection":26,"d3-transition":31}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -19146,7 +19149,7 @@ Object.keys(d3Zoom).forEach(function (key) { exports[key] = d3Zoom[key]; });
 exports.version = version;
 Object.defineProperty(exports, "event", {get: function() { return d3Selection.event; }});
 
-},{"d3-array":1,"d3-axis":2,"d3-brush":3,"d3-chord":4,"d3-collection":5,"d3-color":6,"d3-contour":7,"d3-dispatch":8,"d3-drag":9,"d3-dsv":10,"d3-ease":11,"d3-fetch":12,"d3-force":14,"d3-format":15,"d3-geo":16,"d3-hierarchy":17,"d3-interpolate":18,"d3-path":19,"d3-polygon":20,"d3-quadtree":21,"d3-random":22,"d3-scale":24,"d3-scale-chromatic":23,"d3-selection":25,"d3-shape":26,"d3-time":28,"d3-time-format":27,"d3-timer":29,"d3-transition":30,"d3-voronoi":31,"d3-zoom":32}],34:[function(require,module,exports){
+},{"d3-array":2,"d3-axis":3,"d3-brush":4,"d3-chord":5,"d3-collection":6,"d3-color":7,"d3-contour":8,"d3-dispatch":9,"d3-drag":10,"d3-dsv":11,"d3-ease":12,"d3-fetch":13,"d3-force":15,"d3-format":16,"d3-geo":17,"d3-hierarchy":18,"d3-interpolate":19,"d3-path":20,"d3-polygon":21,"d3-quadtree":22,"d3-random":23,"d3-scale":25,"d3-scale-chromatic":24,"d3-selection":26,"d3-shape":27,"d3-time":29,"d3-time-format":28,"d3-timer":30,"d3-transition":31,"d3-voronoi":32,"d3-zoom":33}],35:[function(require,module,exports){
 function hasTag(val) {
     return function(node) {
         return node.tag === val;
@@ -19221,7 +19224,7 @@ function familyLinks(family) {
 
 module.exports = d3ize;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var crawl = require('tree-crawl');
 
 // from https://github.com/madprime/python-gedcom/blob/master/gedcom/__init__.py
@@ -19298,7 +19301,7 @@ function parse(input) {
 module.exports.parse = parse;
 module.exports.d3ize = require('./d3ize');
 
-},{"./d3ize":34,"tree-crawl":36}],36:[function(require,module,exports){
+},{"./d3ize":35,"tree-crawl":37}],37:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
@@ -19601,7 +19604,7 @@ return crawl;
 
 })));
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 "use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -19741,7 +19744,7 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":38,"./id-generator":45,"d3":33}],38:[function(require,module,exports){
+},{"./chart-util":39,"./id-generator":47,"d3":34}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19769,159 +19772,58 @@ function linkId(node) {
 }
 function getChartInfo(nodes) {
     // Calculate chart boundaries.
-    var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.width / 2; })) - MARGIN;
-    var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.height / 2; })) - MARGIN;
-    var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.width / 2; })) + MARGIN;
-    var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.height / 2; })) + MARGIN;
+    var x0 = d3.min(nodes, function (d) { return d.x - d.data.width / 2; }) - MARGIN;
+    var y0 = d3.min(nodes, function (d) { return d.y - d.data.height / 2; }) - MARGIN;
+    var x1 = d3.max(nodes, function (d) { return d.x + d.data.width / 2; }) + MARGIN;
+    var y1 = d3.max(nodes, function (d) { return d.y + d.data.height / 2; }) + MARGIN;
     return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 exports.getChartInfo = getChartInfo;
 function getChartInfoWithoutMargin(nodes) {
     // Calculate chart boundaries.
-    var x0 = d3.min(nodes.map(function (d) { return d.x - d.data.width / 2; }));
-    var y0 = d3.min(nodes.map(function (d) { return d.y - d.data.height / 2; }));
-    var x1 = d3.max(nodes.map(function (d) { return d.x + d.data.width / 2; }));
-    var y1 = d3.max(nodes.map(function (d) { return d.y + d.data.height / 2; }));
+    var x0 = d3.min(nodes, function (d) { return d.x - d.data.width / 2; });
+    var y0 = d3.min(nodes, function (d) { return d.y - d.data.height / 2; });
+    var x1 = d3.max(nodes, function (d) { return d.x + d.data.width / 2; });
+    var y1 = d3.max(nodes, function (d) { return d.y + d.data.height / 2; });
     return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 exports.getChartInfoWithoutMargin = getChartInfoWithoutMargin;
-/**
- * Returns the relative position of the family box for the vertical layout.
- */
-function getFamPositionVertical(node) {
-    var indiWidth = node.indi ? node.indi.width : 0;
-    var spouseWidth = node.spouse ? node.spouse.width : 0;
-    var familyWidth = node.family.width;
-    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
-        return (indiWidth + spouseWidth - familyWidth) / 2;
-    }
-    if (familyWidth / 2 >= spouseWidth) {
-        return indiWidth + spouseWidth - familyWidth;
-    }
-    if (familyWidth / 2 >= indiWidth) {
-        return 0;
-    }
-    return indiWidth - familyWidth / 2;
-}
-exports.getFamPositionVertical = getFamPositionVertical;
-/**
- * Returns the relative position of the family box for the horizontal layout.
- */
-function getFamPositionHorizontal(node) {
-    var indiHeight = node.indi ? node.indi.height : 0;
-    var spouseHeight = node.spouse ? node.spouse.height : 0;
-    var familyHeight = node.family.height;
-    if (!node.indi || !node.spouse) {
-        return (indiHeight + spouseHeight - familyHeight) / 2;
-    }
-    return indiHeight - familyHeight / 2;
-}
-exports.getFamPositionHorizontal = getFamPositionHorizontal;
 /** Utility class with common code for all chart types. */
 var ChartUtil = /** @class */ (function () {
     function ChartUtil(options) {
         this.options = options;
     }
-    /** Returns the horizontal size. */
-    ChartUtil.prototype.getHSize = function (node) {
-        if (this.options.horizontal) {
-            return ((node.indi ? node.indi.height : 0) +
-                (node.spouse ? node.spouse.height : 0));
-        }
-        var indiHSize = (node.indi ? node.indi.width : 0) + (node.spouse ? node.spouse.width : 0);
-        return d3.max([indiHSize, node.family && node.family.width]);
-    };
-    /** Returns the vertical size. */
-    ChartUtil.prototype.getVSize = function (node) {
-        return this.getIndiVSize(node) + this.getFamVSize(node);
-    };
-    ChartUtil.prototype.getFamVSize = function (node) {
-        if (this.options.horizontal) {
-            return node.family ? node.family.width : 0;
-        }
-        return node.family ? node.family.height : 0;
-    };
-    /** Returns the vertical size of individual boxes. */
-    ChartUtil.prototype.getIndiVSize = function (node) {
-        if (this.options.horizontal) {
-            return d3.max([
-                node.indi && node.indi.width,
-                node.spouse && node.spouse.width,
-                0,
-            ]);
-        }
-        return d3.max([
-            node.indi && node.indi.height,
-            node.spouse && node.spouse.height,
-            0,
-        ]);
-    };
     /** Creates a path from parent to the child node (horizontal layout). */
     ChartUtil.prototype.linkHorizontal = function (s, d) {
+        var sAnchor = this.options.renderer.getFamilyAnchor(s.data);
+        var dAnchor = s.id === d.data.spouseParentNodeId
+            ? this.options.renderer.getSpouseAnchor(d.data)
+            : this.options.renderer.getIndiAnchor(d.data);
+        var _a = [s.x + sAnchor[0], s.y + sAnchor[1]], sx = _a[0], sy = _a[1];
+        var _b = [d.x + dAnchor[0], d.y + dAnchor[1]], dx = _b[0], dy = _b[1];
         var midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
-        var sx = s.x - s.data.width / 2 + this.getIndiVSize(s.data) / 2;
-        var famYOffset = s.data.family
-            ? d3.max([-getFamPositionHorizontal(s.data), 0])
-            : 0;
-        var sy = s.y -
-            (s.data.indi && s.data.spouse
-                ? s.data.height / 2 - s.data.indi.height
-                : 0) +
-            famYOffset;
-        var dx = d.x - d.data.width / 2 + this.getIndiVSize(d.data) / 2;
-        var dy = d.data.spouse
-            ? s.id === d.data.spouseParentNodeId
-                ? d.y + (d.data.indi ? d.data.indi.height / 2 : 0)
-                : d.y - d.data.spouse.height / 2
-            : d.y;
         return "M " + sx + " " + sy + "\n            L " + midX + " " + sy + ",\n              " + midX + " " + dy + ",\n              " + dx + " " + dy;
     };
     /** Creates a path from parent to the child node (vertical layout). */
     ChartUtil.prototype.linkVertical = function (s, d) {
-        // console.log('#7a', s, d);
+        var sAnchor = this.options.renderer.getFamilyAnchor(s.data);
+        var dAnchor = s.id === d.data.spouseParentNodeId
+            ? this.options.renderer.getSpouseAnchor(d.data)
+            : this.options.renderer.getIndiAnchor(d.data);
+        var _a = [s.x + sAnchor[0], s.y + sAnchor[1]], sx = _a[0], sy = _a[1];
+        var _b = [d.x + dAnchor[0], d.y + dAnchor[1]], dx = _b[0], dy = _b[1];
         var midY = s.y + s.data.height / 2 + exports.V_SPACING / 2;
-        var famXOffset = s.data.family
-            ? d3.max([-getFamPositionVertical(s.data), 0])
-            : 0;
-        var sx = s.x -
-            (s.data.indi && s.data.spouse
-                ? s.data.width / 2 - s.data.indi.width
-                : 0) +
-            famXOffset;
-        var sy = s.y - s.data.height / 2 + this.getIndiVSize(s.data) / 2;
-        var dx = d.data.spouse
-            ? s.id === d.data.spouseParentNodeId
-                ? d.x + (d.data.indi ? d.data.indi.width / 2 : 0)
-                : d.x - d.data.spouse.width / 2
-            : d.x;
-        var dy = d.y - d.data.height / 2 + this.getIndiVSize(d.data) / 2;
         return "M " + sx + " " + sy + "\n            L " + sx + " " + midY + ",\n              " + dx + " " + midY + ",\n              " + dx + " " + dy;
     };
     ChartUtil.prototype.linkAdditionalMarriage = function (node) {
-        var nodeIndex = node.parent.children.findIndex(function (n) { return n.id === node.id; });
+        var nodeIndex = node.parent.children.findIndex(function (n) { return n.data.id === node.data.id; });
         // Assert nodeIndex > 0.
         var siblingNode = node.parent.children[nodeIndex - 1];
-        var sFamXOffset = node.data.family
-            ? d3.max([-getFamPositionVertical(node.data), 0])
-            : 0;
-        var sx = node.x + (node.data.indi.width - node.data.width) / 2 + sFamXOffset;
-        var sy = node.y + (node.data.indi.height - node.data.height) / 2;
-        var dFamXOffset = siblingNode.data.family
-            ? d3.max([-getFamPositionVertical(siblingNode.data), 0])
-            : 0;
-        var dx = siblingNode.x +
-            (siblingNode.data.indi.width - siblingNode.data.width) / 2 +
-            dFamXOffset;
-        var dy = siblingNode.y +
-            (siblingNode.data.indi.height - siblingNode.data.height) / 2;
+        var sAnchor = this.options.renderer.getIndiAnchor(node.data);
+        var dAnchor = this.options.renderer.getIndiAnchor(siblingNode.data);
+        var _a = [node.x + sAnchor[0], node.y + sAnchor[1]], sx = _a[0], sy = _a[1];
+        var _b = [siblingNode.x + dAnchor[0], siblingNode.y + dAnchor[1]], dx = _b[0], dy = _b[1];
         return "M " + sx + ", " + sy + "\n            L " + dx + ", " + dy;
-    };
-    ChartUtil.prototype.setPreferredIndiSize = function (indi) {
-        var _a;
-        if (!indi) {
-            return;
-        }
-        _a = this.options.renderer.getPreferredIndiSize(indi.id), indi.width = _a[0], indi.height = _a[1];
     };
     ChartUtil.prototype.updateSvgDimensions = function (chartInfo) {
         var svg = d3.select(this.options.svgSelector);
@@ -19942,6 +19844,34 @@ var ChartUtil = /** @class */ (function () {
         if (svg.select('style').empty()) {
             svg.append('style').text(this.options.renderer.getCss());
         }
+        // Assign generation number.
+        root.each(function (node) {
+            node.data.generation =
+                node.depth * (flipVertically ? -1 : 1) +
+                    (_this.options.baseGeneration || 0);
+        });
+        // Set preferred sizes.
+        this.options.renderer.updateNodes(root.descendants());
+        var vSizePerDepth = new Map();
+        root.each(function (node) {
+            var depth = node.depth;
+            var maxVSize = d3.max([
+                _this.options.horizontal ? node.data.width : node.data.height,
+                vSizePerDepth.get(depth),
+            ]);
+            vSizePerDepth.set(depth, maxVSize);
+        });
+        // Set sizes of whole nodes.
+        root.each(function (node) {
+            var vSize = vSizePerDepth.get(node.depth);
+            if (_this.options.horizontal) {
+                node.data.width = vSize;
+            }
+            else {
+                node.data.height = vSize;
+            }
+        });
+        // Assigns the x and y position for the nodes.
         var treemap = d3_flextree_1.flextree()
             .nodeSize(function (node) {
             if (_this.options.horizontal) {
@@ -19958,71 +19888,6 @@ var ChartUtil = /** @class */ (function () {
             ];
         })
             .spacing(function (a, b) { return exports.H_SPACING; });
-        // Assign generation number.
-        root.each(function (node) {
-            node.data.generation =
-                node.depth * (flipVertically ? -1 : 1) +
-                    (_this.options.baseGeneration || 0);
-        });
-        // Set preferred sizes.
-        root.each(function (node) {
-            var _a;
-            _this.setPreferredIndiSize(node.data.indi);
-            _this.setPreferredIndiSize(node.data.spouse);
-            if (node.data.family) {
-                _a = _this.options.renderer.getPreferredFamSize(node.data.family.id), node.data.family.width = _a[0], node.data.family.height = _a[1];
-            }
-        });
-        // Calculate individual vertical size per depth.
-        var indiVSizePerDepth = new Map();
-        root.each(function (node) {
-            var depth = node.depth;
-            var maxIndiVSize = d3.max([
-                _this.getIndiVSize(node.data),
-                indiVSizePerDepth.get(depth),
-            ]);
-            indiVSizePerDepth.set(depth, maxIndiVSize);
-        });
-        // Set same width for each depth.
-        root.each(function (node) {
-            if (_this.options.horizontal) {
-                if (node.data.indi) {
-                    node.data.indi.width = indiVSizePerDepth.get(node.depth);
-                }
-                if (node.data.spouse) {
-                    node.data.spouse.width = indiVSizePerDepth.get(node.depth);
-                }
-            }
-            else {
-                if (node.data.indi) {
-                    node.data.indi.height = indiVSizePerDepth.get(node.depth);
-                }
-                if (node.data.spouse) {
-                    node.data.spouse.height = indiVSizePerDepth.get(node.depth);
-                }
-            }
-        });
-        var vSizePerDepth = new Map();
-        root.each(function (node) {
-            var depth = node.depth;
-            var maxVSize = d3.max([
-                _this.getVSize(node.data),
-                vSizePerDepth.get(depth),
-            ]);
-            vSizePerDepth.set(depth, maxVSize);
-        });
-        // Set sizes of whole nodes.
-        root.each(function (node) {
-            if (_this.options.horizontal) {
-                node.data.width = vSizePerDepth.get(node.depth);
-                node.data.height = _this.getHSize(node.data);
-            }
-            else {
-                node.data.height = vSizePerDepth.get(node.depth);
-                node.data.width = _this.getHSize(node.data);
-            }
-        });
-        // Assigns the x and y position for the nodes.
         var nodes = treemap(root).descendants();
         // Swap x-y coordinates for horizontal layout.
         nodes.forEach(function (node) {
@@ -20037,12 +19902,11 @@ var ChartUtil = /** @class */ (function () {
         return nodes;
     };
     ChartUtil.prototype.renderChart = function (nodes) {
-        var _this = this;
-        var svg = d3.select(this.options.svgSelector);
-        if (svg.select('g').empty()) {
-            svg.append('g');
-        }
-        // Render nodes.
+        var svg = this.getSvgForRendering();
+        this.renderNodes(nodes, svg);
+        this.renderLinks(nodes, svg);
+    };
+    ChartUtil.prototype.renderNodes = function (nodes, svg) {
         var boundNodes = svg
             .select('g')
             .selectAll('g.node')
@@ -20050,7 +19914,9 @@ var ChartUtil = /** @class */ (function () {
         var nodeEnter = boundNodes.enter().append('g');
         nodeEnter
             .merge(boundNodes)
-            .attr('class', function (node) { return "node generation" + node.data.generation; });
+            .attr('class', function (node) {
+            return "node generation" + node.data.generation;
+        });
         nodeEnter.attr('transform', function (node) {
             return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
                 node.data.height / 2) + ")";
@@ -20085,6 +19951,9 @@ var ChartUtil = /** @class */ (function () {
         else {
             boundNodes.exit().remove();
         }
+    };
+    ChartUtil.prototype.renderLinks = function (nodes, svg) {
+        var _this = this;
         var link = function (parent, child) {
             if (child.data.additionalMarriage) {
                 return _this.linkAdditionalMarriage(child);
@@ -20101,7 +19970,6 @@ var ChartUtil = /** @class */ (function () {
             }
             return _this.linkVertical(parent, child);
         };
-        // Render links.
         var links = nodes.filter(function (n) { return !!n.parent || n.data.additionalMarriage; });
         var boundLinks = svg
             .select('g')
@@ -20141,11 +20009,190 @@ var ChartUtil = /** @class */ (function () {
             boundLinks.exit().remove();
         }
     };
+    ChartUtil.prototype.getSvgForRendering = function () {
+        var svg = d3.select(this.options.svgSelector);
+        if (svg.select('g').empty())
+            svg.append('g');
+        return svg;
+    };
     return ChartUtil;
 }());
 exports.ChartUtil = ChartUtil;
 
-},{"d3":33,"d3-flextree":13}],39:[function(require,module,exports){
+},{"d3":34,"d3-flextree":14}],40:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+/**
+ * Common code for tree nodes that are composed of individual and family boxes.
+ */
+var CompositeRenderer = /** @class */ (function () {
+    function CompositeRenderer(options) {
+        this.options = options;
+    }
+    CompositeRenderer.prototype.getPreferredFamSize = function (id) {
+        // No family box in the simple renderer.
+        return [0, 0];
+    };
+    CompositeRenderer.prototype.setPreferredIndiSize = function (indi) {
+        var _a;
+        if (!indi) {
+            return;
+        }
+        _a = this.getPreferredIndiSize(indi.id), indi.width = _a[0], indi.height = _a[1];
+    };
+    CompositeRenderer.prototype.updateNodes = function (nodes) {
+        var _this = this;
+        // Calculate individual vertical size per depth.
+        var indiVSizePerDepth = new Map();
+        nodes.forEach(function (node) {
+            var _a;
+            _this.setPreferredIndiSize(node.data.indi);
+            _this.setPreferredIndiSize(node.data.spouse);
+            var family = node.data.family;
+            if (family) {
+                _a = _this.getPreferredFamSize(family.id), family.width = _a[0], family.height = _a[1];
+            }
+            var depth = node.depth;
+            var maxIndiVSize = d3.max([
+                getIndiVSize(node.data, !!_this.options.horizontal),
+                indiVSizePerDepth.get(depth),
+            ]);
+            indiVSizePerDepth.set(depth, maxIndiVSize);
+        });
+        // Set same width for each depth.
+        nodes.forEach(function (node) {
+            var _a;
+            if (_this.options.horizontal) {
+                if (node.data.indi) {
+                    node.data.indi.width = indiVSizePerDepth.get(node.depth);
+                }
+                if (node.data.spouse) {
+                    node.data.spouse.width = indiVSizePerDepth.get(node.depth);
+                }
+            }
+            else {
+                if (node.data.indi) {
+                    node.data.indi.height = indiVSizePerDepth.get(node.depth);
+                }
+                if (node.data.spouse) {
+                    node.data.spouse.height = indiVSizePerDepth.get(node.depth);
+                }
+            }
+            var vSize = getVSize(node.data, !!_this.options.horizontal);
+            var hSize = getHSize(node.data, !!_this.options.horizontal);
+            _a = _this.options.horizontal
+                ? [vSize, hSize]
+                : [hSize, vSize], node.data.width = _a[0], node.data.height = _a[1];
+        });
+    };
+    CompositeRenderer.prototype.getFamilyAnchor = function (node) {
+        if (this.options.horizontal) {
+            var x_1 = -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+            var famYOffset = node.family
+                ? d3.max([-getFamPositionHorizontal(node), 0])
+                : 0;
+            var y_1 = -(node.indi && node.spouse ? node.height / 2 - node.indi.height : 0) +
+                famYOffset;
+            return [x_1, y_1];
+        }
+        var famXOffset = node.family
+            ? d3.max([-getFamPositionVertical(node), 0])
+            : 0;
+        var x = -(node.indi && node.spouse ? node.width / 2 - node.indi.width : 0) +
+            famXOffset;
+        var y = -node.height / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+        return [x, y];
+    };
+    CompositeRenderer.prototype.getSpouseAnchor = function (node) {
+        if (this.options.horizontal) {
+            var x_2 = -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+            var y_2 = node.indi ? node.indi.height / 2 : 0;
+            return [x_2, y_2];
+        }
+        var x = node.indi ? node.indi.width / 2 : 0;
+        var y = -node.height / 2 + getIndiVSize(node, !!this.options.horizontal) / 2;
+        return [x, y];
+    };
+    CompositeRenderer.prototype.getIndiAnchor = function (node) {
+        if (this.options.horizontal) {
+            var x_3 = -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
+            var y_3 = node.spouse ? -node.spouse.height / 2 : 0;
+            return [x_3, y_3];
+        }
+        var x = node.spouse ? -node.spouse.width / 2 : 0;
+        var y = -node.height / 2 + getIndiVSize(node, !!this.options.horizontal) / 2;
+        return [x, y];
+    };
+    return CompositeRenderer;
+}());
+exports.CompositeRenderer = CompositeRenderer;
+/**
+ * Returns the relative position of the family box for the vertical layout.
+ */
+function getFamPositionVertical(node) {
+    var indiWidth = node.indi ? node.indi.width : 0;
+    var spouseWidth = node.spouse ? node.spouse.width : 0;
+    var familyWidth = node.family.width;
+    if (!node.indi || !node.spouse || indiWidth + spouseWidth <= familyWidth) {
+        return (indiWidth + spouseWidth - familyWidth) / 2;
+    }
+    if (familyWidth / 2 >= spouseWidth) {
+        return indiWidth + spouseWidth - familyWidth;
+    }
+    if (familyWidth / 2 >= indiWidth) {
+        return 0;
+    }
+    return indiWidth - familyWidth / 2;
+}
+exports.getFamPositionVertical = getFamPositionVertical;
+/**
+ * Returns the relative position of the family box for the horizontal layout.
+ */
+function getFamPositionHorizontal(node) {
+    var indiHeight = node.indi ? node.indi.height : 0;
+    var spouseHeight = node.spouse ? node.spouse.height : 0;
+    var familyHeight = node.family.height;
+    if (!node.indi || !node.spouse) {
+        return (indiHeight + spouseHeight - familyHeight) / 2;
+    }
+    return indiHeight - familyHeight / 2;
+}
+exports.getFamPositionHorizontal = getFamPositionHorizontal;
+/** Returns the horizontal size. */
+function getHSize(node, horizontal) {
+    if (horizontal) {
+        return ((node.indi ? node.indi.height : 0) +
+            (node.spouse ? node.spouse.height : 0));
+    }
+    var indiHSize = (node.indi ? node.indi.width : 0) + (node.spouse ? node.spouse.width : 0);
+    return d3.max([indiHSize, node.family ? node.family.width : 0]);
+}
+function getFamVSize(node, horizontal) {
+    if (horizontal) {
+        return node.family ? node.family.width : 0;
+    }
+    return node.family ? node.family.height : 0;
+}
+/** Returns the vertical size of individual boxes. */
+function getIndiVSize(node, horizontal) {
+    if (horizontal) {
+        return d3.max([
+            node.indi ? node.indi.width : 0,
+            node.spouse ? node.spouse.width : 0,
+        ]);
+    }
+    return d3.max([
+        node.indi ? node.indi.height : 0,
+        node.spouse ? node.spouse.height : 0,
+    ]);
+}
+/** Returns the vertical size. */
+function getVSize(node, horizontal) {
+    return getIndiVSize(node, horizontal) + getFamVSize(node, horizontal);
+}
+
+},{"d3":34}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Details of an individual based on Json input. */
@@ -20181,7 +20228,7 @@ var JsonIndiDetails = /** @class */ (function () {
         return (this.json.death && this.json.death.place) || null;
     };
     JsonIndiDetails.prototype.isConfirmedDeath = function () {
-        return this.json.death && this.json.death.confirmed;
+        return !!this.json.death && !!this.json.death.confirmed;
     };
     JsonIndiDetails.prototype.getSex = function () {
         return this.json.sex || null;
@@ -20209,7 +20256,7 @@ var JsonFamDetails = /** @class */ (function () {
         return this.json.children || [];
     };
     JsonFamDetails.prototype.getMarriageDate = function () {
-        return this.json.marriage;
+        return this.json.marriage || null;
     };
     JsonFamDetails.prototype.getMarriagePlace = function () {
         return (this.json.marriage && this.json.marriage.place) || null;
@@ -20238,7 +20285,7 @@ var JsonDataProvider = /** @class */ (function () {
 }());
 exports.JsonDataProvider = JsonDataProvider;
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var MONTHS_EN = new Map([
@@ -20274,13 +20321,13 @@ function getShortMonth(month, locale) {
 }
 function getQualifier(qualifier, locale) {
     var language = locale && locale.split(/[-_]/)[0];
-    var languageMap = QUALIFIERS_I18N.get(language);
+    var languageMap = language && QUALIFIERS_I18N.get(language);
     return languageMap ? languageMap.get(qualifier) : qualifier;
 }
 /** Simple date formatter. */
 function formatDate(date, locale) {
     return [
-        getQualifier(date.qualifier, locale),
+        date.qualifier && getQualifier(date.qualifier, locale),
         date.day,
         date.month && getShortMonth(date.month, locale),
         date.year,
@@ -20289,7 +20336,7 @@ function formatDate(date, locale) {
 }
 exports.formatDate = formatDate;
 
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20453,12 +20500,25 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":38,"./id-generator":45,"d3":33}],42:[function(require,module,exports){
+},{"./chart-util":39,"./id-generator":47,"d3":34}],44:[function(require,module,exports){
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
-var chart_util_1 = require("./chart-util");
 var date_format_1 = require("./date-format");
+var composite_renderer_1 = require("./composite-renderer");
 var INDI_MIN_HEIGHT = 58;
 var INDI_MIN_WIDTH = 64;
 var FAM_MIN_HEIGHT = 10;
@@ -20497,9 +20557,12 @@ var SEX_SYMBOLS = new Map([
  * Renders some details about a person such as date and place of birth
  * and death.
  */
-var DetailedRenderer = /** @class */ (function () {
+var DetailedRenderer = /** @class */ (function (_super) {
+    __extends(DetailedRenderer, _super);
     function DetailedRenderer(options) {
-        this.options = options;
+        var _this = _super.call(this, options) || this;
+        _this.options = options;
+        return _this;
     }
     /** Extracts lines of details for a person. */
     DetailedRenderer.prototype.getIndiDetails = function (indi) {
@@ -20556,13 +20619,13 @@ var DetailedRenderer = /** @class */ (function () {
         var details = this.getIndiDetails(indi);
         var height = d3.max([
             INDI_MIN_HEIGHT + details.length * 14,
-            indi.getImageUrl() && IMAGE_HEIGHT,
+            indi.getImageUrl() ? IMAGE_HEIGHT : 0,
         ]);
         var maxDetailsWidth = d3.max(details.map(function (x) { return getLength(x.text, 'details'); }));
         var width = d3.max([
             maxDetailsWidth + 22,
-            getLength(indi.getFirstName(), 'name') + 8,
-            getLength(indi.getLastName(), 'name') + 8,
+            getLength(indi.getFirstName() || '', 'name') + 8,
+            getLength(indi.getLastName() || '', 'name') + 8,
             INDI_MIN_WIDTH,
         ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
         return [width, height];
@@ -20585,10 +20648,10 @@ var DetailedRenderer = /** @class */ (function () {
             .data(function (node) {
             var result = [];
             var famXOffset = !_this.options.horizontal && node.data.family
-                ? d3.max([-chart_util_1.getFamPositionVertical(node.data), 0])
+                ? d3.max([-composite_renderer_1.getFamPositionVertical(node.data), 0])
                 : 0;
             var famYOffset = _this.options.horizontal && node.data.family
-                ? d3.max([-chart_util_1.getFamPositionHorizontal(node.data), 0])
+                ? d3.max([-composite_renderer_1.getFamPositionHorizontal(node.data), 0])
                 : 0;
             if (node.data.indi) {
                 result.push({
@@ -20648,10 +20711,10 @@ var DetailedRenderer = /** @class */ (function () {
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
             return "translate(" + ((node.indi && node.indi.width) ||
-                node.spouse.width) + ", " + d3.max([chart_util_1.getFamPositionHorizontal(node), 0]) + ")";
+                node.spouse.width) + ", " + d3.max([composite_renderer_1.getFamPositionHorizontal(node), 0]) + ")";
         }
         return "translate(" + d3.max([
-            chart_util_1.getFamPositionVertical(node),
+            composite_renderer_1.getFamPositionVertical(node),
             0,
         ]) + ", " + ((node.indi && node.indi.height) || node.spouse.height) + ")";
     };
@@ -20748,9 +20811,11 @@ var DetailedRenderer = /** @class */ (function () {
             .append('text')
             .attr('class', 'details sex')
             .attr('text-anchor', 'end')
-            .text(function (data) { return SEX_SYMBOLS.get(getIndi(data).getSex()); })
+            .text(function (data) { return SEX_SYMBOLS.get(getIndi(data).getSex() || '') || ''; })
             .merge(update.select('text.sex'));
-        this.transition(sex).attr('transform', function (data) { return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")"; });
+        this.transition(sex).attr('transform', function (data) {
+            return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")";
+        });
         // Image.
         enter
             .filter(function (data) { return !!getIndi(data).getImageUrl(); })
@@ -20824,10 +20889,10 @@ var DetailedRenderer = /** @class */ (function () {
         }
     };
     return DetailedRenderer;
-}());
+}(composite_renderer_1.CompositeRenderer));
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"./chart-util":38,"./date-format":40,"d3":33}],43:[function(require,module,exports){
+},{"./composite-renderer":40,"./date-format":42,"d3":34}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var parse_gedcom_1 = require("parse-gedcom");
@@ -21035,7 +21100,7 @@ function gedcomEntriesToJson(gedcom) {
 }
 exports.gedcomEntriesToJson = gedcomEntriesToJson;
 
-},{"parse-gedcom":35}],44:[function(require,module,exports){
+},{"parse-gedcom":36}],46:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ancestor_chart_1 = require("./ancestor-chart");
@@ -21068,7 +21133,7 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"./ancestor-chart":37,"./chart-util":38,"./descendant-chart":41}],45:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":43}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Provides unique identifiers. */
@@ -21093,25 +21158,823 @@ var IdGenerator = /** @class */ (function () {
 }());
 exports.IdGenerator = IdGenerator;
 
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
+require("array-flat-polyfill");
 __export(require("./ancestor-chart"));
 __export(require("./chart-util"));
+__export(require("./composite-renderer"));
 __export(require("./data"));
 __export(require("./date-format"));
 __export(require("./descendant-chart"));
 __export(require("./detailed-renderer"));
 __export(require("./gedcom"));
 __export(require("./hourglass-chart"));
+__export(require("./kinship-chart"));
 __export(require("./relatives-chart"));
 __export(require("./simple-api"));
 __export(require("./simple-renderer"));
 
-},{"./ancestor-chart":37,"./chart-util":38,"./data":39,"./date-format":40,"./descendant-chart":41,"./detailed-renderer":42,"./gedcom":43,"./hourglass-chart":44,"./relatives-chart":47,"./simple-api":48,"./simple-renderer":49}],47:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./composite-renderer":40,"./data":41,"./date-format":42,"./descendant-chart":43,"./detailed-renderer":44,"./gedcom":45,"./hourglass-chart":46,"./kinship-chart":49,"./relatives-chart":54,"./simple-api":55,"./simple-renderer":56,"array-flat-polyfill":1}],49:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var hierarchy_creator_1 = require("./kinship/hierarchy-creator");
+var renderer_1 = require("./kinship/renderer");
+var KinshipChart = /** @class */ (function () {
+    function KinshipChart(options) {
+        this.options = options;
+        this.renderer = new renderer_1.KinshipChartRenderer(this.options);
+    }
+    KinshipChart.prototype.render = function () {
+        var _this = this;
+        var hierarchy = hierarchy_creator_1.HierarchyCreator.createHierarchy(this.options.data, new hierarchy_creator_1.EntryId(this.options.startIndi || null, this.options.startFam || null));
+        var _a = this.renderer.layOut(hierarchy.upRoot, hierarchy.downRoot), upNodes = _a[0], downNodes = _a[1];
+        upNodes.concat(downNodes).forEach(function (node) {
+            _this.setChildNodesGenerationNumber(node);
+        });
+        return this.renderer.render(upNodes, downNodes, hierarchy_creator_1.getRootsCount(hierarchy.upRoot, this.options.data));
+    };
+    KinshipChart.prototype.setChildNodesGenerationNumber = function (node) {
+        var childNodes = this.getChildNodesByType(node);
+        var setGenerationNumber = function (childNodes, value) {
+            return childNodes.forEach(function (n) { return (n.data.generation = node.data.generation + value); });
+        };
+        setGenerationNumber(childNodes.indiParents, -1);
+        setGenerationNumber(childNodes.indiSiblings, 0);
+        setGenerationNumber(childNodes.spouseParents, -1);
+        setGenerationNumber(childNodes.spouseSiblings, 0);
+        setGenerationNumber(childNodes.children, 1);
+    };
+    KinshipChart.prototype.getChildNodesByType = function (node) {
+        if (!node || !node.children)
+            return EMPTY_HIERARCHY_TREE_NODES;
+        // Maps id to node object for all children of the input node
+        var childNodesById = new Map(node.children.map(function (n) { return [n.data.id, n]; }));
+        var nodeToHNode = function (n) {
+            return childNodesById.get(n.id);
+        };
+        var childNodes = node.data.childNodes;
+        return {
+            indiParents: childNodes.indiParents.map(nodeToHNode),
+            indiSiblings: childNodes.indiSiblings.map(nodeToHNode),
+            spouseParents: childNodes.spouseParents.map(nodeToHNode),
+            spouseSiblings: childNodes.spouseSiblings.map(nodeToHNode),
+            children: childNodes.children.map(nodeToHNode),
+        };
+    };
+    return KinshipChart;
+}());
+exports.KinshipChart = KinshipChart;
+var EMPTY_HIERARCHY_TREE_NODES = {
+    indiParents: [],
+    indiSiblings: [],
+    spouseParents: [],
+    spouseSiblings: [],
+    children: [],
+};
+
+},{"./kinship/hierarchy-creator":51,"./kinship/renderer":53}],50:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ChildNodes = /** @class */ (function () {
+    function ChildNodes(overrides) {
+        if (overrides === void 0) { overrides = {}; }
+        this.indiParents = [];
+        this.indiSiblings = [];
+        this.spouseParents = [];
+        this.spouseSiblings = [];
+        this.children = [];
+        Object.assign(this, overrides);
+    }
+    ChildNodes.prototype.get = function (type) {
+        switch (type) {
+            case LinkType.IndiParents:
+                return this.indiParents;
+            case LinkType.IndiSiblings:
+                return this.indiSiblings;
+            case LinkType.SpouseParents:
+                return this.spouseParents;
+            case LinkType.SpouseSiblings:
+                return this.spouseSiblings;
+            case LinkType.Children:
+                return this.children;
+        }
+    };
+    ChildNodes.prototype.getAll = function () {
+        return [].concat(this.indiSiblings, this.indiParents, this.children, this.spouseParents, this.spouseSiblings);
+    };
+    ChildNodes.EMPTY = new ChildNodes();
+    return ChildNodes;
+}());
+exports.ChildNodes = ChildNodes;
+var LinkType;
+(function (LinkType) {
+    LinkType[LinkType["IndiParents"] = 0] = "IndiParents";
+    LinkType[LinkType["IndiSiblings"] = 1] = "IndiSiblings";
+    LinkType[LinkType["SpouseParents"] = 2] = "SpouseParents";
+    LinkType[LinkType["SpouseSiblings"] = 3] = "SpouseSiblings";
+    LinkType[LinkType["Children"] = 4] = "Children";
+})(LinkType = exports.LinkType || (exports.LinkType = {}));
+function otherSideLinkType(type) {
+    switch (type) {
+        case LinkType.IndiParents:
+            return LinkType.Children;
+        case LinkType.IndiSiblings:
+            return LinkType.IndiSiblings;
+        case LinkType.SpouseParents:
+            return LinkType.Children;
+        case LinkType.SpouseSiblings:
+            return LinkType.IndiSiblings;
+        case LinkType.Children:
+            return LinkType.IndiParents;
+    }
+}
+exports.otherSideLinkType = otherSideLinkType;
+
+},{}],51:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+var api_1 = require("./api");
+var hierarchy_filter_1 = require("./hierarchy-filter");
+var id_generator_1 = require("../id-generator");
+var utils_1 = require("../utils");
+var HierarchyCreator = /** @class */ (function () {
+    function HierarchyCreator(data, startEntryId) {
+        var _a;
+        this.data = data;
+        this.queuedNodesById = new Map();
+        this.idGenerator = new id_generator_1.IdGenerator();
+        _a = this.expandStartId(startEntryId), this.startEntryId = _a[0], this.startFamIndi = _a[1];
+    }
+    HierarchyCreator.createHierarchy = function (data, startEntryId) {
+        return new HierarchyCreator(data, startEntryId).createHierarchy();
+    };
+    // Convert entry id to values of startEntryId and startFamIndi fields
+    HierarchyCreator.prototype.expandStartId = function (startEntryId) {
+        if (startEntryId.isFam)
+            return [startEntryId, null];
+        var indi = this.data.getIndi(startEntryId.id);
+        if (!indi)
+            throw new Error('Invalid startId');
+        var famsIds = indi.getFamiliesAsSpouse();
+        if (famsIds.length)
+            return [EntryId.fam(famsIds[0]), startEntryId.id];
+        return [startEntryId, null];
+    };
+    HierarchyCreator.prototype.createHierarchy = function () {
+        var upRoot = this.idToNode(this.startEntryId, null, null, false);
+        var downRoot = this.idToNode(this.startEntryId, null, null, false);
+        if (!upRoot || !downRoot)
+            throw new Error('Invalid root node');
+        if (this.startFamIndi) {
+            upRoot.indi = { id: this.startFamIndi };
+            downRoot.indi = { id: this.startFamIndi };
+        }
+        var queue = [upRoot, downRoot];
+        while (queue.length) {
+            var node = queue.shift();
+            var filter = node === upRoot
+                ? HierarchyCreator.UP_FILTER
+                : node === downRoot
+                    ? HierarchyCreator.DOWN_FILTER
+                    : HierarchyCreator.ALL_ACCEPTING_FILTER; //TODO: Filter only on root node?
+            this.fillNodeData(node, filter);
+            for (var _i = 0, _a = node.childNodes.getAll(); _i < _a.length; _i++) {
+                var childNode = _a[_i];
+                queue.push(childNode);
+            }
+        }
+        var getChildNodes = function (node) {
+            var childNodes = node.childNodes.getAll();
+            return childNodes.length ? childNodes : null;
+        };
+        return {
+            upRoot: d3.hierarchy(upRoot, getChildNodes),
+            downRoot: d3.hierarchy(downRoot, getChildNodes),
+        };
+    };
+    HierarchyCreator.prototype.fillNodeData = function (node, filter) {
+        if (this.isFamNode(node)) {
+            var fam = this.data.getFam(node.id);
+            var _a = node.indi && node.indi.id === fam.getMother()
+                ? [fam.getMother(), fam.getFather()]
+                : [fam.getFather(), fam.getMother()], indiId = _a[0], spouseId = _a[1];
+            Object.assign(node, {
+                id: this.idGenerator.getId(node.id),
+                indi: indiId && { id: indiId },
+                spouse: spouseId && { id: spouseId },
+            });
+            if (!node.duplicateOf && !node.duplicated) {
+                node.childNodes = this.childNodesForFam(fam, node, filter);
+            }
+        }
+        else {
+            var indi = this.data.getIndi(node.id);
+            Object.assign(node, {
+                id: this.idGenerator.getId(node.id),
+                indi: { id: indi.getId() },
+            });
+            if (!node.duplicateOf && !node.duplicated) {
+                node.childNodes = this.childNodesForIndi(indi, node, filter);
+            }
+        }
+        node.linkStubs = this.createLinkStubs(node);
+    };
+    HierarchyCreator.prototype.childNodesForFam = function (fam, parentNode, filter) {
+        var indi = parentNode.indi ? this.data.getIndi(parentNode.indi.id) : null;
+        var spouse = parentNode.spouse
+            ? this.data.getIndi(parentNode.spouse.id)
+            : null;
+        var _a = this.getParentsAndSiblings(indi), indiParentsFamsIds = _a[0], indiSiblingsIds = _a[1];
+        var _b = this.getParentsAndSiblings(spouse), spouseParentsFamsIds = _b[0], spouseSiblingsIds = _b[1];
+        var childrenIds = fam.getChildren();
+        return new api_1.ChildNodes({
+            indiParents: filter.indiParents
+                ? this.famAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, api_1.LinkType.IndiParents)
+                : [],
+            indiSiblings: filter.indiSiblings
+                ? this.indiIdsToFamAsSpouseNodes(indiSiblingsIds, parentNode, api_1.LinkType.IndiSiblings)
+                : [],
+            spouseParents: filter.spouseParents
+                ? this.famAsSpouseIdsToNodes(spouseParentsFamsIds, parentNode, api_1.LinkType.SpouseParents)
+                : [],
+            spouseSiblings: filter.spouseSiblings
+                ? this.indiIdsToFamAsSpouseNodes(spouseSiblingsIds, parentNode, api_1.LinkType.SpouseSiblings)
+                : [],
+            children: filter.children
+                ? this.indiIdsToFamAsSpouseNodes(childrenIds, parentNode, api_1.LinkType.Children)
+                : [],
+        });
+    };
+    HierarchyCreator.prototype.childNodesForIndi = function (indi, parentNode, filter) {
+        var _a = this.getParentsAndSiblings(indi), indiParentsFamsIds = _a[0], indiSiblingsIds = _a[1];
+        return new api_1.ChildNodes({
+            indiParents: filter.indiParents
+                ? this.famAsSpouseIdsToNodes(indiParentsFamsIds, parentNode, api_1.LinkType.IndiParents)
+                : [],
+            indiSiblings: filter.indiSiblings
+                ? this.indiIdsToFamAsSpouseNodes(indiSiblingsIds, parentNode, api_1.LinkType.IndiSiblings)
+                : [],
+        });
+    };
+    HierarchyCreator.prototype.areParentsAndSiblingsPresent = function (indiId) {
+        var indi = indiId && this.data.getIndi(indiId);
+        var famcId = indi && indi.getFamilyAsChild();
+        var famc = famcId && this.data.getFam(famcId);
+        if (!famc)
+            return [false, false];
+        return [
+            !!(famc.getFather() || famc.getMother()),
+            famc.getChildren().length > 1,
+        ];
+    };
+    HierarchyCreator.prototype.getParentsAndSiblings = function (indi) {
+        var indiFamcId = indi && indi.getFamilyAsChild();
+        var indiFamc = this.data.getFam(indiFamcId);
+        if (!indiFamc)
+            return [[], []];
+        var father = this.data.getIndi(indiFamc.getFather());
+        var mother = this.data.getIndi(indiFamc.getMother());
+        var parentFamsIds = []
+            .concat(father ? father.getFamiliesAsSpouse() : [], mother ? mother.getFamiliesAsSpouse() : [])
+            .filter(function (id) { return id !== indiFamcId; });
+        parentFamsIds.unshift(indiFamcId);
+        var siblingsIds = Array.from(indiFamc.getChildren());
+        siblingsIds.splice(siblingsIds.indexOf(indi.getId()), 1); // Remove indi from indi's siblings
+        return [parentFamsIds, siblingsIds];
+    };
+    HierarchyCreator.prototype.indiIdsToFamAsSpouseNodes = function (indiIds, parentNode, childNodeType) {
+        var _this = this;
+        return indiIds.flatMap(function (id) {
+            return _this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType);
+        });
+    };
+    HierarchyCreator.prototype.indiIdToFamAsSpouseNodes = function (indiId, parentNode, childNodeType) {
+        var _this = this;
+        if (this.isChildNodeTypeForbidden(childNodeType, parentNode))
+            return [];
+        var famsIds = this.data.getIndi(indiId).getFamiliesAsSpouse();
+        if (!famsIds.length) {
+            var node = this.idToNode(EntryId.indi(indiId), parentNode, childNodeType);
+            return node ? [node] : [];
+        }
+        var famsNodes = famsIds.map(function (id) {
+            return {
+                id: id,
+                indi: { id: indiId },
+                family: { id: id },
+                parentNode: parentNode,
+                linkFromParentType: childNodeType,
+                childNodes: api_1.ChildNodes.EMPTY,
+                linkStubs: [],
+            };
+        });
+        famsNodes.forEach(function (node, i) {
+            if (i !== 0)
+                node.primaryMarriage = famsNodes[0];
+            var duplicateOf = _this.queuedNodesById.get(node.id);
+            if (duplicateOf) {
+                node.duplicateOf = duplicateOf;
+                duplicateOf.duplicated = true;
+            }
+            else
+                _this.queuedNodesById.set(node.id, node);
+        });
+        return famsNodes;
+    };
+    HierarchyCreator.prototype.famAsSpouseIdsToNodes = function (famsIds, parentNode, childNodeType) {
+        var nodes = this.idsToNodes(famsIds.map(EntryId.fam), parentNode, childNodeType);
+        nodes.slice(1).forEach(function (node) { return (node.primaryMarriage = nodes[0]); });
+        return nodes;
+    };
+    HierarchyCreator.prototype.idsToNodes = function (entryIds, parentNode, childNodeType, duplicateCheck) {
+        var _this = this;
+        if (duplicateCheck === void 0) { duplicateCheck = true; }
+        return entryIds
+            .map(function (entryId) {
+            return _this.idToNode(entryId, parentNode, childNodeType, duplicateCheck);
+        })
+            .filter(function (node) { return node != null; });
+    };
+    HierarchyCreator.prototype.idToNode = function (entryId, parentNode, childNodeType, duplicateCheck) {
+        if (duplicateCheck === void 0) { duplicateCheck = true; }
+        if (this.isChildNodeTypeForbidden(childNodeType, parentNode))
+            return null;
+        var id = entryId.id, isFam = entryId.isFam;
+        if (isFam) {
+            var fam = this.data.getFam(id);
+            if (!fam || (!fam.getFather() && !fam.getMother()))
+                return null; // Don't create fam nodes that are missing both husband and wife
+        }
+        var duplicateOf = this.queuedNodesById.get(id);
+        var node = {
+            id: id,
+            parentNode: parentNode,
+            linkFromParentType: childNodeType,
+            childNodes: api_1.ChildNodes.EMPTY,
+            linkStubs: [],
+        };
+        if (isFam)
+            node.family = { id: id };
+        if (duplicateCheck && duplicateOf) {
+            node.duplicateOf = duplicateOf;
+            duplicateOf.duplicated = true;
+        }
+        if (!duplicateOf)
+            this.queuedNodesById.set(id, node);
+        return node;
+    };
+    HierarchyCreator.prototype.createLinkStubs = function (node) {
+        var _this = this;
+        if (!this.isFamNode(node) ||
+            (!node.duplicateOf && !node.duplicated && !node.primaryMarriage)) {
+            return [];
+        }
+        var fam = this.data.getFam(node.family.id);
+        var _a = this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null), indiParentsPresent = _a[0], indiSiblingsPresent = _a[1];
+        var _b = this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null), spouseParentsPresent = _b[0], spouseSiblingsPresent = _b[1];
+        var childrenPresent = utils_1.nonEmpty(fam.getChildren());
+        return [
+            indiParentsPresent ? [api_1.LinkType.IndiParents] : [],
+            indiSiblingsPresent ? [api_1.LinkType.IndiSiblings] : [],
+            spouseParentsPresent ? [api_1.LinkType.SpouseParents] : [],
+            spouseSiblingsPresent ? [api_1.LinkType.SpouseSiblings] : [],
+            childrenPresent ? [api_1.LinkType.Children] : [],
+        ]
+            .flat()
+            .filter(function (linkType) {
+            return !_this.isChildNodeTypeForbidden(linkType, node) &&
+                !node.childNodes.get(linkType).length;
+        });
+    };
+    HierarchyCreator.prototype.isChildNodeTypeForbidden = function (childNodeType, parentNode) {
+        if (childNodeType === null || !parentNode)
+            return false;
+        switch (api_1.otherSideLinkType(parentNode.linkFromParentType)) {
+            case api_1.LinkType.IndiParents:
+            case api_1.LinkType.IndiSiblings:
+                if (childNodeType === api_1.LinkType.IndiParents ||
+                    childNodeType === api_1.LinkType.IndiSiblings) {
+                    return true;
+                }
+                break;
+            case api_1.LinkType.Children:
+                if (!parentNode.primaryMarriage &&
+                    childNodeType === api_1.LinkType.Children) {
+                    return true;
+                }
+                break;
+        }
+        if (parentNode.primaryMarriage) {
+            // Forbid indi/spouse from parentNode that is also indi/spouse in primaryMarriage from having parents and siblings, as they are already added to primaryMarriage node. This prevents drawing parents/siblings of a person for each marriage of this person.
+            var indiId = parentNode.indi.id;
+            var spouseId = parentNode.spouse.id;
+            var pmIndiId = parentNode.primaryMarriage.indi.id;
+            var pmSpouseId = parentNode.primaryMarriage.spouse.id;
+            if (indiId === pmIndiId || indiId === pmSpouseId) {
+                if (childNodeType === api_1.LinkType.IndiParents ||
+                    childNodeType === api_1.LinkType.IndiSiblings) {
+                    return true;
+                }
+            }
+            else if (spouseId === pmIndiId || spouseId === pmSpouseId) {
+                if (childNodeType === api_1.LinkType.SpouseParents ||
+                    childNodeType === api_1.LinkType.SpouseSiblings) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    HierarchyCreator.prototype.isFamNode = function (node) {
+        return !!node.family;
+    };
+    HierarchyCreator.UP_FILTER = hierarchy_filter_1.HierarchyFilter.allRejecting().modify({
+        indiParents: true,
+        spouseParents: true,
+        indiSiblings: true,
+        spouseSiblings: true,
+    });
+    HierarchyCreator.DOWN_FILTER = hierarchy_filter_1.HierarchyFilter.allRejecting().modify({
+        children: true,
+    });
+    HierarchyCreator.ALL_ACCEPTING_FILTER = hierarchy_filter_1.HierarchyFilter.allAccepting();
+    return HierarchyCreator;
+}());
+exports.HierarchyCreator = HierarchyCreator;
+/* Id of indi or fam */
+var EntryId = /** @class */ (function () {
+    function EntryId(indiId, famId) {
+        if (!indiId && !famId)
+            throw new Error('Invalid EntryId');
+        this.id = (indiId || famId);
+        this.isFam = !!famId;
+    }
+    EntryId.indi = function (id) {
+        return new EntryId(id, null);
+    };
+    EntryId.fam = function (id) {
+        return new EntryId(null, id);
+    };
+    return EntryId;
+}());
+exports.EntryId = EntryId;
+function getRootsCount(upRoot, data) {
+    var upIndi = upRoot.data.indi && data.getIndi(upRoot.data.indi.id);
+    var upSpouse = upRoot.data.spouse && data.getIndi(upRoot.data.spouse.id);
+    return ((upIndi ? upIndi.getFamiliesAsSpouse().length : 0) +
+        (upSpouse ? upSpouse.getFamiliesAsSpouse().length - 1 : 0));
+}
+exports.getRootsCount = getRootsCount;
+
+},{"../id-generator":47,"../utils":57,"./api":50,"./hierarchy-filter":52,"d3":34}],52:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var HierarchyFilter = /** @class */ (function () {
+    function HierarchyFilter(overrides) {
+        if (overrides === void 0) { overrides = {}; }
+        this.indiParents = true;
+        this.indiSiblings = true;
+        this.spouseParents = true;
+        this.spouseSiblings = true;
+        this.children = true;
+        this.modify(overrides);
+    }
+    HierarchyFilter.allAccepting = function () {
+        return new HierarchyFilter();
+    };
+    HierarchyFilter.allRejecting = function () {
+        return new HierarchyFilter().modify({
+            indiParents: false,
+            indiSiblings: false,
+            spouseParents: false,
+            spouseSiblings: false,
+            children: false,
+        });
+    };
+    HierarchyFilter.prototype.modify = function (overrides) {
+        Object.assign(this, overrides);
+        return this;
+    };
+    return HierarchyFilter;
+}());
+exports.HierarchyFilter = HierarchyFilter;
+
+},{}],53:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+var api_1 = require("./api");
+var chart_util_1 = require("../chart-util");
+var utils_1 = require("../utils");
+var LINKS_BASE_OFFSET = 17;
+var PARENT_LINK_ANCHOR_X_OFFSET = 15;
+var SIBLING_LINK_ANCHOR_Y_OFFSET = 5;
+var SIBLING_LINK_STARTER_LENGTH = 7;
+var LINKS_SEPARATION = 6;
+var LINK_STUB_CIRCLE_R = 3;
+var KinshipChartRenderer = /** @class */ (function () {
+    function KinshipChartRenderer(options) {
+        this.options = options;
+        this.util = new chart_util_1.ChartUtil(this.options);
+    }
+    KinshipChartRenderer.prototype.layOut = function (upRoot, downRoot) {
+        var svg = this.util.getSvgForRendering();
+        // Add styles so that calculating text size is correct.
+        if (svg.select('style').empty()) {
+            svg.append('style').text(this.options.renderer.getCss());
+        }
+        return [
+            this.util.layOutChart(upRoot, true),
+            this.util.layOutChart(downRoot),
+        ];
+    };
+    KinshipChartRenderer.prototype.render = function (upNodes, downNodes, rootsCount) {
+        var _this = this;
+        var allNodes = upNodes.concat(downNodes);
+        var allNodesDeduped = allNodes.slice(1); // Remove duplicate start/center node
+        // Prepare for rendering
+        upNodes.forEach(function (node) { return _this.setLinkYs(node, true); });
+        downNodes.forEach(function (node) { return _this.setLinkYs(node, false); });
+        // Render chart
+        this.util.renderNodes(allNodesDeduped, this.util.getSvgForRendering());
+        this.renderLinks(allNodes);
+        if (rootsCount > 1) {
+            this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
+        }
+        var info = chart_util_1.getChartInfo(allNodesDeduped);
+        this.util.updateSvgDimensions(info);
+        return info;
+    };
+    KinshipChartRenderer.prototype.renderLinks = function (nodes) {
+        var _this = this;
+        var svgg = this.util.getSvgForRendering().select('g');
+        var keyFn = function (d) { return d.data.id; };
+        // Render links
+        var boundLinkNodes = svgg
+            .selectAll('path.internode-link')
+            .data(nodes.filter(function (n) { return !!n.parent; }), keyFn);
+        boundLinkNodes
+            .enter()
+            .insert('path', 'g')
+            .attr('class', function (node) { return _this.cssClassForLink(node); })
+            .merge(boundLinkNodes)
+            .attr('d', function (node) {
+            var linkPoints = node.data.primaryMarriage
+                ? _this.additionalMarriageLinkPoints(node)
+                : _this.linkPoints(node.parent, node, node.data.linkFromParentType);
+            return utils_1.points2pathd(linkPoints);
+        });
+        boundLinkNodes.exit().remove();
+        // Render link stubs container "g" element
+        var boundLinkStubNodes = svgg
+            .selectAll('g.link-stubs')
+            .data(nodes.filter(function (n) { return n.data.duplicateOf || n.data.duplicated || n.data.primaryMarriage; }), keyFn);
+        var linkStubNodesEnter = boundLinkStubNodes
+            .enter()
+            .insert('g', 'g')
+            .attr('class', 'link-stubs');
+        boundLinkStubNodes.exit().remove();
+        // Render link stubs
+        var boundLinkStubs = linkStubNodesEnter
+            .merge(boundLinkStubNodes)
+            .selectAll('g')
+            .data(function (node) { return _this.nodeToLinkStubRenderInfos(node); }, function (d) { return d.linkType.toString(); });
+        boundLinkStubs
+            .enter()
+            .append('g')
+            .call(function (g) {
+            return g
+                .append('path')
+                .attr('class', function (d) { return _this.cssClassForLinkStub(d.linkType); })
+                .merge(boundLinkStubs.select('path.link-stub'))
+                .attr('d', function (d) { return utils_1.points2pathd(d.points); });
+        })
+            .call(function (g) {
+            return g
+                .append('circle')
+                .attr('r', LINK_STUB_CIRCLE_R)
+                .style('stroke', 'black')
+                .style('fill', 'none')
+                .merge(boundLinkStubs.select('circle'))
+                .attr('transform', function (d) {
+                return "translate(" + utils_1.last(d.points).x + ", " + (utils_1.last(d.points).y +
+                    LINK_STUB_CIRCLE_R * d.treeDir) + ")";
+            });
+        });
+        boundLinkStubs.exit().remove();
+    };
+    KinshipChartRenderer.prototype.cssClassForLink = function (fromNode) {
+        if (fromNode.data.primaryMarriage) {
+            return 'link internode-link additional-marriage';
+        }
+        return ('link internode-link ' +
+            this.cssClassForLinkType(fromNode.data.linkFromParentType));
+    };
+    KinshipChartRenderer.prototype.cssClassForLinkStub = function (linkType) {
+        return 'link link-stub ' + this.cssClassForLinkType(linkType);
+    };
+    KinshipChartRenderer.prototype.cssClassForLinkType = function (linkType) {
+        switch (linkType) {
+            case api_1.LinkType.IndiParents:
+            case api_1.LinkType.SpouseParents:
+                return 'parents-link';
+            case api_1.LinkType.IndiSiblings:
+            case api_1.LinkType.SpouseSiblings:
+                return 'siblings-link';
+            case api_1.LinkType.Children:
+                return 'children-link';
+        }
+    };
+    KinshipChartRenderer.prototype.nodeToLinkStubRenderInfos = function (node) {
+        var _this = this;
+        return node.data.linkStubs.map(function (linkType) {
+            var isUpTree = node.y < node.parent.y;
+            var treeDir = isUpTree ? -1 : 1;
+            var anchorPoints = _this.linkAnchorPoints(node, linkType, isUpTree);
+            var y = node.data.linkYs.children -
+                (2 * LINKS_SEPARATION + 2 * LINK_STUB_CIRCLE_R) * treeDir;
+            return {
+                treeDir: treeDir,
+                linkType: linkType,
+                points: anchorPoints.concat([{ x: utils_1.last(anchorPoints).x, y: y }]),
+            };
+        });
+    };
+    KinshipChartRenderer.prototype.getLinkY = function (node, type) {
+        switch (type) {
+            case api_1.LinkType.IndiParents:
+                return node.data.linkYs.indi;
+            case api_1.LinkType.IndiSiblings:
+                return node.data.linkYs.indi;
+            case api_1.LinkType.SpouseParents:
+                return node.data.linkYs.spouse;
+            case api_1.LinkType.SpouseSiblings:
+                return node.data.linkYs.spouse;
+            case api_1.LinkType.Children:
+                return node.data.linkYs.children;
+        }
+    };
+    KinshipChartRenderer.prototype.setLinkYs = function (node, isUpTree) {
+        var treeDir = isUpTree ? -1 : 1;
+        var base = node.y + (node.data.height / 2 + LINKS_BASE_OFFSET) * treeDir;
+        var offset = LINKS_SEPARATION * treeDir;
+        var _a = this.calcLinkOffsetDirs(node), indiOffsetDir = _a[0], spouseOffsetDir = _a[1];
+        node.data.linkYs = {
+            indi: base + offset * indiOffsetDir,
+            spouse: base + offset * spouseOffsetDir,
+            children: base,
+        };
+    };
+    /***
+     * Calculates indi (indiParent and indiSiblings) and spouse (spouseParent and spouseSiblings)
+     * links offset directions, so they don't merge/collide with children links and with each other.
+     ***/
+    KinshipChartRenderer.prototype.calcLinkOffsetDirs = function (node) {
+        var childNodes = node.data.childNodes;
+        if (childNodes.children.length) {
+            // Check children-indi and children-spouse links collisions
+            var indiParentLinkAnchorX = this.linkAnchorPoints(node, api_1.LinkType.IndiParents, true)[0].x;
+            var spouseParentLinkAnchorX = this.linkAnchorPoints(node, api_1.LinkType.SpouseParents, true)[0].x;
+            var childrenLinksX = {
+                min: this.findMinXOfChildNodesAnchors(node, childNodes.children),
+                max: this.findMaxXOfChildNodesAnchors(node, childNodes.children),
+            };
+            if (childrenLinksX.min < indiParentLinkAnchorX &&
+                childrenLinksX.max > spouseParentLinkAnchorX) {
+                return [-1, -1]; // This shouldn't happen! It can't happen with start node, because start node have children links going down and other links going up. It can't happen with non-start node, as there can't be outgoing indi, spouse and children links at the same time on non-start node. -- But.. It might be useful to not remove it, so that this function might be used when constructing links for other types of charts.
+            }
+            else if (childrenLinksX.min < indiParentLinkAnchorX) {
+                return [-1, 1];
+            }
+            else if (childrenLinksX.max > spouseParentLinkAnchorX) {
+                return [1, -1];
+            }
+        }
+        else if ((childNodes.indiParents.length || childNodes.indiSiblings.length) &&
+            (childNodes.spouseParents.length || childNodes.spouseSiblings.length)) {
+            // Check indi-spouse links collision
+            var indiParentLinkAnchorX = this.linkAnchorPoints(node, api_1.LinkType.IndiParents, true)[0].x;
+            var spouseLinksMinX = this.findMinXOfChildNodesAnchors(node, childNodes.spouseSiblings.concat(childNodes.spouseParents));
+            if (spouseLinksMinX < indiParentLinkAnchorX) {
+                return [-1, 1];
+            }
+        }
+        return [1, -1];
+    };
+    KinshipChartRenderer.prototype.findMinXOfChildNodesAnchors = function (parentNode, childNodes) {
+        return this.findExtremeXOfChildNodesAnchors(parentNode, childNodes, true);
+    };
+    KinshipChartRenderer.prototype.findMaxXOfChildNodesAnchors = function (parentNode, childNodes) {
+        return this.findExtremeXOfChildNodesAnchors(parentNode, childNodes, false);
+    };
+    KinshipChartRenderer.prototype.findExtremeXOfChildNodesAnchors = function (parentNode, childNodes, isMin) {
+        var extremeFindingFunction = isMin ? d3.min : d3.max;
+        var dir = isMin ? -1 : 1;
+        var childNodesSet = new Set(childNodes);
+        return (extremeFindingFunction(parentNode.children.filter(function (n) { return childNodesSet.has(n.data); }), function (n) { return n.x + (dir * n.data.width) / 2; }) +
+            dir * SIBLING_LINK_STARTER_LENGTH);
+    };
+    KinshipChartRenderer.prototype.linkPoints = function (from, to, type) {
+        var isUpTree = from.y > to.y;
+        var pointsFrom = this.linkAnchorPoints(from, type, isUpTree);
+        var pointsTo = this.linkAnchorPoints(to, api_1.otherSideLinkType(type), !isUpTree).reverse();
+        var y = this.getLinkY(from, type);
+        return pointsFrom.concat([
+            { x: pointsFrom[pointsFrom.length - 1].x, y: y },
+            { x: pointsTo[0].x, y: y }
+        ], pointsTo);
+    };
+    KinshipChartRenderer.prototype.additionalMarriageLinkPoints = function (node) {
+        var nodeIndex = node.parent.children.findIndex(function (n) { return n.data.id === node.data.id; });
+        var prevSiblingNode = node.parent.children[nodeIndex - 1];
+        var y = this.indiMidY(node);
+        return [{ x: prevSiblingNode.x, y: y }, { x: node.x, y: y }];
+    };
+    KinshipChartRenderer.prototype.linkAnchorPoints = function (node, type, top) {
+        var _a = [node.x, node.y], x = _a[0], y = _a[1];
+        var _b = [node.data.width, node.data.height], w = _b[0], h = _b[1];
+        var leftEdge = x - w / 2;
+        var rightEdge = x + w / 2;
+        var _c = [
+            node.data.indi,
+            node.data.spouse,
+            node.data.family,
+        ].map(function (e) { return (e ? e.width : 0); }), indiW = _c[0], spouseW = _c[1], familyW = _c[2];
+        var indisW = indiW + spouseW;
+        var indisLeftEdge = x - w / 2 + (familyW > indisW ? (familyW - indisW) / 2 : 0);
+        var indisRightEdge = indisLeftEdge + indisW;
+        var siblingAnchorY = this.indiMidY(node) + SIBLING_LINK_ANCHOR_Y_OFFSET * (top ? -1 : 1);
+        switch (type) {
+            case api_1.LinkType.IndiParents:
+                return [
+                    { x: indisLeftEdge + PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2 },
+                ];
+            case api_1.LinkType.SpouseParents:
+                return [
+                    { x: indisRightEdge - PARENT_LINK_ANCHOR_X_OFFSET, y: y - h / 2 },
+                ];
+            case api_1.LinkType.IndiSiblings:
+                return [
+                    { x: indisLeftEdge, y: siblingAnchorY },
+                    {
+                        x: (familyW > indisW && !top ? leftEdge : indisLeftEdge) -
+                            SIBLING_LINK_STARTER_LENGTH,
+                        y: siblingAnchorY,
+                    },
+                ];
+            case api_1.LinkType.SpouseSiblings:
+                return [
+                    { x: indisRightEdge, y: siblingAnchorY },
+                    {
+                        x: (familyW > indisW && !top ? rightEdge : indisRightEdge) +
+                            SIBLING_LINK_STARTER_LENGTH,
+                        y: siblingAnchorY,
+                    },
+                ];
+            case api_1.LinkType.Children:
+                return [
+                    { x: indisLeftEdge + (node.data.spouse ? indiW : indiW / 2), y: y },
+                ];
+        }
+    };
+    KinshipChartRenderer.prototype.indiMidY = function (node) {
+        return node.y - node.data.height / 2 + node.data.indi.height / 2;
+    };
+    KinshipChartRenderer.prototype.renderRootDummyAdditionalMarriageLinkStub = function (root) {
+        var svgg = this.util.getSvgForRendering().select('g');
+        var y = this.indiMidY(root);
+        var x = root.data.width / 2 + 20;
+        var r = 3;
+        svgg.selectAll('.root-dummy-additional-marriage').remove();
+        svgg
+            .insert('g', 'g')
+            .attr('class', 'root-dummy-additional-marriage')
+            .call(function (g) {
+            return g
+                .append('path')
+                .attr('d', "M 0 " + y + " L " + x + " " + y)
+                .attr('class', 'link additional-marriage');
+        })
+            .call(function (g) {
+            return g
+                .append('circle')
+                .attr('transform', "translate(" + (x + r) + ", " + y + ")")
+                .attr('r', r)
+                .style('stroke', 'black')
+                .style('fill', 'black');
+        });
+    };
+    return KinshipChartRenderer;
+}());
+exports.KinshipChartRenderer = KinshipChartRenderer;
+
+},{"../chart-util":39,"../utils":57,"./api":50,"d3":34}],54:[function(require,module,exports){
 "use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -21224,7 +22087,8 @@ var RelativesChart = /** @class */ (function () {
                     ? parentData.left
                     : node.parent.data.indiParentNodeId === node.id;
             data.middle =
-                (!parentData || parentData.middle) && node.parent.children.length === 1;
+                (!parentData || parentData.middle) &&
+                    node.parent.children.length === 1;
         });
         ancestorsRoot.each(function (node) {
             var data = ancestorData.get(node.data.id);
@@ -21254,7 +22118,9 @@ var RelativesChart = /** @class */ (function () {
             var nodeWidth = thisNode.data.width;
             var nodeHeight = thisNode.data.height;
             var indiWidth = thisNode.data.indi ? thisNode.data.indi.width : 0;
-            var spouseWidth = thisNode.data.spouse ? thisNode.data.spouse.width : 0;
+            var spouseWidth = thisNode.data.spouse
+                ? thisNode.data.spouse.width
+                : 0;
             // Lay out the individual's ancestors and their descendants.
             if (indiParent) {
                 var data = ancestorData.get(indiParent.data.id);
@@ -21379,7 +22245,7 @@ var RelativesChart = /** @class */ (function () {
 }());
 exports.RelativesChart = RelativesChart;
 
-},{"./ancestor-chart":37,"./chart-util":38,"./descendant-chart":41,"./id-generator":45,"d3":33}],48:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":43,"./id-generator":47,"d3":34}],55:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -21445,10 +22311,24 @@ function createChart(options) {
 }
 exports.createChart = createChart;
 
-},{"./data":39,"d3":33}],49:[function(require,module,exports){
+},{"./data":41,"d3":34}],56:[function(require,module,exports){
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
+var composite_renderer_1 = require("./composite-renderer");
 var MIN_HEIGHT = 27;
 var MIN_WIDTH = 50;
 /** Calculates the length of the given text in pixels when rendered. */
@@ -21482,9 +22362,12 @@ function getYears(indi) {
  * Simple rendering of an individual box showing only the person's name and
  * years of birth and death.
  */
-var SimpleRenderer = /** @class */ (function () {
+var SimpleRenderer = /** @class */ (function (_super) {
+    __extends(SimpleRenderer, _super);
     function SimpleRenderer(options) {
-        this.options = options;
+        var _this = _super.call(this, options) || this;
+        _this.options = options;
+        return _this;
     }
     SimpleRenderer.prototype.getPreferredIndiSize = function (id) {
         var indi = this.options.data.getIndi(id);
@@ -21492,10 +22375,6 @@ var SimpleRenderer = /** @class */ (function () {
         var width = Math.max(getLength(getName(indi)) + 8, getLength(years), MIN_WIDTH);
         var height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
         return [width, height];
-    };
-    SimpleRenderer.prototype.getPreferredFamSize = function (id) {
-        // No family box in the simple renderer.
-        return [0, 0];
     };
     SimpleRenderer.prototype.render = function (enter, update) {
         var selection = enter
@@ -21533,7 +22412,9 @@ var SimpleRenderer = /** @class */ (function () {
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
             .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
-            .text(function (node) { return getName(_this.options.data.getIndi(indiFunc(node.data).id)); });
+            .text(function (node) {
+            return getName(_this.options.data.getIndi(indiFunc(node.data).id));
+        });
         group
             .append('text')
             .attr('text-anchor', 'middle')
@@ -21544,8 +22425,33 @@ var SimpleRenderer = /** @class */ (function () {
         });
     };
     return SimpleRenderer;
-}());
+}(composite_renderer_1.CompositeRenderer));
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"d3":33}]},{},[46])(46)
+},{"./composite-renderer":40,"d3":34}],57:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function nonEmpty(array) {
+    return !!(array && array.length);
+}
+exports.nonEmpty = nonEmpty;
+function last(array) {
+    return array[array.length - 1];
+}
+exports.last = last;
+function zip(a, b) {
+    return a.map(function (e, i) { return [e, b[i]]; });
+}
+exports.zip = zip;
+function points2pathd(points) {
+    var result = "M " + points[0].x + " " + points[0].y + " L";
+    for (var _i = 0, _a = points.slice(1); _i < _a.length; _i++) {
+        var s = _a[_i];
+        result += " " + s.x + " " + s.y;
+    }
+    return result;
+}
+exports.points2pathd = points2pathd;
+
+},{}]},{},[48])(48)
 });
