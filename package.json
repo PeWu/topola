@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/d3": "^5.0.0",
     "@types/jasmine": "^2.8.8",
-    "browser-sync": "^2.26.5",
+    "browser-sync": "^2.26.7",
     "browserify": "^16.2.3",
     "concurrently": "^3.5.1",
     "gh-pages": "^2.0.1",
