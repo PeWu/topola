@@ -137,7 +137,10 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
 }
 
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
-function createIndi(entry: GedcomEntry): JsonIndi {
+function createIndi(
+  entry: GedcomEntry,
+  objects: Map<string, GedcomEntry>
+): JsonIndi {
   const id = pointerToId(entry.pointer);
   const fams = findTags(entry.tree, 'FAMS').map(entry =>
     pointerToId(entry.data)
@@ -171,7 +174,11 @@ function createIndi(entry: GedcomEntry): JsonIndi {
   // Image URL.
   const objeTag = findTag(entry.tree, 'OBJE');
   if (objeTag) {
-    const fileTag = findTag(objeTag.tree, 'FILE');
+    // Dereference OBJEct if needed.
+    const realObjeTag = objeTag.data
+      ? objects.get(pointerToId(objeTag.data))!
+      : objeTag;
+    const fileTag = findTag(realObjeTag.tree, 'FILE');
     if (fileTag) {
       indi.imageUrl = fileTag.data;
     }
@@ -219,6 +226,11 @@ function createFam(entry: GedcomEntry): JsonFam {
   return fam;
 }
 
+/** Creates a map from ID to entry from an array of entries. */
+function createMap(entries: GedcomEntry[]): Map<string, GedcomEntry> {
+  return new Map(entries.map(entry => [pointerToId(entry.pointer), entry]));
+}
+
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
 export function gedcomToJson(gedcomContents: string): JsonGedcomData {
   return gedcomEntriesToJson(parseGedcom(gedcomContents));
@@ -226,7 +238,10 @@ export function gedcomToJson(gedcomContents: string): JsonGedcomData {
 
 /** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
 export function gedcomEntriesToJson(gedcom: GedcomEntry[]): JsonGedcomData {
-  const indis = findTags(gedcom, 'INDI').map(createIndi);
+  const objects = createMap(findTags(gedcom, 'OBJE'));
+  const indis = findTags(gedcom, 'INDI').map(entry =>
+    createIndi(entry, objects)
+  );
   const fams = findTags(gedcom, 'FAM').map(createFam);
   return { indis, fams };
 }
