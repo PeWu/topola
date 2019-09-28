@@ -21016,7 +21016,7 @@ function createEvent(entry) {
     return undefined;
 }
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
-function createIndi(entry) {
+function createIndi(entry, objects) {
     var id = pointerToId(entry.pointer);
     var fams = findTags(entry.tree, 'FAMS').map(function (entry) {
         return pointerToId(entry.data);
@@ -21046,7 +21046,11 @@ function createIndi(entry) {
     // Image URL.
     var objeTag = findTag(entry.tree, 'OBJE');
     if (objeTag) {
-        var fileTag = findTag(objeTag.tree, 'FILE');
+        // Dereference OBJEct if needed.
+        var realObjeTag = objeTag.data
+            ? objects.get(pointerToId(objeTag.data))
+            : objeTag;
+        var fileTag = findTag(realObjeTag.tree, 'FILE');
         if (fileTag) {
             indi.imageUrl = fileTag.data;
         }
@@ -21087,6 +21091,10 @@ function createFam(entry) {
     }
     return fam;
 }
+/** Creates a map from ID to entry from an array of entries. */
+function createMap(entries) {
+    return new Map(entries.map(function (entry) { return [pointerToId(entry.pointer), entry]; }));
+}
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
 function gedcomToJson(gedcomContents) {
     return gedcomEntriesToJson(parse_gedcom_1.parse(gedcomContents));
@@ -21094,7 +21102,10 @@ function gedcomToJson(gedcomContents) {
 exports.gedcomToJson = gedcomToJson;
 /** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
 function gedcomEntriesToJson(gedcom) {
-    var indis = findTags(gedcom, 'INDI').map(createIndi);
+    var objects = createMap(findTags(gedcom, 'OBJE'));
+    var indis = findTags(gedcom, 'INDI').map(function (entry) {
+        return createIndi(entry, objects);
+    });
     var fams = findTags(gedcom, 'FAM').map(createFam);
     return { indis: indis, fams: fams };
 }
@@ -22097,7 +22108,7 @@ var RelativesChart = /** @class */ (function () {
                 var childNode = ancestorData.get(child.data.id).descendantNodes[0];
                 childNode.parent = thisNode;
             });
-            if (node.data.indiParentNodeId) {
+            if (node.data.indiParentNodeId && node.children) {
                 thisNode.data.indiParentNodeId = node.children.find(function (childNode) { return childNode.id === node.data.indiParentNodeId; }).data.id;
             }
             if (node.data.spouseParentNodeId) {
