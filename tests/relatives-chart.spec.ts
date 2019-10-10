@@ -29,7 +29,7 @@ describe('Relatives chart', () => {
 
   it('should work with a family with no parents defined', () => {
     const json: JsonGedcomData = {
-      fams: [{ id: 'F1' }],
+      fams: [{ id: 'F1', children: ['I1']}],
       indis: [{ id: 'I1', famc: 'F1' }],
     };
     const data = new JsonDataProvider(json);
@@ -41,5 +41,21 @@ describe('Relatives chart', () => {
     });
     chart.render();
     expect(document.querySelectorAll('g.node').length).toEqual(1);
+  });
+
+  it('should work with a family with only the wife', () => {
+    const json: JsonGedcomData = {
+      fams: [{ id: 'F1', children: ['I1'], wife: 'I2' }],
+      indis: [{ id: 'I1', famc: 'F1' }, { id: 'I2', fams: ['F1']}],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new RelativesChart({
+      data,
+      startIndi: 'I1',
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+    });
+    chart.render();
+    expect(document.querySelectorAll('g.node').length).toEqual(2);
   });
 });

@@ -189,7 +189,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       // Lay out the individual's ancestors and their descendants.
       if (indiParent) {
         const data = ancestorData.get(indiParent.data.id)!;
-        const parentNode = data!.descendantNodes[0];
+        const parentNode = data.descendantNodes[0];
         const parentData = parentNode.data;
         const spouseTreeHeight = spouseParent
           ? ancestorData.get(spouseParent.data.id)!.height + V_SPACING
@@ -220,7 +220,9 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
           indiWidth / 2 -
           nodeWidth / 2 +
           parentData.width! / 2 -
-          parentData.indi!.width!;
+          (parentData.indi
+            ? parentData.indi.width!
+            : parentData.spouse!.width!);
         if (data.middle) {
           parentNode.x = 0;
         } else if (!nodeData || nodeData.middle) {
@@ -245,7 +247,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       // Lay out the spouse's ancestors and their descendants.
       if (spouseParent) {
         const data = ancestorData.get(spouseParent.data.id)!;
-        const parentNode = data!.descendantNodes[0];
+        const parentNode = data.descendantNodes[0];
         const parentData = parentNode.data;
         const indiTreeHeight = indiParent
           ? ancestorData.get(indiParent.data.id)!.height + V_SPACING
@@ -276,7 +278,9 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
           nodeWidth / 2 -
           spouseWidth / 2 +
           parentData.width! / 2 -
-          parentData.indi!.width!;
+          (parentData.indi
+            ? parentData.indi.width!
+            : parentData.spouse!.width!);
         if (data.middle) {
           parentNode.x = 0;
         } else if (!nodeData || nodeData.middle) {
