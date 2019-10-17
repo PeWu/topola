@@ -159,7 +159,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
           childNode => childNode.id === node.data.indiParentNodeId
         )!.data.id;
       }
-      if (node.data.spouseParentNodeId) {
+      if (node.data.spouseParentNodeId && node.children) {
         thisNode.data.spouseParentNodeId = node.children!.find(
           childNode => childNode.id === node.data.spouseParentNodeId
         )!.data.id;
