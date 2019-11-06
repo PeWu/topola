@@ -20970,15 +20970,15 @@ function parseDate(parts) {
 function getDate(gedcomDate) {
     var parts = gedcomDate.split(' ');
     var firstPart = parts[0].toLowerCase();
-    if (firstPart === 'bet') {
+    if (firstPart.startsWith('bet')) {
         var i = parts.findIndex(function (x) { return x.toLowerCase() === 'and'; });
         var from = parseDate(parts.slice(1, i));
         var to = parseDate(parts.slice(i + 1));
         return { dateRange: { from: from, to: to } };
     }
-    if (firstPart === 'bef' || firstPart === 'aft') {
+    if (firstPart.startsWith('bef') || firstPart.startsWith('aft')) {
         var date_1 = parseDate(parts.slice(1));
-        if (firstPart === 'bef') {
+        if (firstPart.startsWith('bef')) {
             return { dateRange: { to: date_1 } };
         }
         return { dateRange: { from: date_1 } };
@@ -21050,7 +21050,7 @@ function createIndi(entry, objects) {
         var realObjeTag = objeTag.data
             ? objects.get(pointerToId(objeTag.data))
             : objeTag;
-        var fileTag = findTag(realObjeTag.tree, 'FILE');
+        var fileTag = realObjeTag && findTag(realObjeTag.tree, 'FILE');
         if (fileTag) {
             indi.imageUrl = fileTag.data;
         }
@@ -22111,7 +22111,7 @@ var RelativesChart = /** @class */ (function () {
             if (node.data.indiParentNodeId && node.children) {
                 thisNode.data.indiParentNodeId = node.children.find(function (childNode) { return childNode.id === node.data.indiParentNodeId; }).data.id;
             }
-            if (node.data.spouseParentNodeId) {
+            if (node.data.spouseParentNodeId && node.children) {
                 thisNode.data.spouseParentNodeId = node.children.find(function (childNode) { return childNode.id === node.data.spouseParentNodeId; }).data.id;
             }
         });
@@ -22160,7 +22160,9 @@ var RelativesChart = /** @class */ (function () {
                 var middleX = indiWidth / 2 -
                     nodeWidth / 2 +
                     parentData.width / 2 -
-                    parentData.indi.width;
+                    (parentData.indi
+                        ? parentData.indi.width
+                        : parentData.spouse.width);
                 if (data.middle) {
                     parentNode.x = 0;
                 }
@@ -22212,7 +22214,9 @@ var RelativesChart = /** @class */ (function () {
                 var middleX = nodeWidth / 2 -
                     spouseWidth / 2 +
                     parentData.width / 2 -
-                    parentData.indi.width;
+                    (parentData.indi
+                        ? parentData.indi.width
+                        : parentData.spouse.width);
                 if (data.middle) {
                     parentNode.x = 0;
                 }
