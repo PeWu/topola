@@ -178,7 +178,7 @@ function createIndi(
     const realObjeTag = objeTag.data
       ? objects.get(pointerToId(objeTag.data))!
       : objeTag;
-    const fileTag = findTag(realObjeTag.tree, 'FILE');
+    const fileTag = realObjeTag && findTag(realObjeTag.tree, 'FILE');
     if (fileTag) {
       indi.imageUrl = fileTag.data;
     }
