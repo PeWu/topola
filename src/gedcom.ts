@@ -69,7 +69,7 @@ function parseDate(parts: string[]): Date | undefined {
     result.qualifier = firstPart;
     parts = parts.slice(1);
   }
-  if (parts.length && parts[parts.length - 1].match(/^\d\d\d\d$/)) {
+  if (parts.length && parts[parts.length - 1].match(/^\d{1,4}$/)) {
     result.year = Number(parts[parts.length - 1]);
     parts = parts.slice(0, parts.length - 1);
   }
