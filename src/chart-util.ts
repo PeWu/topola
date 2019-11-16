@@ -15,8 +15,18 @@ const MARGIN = 15;
 const HIDE_TIME_MS = 200;
 const MOVE_TIME_MS = 500;
 
+/**
+ * Additional layout options intended to be used internally by layout
+ * implementations.
+ */
+export interface LayoutOptions {
+  flipVertically?: boolean;
+  vSpacing?: number;
+  hSpacing?: number;
+}
+
 /** Assigns an identifier to a link. */
-function linkId(node: d3.HierarchyPointNode<TreeNode>) {
+export function linkId(node: d3.HierarchyPointNode<TreeNode>) {
   if (!node.parent) {
     return `${node.id}:A`;
   }
@@ -126,7 +136,7 @@ export class ChartUtil {
 
   layOutChart<N extends TreeNode>(
     root: d3.HierarchyNode<N>,
-    flipVertically = false
+    layoutOptions: LayoutOptions = {}
   ): Array<d3.HierarchyPointNode<N>> {
     // Add styles so that calculating text size is correct.
     const svg = d3.select(this.options.svgSelector);
@@ -137,7 +147,7 @@ export class ChartUtil {
     // Assign generation number.
     root.each(node => {
       node.data.generation =
-        node.depth * (flipVertically ? -1 : 1) +
+        node.depth * (layoutOptions.flipVertically ? -1 : 1) +
         (this.options.baseGeneration || 0);
     });
 
@@ -164,6 +174,10 @@ export class ChartUtil {
       }
     });
 
+    const vSpacing =
+      layoutOptions.vSpacing !== undefined ? layoutOptions.vSpacing : V_SPACING;
+    const hSpacing =
+      layoutOptions.hSpacing !== undefined ? layoutOptions.hSpacing : H_SPACING;
     // Assigns the x and y position for the nodes.
     const treemap = flextree<N>()
       .nodeSize(node => {
@@ -172,22 +186,22 @@ export class ChartUtil {
             d3.max(node.children || [], n => n.data.width) || 0;
           return [
             node.data.height!,
-            (maxChildSize + node.data.width!) / 2 + V_SPACING,
+            (maxChildSize + node.data.width!) / 2 + vSpacing,
           ];
         }
         const maxChildSize =
           d3.max(node.children || [], n => n.data.height) || 0;
         return [
           node.data.width!,
-          (maxChildSize + node.data.height!) / 2 + V_SPACING,
+          (maxChildSize + node.data.height!) / 2 + vSpacing,
         ];
       })
-      .spacing((a, b) => H_SPACING);
+      .spacing((a, b) => hSpacing);
     const nodes = treemap(root).descendants();
 
     // Swap x-y coordinates for horizontal layout.
     nodes.forEach(node => {
-      if (flipVertically) {
+      if (layoutOptions.flipVertically) {
         node.y = -node.y;
       }
       if (this.options.horizontal) {
@@ -215,11 +229,7 @@ export class ChartUtil {
     const nodeEnter = boundNodes.enter().append('g' as string);
     nodeEnter
       .merge(boundNodes)
-      .attr(
-        'class',
-        (node: d3.HierarchyPointNode<TreeNode>) =>
-          `node generation${node.data.generation}`
-      );
+      .attr('class', node => `node generation${node.data.generation}`);
     nodeEnter.attr(
       'transform',
       (node: d3.HierarchyPointNode<TreeNode>) =>
@@ -326,7 +336,9 @@ export class ChartUtil {
 
   getSvgForRendering(): SVGSelection {
     const svg = d3.select(this.options.svgSelector);
-    if (svg.select('g').empty()) svg.append('g');
+    if (svg.select('g').empty()) {
+      svg.append('g');
+    }
     return svg;
   }
 }

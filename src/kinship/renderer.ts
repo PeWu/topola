@@ -32,7 +32,7 @@ export class KinshipChartRenderer {
     }
 
     return [
-      this.util.layOutChart(upRoot, true),
+      this.util.layOutChart(upRoot, { flipVertically: true }),
       this.util.layOutChart(downRoot),
     ];
   }

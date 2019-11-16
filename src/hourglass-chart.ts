@@ -15,13 +15,11 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam>
     this.util = new ChartUtil(options);
   }
 
-  getFamilies(indiId: string) {
-    return this.options.data.getIndi(indiId)!.getFamiliesAsSpouse();
-  }
-
   render(): ChartInfo {
     const ancestorsRoot = getAncestorsTree(this.options);
-    const ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
+    const ancestorNodes = this.util.layOutChart(ancestorsRoot, {
+      flipVertically: true,
+    });
 
     const descendantNodes = layOutDescendants(this.options);
 

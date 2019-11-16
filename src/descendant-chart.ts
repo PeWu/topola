@@ -1,15 +1,19 @@
 import * as d3 from 'd3';
-
 import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
-import { ChartUtil, getChartInfo } from './chart-util';
+import { ChartUtil, getChartInfo, LayoutOptions } from './chart-util';
 import { IdGenerator } from './id-generator';
 
-const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
+export const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
 
-export function layOutDescendants(options: ChartOptions) {
+export function layOutDescendants(
+  options: ChartOptions,
+  layoutOptions: LayoutOptions = {}
+) {
   const descendants = new DescendantChart(options);
   const descendantsRoot = descendants.createHierarchy();
-  return removeDummyNode(new ChartUtil(options).layOutChart(descendantsRoot));
+  return removeDummyNode(
+    new ChartUtil(options).layOutChart(descendantsRoot, layoutOptions)
+  );
 }
 
 /** Removes the dummy root node if it was added in createHierarchy(). */

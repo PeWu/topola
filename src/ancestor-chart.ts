@@ -127,7 +127,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
    */
   render(): ChartInfo {
     const root = this.createHierarchy();
-    const nodes = this.util.layOutChart(root, true);
+    const nodes = this.util.layOutChart(root, { flipVertically: true });
     this.util.renderChart(nodes);
 
     const info = getChartInfo(nodes);
