@@ -19734,7 +19734,7 @@ var AncestorChart = /** @class */ (function () {
      */
     AncestorChart.prototype.render = function () {
         var root = this.createHierarchy();
-        var nodes = this.util.layOutChart(root, true);
+        var nodes = this.util.layOutChart(root, { flipVertically: true });
         this.util.renderChart(nodes);
         var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
@@ -19744,7 +19744,7 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":39,"./id-generator":47,"d3":34}],39:[function(require,module,exports){
+},{"./chart-util":39,"./id-generator":49,"d3":34}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -19770,6 +19770,7 @@ function linkId(node) {
     }
     return parent.id + ":" + child.id;
 }
+exports.linkId = linkId;
 function getChartInfo(nodes) {
     // Calculate chart boundaries.
     var x0 = d3.min(nodes, function (d) { return d.x - d.data.width / 2; }) - MARGIN;
@@ -19836,9 +19837,9 @@ var ChartUtil = /** @class */ (function () {
             : group;
         transition.attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
     };
-    ChartUtil.prototype.layOutChart = function (root, flipVertically) {
+    ChartUtil.prototype.layOutChart = function (root, layoutOptions) {
         var _this = this;
-        if (flipVertically === void 0) { flipVertically = false; }
+        if (layoutOptions === void 0) { layoutOptions = {}; }
         // Add styles so that calculating text size is correct.
         var svg = d3.select(this.options.svgSelector);
         if (svg.select('style').empty()) {
@@ -19847,7 +19848,7 @@ var ChartUtil = /** @class */ (function () {
         // Assign generation number.
         root.each(function (node) {
             node.data.generation =
-                node.depth * (flipVertically ? -1 : 1) +
+                node.depth * (layoutOptions.flipVertically ? -1 : 1) +
                     (_this.options.baseGeneration || 0);
         });
         // Set preferred sizes.
@@ -19871,6 +19872,8 @@ var ChartUtil = /** @class */ (function () {
                 node.data.height = vSize;
             }
         });
+        var vSpacing = layoutOptions.vSpacing !== undefined ? layoutOptions.vSpacing : exports.V_SPACING;
+        var hSpacing = layoutOptions.hSpacing !== undefined ? layoutOptions.hSpacing : exports.H_SPACING;
         // Assigns the x and y position for the nodes.
         var treemap = d3_flextree_1.flextree()
             .nodeSize(function (node) {
@@ -19878,21 +19881,21 @@ var ChartUtil = /** @class */ (function () {
                 var maxChildSize_1 = d3.max(node.children || [], function (n) { return n.data.width; }) || 0;
                 return [
                     node.data.height,
-                    (maxChildSize_1 + node.data.width) / 2 + exports.V_SPACING,
+                    (maxChildSize_1 + node.data.width) / 2 + vSpacing,
                 ];
             }
             var maxChildSize = d3.max(node.children || [], function (n) { return n.data.height; }) || 0;
             return [
                 node.data.width,
-                (maxChildSize + node.data.height) / 2 + exports.V_SPACING,
+                (maxChildSize + node.data.height) / 2 + vSpacing,
             ];
         })
-            .spacing(function (a, b) { return exports.H_SPACING; });
+            .spacing(function (a, b) { return hSpacing; });
         var nodes = treemap(root).descendants();
         // Swap x-y coordinates for horizontal layout.
         nodes.forEach(function (node) {
             var _a;
-            if (flipVertically) {
+            if (layoutOptions.flipVertically) {
                 node.y = -node.y;
             }
             if (_this.options.horizontal) {
@@ -19914,9 +19917,7 @@ var ChartUtil = /** @class */ (function () {
         var nodeEnter = boundNodes.enter().append('g');
         nodeEnter
             .merge(boundNodes)
-            .attr('class', function (node) {
-            return "node generation" + node.data.generation;
-        });
+            .attr('class', function (node) { return "node generation" + node.data.generation; });
         nodeEnter.attr('transform', function (node) {
             return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
                 node.data.height / 2) + ")";
@@ -20011,8 +20012,9 @@ var ChartUtil = /** @class */ (function () {
     };
     ChartUtil.prototype.getSvgForRendering = function () {
         var svg = d3.select(this.options.svgSelector);
-        if (svg.select('g').empty())
+        if (svg.select('g').empty()) {
             svg.append('g');
+        }
         return svg;
     };
     return ChartUtil;
@@ -20020,6 +20022,80 @@ var ChartUtil = /** @class */ (function () {
 exports.ChartUtil = ChartUtil;
 
 },{"d3":34,"d3-flextree":14}],40:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/** Renders person or married couple inside a sircle. */
+var CircleRenderer = /** @class */ (function () {
+    function CircleRenderer(options) {
+        this.options = options;
+    }
+    CircleRenderer.prototype.getFamilyAnchor = function (node) {
+        return [0, 0];
+    };
+    CircleRenderer.prototype.getIndiAnchor = function (node) {
+        return [0, 0];
+    };
+    CircleRenderer.prototype.getSpouseAnchor = function (node) {
+        return [0, 0];
+    };
+    CircleRenderer.prototype.updateNodes = function (nodes) {
+        nodes.forEach(function (node) {
+            var _a;
+            _a = node.data.family
+                ? [120, 120]
+                : [80, 80], node.data.width = _a[0], node.data.height = _a[1];
+        });
+    };
+    CircleRenderer.prototype.getName = function (entry) {
+        if (!entry) {
+            return '';
+        }
+        var indi = this.options.data.getIndi(entry.id);
+        var firstName = indi.getFirstName();
+        return firstName ? firstName.split(' ')[0] : '';
+    };
+    CircleRenderer.prototype.render = function (enter, update) {
+        var _this = this;
+        enter = enter.append('g').attr('class', 'circle');
+        update = update.select('g');
+        enter
+            .append('circle')
+            .attr('r', function (node) { return node.data.width / 2; })
+            .attr('cx', function (node) { return node.data.width / 2; })
+            .attr('cy', function (node) { return node.data.height / 2; });
+        enter
+            .filter(function (node) { return !!node.data.family; })
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', function (node) {
+            return "translate(" + node.data.width / 2 + ", " + (node.data.height / 2 - 4) + ")";
+        })
+            .text(function (node) { return _this.getName(node.data.indi); });
+        enter
+            .filter(function (node) { return !!node.data.family; })
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', function (node) {
+            return "translate(" + node.data.width / 2 + ", " + (node.data.height / 2 + 14) + ")";
+        })
+            .text(function (node) { return _this.getName(node.data.spouse); });
+        enter
+            .filter(function (node) { return !node.data.family; })
+            .append('text')
+            .attr('text-anchor', 'middle')
+            .attr('transform', function (node) {
+            return "translate(" + node.data.width / 2 + ", " + (node.data.height / 2 + 4) + ")";
+        })
+            .text(function (node) { return _this.getName(node.data.indi); });
+    };
+    CircleRenderer.prototype.getCss = function () {
+        return "\n    circle {\n      fill: white;\n      stroke: #040;\n      stroke-width: 5px;\n    }\n    .circle text {\n      font-size: 12px;\n    }\n    .background {\n      stroke: none;\n    }\n    ";
+    };
+    return CircleRenderer;
+}());
+exports.CircleRenderer = CircleRenderer;
+
+},{}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -20192,7 +20268,7 @@ function getVSize(node, horizontal) {
     return getIndiVSize(node, horizontal) + getFamVSize(node, horizontal);
 }
 
-},{"d3":34}],41:[function(require,module,exports){
+},{"d3":34}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Details of an individual based on Json input. */
@@ -20285,7 +20361,7 @@ var JsonDataProvider = /** @class */ (function () {
 }());
 exports.JsonDataProvider = JsonDataProvider;
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var MONTHS_EN = new Map([
@@ -20336,22 +20412,23 @@ function formatDate(date, locale) {
 }
 exports.formatDate = formatDate;
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
-var DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
-function layOutDescendants(options) {
+exports.DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
+function layOutDescendants(options, layoutOptions) {
+    if (layoutOptions === void 0) { layoutOptions = {}; }
     var descendants = new DescendantChart(options);
     var descendantsRoot = descendants.createHierarchy();
-    return removeDummyNode(new chart_util_1.ChartUtil(options).layOutChart(descendantsRoot));
+    return removeDummyNode(new chart_util_1.ChartUtil(options).layOutChart(descendantsRoot, layoutOptions));
 }
 exports.layOutDescendants = layOutDescendants;
 /** Removes the dummy root node if it was added in createHierarchy(). */
 function removeDummyNode(allNodes) {
-    if (allNodes[0].id !== DUMMY_ROOT_NODE_ID) {
+    if (allNodes[0].id !== exports.DUMMY_ROOT_NODE_ID) {
         return allNodes;
     }
     var nodes = allNodes.slice(1);
@@ -20360,7 +20437,7 @@ function removeDummyNode(allNodes) {
     var dy = -nodes[0].y;
     nodes.forEach(function (node) {
         if (node.parent &&
-            node.parent.id === DUMMY_ROOT_NODE_ID &&
+            node.parent.id === exports.DUMMY_ROOT_NODE_ID &&
             !node.data.additionalMarriage) {
             delete node.parent;
         }
@@ -20448,7 +20525,7 @@ var DescendantChart = /** @class */ (function () {
         // After layout is complete, the dummy node will be removed.
         if (nodes.length > 1) {
             var dummyNode_1 = {
-                id: DUMMY_ROOT_NODE_ID,
+                id: exports.DUMMY_ROOT_NODE_ID,
                 height: 1,
                 width: 1,
             };
@@ -20500,7 +20577,7 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":39,"./id-generator":47,"d3":34}],44:[function(require,module,exports){
+},{"./chart-util":39,"./id-generator":49,"d3":34}],45:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -20892,7 +20969,194 @@ var DetailedRenderer = /** @class */ (function (_super) {
 }(composite_renderer_1.CompositeRenderer));
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"./composite-renderer":40,"./date-format":42,"d3":34}],45:[function(require,module,exports){
+},{"./composite-renderer":41,"./date-format":43,"d3":34}],46:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var d3 = require("d3");
+var chart_util_1 = require("./chart-util");
+var descendant_chart_1 = require("./descendant-chart");
+/** Returns an SVG line definition for a tree branch between two points. */
+function branch(x1, y1, x2, y2) {
+    var yMid = y2 + 110;
+    if (x2 > x1 + 100) {
+        return "\n      M " + (x1 + 10) + "       " + y1 + "\n      C " + (x1 + 10) + "       " + (yMid + 25) + "\n        " + (x1 + 45) + "       " + (yMid + 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid + 5) + "\n        " + (x2 - 45) + "       " + yMid + "\n        " + (x2 + 2) + "        " + (yMid - 25) + "\n        " + (x2 + 2) + "        " + y2 + "\n      L " + (x2 - 2) + "        " + y2 + "\n      C " + (x2 - 2) + "        " + (yMid - 25) + "\n        " + (x2 - 45) + "       " + (yMid - 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid - 5) + "\n        " + (x1 + 45) + "       " + yMid + "\n        " + (x1 - 10) + "       " + (yMid + 25) + "\n        " + (x1 - 10) + "       " + y1;
+    }
+    if (x2 < x1 - 100) {
+        return "\n      M " + (x1 - 10) + "       " + y1 + "\n      C " + (x1 - 10) + "       " + (yMid + 25) + "\n        " + (x1 - 45) + "       " + (yMid + 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid + 5) + "\n        " + (x2 + 45) + "       " + yMid + "\n        " + (x2 - 2) + "        " + (yMid - 25) + "\n        " + (x2 - 2) + "        " + y2 + "\n      L " + (x2 + 2) + "        " + y2 + "\n      C " + (x2 + 2) + "        " + (yMid - 25) + "\n        " + (x2 + 45) + "       " + (yMid - 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid - 5) + "\n        " + (x1 - 45) + "       " + yMid + "\n        " + (x1 + 10) + "       " + (yMid + 25) + "\n        " + (x1 + 10) + "       " + y1;
+    }
+    return "\n    M " + (x1 + 10) + "       " + y1 + "\n    C " + (x1 + 10) + "       " + (yMid + 25) + "\n      " + (x2 + 2) + "        " + (yMid - 25) + "\n      " + (x2 + 2) + "        " + y2 + "\n    L " + (x2 - 2) + "        " + y2 + "\n    C " + (x2 - 2) + "        " + (yMid - 25) + "\n      " + (x1 - 10) + "       " + (yMid + 25) + "\n      " + (x1 - 10) + "       " + y1;
+}
+/** Renders a fancy descendants tree chart. */
+var FancyChart = /** @class */ (function () {
+    function FancyChart(options) {
+        this.options = options;
+        this.util = new chart_util_1.ChartUtil(options);
+    }
+    /** Creates a path from parent to the child node (vertical layout). */
+    FancyChart.prototype.linkVertical = function (s, d) {
+        var sAnchor = this.options.renderer.getFamilyAnchor(s.data);
+        var dAnchor = s.id === d.data.spouseParentNodeId
+            ? this.options.renderer.getSpouseAnchor(d.data)
+            : this.options.renderer.getIndiAnchor(d.data);
+        var _a = [s.x + sAnchor[0], s.y + sAnchor[1]], sx = _a[0], sy = _a[1];
+        var _b = [d.x + dAnchor[0], d.y + dAnchor[1]], dx = _b[0], dy = _b[1];
+        return branch(dx, dy, sx, sy);
+    };
+    FancyChart.prototype.linkAdditionalMarriage = function (node) {
+        var nodeIndex = node.parent.children.findIndex(function (n) { return n.id === node.id; });
+        // Assert nodeIndex > 0.
+        var siblingNode = node.parent.children[nodeIndex - 1];
+        var sAnchor = this.options.renderer.getIndiAnchor(node.data);
+        var dAnchor = this.options.renderer.getIndiAnchor(siblingNode.data);
+        var _a = [node.x + sAnchor[0], node.y + sAnchor[1]], sx = _a[0], sy = _a[1];
+        var _b = [siblingNode.x + dAnchor[0], siblingNode.y + dAnchor[1]], dx = _b[0], dy = _b[1];
+        return "M " + sx + ", " + (sy + 2) + "\n              L " + dx + ", " + (dy + 10) + "\n              " + dx + ", " + (dy - 10) + "\n              " + sx + ", " + (sy - 2);
+    };
+    FancyChart.prototype.renderBackground = function (chartInfo, svg) {
+        svg
+            .select('g')
+            .append('rect')
+            .attr('x', -chartInfo.origin[0])
+            .attr('y', -chartInfo.origin[1])
+            .attr('width', chartInfo.size[0])
+            .attr('height', chartInfo.origin[1])
+            .attr('fill', '#cff');
+        svg
+            .select('g')
+            .append('rect')
+            .attr('x', -chartInfo.origin[0])
+            .attr('y', 0)
+            .attr('width', chartInfo.size[0])
+            .attr('height', chartInfo.size[1] - chartInfo.origin[1])
+            .attr('fill', '#494');
+    };
+    FancyChart.prototype.renderLeaves = function (nodes, svg) {
+        var gradient = svg
+            .select('g')
+            .append('radialGradient')
+            .attr('id', 'gradient');
+        gradient
+            .append('stop')
+            .attr('offset', '0%')
+            .attr('stop-color', '#8f8');
+        gradient
+            .append('stop')
+            .attr('offset', '80%')
+            .attr('stop-color', '#8f8')
+            .attr('stop-opacity', 0.5);
+        gradient
+            .append('stop')
+            .attr('offset', '100%')
+            .attr('stop-color', '#8f8')
+            .attr('stop-opacity', 0);
+        var backgroundNodes = nodes.filter(function (n) { return n.parent && n.parent.id !== descendant_chart_1.DUMMY_ROOT_NODE_ID; });
+        var minGeneration = d3.min(backgroundNodes, function (node) { return node.data.generation; }) || 0;
+        var sizeFunction = function (node) {
+            return 280 - 180 / Math.sqrt(1 + node.data.generation - minGeneration);
+        };
+        {
+            var boundNodes = svg
+                .select('g')
+                .selectAll('g.background')
+                .data(backgroundNodes, function (d) { return d.id; });
+            var enter = boundNodes.enter().append('g');
+            enter
+                .merge(boundNodes)
+                .attr('class', 'background')
+                .attr('transform', function (node) {
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
+                    node.data.height / 2) + ")";
+            });
+            var background = enter.append('g').attr('class', 'background');
+            background
+                .append('circle')
+                .attr('class', 'background')
+                .attr('r', sizeFunction)
+                .attr('cx', function (node) { return node.data.width / 2; })
+                .attr('cy', function (node) { return node.data.height / 2; })
+                .style('fill', '#493');
+        }
+        {
+            var boundNodes = svg
+                .select('g')
+                .selectAll('g.background2')
+                .data(backgroundNodes, function (d) { return d.id; });
+            var enter = boundNodes.enter().append('g');
+            enter
+                .merge(boundNodes)
+                .attr('class', 'background2')
+                .attr('transform', function (node) {
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
+                    node.data.height / 2) + ")";
+            });
+            var background = enter.append('g').attr('class', 'background2');
+            background
+                .append('circle')
+                .attr('class', 'background')
+                .attr('r', sizeFunction)
+                .attr('cx', function (node) { return node.data.width / 2; })
+                .attr('cy', function (node) { return node.data.height / 2; })
+                .style('fill', 'url(#gradient)');
+        }
+    };
+    FancyChart.prototype.renderLinks = function (nodes, svg) {
+        var _this = this;
+        var link = function (parent, child) {
+            if (child.data.additionalMarriage) {
+                return _this.linkAdditionalMarriage(child);
+            }
+            return _this.linkVertical(child, parent);
+        };
+        var links = nodes.filter(function (n) { return !!n.parent; });
+        svg
+            .select('g')
+            .selectAll('path.branch')
+            .data(links, chart_util_1.linkId)
+            .enter()
+            .append('path')
+            .attr('class', function (node) {
+            return node.data.additionalMarriage ? 'branch additional-marriage' : 'branch';
+        })
+            .attr('d', function (node) { return link(node.parent, node); });
+    };
+    FancyChart.prototype.renderTreeTrunk = function (nodes, svg) {
+        var trunkNodes = nodes.filter(function (n) { return !n.parent || n.parent.id === descendant_chart_1.DUMMY_ROOT_NODE_ID; });
+        svg
+            .select('g')
+            .selectAll('g.trunk')
+            .data(trunkNodes, function (d) { return d.id; })
+            .enter()
+            .append('g')
+            .attr('class', 'trunk')
+            .attr('transform', function (node) { return "translate(" + node.x + ", " + node.y + ")"; })
+            .append('path')
+            .attr('d', "\n          M 10 20\n          L 10 40\n          C 10 60 10 90 40 90\n          L -40 90\n          C -10 90 -10 60 -10 40\n          L -10 20");
+    };
+    FancyChart.prototype.render = function () {
+        var nodes = descendant_chart_1.layOutDescendants(this.options, {
+            flipVertically: true,
+            vSpacing: 100,
+        });
+        var info = chart_util_1.getChartInfo(nodes);
+        info.origin[0] += 150;
+        info.origin[1] += 150;
+        info.size[0] += 300;
+        info.size[1] += 300;
+        var svg = this.util.getSvgForRendering();
+        svg.append('style').text("\n      .branch, .trunk {\n        fill: #632;\n        stroke: #632;\n      }");
+        this.renderBackground(info, svg);
+        this.renderLeaves(nodes, svg);
+        this.renderLinks(nodes, svg);
+        this.renderTreeTrunk(nodes, svg);
+        this.util.renderNodes(nodes, svg);
+        this.util.updateSvgDimensions(info);
+        return info;
+    };
+    return FancyChart;
+}());
+exports.FancyChart = FancyChart;
+
+},{"./chart-util":39,"./descendant-chart":44,"d3":34}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var parse_gedcom_1 = require("parse-gedcom");
@@ -21111,7 +21375,7 @@ function gedcomEntriesToJson(gedcom) {
 }
 exports.gedcomEntriesToJson = gedcomEntriesToJson;
 
-},{"parse-gedcom":36}],46:[function(require,module,exports){
+},{"parse-gedcom":36}],48:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ancestor_chart_1 = require("./ancestor-chart");
@@ -21126,12 +21390,11 @@ var HourglassChart = /** @class */ (function () {
         this.options = options;
         this.util = new chart_util_1.ChartUtil(options);
     }
-    HourglassChart.prototype.getFamilies = function (indiId) {
-        return this.options.data.getIndi(indiId).getFamiliesAsSpouse();
-    };
     HourglassChart.prototype.render = function () {
         var ancestorsRoot = ancestor_chart_1.getAncestorsTree(this.options);
-        var ancestorNodes = this.util.layOutChart(ancestorsRoot, true);
+        var ancestorNodes = this.util.layOutChart(ancestorsRoot, {
+            flipVertically: true,
+        });
         var descendantNodes = descendant_chart_1.layOutDescendants(this.options);
         // slice(1) removes the duplicated start node.
         var nodes = ancestorNodes.slice(1).concat(descendantNodes);
@@ -21144,7 +21407,7 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":43}],47:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":44}],49:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /** Provides unique identifiers. */
@@ -21169,7 +21432,7 @@ var IdGenerator = /** @class */ (function () {
 }());
 exports.IdGenerator = IdGenerator;
 
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 "use strict";
 function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
@@ -21178,9 +21441,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("array-flat-polyfill");
 __export(require("./ancestor-chart"));
 __export(require("./chart-util"));
+__export(require("./circle-renderer"));
 __export(require("./composite-renderer"));
 __export(require("./data"));
 __export(require("./date-format"));
+__export(require("./fancy-chart"));
 __export(require("./descendant-chart"));
 __export(require("./detailed-renderer"));
 __export(require("./gedcom"));
@@ -21190,7 +21455,7 @@ __export(require("./relatives-chart"));
 __export(require("./simple-api"));
 __export(require("./simple-renderer"));
 
-},{"./ancestor-chart":38,"./chart-util":39,"./composite-renderer":40,"./data":41,"./date-format":42,"./descendant-chart":43,"./detailed-renderer":44,"./gedcom":45,"./hourglass-chart":46,"./kinship-chart":49,"./relatives-chart":54,"./simple-api":55,"./simple-renderer":56,"array-flat-polyfill":1}],49:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./circle-renderer":40,"./composite-renderer":41,"./data":42,"./date-format":43,"./descendant-chart":44,"./detailed-renderer":45,"./fancy-chart":46,"./gedcom":47,"./hourglass-chart":48,"./kinship-chart":51,"./relatives-chart":56,"./simple-api":57,"./simple-renderer":58,"array-flat-polyfill":1}],51:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var hierarchy_creator_1 = require("./kinship/hierarchy-creator");
@@ -21248,7 +21513,7 @@ var EMPTY_HIERARCHY_TREE_NODES = {
     children: [],
 };
 
-},{"./kinship/hierarchy-creator":51,"./kinship/renderer":53}],50:[function(require,module,exports){
+},{"./kinship/hierarchy-creator":53,"./kinship/renderer":55}],52:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ChildNodes = /** @class */ (function () {
@@ -21306,7 +21571,7 @@ function otherSideLinkType(type) {
 }
 exports.otherSideLinkType = otherSideLinkType;
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -21643,7 +21908,7 @@ function getRootsCount(upRoot, data) {
 }
 exports.getRootsCount = getRootsCount;
 
-},{"../id-generator":47,"../utils":57,"./api":50,"./hierarchy-filter":52,"d3":34}],52:[function(require,module,exports){
+},{"../id-generator":49,"../utils":59,"./api":52,"./hierarchy-filter":54,"d3":34}],54:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var HierarchyFilter = /** @class */ (function () {
@@ -21676,7 +21941,7 @@ var HierarchyFilter = /** @class */ (function () {
 }());
 exports.HierarchyFilter = HierarchyFilter;
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -21701,7 +21966,7 @@ var KinshipChartRenderer = /** @class */ (function () {
             svg.append('style').text(this.options.renderer.getCss());
         }
         return [
-            this.util.layOutChart(upRoot, true),
+            this.util.layOutChart(upRoot, { flipVertically: true }),
             this.util.layOutChart(downRoot),
         ];
     };
@@ -21985,7 +22250,7 @@ var KinshipChartRenderer = /** @class */ (function () {
 }());
 exports.KinshipChartRenderer = KinshipChartRenderer;
 
-},{"../chart-util":39,"../utils":57,"./api":50,"d3":34}],54:[function(require,module,exports){
+},{"../chart-util":39,"../utils":59,"./api":52,"d3":34}],56:[function(require,module,exports){
 "use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -22260,7 +22525,7 @@ var RelativesChart = /** @class */ (function () {
 }());
 exports.RelativesChart = RelativesChart;
 
-},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":43,"./id-generator":47,"d3":34}],55:[function(require,module,exports){
+},{"./ancestor-chart":38,"./chart-util":39,"./descendant-chart":44,"./id-generator":49,"d3":34}],57:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
@@ -22326,7 +22591,7 @@ function createChart(options) {
 }
 exports.createChart = createChart;
 
-},{"./data":41,"d3":34}],56:[function(require,module,exports){
+},{"./data":42,"d3":34}],58:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -22443,7 +22708,7 @@ var SimpleRenderer = /** @class */ (function (_super) {
 }(composite_renderer_1.CompositeRenderer));
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"./composite-renderer":40,"d3":34}],57:[function(require,module,exports){
+},{"./composite-renderer":41,"d3":34}],59:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 function nonEmpty(array) {
@@ -22468,5 +22733,5 @@ function points2pathd(points) {
 }
 exports.points2pathd = points2pathd;
 
-},{}]},{},[48])(48)
+},{}]},{},[50])(50)
 });
