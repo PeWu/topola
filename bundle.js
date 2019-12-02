@@ -20089,7 +20089,7 @@ var CircleRenderer = /** @class */ (function () {
             .text(function (node) { return _this.getName(node.data.indi); });
     };
     CircleRenderer.prototype.getCss = function () {
-        return "\n    circle {\n      fill: white;\n      stroke: #040;\n      stroke-width: 5px;\n    }\n    .circle text {\n      font-size: 12px;\n    }\n    .background {\n      stroke: none;\n    }\n    ";
+        return "\n    circle {\n      fill: white;\n      stroke: #040;\n      stroke-width: 5px;\n    }\n    .circle text {\n      font-family: verdana, arial, sans-serif;\n      font-size: 12px;\n    }\n    .background {\n      stroke: none;\n    }\n    ";
     };
     return CircleRenderer;
 }());
@@ -21141,7 +21141,7 @@ var FancyChart = /** @class */ (function () {
         info.origin[0] += 150;
         info.origin[1] += 150;
         info.size[0] += 300;
-        info.size[1] += 300;
+        info.size[1] += 250;
         var svg = this.util.getSvgForRendering();
         svg.append('style').text("\n      .branch, .trunk {\n        fill: #632;\n        stroke: #632;\n      }");
         this.renderBackground(info, svg);
