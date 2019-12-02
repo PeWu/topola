@@ -256,7 +256,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     info.origin[0] += 150;
     info.origin[1] += 150;
     info.size[0] += 300;
-    info.size[1] += 300;
+    info.size[1] += 250;
 
     const svg = this.util.getSvgForRendering();
     svg.append('style').text(`
