@@ -91,6 +91,7 @@ export class CircleRenderer implements Renderer {
       stroke-width: 5px;
     }
     .circle text {
+      font-family: verdana, arial, sans-serif;
       font-size: 12px;
     }
     .background {
