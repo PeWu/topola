@@ -77,7 +77,7 @@ describe('GEDCOM parser', () => {
   
       let sut = gedcomToJson(gedcom);
       expect(sut.indis.length).toBe(1);
-      expect(sut.indis[0].imageUrl!.url).toBe('person.jpg');
+      expect(sut.indis[0].mainImage!.url).toBe('person.jpg');
     });
     it('should parse a single image with title correctly', () => {
       let gedcom = `
@@ -89,8 +89,8 @@ describe('GEDCOM parser', () => {
   
       let sut = gedcomToJson(gedcom);
       expect(sut.indis.length).toBe(1);
-      expect(sut.indis[0].imageUrl!.url).toBe('person.jpg');
-      expect(sut.indis[0].imageUrl!.title).toBe('some description');
+      expect(sut.indis[0].mainImage!.url).toBe('person.jpg');
+      expect(sut.indis[0].mainImage!.title).toBe('some description');
     });
     it('should parse multiple image objects correctly', () => {
       let gedcom = `
@@ -105,12 +105,12 @@ describe('GEDCOM parser', () => {
   
       let sut = gedcomToJson(gedcom);
       expect(sut.indis.length).toBe(1);
-      expect(sut.indis[0].imageUrl!.url).toBe('main.jpg');
-      expect(sut.indis[0].imageUrl!.title).toBe('some');
+      expect(sut.indis[0].mainImage!.url).toBe('main.jpg');
+      expect(sut.indis[0].mainImage!.title).toBe('some');
   
-      expect(sut.indis[0].images!.length).toBe(1);
-      expect(sut.indis[0].images![0].url).toBe('album.jpg');
-      expect(sut.indis[0].images![0].title).toBe('description');
+      expect(sut.indis[0].album!.length).toBe(1);
+      expect(sut.indis[0].album![0].url).toBe('album.jpg');
+      expect(sut.indis[0].album![0].title).toBe('description');
     });
   });
 });

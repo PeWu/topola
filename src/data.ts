@@ -42,8 +42,8 @@ export interface JsonIndi {
   birth?: JsonEvent;
   death?: JsonEvent;
   sex?: string;
-  imageUrl?: JsonImage;
-  images?: JsonImage[];
+  mainImage?: JsonImage;
+  album?: JsonImage[];
 }
 
 /** Json representation of a family. */
@@ -132,13 +132,13 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.sex || null;
   }
   getImageUrl() {
-    return this.json.imageUrl && this.json.imageUrl.url || null;
+    return this.json.mainImage && this.json.mainImage.url || null;
   }
   getMainImage() {
-    return this.json.imageUrl || null;
+    return this.json.mainImage || null;
   }
   getAlbumImages() {
-    return this.json.images || null;
+    return this.json.album || null;
   }
 }
 

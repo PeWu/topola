@@ -212,10 +212,10 @@ function createIndi(
       
       const fileTag = getFileTag(objeTags[0]);
       if (fileTag) {
-          indi.imageUrl = fileTag;
+          indi.mainImage = fileTag;
       }
 
-      indi.images = objeTags.slice(1).map(getFileTag).filter(x => x);
+      indi.album = objeTags.slice(1).map(getFileTag).filter(x => x);
   }
 
   // Birth date and place.
