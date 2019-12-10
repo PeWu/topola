@@ -148,16 +148,24 @@ function createIndi(
   const indi: JsonIndi = { id, fams };
 
   // Name.
-  const nameTag = findTag(entry.tree, 'NAME');
-  if (nameTag) {
+  const nameTags = findTags(entry.tree, 'NAME');
+  nameTags.forEach((nameTag: GedcomEntry) => {
     const { firstName, lastName } = extractName(nameTag.data);
-    if (firstName) {
-      indi.firstName = firstName;
+    const type = findTag(nameTag.tree, 'TYPE');
+    if (type && type.data === 'maiden') {
+      if (lastName) {
+        indi.maidenName = lastName;
+      }
     }
-    if (lastName) {
-      indi.lastName = lastName;
+    else {
+      if (firstName) {
+        indi.firstName = firstName;
+      }
+      if (lastName) {
+        indi.lastName = lastName;
+      }
     }
-  }
+  });
 
   // Sex.
   const sexTag = findTag(entry.tree, 'SEX');

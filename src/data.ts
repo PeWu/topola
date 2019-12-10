@@ -34,6 +34,7 @@ export interface JsonIndi {
   id: string;
   firstName?: string;
   lastName?: string;
+  maidenName?: string;
   famc?: string;
   fams?: string[];
   birth?: JsonEvent;
