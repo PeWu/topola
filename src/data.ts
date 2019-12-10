@@ -24,6 +24,11 @@ export interface JsonEvent extends DateOrRange {
   confirmed?: boolean;
 }
 
+export interface JsonImage {
+  url?: string;
+  title?: string;
+}
+
 /** Json representation of an individual. */
 export interface JsonIndi {
   id: string;
@@ -34,7 +39,8 @@ export interface JsonIndi {
   birth?: JsonEvent;
   death?: JsonEvent;
   sex?: string;
-  imageUrl?: string;
+  imageUrl?: JsonImage;
+  images?: JsonImage[];
 }
 
 /** Json representation of a family. */
@@ -108,7 +114,7 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.sex || null;
   }
   getImageUrl() {
-    return this.json.imageUrl || null;
+    return this.json.imageUrl && this.json.imageUrl.url || null;
   }
 }
 

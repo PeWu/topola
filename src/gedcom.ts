@@ -172,16 +172,30 @@ function createIndi(
   }
 
   // Image URL.
-  const objeTag = findTag(entry.tree, 'OBJE');
-  if (objeTag) {
-    // Dereference OBJEct if needed.
-    const realObjeTag = objeTag.data
-      ? objects.get(pointerToId(objeTag.data))!
-      : objeTag;
-    const fileTag = realObjeTag && findTag(realObjeTag.tree, 'FILE');
-    if (fileTag) {
-      indi.imageUrl = fileTag.data;
-    }
+  var objeTags = findTags(entry.tree, 'OBJE');
+  if (objeTags.length > 0) {
+      // Dereference OBJEct if needed.
+      const getFileTag = (tag: GedcomEntry) => {
+          var realObjeTag = tag.data
+          ? objects.get(pointerToId(tag.data))
+          : tag;
+          if (!realObjeTag) return null;
+
+          const file = findTag(realObjeTag.tree, 'FILE');
+          const title = findTag(realObjeTag.tree, 'TITL');
+
+          var result: any = {};
+          if (file) result.url = file.data;          
+          if (title) result.title = title.data;
+          return result;   
+      };
+      
+      const fileTag = getFileTag(objeTags[0]);
+      if (fileTag) {
+          indi.imageUrl = fileTag;
+      }
+
+      indi.images = objeTags.slice(1).map(getFileTag).filter(x => x);
   }
 
   // Birth date and place.
