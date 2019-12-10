@@ -37,6 +37,8 @@ export interface JsonIndi {
   maidenName?: string;
   famc?: string;
   fams?: string[];
+  numberOfChildren?: number;
+  numberOfMarriages?: number;
   birth?: JsonEvent;
   death?: JsonEvent;
   sex?: string;
@@ -63,6 +65,10 @@ export interface JsonGedcomData {
 export interface IndiDetails extends Indi {
   getFirstName(): string | null;
   getLastName(): string | null;
+  getMaidenName(): string | null;
+  getNumberOfChildren(): number | null;
+  getNumberOfMarriages(): number | null;
+  getMaidenName(): string | null;
   getBirthDate(): DateOrRange | null;
   getBirthPlace(): string | null;
   getDeathDate(): DateOrRange | null;
@@ -70,6 +76,8 @@ export interface IndiDetails extends Indi {
   isConfirmedDeath(): boolean;
   getSex(): string | null;
   getImageUrl(): string | null;
+  getMainImage(): JsonImage | null;
+  getAlbumImages(): JsonImage[] | null;
 }
 
 /** Details of a family record. */
@@ -99,6 +107,15 @@ class JsonIndiDetails implements IndiDetails {
   getBirthDate() {
     return this.json.birth || null;
   }
+  getMaidenName() {
+    return this.json.maidenName || null;
+  }
+  getNumberOfChildren() {
+    return this.json.numberOfChildren || null;
+  }
+  getNumberOfMarriages() {
+    return this.json.numberOfMarriages || null;
+  }
   getBirthPlace() {
     return (this.json.birth && this.json.birth.place) || null;
   }
@@ -116,6 +133,12 @@ class JsonIndiDetails implements IndiDetails {
   }
   getImageUrl() {
     return this.json.imageUrl && this.json.imageUrl.url || null;
+  }
+  getMainImage() {
+    return this.json.imageUrl || null;
+  }
+  getAlbumImages() {
+    return this.json.images || null;
   }
 }
 

@@ -167,6 +167,18 @@ function createIndi(
     }
   });
 
+  // Number of children.
+  const nchiTag = findTag(entry.tree, 'NCHI');
+  if (nchiTag) {
+    indi.numberOfChildren = +nchiTag.data;
+  }
+
+  // Number of marriages.
+  const nmrTag = findTag(entry.tree, 'NMR');
+  if (nmrTag) {
+    indi.numberOfMarriages = +nmrTag.data;
+  }
+
   // Sex.
   const sexTag = findTag(entry.tree, 'SEX');
   if (sexTag) {

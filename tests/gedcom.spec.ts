@@ -46,6 +46,27 @@ describe('GEDCOM parser', () => {
     });
   });
 
+  describe('Meta', () => {
+    it('should parse number of children correctly', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NCHI 10
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].numberOfChildren).toBe(10);
+    });
+    it('should parse number of marriages correctly', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NMR 5
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].numberOfMarriages).toBe(5);
+    });
+  });
+
   describe('Images', () => {
     it('should parse a single image object correctly', () => {
       let gedcom = `
