@@ -9,6 +9,7 @@ import {
   JsonIndi,
   JsonImage,
 } from './data';
+import { interpolateInferno } from 'd3';
 
 /** Returns the first entry with the given tag or undefined if not found. */
 function findTag(tree: GedcomEntry[], tag: string): GedcomEntry | undefined {
@@ -112,6 +113,19 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
 }
 
 /**
+ * tries to treat an input tag as NOTE and parsse all lines of notes
+ */
+function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
+  if (!notesTag || notesTag.tag !== 'NOTE') return undefined;
+  const result = [notesTag.data];
+
+  findTags(notesTag.tree, 'CONT')
+    .filter(x => x.data)
+    .forEach(x => result.push(x.data));
+  return result;
+}
+
+/**
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
  */
@@ -119,9 +133,12 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
   if (!entry) {
     return undefined;
   }
+  const typeTag = findTag(entry.tree, 'TYPE');
   const dateTag = findTag(entry.tree, 'DATE');
-  const date = dateTag && dateTag.data && getDate(dateTag.data);
   const placeTag = findTag(entry.tree, 'PLAC');
+  const notes = createNotes(findTag(entry.tree, 'NOTE'));
+
+  const date = dateTag && dateTag.data && getDate(dateTag.data);
   const place = placeTag && placeTag.data;
   if (date || place) {
     const result: JsonEvent = date || {};
@@ -129,6 +146,8 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
       result.place = place;
     }
     result.confirmed = true;
+    result.type = typeTag ? typeTag!.data : undefined;
+    result.notes = notes;
     return result;
   }
   if (entry.data && entry.data.toLowerCase() === 'y') {
@@ -234,11 +253,13 @@ function createIndi(
   }
 
   // Notes.
-  const noteTag = findTag(entry.tree, 'NOTE');
-  if (noteTag) {
-    indi.notes = [noteTag.data];
-    findTags(noteTag.tree, 'CONT').filter(x => x.data).forEach(x => indi.notes!.push(x.data));
-  }
+  indi.notes = createNotes(findTag(entry.tree, 'NOTE'));
+
+  // Events
+  indi.events = findTags(entry.tree, 'EVEN')
+                  .map(createEvent)
+                  .filter((x): x is JsonEvent => x !== null);
+
   return indi;
 }
 

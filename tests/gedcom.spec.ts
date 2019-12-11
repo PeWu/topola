@@ -132,6 +132,46 @@ describe('GEDCOM parser', () => {
     });
   });
 
+  describe('Events', () => {
+    it('should parse events correctly', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 EVEN
+      2 TYPE Simple
+      2 DATE 1 Jan 1980
+      2 PLAC 131 W 3rd St, New York, NY 10012
+      2 NOTE line1
+      3 CONT line2
+      3 CONT line3
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].events!.length).toBe(1);
+      expect(sut.indis[0].events![0].type).toBe('Simple');
+      expect(sut.indis[0].events![0].date!.day).toBe(1);
+      expect(sut.indis[0].events![0].date!.month).toBe(1);
+      expect(sut.indis[0].events![0].date!.year).toBe(1980);
+      expect(sut.indis[0].events![0].place).toBe('131 W 3rd St, New York, NY 10012');
+      expect(sut.indis[0].events![0].notes![0]).toBe('line1');
+      expect(sut.indis[0].events![0].notes![1]).toBe('line2');
+      expect(sut.indis[0].events![0].notes![2]).toBe('line3');
+    });
+    it('should birthday correctly', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 BIRT
+      2 DATE 23 Sep 1926
+      2 PLAC 247 Candlewood Path, Dix Hills, NY 11746
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].birth!.date!.day).toBe(23);
+      expect(sut.indis[0].birth!.date!.month).toBe(9);
+      expect(sut.indis[0].birth!.date!.year).toBe(1926);
+      expect(sut.indis[0].birth!.place).toBe('247 Candlewood Path, Dix Hills, NY 11746');
+    });
+  });
+
   describe('Images', () => {
     it('should parse multiple image objects correctly', () => {
       let gedcom = `

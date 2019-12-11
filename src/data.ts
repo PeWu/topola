@@ -20,8 +20,10 @@ export interface DateOrRange {
 }
 
 export interface JsonEvent extends DateOrRange {
+  type?: string;
   place?: string;
   confirmed?: boolean;
+  notes?: string[];
 }
 
 export interface JsonImage {
@@ -44,6 +46,7 @@ export interface JsonIndi {
   sex?: string;
   images?: JsonImage[];
   notes?: string[];
+  events?: JsonEvent[];
 }
 
 /** Json representation of a family. */
@@ -78,6 +81,7 @@ export interface IndiDetails extends Indi {
   getImageUrl(): string | null;
   getImages(): JsonImage[] | null;
   getNotes(): string[] | null;
+  getEvents(): JsonEvent[] | null;
 }
 
 /** Details of a family record. */
@@ -144,6 +148,9 @@ class JsonIndiDetails implements IndiDetails {
   }
   getNotes() {
     return this.json.notes || null;
+  }
+  getEvents() {
+    return this.json.events || null;
   }
 }
 
