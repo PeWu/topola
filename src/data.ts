@@ -130,7 +130,12 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.sex || null;
   }
   getImageUrl() {
-    return (this.json.images && this.json.images.length > 0 && this.json.images[0].url) || null;
+    return (
+      (this.json.images &&
+        this.json.images.length > 0 &&
+        this.json.images[0].url) ||
+      null
+    );
   }
   getImages() {
     return this.json.images || null;

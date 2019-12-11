@@ -150,22 +150,29 @@ function createIndi(
 
   // Name.
   const nameTags = findTags(entry.tree, 'NAME');
-  nameTags.forEach((nameTag: GedcomEntry) => {
-    const { firstName, lastName } = extractName(nameTag.data);
+  const isMaiden = (nameTag: GedcomEntry) => {
     const type = findTag(nameTag.tree, 'TYPE');
-    if (type && type.data === 'maiden') {
-      if (lastName) {
-        indi.maidenName = lastName;
-      }
-    } else {
-      if (firstName && !indi.firstName) {
-        indi.firstName = firstName;
-      }
-      if (lastName && !indi.lastName) {
-        indi.lastName = lastName;
-      }
+    return type !== undefined && type.data === 'maiden';
+  };
+  const main = nameTags.find(x => !isMaiden(x));
+  const maiden = nameTags.find(isMaiden);
+
+  if (main) {
+    const { firstName, lastName } = extractName(main.data);
+    if (firstName) {
+      indi.firstName = firstName;
     }
-  });
+    if (lastName) {
+      indi.lastName = lastName;
+    }
+  }
+
+  if (maiden) {
+    const { firstName, lastName } = extractName(maiden.data);
+    if (lastName) {
+      indi.maidenName = lastName;
+    }
+  }
 
   // Number of children.
   const nchiTag = findTag(entry.tree, 'NCHI');
@@ -203,13 +210,15 @@ function createIndi(
       const title = findTag(realObjeTag.tree, 'TITL');
 
       const result: JsonImage = {
-        url: file!.data
+        url: file!.data,
       };
       if (title) result.title = title.data;
       return result;
     };
 
-    indi.images = objeTags.map(getFileTag).filter((x): x is JsonImage => x !== null);
+    indi.images = objeTags
+      .map(getFileTag)
+      .filter((x): x is JsonImage => x !== null);
   }
 
   // Birth date and place.
