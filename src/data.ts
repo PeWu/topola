@@ -132,7 +132,7 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.sex || null;
   }
   getImageUrl() {
-    return this.json.mainImage && this.json.mainImage.url || null;
+    return (this.json.mainImage && this.json.mainImage.url) || null;
   }
   getMainImage() {
     return this.json.mainImage || null;

@@ -7,6 +7,7 @@ import {
   JsonFam,
   JsonGedcomData,
   JsonIndi,
+  JsonImage,
 } from './data';
 
 /** Returns the first entry with the given tag or undefined if not found. */
@@ -156,8 +157,7 @@ function createIndi(
       if (lastName) {
         indi.maidenName = lastName;
       }
-    }
-    else {
+    } else {
       if (firstName) {
         indi.firstName = firstName;
       }
@@ -192,30 +192,31 @@ function createIndi(
   }
 
   // Image URL.
-  var objeTags = findTags(entry.tree, 'OBJE');
+  const objeTags = findTags(entry.tree, 'OBJE');
   if (objeTags.length > 0) {
-      // Dereference OBJEct if needed.
-      const getFileTag = (tag: GedcomEntry) => {
-          var realObjeTag = tag.data
-          ? objects.get(pointerToId(tag.data))
-          : tag;
-          if (!realObjeTag) return null;
+    // Dereference OBJEct if needed.
+    const getFileTag = (tag: GedcomEntry) => {
+      const realObjeTag = tag.data ? objects.get(pointerToId(tag.data)) : tag;
+      if (!realObjeTag) return null;
 
-          const file = findTag(realObjeTag.tree, 'FILE');
-          const title = findTag(realObjeTag.tree, 'TITL');
+      const file = findTag(realObjeTag.tree, 'FILE');
+      const title = findTag(realObjeTag.tree, 'TITL');
 
-          var result: any = {};
-          if (file) result.url = file.data;          
-          if (title) result.title = title.data;
-          return result;   
-      };
-      
-      const fileTag = getFileTag(objeTags[0]);
-      if (fileTag) {
-          indi.mainImage = fileTag;
-      }
+      const result: JsonImage = {};
+      if (file) result.url = file.data;
+      if (title) result.title = title.data;
+      return result;
+    };
 
-      indi.album = objeTags.slice(1).map(getFileTag).filter(x => x);
+    const fileTag = getFileTag(objeTags[0]);
+    if (fileTag) {
+      indi.mainImage = fileTag;
+    }
+
+    indi.album = objeTags
+      .slice(1)
+      .map(getFileTag)
+      .filter(x => x);
   }
 
   // Birth date and place.
