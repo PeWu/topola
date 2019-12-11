@@ -25,7 +25,7 @@ export interface JsonEvent extends DateOrRange {
 }
 
 export interface JsonImage {
-  url?: string;
+  url: string;
   title?: string;
 }
 
@@ -42,8 +42,7 @@ export interface JsonIndi {
   birth?: JsonEvent;
   death?: JsonEvent;
   sex?: string;
-  mainImage?: JsonImage;
-  album?: JsonImage[];
+  images?: JsonImage[];
 }
 
 /** Json representation of a family. */
@@ -76,8 +75,7 @@ export interface IndiDetails extends Indi {
   isConfirmedDeath(): boolean;
   getSex(): string | null;
   getImageUrl(): string | null;
-  getMainImage(): JsonImage | null;
-  getAlbumImages(): JsonImage[] | null;
+  getImages(): JsonImage[] | null;
 }
 
 /** Details of a family record. */
@@ -132,13 +130,10 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.sex || null;
   }
   getImageUrl() {
-    return (this.json.mainImage && this.json.mainImage.url) || null;
+    return (this.json.images && this.json.images.length > 0 && this.json.images[0].url) || null;
   }
-  getMainImage() {
-    return this.json.mainImage || null;
-  }
-  getAlbumImages() {
-    return this.json.album || null;
+  getImages() {
+    return this.json.images || null;
   }
 }
 

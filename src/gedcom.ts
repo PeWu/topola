@@ -202,21 +202,14 @@ function createIndi(
       const file = findTag(realObjeTag.tree, 'FILE');
       const title = findTag(realObjeTag.tree, 'TITL');
 
-      const result: JsonImage = {};
-      if (file) result.url = file.data;
+      const result: JsonImage = {
+        url: file!.data
+      };
       if (title) result.title = title.data;
       return result;
     };
 
-    const fileTag = getFileTag(objeTags[0]);
-    if (fileTag) {
-      indi.mainImage = fileTag;
-    }
-
-    indi.album = objeTags
-      .slice(1)
-      .map(getFileTag)
-      .filter(x => x);
+    indi.images = objeTags.map(getFileTag).filter((x): x is JsonImage => x !== null);
   }
 
   // Birth date and place.
