@@ -43,6 +43,7 @@ export interface JsonIndi {
   death?: JsonEvent;
   sex?: string;
   images?: JsonImage[];
+  notes?: string[];
 }
 
 /** Json representation of a family. */
@@ -76,6 +77,7 @@ export interface IndiDetails extends Indi {
   getSex(): string | null;
   getImageUrl(): string | null;
   getImages(): JsonImage[] | null;
+  getNotes(): string[] | null;
 }
 
 /** Details of a family record. */
@@ -139,6 +141,9 @@ class JsonIndiDetails implements IndiDetails {
   }
   getImages() {
     return this.json.images || null;
+  }
+  getNotes() {
+    return this.json.notes || null;
   }
 }
 

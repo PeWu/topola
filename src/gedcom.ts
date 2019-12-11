@@ -232,6 +232,13 @@ function createIndi(
   if (death) {
     indi.death = death;
   }
+
+  // Notes.
+  const noteTag = findTag(entry.tree, 'NOTE');
+  if (noteTag) {
+    indi.notes = [noteTag.data];
+    findTags(noteTag.tree, 'CONT').filter(x => x.data).forEach(x => indi.notes!.push(x.data));
+  }
   return indi;
 }
 

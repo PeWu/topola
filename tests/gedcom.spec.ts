@@ -86,6 +86,31 @@ describe('GEDCOM parser', () => {
     });
   });
 
+  describe('Notes', () => {
+    it('should parse single note correctly', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NOTE Hello
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].notes!.length).toBe(1);
+      expect(sut.indis[0].notes![0]).toBe('Hello');
+    });
+    it('should parse single note correctly', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NOTE Hello
+      2 CONT World
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].notes!.length).toBe(2);
+      expect(sut.indis[0].notes![0]).toBe('Hello');
+      expect(sut.indis[0].notes![1]).toBe('World');
+    });
+  });
+
   describe('Meta', () => {
     it('should parse number of children correctly', () => {
       let gedcom = `
