@@ -223,21 +223,21 @@ function createIndi(
     // Dereference OBJEct if needed.
     const getFileTag = (tag: GedcomEntry) => {
       const realObjeTag = tag.data ? objects.get(pointerToId(tag.data)) : tag;
-      if (!realObjeTag) return null;
+      if (!realObjeTag) return undefined;
 
       const file = findTag(realObjeTag.tree, 'FILE');
       const title = findTag(realObjeTag.tree, 'TITL');
 
-      const result: JsonImage = {
-        url: file!.data,
-      };
-      if (title) result.title = title.data;
-      return result;
+      if (!file) return undefined;
+      return {
+        url: file.data,
+        title: title && title.data,
+      } as JsonImage;
     };
 
     indi.images = objeTags
       .map(getFileTag)
-      .filter((x): x is JsonImage => x !== null);
+      .filter((x): x is JsonImage => x !== undefined);
   }
 
   // Birth date and place.
@@ -257,8 +257,8 @@ function createIndi(
 
   // Events
   indi.events = findTags(entry.tree, 'EVEN')
-                  .map(createEvent)
-                  .filter((x): x is JsonEvent => x !== null);
+    .map(createEvent)
+    .filter((x): x is JsonEvent => x !== null);
 
   return indi;
 }
