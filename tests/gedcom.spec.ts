@@ -44,6 +44,21 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].lastName).toBe('Doe');
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
+    it('should consider the first NAME record as main', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NAME John /Doe/
+      1 NAME Jane /Adams/
+      1 NAME /Smith/
+      2 TYPE maiden
+      1 NAME Tony /Stark/
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].firstName).toBe('John');
+      expect(sut.indis[0].lastName).toBe('Doe');
+      expect(sut.indis[0].maidenName).toBe('Smith');
+    });
   });
 
   describe('Meta', () => {

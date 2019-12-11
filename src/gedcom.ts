@@ -158,10 +158,10 @@ function createIndi(
         indi.maidenName = lastName;
       }
     } else {
-      if (firstName) {
+      if (firstName && !indi.firstName) {
         indi.firstName = firstName;
       }
-      if (lastName) {
+      if (lastName && !indi.lastName) {
         indi.lastName = lastName;
       }
     }
