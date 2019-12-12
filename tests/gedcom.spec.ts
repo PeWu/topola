@@ -72,6 +72,19 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].lastName).toBe('Doe');
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
+    it('should treat maiden first name is the main if nothing else provided', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NAME John /Smith/
+      2 TYPE maiden
+      1 NAME /Doe/
+      `;
+  
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].firstName).toBe('John');
+      expect(sut.indis[0].lastName).toBe('Doe');
+      expect(sut.indis[0].maidenName).toBe('Smith');
+    });
     it('should parse correctly if no main NAME', () => {
       let gedcom = `
       0 @I1@ INDI

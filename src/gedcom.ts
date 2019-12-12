@@ -119,7 +119,7 @@ function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
 
   return findTags(notesTag.tree, 'CONT')
     .filter(x => x.data)
-    .reduce((a, i) => a.concat(i.data), [notesTag.data])
+    .reduce((a, i) => a.concat(i.data), [notesTag.data]);
 }
 
 /**
@@ -133,7 +133,6 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
   const typeTag = findTag(entry.tree, 'TYPE');
   const dateTag = findTag(entry.tree, 'DATE');
   const placeTag = findTag(entry.tree, 'PLAC');
-  const notes = createNotes(findTag(entry.tree, 'NOTE'));
 
   const date = dateTag && dateTag.data && getDate(dateTag.data);
   const place = placeTag && placeTag.data;
@@ -144,7 +143,7 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
     }
     result.confirmed = true;
     result.type = typeTag ? typeTag!.data : undefined;
-    result.notes = notes;
+    result.notes = createNotes(findTag(entry.tree, 'NOTE'));
     return result;
   }
   if (entry.data && entry.data.toLowerCase() === 'y') {
@@ -187,6 +186,9 @@ function createIndi(
     const { firstName, lastName } = extractName(maiden.data);
     if (lastName) {
       indi.maidenName = lastName;
+    }
+    if (firstName && !indi.firstName) {
+      indi.firstName = firstName;
     }
   }
 
