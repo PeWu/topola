@@ -7,6 +7,7 @@ import {
   JsonFam,
   JsonGedcomData,
   JsonIndi,
+  JsonImage,
 } from './data';
 
 /** Returns the first entry with the given tag or undefined if not found. */
@@ -111,6 +112,17 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
 }
 
 /**
+ * tries to treat an input tag as NOTE and parsse all lines of notes
+ */
+function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
+  if (!notesTag || notesTag.tag !== 'NOTE') return undefined;
+
+  return findTags(notesTag.tree, 'CONT')
+    .filter(x => x.data)
+    .reduce((a, i) => a.concat(i.data), [notesTag.data]);
+}
+
+/**
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
  */
@@ -118,9 +130,11 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
   if (!entry) {
     return undefined;
   }
+  const typeTag = findTag(entry.tree, 'TYPE');
   const dateTag = findTag(entry.tree, 'DATE');
-  const date = dateTag && dateTag.data && getDate(dateTag.data);
   const placeTag = findTag(entry.tree, 'PLAC');
+
+  const date = dateTag && dateTag.data && getDate(dateTag.data);
   const place = placeTag && placeTag.data;
   if (date || place) {
     const result: JsonEvent = date || {};
@@ -128,6 +142,8 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
       result.place = place;
     }
     result.confirmed = true;
+    result.type = typeTag ? typeTag!.data : undefined;
+    result.notes = createNotes(findTag(entry.tree, 'NOTE'));
     return result;
   }
   if (entry.data && entry.data.toLowerCase() === 'y') {
@@ -148,15 +164,44 @@ function createIndi(
   const indi: JsonIndi = { id, fams };
 
   // Name.
-  const nameTag = findTag(entry.tree, 'NAME');
-  if (nameTag) {
-    const { firstName, lastName } = extractName(nameTag.data);
+  const nameTags = findTags(entry.tree, 'NAME');
+  const isMaiden = (nameTag: GedcomEntry) => {
+    const type = findTag(nameTag.tree, 'TYPE');
+    return type !== undefined && type.data === 'maiden';
+  };
+  const main = nameTags.find(x => !isMaiden(x));
+  const maiden = nameTags.find(isMaiden);
+
+  if (main) {
+    const { firstName, lastName } = extractName(main.data);
     if (firstName) {
       indi.firstName = firstName;
     }
     if (lastName) {
       indi.lastName = lastName;
     }
+  }
+
+  if (maiden) {
+    const { firstName, lastName } = extractName(maiden.data);
+    if (lastName) {
+      indi.maidenName = lastName;
+    }
+    if (firstName && !indi.firstName) {
+      indi.firstName = firstName;
+    }
+  }
+
+  // Number of children.
+  const nchiTag = findTag(entry.tree, 'NCHI');
+  if (nchiTag) {
+    indi.numberOfChildren = +nchiTag.data;
+  }
+
+  // Number of marriages.
+  const nmrTag = findTag(entry.tree, 'NMR');
+  if (nmrTag) {
+    indi.numberOfMarriages = +nmrTag.data;
   }
 
   // Sex.
@@ -172,16 +217,26 @@ function createIndi(
   }
 
   // Image URL.
-  const objeTag = findTag(entry.tree, 'OBJE');
-  if (objeTag) {
+  const objeTags = findTags(entry.tree, 'OBJE');
+  if (objeTags.length > 0) {
     // Dereference OBJEct if needed.
-    const realObjeTag = objeTag.data
-      ? objects.get(pointerToId(objeTag.data))!
-      : objeTag;
-    const fileTag = realObjeTag && findTag(realObjeTag.tree, 'FILE');
-    if (fileTag) {
-      indi.imageUrl = fileTag.data;
-    }
+    const getFileTag = (tag: GedcomEntry) => {
+      const realObjeTag = tag.data ? objects.get(pointerToId(tag.data)) : tag;
+      if (!realObjeTag) return undefined;
+
+      const file = findTag(realObjeTag.tree, 'FILE');
+      const title = findTag(realObjeTag.tree, 'TITL');
+
+      if (!file) return undefined;
+      return {
+        url: file.data,
+        title: title && title.data,
+      } as JsonImage;
+    };
+
+    indi.images = objeTags
+      .map(getFileTag)
+      .filter((x): x is JsonImage => x !== undefined);
   }
 
   // Birth date and place.
@@ -195,6 +250,15 @@ function createIndi(
   if (death) {
     indi.death = death;
   }
+
+  // Notes.
+  indi.notes = createNotes(findTag(entry.tree, 'NOTE'));
+
+  // Events
+  indi.events = findTags(entry.tree, 'EVEN')
+    .map(createEvent)
+    .filter((x): x is JsonEvent => x !== null);
+
   return indi;
 }
 

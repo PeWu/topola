@@ -20,8 +20,15 @@ export interface DateOrRange {
 }
 
 export interface JsonEvent extends DateOrRange {
+  type?: string;
   place?: string;
   confirmed?: boolean;
+  notes?: string[];
+}
+
+export interface JsonImage {
+  url: string;
+  title?: string;
 }
 
 /** Json representation of an individual. */
@@ -29,12 +36,17 @@ export interface JsonIndi {
   id: string;
   firstName?: string;
   lastName?: string;
+  maidenName?: string;
   famc?: string;
   fams?: string[];
+  numberOfChildren?: number;
+  numberOfMarriages?: number;
   birth?: JsonEvent;
   death?: JsonEvent;
   sex?: string;
-  imageUrl?: string;
+  images?: JsonImage[];
+  notes?: string[];
+  events?: JsonEvent[];
 }
 
 /** Json representation of a family. */
@@ -56,6 +68,10 @@ export interface JsonGedcomData {
 export interface IndiDetails extends Indi {
   getFirstName(): string | null;
   getLastName(): string | null;
+  getMaidenName(): string | null;
+  getNumberOfChildren(): number | null;
+  getNumberOfMarriages(): number | null;
+  getMaidenName(): string | null;
   getBirthDate(): DateOrRange | null;
   getBirthPlace(): string | null;
   getDeathDate(): DateOrRange | null;
@@ -63,6 +79,9 @@ export interface IndiDetails extends Indi {
   isConfirmedDeath(): boolean;
   getSex(): string | null;
   getImageUrl(): string | null;
+  getImages(): JsonImage[] | null;
+  getNotes(): string[] | null;
+  getEvents(): JsonEvent[] | null;
 }
 
 /** Details of a family record. */
@@ -92,6 +111,15 @@ class JsonIndiDetails implements IndiDetails {
   getBirthDate() {
     return this.json.birth || null;
   }
+  getMaidenName() {
+    return this.json.maidenName || null;
+  }
+  getNumberOfChildren() {
+    return this.json.numberOfChildren || null;
+  }
+  getNumberOfMarriages() {
+    return this.json.numberOfMarriages || null;
+  }
   getBirthPlace() {
     return (this.json.birth && this.json.birth.place) || null;
   }
@@ -108,7 +136,21 @@ class JsonIndiDetails implements IndiDetails {
     return this.json.sex || null;
   }
   getImageUrl() {
-    return this.json.imageUrl || null;
+    return (
+      (this.json.images &&
+        this.json.images.length > 0 &&
+        this.json.images[0].url) ||
+      null
+    );
+  }
+  getImages() {
+    return this.json.images || null;
+  }
+  getNotes() {
+    return this.json.notes || null;
+  }
+  getEvents() {
+    return this.json.events || null;
   }
 }
 
