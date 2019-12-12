@@ -9,7 +9,6 @@ import {
   JsonIndi,
   JsonImage,
 } from './data';
-import { interpolateInferno } from 'd3';
 
 /** Returns the first entry with the given tag or undefined if not found. */
 function findTag(tree: GedcomEntry[], tag: string): GedcomEntry | undefined {
@@ -117,12 +116,10 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
  */
 function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
   if (!notesTag || notesTag.tag !== 'NOTE') return undefined;
-  const result = [notesTag.data];
 
-  findTags(notesTag.tree, 'CONT')
+  return findTags(notesTag.tree, 'CONT')
     .filter(x => x.data)
-    .forEach(x => result.push(x.data));
-  return result;
+    .reduce((a, i) => a.concat(i.data), [notesTag.data])
 }
 
 /**
