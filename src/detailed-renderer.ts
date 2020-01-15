@@ -146,6 +146,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         maxDetailsWidth + 22,
         getLength(indi.getFirstName() || '', 'name') + 8,
         getLength(indi.getLastName() || '', 'name') + 8,
+        getLength(id, 'id') + 32,
         INDI_MIN_WIDTH,
       ])! + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
     return [width, height];
