@@ -117,6 +117,8 @@ export interface ChartInfo {
   size: [number, number];
   // The coordinates of the start indi or fam.
   origin: [number, number];
+  // Promise that is resolved after animations are finished.
+  animationPromise: Promise<void>;
 }
 
 export interface Chart {

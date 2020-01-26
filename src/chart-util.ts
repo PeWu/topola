@@ -25,6 +25,13 @@ export interface LayoutOptions {
   hSpacing?: number;
 }
 
+export interface ChartSizeInfo {
+  // Chart size.
+  size: [number, number];
+  // The coordinates of the start indi or fam.
+  origin: [number, number];
+}
+
 /** Assigns an identifier to a link. */
 export function linkId(node: d3.HierarchyPointNode<TreeNode>) {
   if (!node.parent) {
@@ -43,7 +50,7 @@ export function linkId(node: d3.HierarchyPointNode<TreeNode>) {
 
 export function getChartInfo(
   nodes: Array<d3.HierarchyPointNode<TreeNode>>
-): ChartInfo {
+): ChartSizeInfo {
   // Calculate chart boundaries.
   const x0 = d3.min(nodes, d => d.x - d.data.width! / 2)! - MARGIN;
   const y0 = d3.min(nodes, d => d.y - d.data.height! / 2)! - MARGIN;
@@ -54,7 +61,7 @@ export function getChartInfo(
 
 export function getChartInfoWithoutMargin(
   nodes: Array<d3.HierarchyPointNode<TreeNode>>
-): ChartInfo {
+): ChartSizeInfo {
   // Calculate chart boundaries.
   const x0 = d3.min(nodes, d => d.x - d.data.width! / 2)!;
   const y0 = d3.min(nodes, d => d.y - d.data.height! / 2)!;
@@ -119,7 +126,7 @@ export class ChartUtil {
             L ${dx}, ${dy}`;
   }
 
-  updateSvgDimensions(chartInfo: ChartInfo) {
+  updateSvgDimensions(chartInfo: ChartSizeInfo) {
     const svg = d3.select(this.options.svgSelector);
     const group = svg.select('g');
     const transition = this.options.animate
@@ -211,127 +218,167 @@ export class ChartUtil {
     return nodes;
   }
 
-  renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+  renderChart(nodes: Array<d3.HierarchyPointNode<TreeNode>>): Promise<void> {
     const svg = this.getSvgForRendering();
-    this.renderNodes(nodes, svg);
-    this.renderLinks(nodes, svg);
+    const nodeAnimation = this.renderNodes(nodes, svg);
+    const linkAnimation = this.renderLinks(nodes, svg);
+    return (Promise.all([nodeAnimation, linkAnimation]) as unknown) as Promise<
+      void
+    >;
   }
 
   renderNodes(
     nodes: Array<d3.HierarchyPointNode<TreeNode>>,
     svg: SVGSelection
-  ) {
-    const boundNodes = svg
-      .select('g')
-      .selectAll('g.node')
-      .data(nodes, (d: d3.HierarchyPointNode<TreeNode>) => d.id!);
+  ): Promise<void> {
+    const animationPromise = new Promise<void>(resolve => {
+      const boundNodes = svg
+        .select('g')
+        .selectAll('g.node')
+        .data(nodes, (d: d3.HierarchyPointNode<TreeNode>) => d.id!);
 
-    const nodeEnter = boundNodes.enter().append('g' as string);
-    nodeEnter
-      .merge(boundNodes)
-      .attr('class', node => `node generation${node.data.generation}`);
-    nodeEnter.attr(
-      'transform',
-      (node: d3.HierarchyPointNode<TreeNode>) =>
-        `translate(${node.x - node.data.width! / 2}, ${node.y -
-          node.data.height! / 2})`
-    );
-    if (this.options.animate) {
+      const nodeEnter = boundNodes.enter().append('g' as string);
+
+      let transitionsPending =
+        boundNodes.exit().size() + boundNodes.size() + nodeEnter.size();
+      const transitionDone = () => {
+        transitionsPending--;
+        if (transitionsPending === 0) {
+          resolve();
+        }
+      };
+      if (!this.options.animate) {
+        resolve();
+      }
+
       nodeEnter
-        .style('opacity', 0)
-        .transition()
-        .delay(HIDE_TIME_MS + MOVE_TIME_MS)
-        .duration(HIDE_TIME_MS)
-        .style('opacity', 1);
-    }
-    const updateTransition = this.options.animate
-      ? boundNodes
+        .merge(boundNodes)
+        .attr('class', node => `node generation${node.data.generation}`);
+      nodeEnter.attr(
+        'transform',
+        (node: d3.HierarchyPointNode<TreeNode>) =>
+          `translate(${node.x - node.data.width! / 2}, ${node.y -
+            node.data.height! / 2})`
+      );
+      if (this.options.animate) {
+        nodeEnter
+          .style('opacity', 0)
           .transition()
-          .delay(HIDE_TIME_MS)
-          .duration(MOVE_TIME_MS)
-      : boundNodes;
-    updateTransition.attr(
-      'transform',
-      (node: d3.HierarchyPointNode<TreeNode>) =>
-        `translate(${node.x - node.data.width! / 2}, ${node.y -
-          node.data.height! / 2})`
-    );
-    this.options.renderer.render(nodeEnter, boundNodes);
-    if (this.options.animate) {
-      boundNodes
-        .exit()
-        .transition()
-        .duration(HIDE_TIME_MS)
-        .style('opacity', 0)
-        .remove();
-    } else {
-      boundNodes.exit().remove();
-    }
+          .delay(HIDE_TIME_MS + MOVE_TIME_MS)
+          .duration(HIDE_TIME_MS)
+          .style('opacity', 1)
+          .on('end', transitionDone);
+      }
+      const updateTransition = this.options.animate
+        ? boundNodes
+            .transition()
+            .delay(HIDE_TIME_MS)
+            .duration(MOVE_TIME_MS)
+            .on('end', transitionDone)
+        : boundNodes;
+      updateTransition.attr(
+        'transform',
+        (node: d3.HierarchyPointNode<TreeNode>) =>
+          `translate(${node.x - node.data.width! / 2}, ${node.y -
+            node.data.height! / 2})`
+      );
+      this.options.renderer.render(nodeEnter, boundNodes);
+      if (this.options.animate) {
+        boundNodes
+          .exit()
+          .transition()
+          .duration(HIDE_TIME_MS)
+          .style('opacity', 0)
+          .remove()
+          .on('end', transitionDone);
+      } else {
+        boundNodes.exit().remove();
+      }
+    });
+    return animationPromise;
   }
 
   renderLinks(
     nodes: Array<d3.HierarchyPointNode<TreeNode>>,
     svg: SVGSelection
-  ) {
-    const link = (
-      parent: d3.HierarchyPointNode<TreeNode>,
-      child: d3.HierarchyPointNode<TreeNode>
-    ) => {
-      if (child.data.additionalMarriage) {
-        return this.linkAdditionalMarriage(child);
-      }
-      const flipVertically = parent.data.generation! > child.data.generation!;
-      if (this.options.horizontal) {
-        if (flipVertically) {
-          return this.linkHorizontal(child, parent);
+  ): Promise<void> {
+    const animationPromise = new Promise<void>(resolve => {
+      const link = (
+        parent: d3.HierarchyPointNode<TreeNode>,
+        child: d3.HierarchyPointNode<TreeNode>
+      ) => {
+        if (child.data.additionalMarriage) {
+          return this.linkAdditionalMarriage(child);
         }
-        return this.linkHorizontal(parent, child);
-      }
-      if (flipVertically) {
-        return this.linkVertical(child, parent);
-      }
-      return this.linkVertical(parent, child);
-    };
+        const flipVertically = parent.data.generation! > child.data.generation!;
+        if (this.options.horizontal) {
+          if (flipVertically) {
+            return this.linkHorizontal(child, parent);
+          }
+          return this.linkHorizontal(parent, child);
+        }
+        if (flipVertically) {
+          return this.linkVertical(child, parent);
+        }
+        return this.linkVertical(parent, child);
+      };
 
-    const links = nodes.filter(n => !!n.parent || n.data.additionalMarriage);
-    const boundLinks = svg
-      .select('g')
-      .selectAll('path.link')
-      .data(links, linkId);
-    const path = boundLinks
-      .enter()
-      .insert('path', 'g')
-      .attr('class', node =>
-        node.data.additionalMarriage ? 'link additional-marriage' : 'link'
-      )
-      .attr('d', node => link(node.parent!, node));
+      const links = nodes.filter(n => !!n.parent || n.data.additionalMarriage);
+      const boundLinks = svg
+        .select('g')
+        .selectAll('path.link')
+        .data(links, linkId);
+      const path = boundLinks
+        .enter()
+        .insert('path', 'g')
+        .attr('class', node =>
+          node.data.additionalMarriage ? 'link additional-marriage' : 'link'
+        )
+        .attr('d', node => link(node.parent!, node));
 
-    const linkTransition = this.options.animate
-      ? boundLinks
+      let transitionsPending =
+        boundLinks.exit().size() + boundLinks.size() + path.size();
+      const transitionDone = () => {
+        transitionsPending--;
+        if (transitionsPending === 0) {
+          resolve();
+        }
+      };
+      if (!this.options.animate) {
+        resolve();
+      }
+
+      const linkTransition = this.options.animate
+        ? boundLinks
+            .transition()
+            .delay(HIDE_TIME_MS)
+            .duration(MOVE_TIME_MS)
+            .on('end', transitionDone)
+        : boundLinks;
+      linkTransition.attr('d', node => link(node.parent!, node));
+
+      if (this.options.animate) {
+        path
+          .style('opacity', 0)
           .transition()
-          .delay(HIDE_TIME_MS)
-          .duration(MOVE_TIME_MS)
-      : boundLinks;
-    linkTransition.attr('d', node => link(node.parent!, node));
-
-    if (this.options.animate) {
-      path
-        .style('opacity', 0)
-        .transition()
-        .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
-        .duration(0)
-        .style('opacity', 1);
-    }
-    if (this.options.animate) {
-      boundLinks
-        .exit()
-        .transition()
-        .duration(0)
-        .style('opacity', 0)
-        .remove();
-    } else {
-      boundLinks.exit().remove();
-    }
+          .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
+          .duration(0)
+          .style('opacity', 1)
+          .on('end', transitionDone);
+      }
+      if (this.options.animate) {
+        boundLinks
+          .exit()
+          .transition()
+          .duration(0)
+          .style('opacity', 0)
+          .remove()
+          .on('end', transitionDone);
+      } else {
+        boundLinks.exit().remove();
+      }
+    });
+    return animationPromise;
   }
 
   getSvgForRendering(): SVGSelection {

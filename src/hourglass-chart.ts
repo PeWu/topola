@@ -25,10 +25,10 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam>
 
     // slice(1) removes the duplicated start node.
     const nodes = ancestorNodes.slice(1).concat(descendantNodes);
-    this.util.renderChart(nodes);
+    const animationPromise = this.util.renderChart(nodes);
 
     const info = getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
-    return info;
+    return Object.assign(info, { animationPromise });
   }
 }

@@ -50,7 +50,10 @@ export class KinshipChartRenderer {
     downNodes.forEach(node => this.setLinkYs(node, false));
 
     // Render chart
-    this.util.renderNodes(allNodesDeduped, this.util.getSvgForRendering());
+    const animationPromise = this.util.renderNodes(
+      allNodesDeduped,
+      this.util.getSvgForRendering()
+    );
     this.renderLinks(allNodes);
     if (rootsCount > 1) {
       this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
@@ -58,7 +61,7 @@ export class KinshipChartRenderer {
 
     const info = getChartInfo(allNodesDeduped);
     this.util.updateSvgDimensions(info);
-    return info;
+    return Object.assign(info, { animationPromise });
   }
 
   private renderLinks(nodes: Array<d3.HierarchyPointNode<TreeNode>>) {

@@ -317,10 +317,10 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
     );
 
     const nodes = descendantNodes.concat(ancestorDescentants);
-    this.util.renderChart(nodes);
+    const animationPromise = this.util.renderChart(nodes);
 
     const info = getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
-    return info;
+    return Object.assign(info, { animationPromise });
   }
 }

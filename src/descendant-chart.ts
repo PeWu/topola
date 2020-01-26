@@ -167,10 +167,10 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
   render(): ChartInfo {
     const root = this.createHierarchy();
     const nodes = removeDummyNode(this.util.layOutChart(root));
-    this.util.renderChart(nodes);
+    const animationPromise = this.util.renderChart(nodes);
 
     const info = getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
-    return info;
+    return Object.assign(info, { animationPromise });
   }
 }

@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
-import { ChartUtil, getChartInfo, linkId } from './chart-util';
+import { ChartUtil, getChartInfo, linkId, ChartSizeInfo } from './chart-util';
 import { DUMMY_ROOT_NODE_ID, layOutDescendants } from './descendant-chart';
 
 /** Returns an SVG line definition for a tree branch between two points. */
@@ -89,7 +89,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
   }
 
   renderBackground(
-    chartInfo: ChartInfo,
+    chartInfo: ChartSizeInfo,
     svg: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>
   ) {
     svg
@@ -272,6 +272,6 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     this.util.renderNodes(nodes, svg);
 
     this.util.updateSvgDimensions(info);
-    return info;
+    return Object.assign(info, { animationPromise: Promise.resolve() });
   }
 }
