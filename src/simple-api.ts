@@ -97,6 +97,7 @@ function createChartOptions(
 
 export interface ChartHandle {
   render(data?: RenderOptions): ChartInfo;
+  setData(json: JsonGedcomData): void;
 }
 
 class SimpleChartHandle implements ChartHandle {
@@ -117,6 +118,15 @@ class SimpleChartHandle implements ChartHandle {
         .attr('height', info.size[1]);
     }
     return info;
+  }
+
+  /**
+   * Updates the chart input data.
+   * This is useful when the data is dynamically loaded and a different subset
+   * of data will be displayed.
+   */
+  setData(json: JsonGedcomData) {
+    this.options.json = json;
   }
 }
 
