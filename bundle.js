@@ -19735,10 +19735,10 @@ var AncestorChart = /** @class */ (function () {
     AncestorChart.prototype.render = function () {
         var root = this.createHierarchy();
         var nodes = this.util.layOutChart(root, { flipVertically: true });
-        this.util.renderChart(nodes);
+        var animationPromise = this.util.renderChart(nodes);
         var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
-        return info;
+        return Object.assign(info, { animationPromise: animationPromise });
     };
     return AncestorChart;
 }());
@@ -19906,109 +19906,143 @@ var ChartUtil = /** @class */ (function () {
     };
     ChartUtil.prototype.renderChart = function (nodes) {
         var svg = this.getSvgForRendering();
-        this.renderNodes(nodes, svg);
-        this.renderLinks(nodes, svg);
+        var nodeAnimation = this.renderNodes(nodes, svg);
+        var linkAnimation = this.renderLinks(nodes, svg);
+        return Promise.all([nodeAnimation, linkAnimation]);
     };
     ChartUtil.prototype.renderNodes = function (nodes, svg) {
-        var boundNodes = svg
-            .select('g')
-            .selectAll('g.node')
-            .data(nodes, function (d) { return d.id; });
-        var nodeEnter = boundNodes.enter().append('g');
-        nodeEnter
-            .merge(boundNodes)
-            .attr('class', function (node) { return "node generation" + node.data.generation; });
-        nodeEnter.attr('transform', function (node) {
-            return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
-                node.data.height / 2) + ")";
-        });
-        if (this.options.animate) {
+        var _this = this;
+        var animationPromise = new Promise(function (resolve) {
+            var boundNodes = svg
+                .select('g')
+                .selectAll('g.node')
+                .data(nodes, function (d) { return d.id; });
+            var nodeEnter = boundNodes.enter().append('g');
+            var transitionsPending = boundNodes.exit().size() + boundNodes.size() + nodeEnter.size();
+            var transitionDone = function () {
+                transitionsPending--;
+                if (transitionsPending === 0) {
+                    resolve();
+                }
+            };
+            if (!_this.options.animate) {
+                resolve();
+            }
             nodeEnter
-                .style('opacity', 0)
-                .transition()
-                .delay(HIDE_TIME_MS + MOVE_TIME_MS)
-                .duration(HIDE_TIME_MS)
-                .style('opacity', 1);
-        }
-        var updateTransition = this.options.animate
-            ? boundNodes
-                .transition()
-                .delay(HIDE_TIME_MS)
-                .duration(MOVE_TIME_MS)
-            : boundNodes;
-        updateTransition.attr('transform', function (node) {
-            return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
-                node.data.height / 2) + ")";
+                .merge(boundNodes)
+                .attr('class', function (node) { return "node generation" + node.data.generation; });
+            nodeEnter.attr('transform', function (node) {
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
+                    node.data.height / 2) + ")";
+            });
+            if (_this.options.animate) {
+                nodeEnter
+                    .style('opacity', 0)
+                    .transition()
+                    .delay(HIDE_TIME_MS + MOVE_TIME_MS)
+                    .duration(HIDE_TIME_MS)
+                    .style('opacity', 1)
+                    .on('end', transitionDone);
+            }
+            var updateTransition = _this.options.animate
+                ? boundNodes
+                    .transition()
+                    .delay(HIDE_TIME_MS)
+                    .duration(MOVE_TIME_MS)
+                    .on('end', transitionDone)
+                : boundNodes;
+            updateTransition.attr('transform', function (node) {
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
+                    node.data.height / 2) + ")";
+            });
+            _this.options.renderer.render(nodeEnter, boundNodes);
+            if (_this.options.animate) {
+                boundNodes
+                    .exit()
+                    .transition()
+                    .duration(HIDE_TIME_MS)
+                    .style('opacity', 0)
+                    .remove()
+                    .on('end', transitionDone);
+            }
+            else {
+                boundNodes.exit().remove();
+            }
         });
-        this.options.renderer.render(nodeEnter, boundNodes);
-        if (this.options.animate) {
-            boundNodes
-                .exit()
-                .transition()
-                .duration(HIDE_TIME_MS)
-                .style('opacity', 0)
-                .remove();
-        }
-        else {
-            boundNodes.exit().remove();
-        }
+        return animationPromise;
     };
     ChartUtil.prototype.renderLinks = function (nodes, svg) {
         var _this = this;
-        var link = function (parent, child) {
-            if (child.data.additionalMarriage) {
-                return _this.linkAdditionalMarriage(child);
-            }
-            var flipVertically = parent.data.generation > child.data.generation;
-            if (_this.options.horizontal) {
-                if (flipVertically) {
-                    return _this.linkHorizontal(child, parent);
+        var animationPromise = new Promise(function (resolve) {
+            var link = function (parent, child) {
+                if (child.data.additionalMarriage) {
+                    return _this.linkAdditionalMarriage(child);
                 }
-                return _this.linkHorizontal(parent, child);
+                var flipVertically = parent.data.generation > child.data.generation;
+                if (_this.options.horizontal) {
+                    if (flipVertically) {
+                        return _this.linkHorizontal(child, parent);
+                    }
+                    return _this.linkHorizontal(parent, child);
+                }
+                if (flipVertically) {
+                    return _this.linkVertical(child, parent);
+                }
+                return _this.linkVertical(parent, child);
+            };
+            var links = nodes.filter(function (n) { return !!n.parent || n.data.additionalMarriage; });
+            var boundLinks = svg
+                .select('g')
+                .selectAll('path.link')
+                .data(links, linkId);
+            var path = boundLinks
+                .enter()
+                .insert('path', 'g')
+                .attr('class', function (node) {
+                return node.data.additionalMarriage ? 'link additional-marriage' : 'link';
+            })
+                .attr('d', function (node) { return link(node.parent, node); });
+            var transitionsPending = boundLinks.exit().size() + boundLinks.size() + path.size();
+            var transitionDone = function () {
+                transitionsPending--;
+                if (transitionsPending === 0) {
+                    resolve();
+                }
+            };
+            if (!_this.options.animate) {
+                resolve();
             }
-            if (flipVertically) {
-                return _this.linkVertical(child, parent);
+            var linkTransition = _this.options.animate
+                ? boundLinks
+                    .transition()
+                    .delay(HIDE_TIME_MS)
+                    .duration(MOVE_TIME_MS)
+                    .on('end', transitionDone)
+                : boundLinks;
+            linkTransition.attr('d', function (node) { return link(node.parent, node); });
+            if (_this.options.animate) {
+                path
+                    .style('opacity', 0)
+                    .transition()
+                    .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
+                    .duration(0)
+                    .style('opacity', 1)
+                    .on('end', transitionDone);
             }
-            return _this.linkVertical(parent, child);
-        };
-        var links = nodes.filter(function (n) { return !!n.parent || n.data.additionalMarriage; });
-        var boundLinks = svg
-            .select('g')
-            .selectAll('path.link')
-            .data(links, linkId);
-        var path = boundLinks
-            .enter()
-            .insert('path', 'g')
-            .attr('class', function (node) {
-            return node.data.additionalMarriage ? 'link additional-marriage' : 'link';
-        })
-            .attr('d', function (node) { return link(node.parent, node); });
-        var linkTransition = this.options.animate
-            ? boundLinks
-                .transition()
-                .delay(HIDE_TIME_MS)
-                .duration(MOVE_TIME_MS)
-            : boundLinks;
-        linkTransition.attr('d', function (node) { return link(node.parent, node); });
-        if (this.options.animate) {
-            path
-                .style('opacity', 0)
-                .transition()
-                .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
-                .duration(0)
-                .style('opacity', 1);
-        }
-        if (this.options.animate) {
-            boundLinks
-                .exit()
-                .transition()
-                .duration(0)
-                .style('opacity', 0)
-                .remove();
-        }
-        else {
-            boundLinks.exit().remove();
-        }
+            if (_this.options.animate) {
+                boundLinks
+                    .exit()
+                    .transition()
+                    .duration(0)
+                    .style('opacity', 0)
+                    .remove()
+                    .on('end', transitionDone);
+            }
+            else {
+                boundLinks.exit().remove();
+            }
+        });
+        return animationPromise;
     };
     ChartUtil.prototype.getSvgForRendering = function () {
         var svg = d3.select(this.options.svgSelector);
@@ -20294,6 +20328,15 @@ var JsonIndiDetails = /** @class */ (function () {
     JsonIndiDetails.prototype.getBirthDate = function () {
         return this.json.birth || null;
     };
+    JsonIndiDetails.prototype.getMaidenName = function () {
+        return this.json.maidenName || null;
+    };
+    JsonIndiDetails.prototype.getNumberOfChildren = function () {
+        return this.json.numberOfChildren || null;
+    };
+    JsonIndiDetails.prototype.getNumberOfMarriages = function () {
+        return this.json.numberOfMarriages || null;
+    };
     JsonIndiDetails.prototype.getBirthPlace = function () {
         return (this.json.birth && this.json.birth.place) || null;
     };
@@ -20310,7 +20353,19 @@ var JsonIndiDetails = /** @class */ (function () {
         return this.json.sex || null;
     };
     JsonIndiDetails.prototype.getImageUrl = function () {
-        return this.json.imageUrl || null;
+        return ((this.json.images &&
+            this.json.images.length > 0 &&
+            this.json.images[0].url) ||
+            null);
+    };
+    JsonIndiDetails.prototype.getImages = function () {
+        return this.json.images || null;
+    };
+    JsonIndiDetails.prototype.getNotes = function () {
+        return this.json.notes || null;
+    };
+    JsonIndiDetails.prototype.getEvents = function () {
+        return this.json.events || null;
     };
     return JsonIndiDetails;
 }());
@@ -20568,10 +20623,10 @@ var DescendantChart = /** @class */ (function () {
     DescendantChart.prototype.render = function () {
         var root = this.createHierarchy();
         var nodes = removeDummyNode(this.util.layOutChart(root));
-        this.util.renderChart(nodes);
+        var animationPromise = this.util.renderChart(nodes);
         var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
-        return info;
+        return Object.assign(info, { animationPromise: animationPromise });
     };
     return DescendantChart;
 }());
@@ -20703,6 +20758,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
             maxDetailsWidth + 22,
             getLength(indi.getFirstName() || '', 'name') + 8,
             getLength(indi.getLastName() || '', 'name') + 8,
+            getLength(id, 'id') + 32,
             INDI_MIN_WIDTH,
         ]) + (indi.getImageUrl() ? IMAGE_WIDTH : 0);
         return [width, height];
@@ -21150,7 +21206,7 @@ var FancyChart = /** @class */ (function () {
         this.renderTreeTrunk(nodes, svg);
         this.util.renderNodes(nodes, svg);
         this.util.updateSvgDimensions(info);
-        return info;
+        return Object.assign(info, { animationPromise: Promise.resolve() });
     };
     return FancyChart;
 }());
@@ -21255,6 +21311,16 @@ function getDate(gedcomDate) {
 }
 exports.getDate = getDate;
 /**
+ * tries to treat an input tag as NOTE and parsse all lines of notes
+ */
+function createNotes(notesTag) {
+    if (!notesTag || notesTag.tag !== 'NOTE')
+        return undefined;
+    return findTags(notesTag.tree, 'CONT')
+        .filter(function (x) { return x.data; })
+        .reduce(function (a, i) { return a.concat(i.data); }, [notesTag.data]);
+}
+/**
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
  */
@@ -21262,9 +21328,10 @@ function createEvent(entry) {
     if (!entry) {
         return undefined;
     }
+    var typeTag = findTag(entry.tree, 'TYPE');
     var dateTag = findTag(entry.tree, 'DATE');
-    var date = dateTag && dateTag.data && getDate(dateTag.data);
     var placeTag = findTag(entry.tree, 'PLAC');
+    var date = dateTag && dateTag.data && getDate(dateTag.data);
     var place = placeTag && placeTag.data;
     if (date || place) {
         var result = date || {};
@@ -21272,6 +21339,8 @@ function createEvent(entry) {
             result.place = place;
         }
         result.confirmed = true;
+        result.type = typeTag ? typeTag.data : undefined;
+        result.notes = createNotes(findTag(entry.tree, 'NOTE'));
         return result;
     }
     if (entry.data && entry.data.toLowerCase() === 'y') {
@@ -21287,15 +21356,40 @@ function createIndi(entry, objects) {
     });
     var indi = { id: id, fams: fams };
     // Name.
-    var nameTag = findTag(entry.tree, 'NAME');
-    if (nameTag) {
-        var _a = extractName(nameTag.data), firstName = _a.firstName, lastName = _a.lastName;
+    var nameTags = findTags(entry.tree, 'NAME');
+    var isMaiden = function (nameTag) {
+        var type = findTag(nameTag.tree, 'TYPE');
+        return type !== undefined && type.data === 'maiden';
+    };
+    var main = nameTags.find(function (x) { return !isMaiden(x); });
+    var maiden = nameTags.find(isMaiden);
+    if (main) {
+        var _a = extractName(main.data), firstName = _a.firstName, lastName = _a.lastName;
         if (firstName) {
             indi.firstName = firstName;
         }
         if (lastName) {
             indi.lastName = lastName;
         }
+    }
+    if (maiden) {
+        var _b = extractName(maiden.data), firstName = _b.firstName, lastName = _b.lastName;
+        if (lastName) {
+            indi.maidenName = lastName;
+        }
+        if (firstName && !indi.firstName) {
+            indi.firstName = firstName;
+        }
+    }
+    // Number of children.
+    var nchiTag = findTag(entry.tree, 'NCHI');
+    if (nchiTag) {
+        indi.numberOfChildren = +nchiTag.data;
+    }
+    // Number of marriages.
+    var nmrTag = findTag(entry.tree, 'NMR');
+    if (nmrTag) {
+        indi.numberOfMarriages = +nmrTag.data;
     }
     // Sex.
     var sexTag = findTag(entry.tree, 'SEX');
@@ -21308,16 +21402,25 @@ function createIndi(entry, objects) {
         indi.famc = pointerToId(famcTag.data);
     }
     // Image URL.
-    var objeTag = findTag(entry.tree, 'OBJE');
-    if (objeTag) {
+    var objeTags = findTags(entry.tree, 'OBJE');
+    if (objeTags.length > 0) {
         // Dereference OBJEct if needed.
-        var realObjeTag = objeTag.data
-            ? objects.get(pointerToId(objeTag.data))
-            : objeTag;
-        var fileTag = realObjeTag && findTag(realObjeTag.tree, 'FILE');
-        if (fileTag) {
-            indi.imageUrl = fileTag.data;
-        }
+        var getFileTag = function (tag) {
+            var realObjeTag = tag.data ? objects.get(pointerToId(tag.data)) : tag;
+            if (!realObjeTag)
+                return undefined;
+            var file = findTag(realObjeTag.tree, 'FILE');
+            var title = findTag(realObjeTag.tree, 'TITL');
+            if (!file)
+                return undefined;
+            return {
+                url: file.data,
+                title: title && title.data,
+            };
+        };
+        indi.images = objeTags
+            .map(getFileTag)
+            .filter(function (x) { return x !== undefined; });
     }
     // Birth date and place.
     var birth = createEvent(findTag(entry.tree, 'BIRT'));
@@ -21329,6 +21432,12 @@ function createIndi(entry, objects) {
     if (death) {
         indi.death = death;
     }
+    // Notes.
+    indi.notes = createNotes(findTag(entry.tree, 'NOTE'));
+    // Events
+    indi.events = findTags(entry.tree, 'EVEN')
+        .map(createEvent)
+        .filter(function (x) { return x !== null; });
     return indi;
 }
 /** Creates a JsonFam object from an FAM entry in GEDCOM. */
@@ -21398,10 +21507,10 @@ var HourglassChart = /** @class */ (function () {
         var descendantNodes = descendant_chart_1.layOutDescendants(this.options);
         // slice(1) removes the duplicated start node.
         var nodes = ancestorNodes.slice(1).concat(descendantNodes);
-        this.util.renderChart(nodes);
+        var animationPromise = this.util.renderChart(nodes);
         var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
-        return info;
+        return Object.assign(info, { animationPromise: animationPromise });
     };
     return HourglassChart;
 }());
@@ -21978,14 +22087,14 @@ var KinshipChartRenderer = /** @class */ (function () {
         upNodes.forEach(function (node) { return _this.setLinkYs(node, true); });
         downNodes.forEach(function (node) { return _this.setLinkYs(node, false); });
         // Render chart
-        this.util.renderNodes(allNodesDeduped, this.util.getSvgForRendering());
+        var animationPromise = this.util.renderNodes(allNodesDeduped, this.util.getSvgForRendering());
         this.renderLinks(allNodes);
         if (rootsCount > 1) {
             this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
         }
         var info = chart_util_1.getChartInfo(allNodesDeduped);
         this.util.updateSvgDimensions(info);
-        return info;
+        return Object.assign(info, { animationPromise: animationPromise });
     };
     KinshipChartRenderer.prototype.renderLinks = function (nodes) {
         var _this = this;
@@ -22516,10 +22625,10 @@ var RelativesChart = /** @class */ (function () {
         var ancestorsRoot = ancestor_chart_1.getAncestorsTree(ancestorOptions);
         var ancestorDescentants = this.layOutAncestorDescendants(ancestorsRoot, descendantNodes[0]);
         var nodes = descendantNodes.concat(ancestorDescentants);
-        this.util.renderChart(nodes);
+        var animationPromise = this.util.renderChart(nodes);
         var info = chart_util_1.getChartInfo(nodes);
         this.util.updateSvgDimensions(info);
-        return info;
+        return Object.assign(info, { animationPromise: animationPromise });
     };
     return RelativesChart;
 }());
@@ -22583,6 +22692,14 @@ var SimpleChartHandle = /** @class */ (function () {
                 .attr('height', info.size[1]);
         }
         return info;
+    };
+    /**
+     * Updates the chart input data.
+     * This is useful when the data is dynamically loaded and a different subset
+     * of data will be displayed.
+     */
+    SimpleChartHandle.prototype.setData = function (json) {
+        this.options.json = json;
     };
     return SimpleChartHandle;
 }());
