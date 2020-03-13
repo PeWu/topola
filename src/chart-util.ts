@@ -382,7 +382,7 @@ export class ChartUtil {
   }
 
   getSvgForRendering(): SVGSelection {
-    const svg = d3.select(this.options.svgSelector);
+    const svg = d3.select(this.options.svgSelector) as SVGSelection;
     if (svg.select('g').empty()) {
       svg.append('g');
     }
