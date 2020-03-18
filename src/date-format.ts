@@ -1,4 +1,4 @@
-import { Date as GedcomDate } from './data';
+import { Date as GedcomDate, DateOrRange } from './data';
 
 const MONTHS_EN: Map<number, string> = new Map([
   [1, 'Jan'],
@@ -17,7 +17,16 @@ const MONTHS_EN: Map<number, string> = new Map([
 
 /** Translations of the GEDCOM date qualifiers. */
 const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
-  ['pl', new Map([['cal', 'wyl.'], ['abt', 'ok.'], ['est', 'szac.']])],
+  [
+    'pl',
+    new Map([
+      ['cal', 'wyl.'],
+      ['abt', 'ok.'],
+      ['est', 'szac.'],
+      ['before', 'przed'],
+      ['after', 'po'],
+    ]),
+  ],
 ]);
 
 const shortMonthCache = new Map<string, string>();
@@ -44,7 +53,7 @@ function getQualifier(qualifier: string, locale?: string) {
 }
 
 /** Simple date formatter. */
-export function formatDate(date: GedcomDate, locale?: string) {
+export function formatDate(date: GedcomDate, locale?: string): string {
   return [
     date.qualifier && getQualifier(date.qualifier, locale),
     date.day,
@@ -52,4 +61,30 @@ export function formatDate(date: GedcomDate, locale?: string) {
     date.year,
     date.text,
   ].join(' ');
+}
+
+/** Formats a DateOrRange object. */
+export function formatDateOrRange(
+  dateOrRange: DateOrRange,
+  locale?: string
+): string {
+  if (dateOrRange.date) {
+    return formatDate(dateOrRange.date, locale);
+  }
+  if (!dateOrRange.dateRange) {
+    return '';
+  }
+  const from =
+    dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from);
+  const to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to);
+  if (from && to) {
+    return `${from} .. ${to}`;
+  }
+  if (from) {
+    return `${getQualifier('after')} ${from}`;
+  }
+  if (to) {
+    return `${getQualifier('before')} ${to}`;
+  }
+  return '';
 }

@@ -8,7 +8,7 @@ import {
   TreeNodeSelection,
 } from './api';
 import { FamDetails, IndiDetails } from './data';
-import { formatDate } from './date-format';
+import { formatDateOrRange } from './date-format';
 import {
   CompositeRenderer,
   getFamPositionHorizontal,
@@ -79,13 +79,11 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const detailsList: DetailsLine[] = [];
     const birthDate =
       indi.getBirthDate() &&
-      indi.getBirthDate()!.date &&
-      formatDate(indi.getBirthDate()!.date!, this.options.locale);
+      formatDateOrRange(indi.getBirthDate()!, this.options.locale);
     const birthPlace = indi.getBirthPlace();
     const deathDate =
       indi.getDeathDate() &&
-      indi.getDeathDate()!.date &&
-      formatDate(indi.getDeathDate()!.date!, this.options.locale);
+      formatDateOrRange(indi.getDeathDate()!, this.options.locale);
     const deathPlace = indi.getDeathPlace();
     if (birthDate) {
       detailsList.push({ symbol: '', text: birthDate });
@@ -114,8 +112,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const detailsList: DetailsLine[] = [];
     const marriageDate =
       fam.getMarriageDate() &&
-      fam.getMarriageDate()!.date &&
-      formatDate(fam.getMarriageDate()!.date!, this.options.locale);
+      formatDateOrRange(fam.getMarriageDate()!, this.options.locale);
     const marriagePlace = fam.getMarriagePlace();
     if (marriageDate) {
       detailsList.push({ symbol: '', text: marriageDate });
