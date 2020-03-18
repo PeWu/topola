@@ -20435,7 +20435,16 @@ var MONTHS_EN = new Map([
 ]);
 /** Translations of the GEDCOM date qualifiers. */
 var QUALIFIERS_I18N = new Map([
-    ['pl', new Map([['cal', 'wyl.'], ['abt', 'ok.'], ['est', 'szac.']])],
+    [
+        'pl',
+        new Map([
+            ['cal', 'wyl.'],
+            ['abt', 'ok.'],
+            ['est', 'szac.'],
+            ['before', 'przed'],
+            ['after', 'po'],
+        ]),
+    ],
 ]);
 var shortMonthCache = new Map();
 function getShortMonth(month, locale) {
@@ -20466,6 +20475,28 @@ function formatDate(date, locale) {
     ].join(' ');
 }
 exports.formatDate = formatDate;
+/** Formats a DateOrRange object. */
+function formatDateOrRange(dateOrRange, locale) {
+    if (dateOrRange.date) {
+        return formatDate(dateOrRange.date, locale);
+    }
+    if (!dateOrRange.dateRange) {
+        return '';
+    }
+    var from = dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from);
+    var to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to);
+    if (from && to) {
+        return from + " .. " + to;
+    }
+    if (from) {
+        return getQualifier('after') + " " + from;
+    }
+    if (to) {
+        return getQualifier('before') + " " + to;
+    }
+    return '';
+}
+exports.formatDateOrRange = formatDateOrRange;
 
 },{}],44:[function(require,module,exports){
 "use strict";
@@ -20700,12 +20731,10 @@ var DetailedRenderer = /** @class */ (function (_super) {
     DetailedRenderer.prototype.getIndiDetails = function (indi) {
         var detailsList = [];
         var birthDate = indi.getBirthDate() &&
-            indi.getBirthDate().date &&
-            date_format_1.formatDate(indi.getBirthDate().date, this.options.locale);
+            date_format_1.formatDateOrRange(indi.getBirthDate(), this.options.locale);
         var birthPlace = indi.getBirthPlace();
         var deathDate = indi.getDeathDate() &&
-            indi.getDeathDate().date &&
-            date_format_1.formatDate(indi.getDeathDate().date, this.options.locale);
+            date_format_1.formatDateOrRange(indi.getDeathDate(), this.options.locale);
         var deathPlace = indi.getDeathPlace();
         if (birthDate) {
             detailsList.push({ symbol: '', text: birthDate });
@@ -20732,8 +20761,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
     DetailedRenderer.prototype.getFamDetails = function (fam) {
         var detailsList = [];
         var marriageDate = fam.getMarriageDate() &&
-            fam.getMarriageDate().date &&
-            date_format_1.formatDate(fam.getMarriageDate().date, this.options.locale);
+            date_format_1.formatDateOrRange(fam.getMarriageDate(), this.options.locale);
         var marriagePlace = fam.getMarriagePlace();
         if (marriageDate) {
             detailsList.push({ symbol: '', text: marriageDate });
@@ -22052,6 +22080,13 @@ exports.HierarchyFilter = HierarchyFilter;
 
 },{}],55:[function(require,module,exports){
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var api_1 = require("./api");
@@ -22187,7 +22222,7 @@ var KinshipChartRenderer = /** @class */ (function () {
             return {
                 treeDir: treeDir,
                 linkType: linkType,
-                points: anchorPoints.concat([{ x: utils_1.last(anchorPoints).x, y: y }]),
+                points: __spreadArrays(anchorPoints, [{ x: utils_1.last(anchorPoints).x, y: y }]),
             };
         });
     };
@@ -22270,7 +22305,7 @@ var KinshipChartRenderer = /** @class */ (function () {
         var pointsFrom = this.linkAnchorPoints(from, type, isUpTree);
         var pointsTo = this.linkAnchorPoints(to, api_1.otherSideLinkType(type), !isUpTree).reverse();
         var y = this.getLinkY(from, type);
-        return pointsFrom.concat([
+        return __spreadArrays(pointsFrom, [
             { x: pointsFrom[pointsFrom.length - 1].x, y: y },
             { x: pointsTo[0].x, y: y }
         ], pointsTo);
@@ -22372,6 +22407,13 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var d3 = require("d3");
 var ancestor_chart_1 = require("./ancestor-chart");
@@ -22394,7 +22436,7 @@ var FilterChildFam = /** @class */ (function () {
         return this.fam.getMother();
     };
     FilterChildFam.prototype.getChildren = function () {
-        var children = this.fam.getChildren().slice();
+        var children = __spreadArrays(this.fam.getChildren());
         var index = children.indexOf(this.childId);
         if (index !== -1) {
             children.splice(index, 1);
