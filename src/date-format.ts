@@ -31,7 +31,7 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
 
 const shortMonthCache = new Map<string, string>();
 
-function getShortMonth(month: number, locale?: string) {
+function getShortMonth(month: number, locale: string | undefined) {
   if (!Intl || !Intl.DateTimeFormat) {
     return MONTHS_EN.get(month);
   }
@@ -46,7 +46,7 @@ function getShortMonth(month: number, locale?: string) {
   return result;
 }
 
-function getQualifier(qualifier: string, locale?: string) {
+function getQualifier(qualifier: string, locale: string | undefined) {
   const language = locale && locale.split(/[-_]/)[0];
   const languageMap = language && QUALIFIERS_I18N.get(language);
   return languageMap ? languageMap.get(qualifier) : qualifier;
@@ -81,10 +81,10 @@ export function formatDateOrRange(
     return `${from} .. ${to}`;
   }
   if (from) {
-    return `${getQualifier('after')} ${from}`;
+    return `${getQualifier('after', locale)} ${from}`;
   }
   if (to) {
-    return `${getQualifier('before')} ${to}`;
+    return `${getQualifier('before', locale)} ${to}`;
   }
   return '';
 }
