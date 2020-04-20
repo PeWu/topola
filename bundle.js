@@ -20367,6 +20367,9 @@ var JsonIndiDetails = /** @class */ (function () {
     JsonIndiDetails.prototype.getEvents = function () {
         return this.json.events || null;
     };
+    JsonIndiDetails.prototype.showId = function () {
+        return !this.json.hideId;
+    };
     return JsonIndiDetails;
 }());
 /** Details of a family based on Json input. */
@@ -20489,10 +20492,10 @@ function formatDateOrRange(dateOrRange, locale) {
         return from + " .. " + to;
     }
     if (from) {
-        return getQualifier('after') + " " + from;
+        return getQualifier('after', locale) + " " + from;
     }
     if (to) {
-        return getQualifier('before') + " " + to;
+        return getQualifier('before', locale) + " " + to;
     }
     return '';
 }
@@ -20755,6 +20758,9 @@ var DetailedRenderer = /** @class */ (function (_super) {
         if (deathDate || deathPlace) {
             detailsList[listIndex].symbol = '+';
         }
+        else if (indi.isConfirmedDeath()) {
+            detailsList.push({ symbol: '+', text: '' });
+        }
         return detailsList;
     };
     /** Extracts lines of details for a family. */
@@ -20962,6 +20968,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
         }
         // Render id.
         var id = enter
+            .filter(function (data) { return getIndi(data).showId(); })
             .append('text')
             .attr('class', 'id')
             .text(function (data) { return data.indi.id; })
