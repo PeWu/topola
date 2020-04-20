@@ -103,6 +103,8 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     }
     if (deathDate || deathPlace) {
       detailsList[listIndex].symbol = '+';
+    } else if (indi.isConfirmedDeath()) {
+      detailsList.push({symbol:'+', text:''});
     }
     return detailsList;
   }
