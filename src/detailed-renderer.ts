@@ -1,7 +1,8 @@
-import { BaseType, Selection, select } from 'd3-selection';
+import { BaseType, select, Selection } from 'd3-selection';
 import { FamDetails, IndiDetails } from './data';
 import { formatDateOrRange } from './date-format';
 import { max } from 'd3-array';
+import 'd3-transition';
 import {
   Renderer,
   RendererOptions,

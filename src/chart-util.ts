@@ -1,8 +1,9 @@
-import { BaseType, Selection, select } from 'd3-selection';
+import { BaseType, select, Selection } from 'd3-selection';
 import { ChartOptions, TreeNode } from './api';
 import { flextree } from 'd3-flextree';
 import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
 import { max, min } from 'd3-array';
+import 'd3-transition';
 
 type SVGSelection = Selection<BaseType, {}, BaseType, {}>;
 
