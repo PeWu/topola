@@ -1,9 +1,10 @@
+import { HierarchyNode } from 'd3-hierarchy';
 import { Renderer, TreeNode, TreeNodeSelection } from '../src/api';
 
 export class FakeRenderer implements Renderer {
   constructor() {}
 
-  updateNodes(nodes: Array<d3.HierarchyNode<TreeNode>>) {
+  updateNodes(nodes: Array<HierarchyNode<TreeNode>>) {
     nodes.forEach(node => {
       node.data.height = 10;
       node.data.width = 10;
