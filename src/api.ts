@@ -1,4 +1,5 @@
-import * as d3 from 'd3';
+import { BaseType, Selection } from 'd3-selection';
+import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
 
 /** Individual or family ID with dimensions. */
 export interface TreeEntry {
@@ -66,10 +67,10 @@ export interface DataProvider<IndiT extends Indi, FamT extends Fam> {
 }
 
 /** D3 selection containing TreeNode data. */
-export type TreeNodeSelection = d3.Selection<
-  d3.BaseType,
-  d3.HierarchyPointNode<TreeNode>,
-  d3.BaseType,
+export type TreeNodeSelection = Selection<
+  BaseType,
+  HierarchyPointNode<TreeNode>,
+  BaseType,
   {}
 >;
 
@@ -80,7 +81,7 @@ export interface Renderer {
   // Returns CSS used as a string
   getCss(): string;
   // Updates node dimensions.
-  updateNodes(nodes: Array<d3.HierarchyNode<TreeNode>>): void;
+  updateNodes(nodes: Array<HierarchyNode<TreeNode>>): void;
   // Returns the family anchor point relative to the node's coordinates.
   getFamilyAnchor(node: TreeNode): [number, number];
   // Returns the individual anchor point relative to the node's coordinates.

@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+import { HierarchyNode, HierarchyPointNode, stratify } from 'd3-hierarchy';
 import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
 import { ChartUtil, getChartInfo, LayoutOptions } from './chart-util';
 import { IdGenerator } from './id-generator';
@@ -17,7 +17,7 @@ export function layOutDescendants(
 }
 
 /** Removes the dummy root node if it was added in createHierarchy(). */
-function removeDummyNode(allNodes: Array<d3.HierarchyPointNode<TreeNode>>) {
+function removeDummyNode(allNodes: Array<HierarchyPointNode<TreeNode>>) {
   if (allNodes[0].id !== DUMMY_ROOT_NODE_ID) {
     return allNodes;
   }
@@ -110,7 +110,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
   }
 
   /** Creates a d3 hierarchy from the input data. */
-  createHierarchy(): d3.HierarchyNode<TreeNode> {
+  createHierarchy(): HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
 
     const nodes = this.options.startIndi
@@ -157,7 +157,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
         parents.push(...childNodes);
       });
     }
-    return d3.stratify<TreeNode>()(parents);
+    return stratify<TreeNode>()(parents);
   }
 
   /**

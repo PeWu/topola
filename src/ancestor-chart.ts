@@ -1,7 +1,6 @@
-import * as d3 from 'd3';
-
 import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
 import { ChartUtil, getChartInfo } from './chart-util';
+import { HierarchyNode, stratify } from 'd3-hierarchy';
 import { IdGenerator } from './id-generator';
 
 export function getAncestorsTree(options: ChartOptions) {
@@ -47,7 +46,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
   }
 
   /** Creates a d3 hierarchy from the input data. */
-  createHierarchy(): d3.HierarchyNode<TreeNode> {
+  createHierarchy(): HierarchyNode<TreeNode> {
     const parents: TreeNode[] = [];
     const stack: TreeNode[] = [];
     const idGenerator = this.options.idGenerator || new IdGenerator();
@@ -118,7 +117,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       }
       parents.push(entry);
     }
-    return d3.stratify<TreeNode>()(parents);
+    return stratify<TreeNode>()(parents);
   }
 
   /**

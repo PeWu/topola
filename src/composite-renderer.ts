@@ -1,4 +1,5 @@
-import * as d3 from 'd3';
+import { HierarchyNode } from 'd3-hierarchy';
+import { max } from 'd3-array';
 import { TreeEntry, TreeNode } from './api';
 
 /**
@@ -21,7 +22,7 @@ export abstract class CompositeRenderer {
     [indi.width, indi.height] = this.getPreferredIndiSize(indi.id);
   }
 
-  updateNodes(nodes: Array<d3.HierarchyNode<TreeNode>>) {
+  updateNodes(nodes: Array<HierarchyNode<TreeNode>>) {
     // Calculate individual vertical size per depth.
     const indiVSizePerDepth = new Map<number, number>();
     nodes.forEach(node => {
@@ -33,7 +34,7 @@ export abstract class CompositeRenderer {
       }
 
       const depth = node.depth;
-      const maxIndiVSize = d3.max([
+      const maxIndiVSize = max([
         getIndiVSize(node.data, !!this.options.horizontal),
         indiVSizePerDepth.get(depth)!,
       ])!;
@@ -70,7 +71,7 @@ export abstract class CompositeRenderer {
       const x =
         -node.width! / 2 + getIndiVSize(node, this.options.horizontal) / 2;
       const famYOffset = node.family
-        ? d3.max([-getFamPositionHorizontal(node), 0])!
+        ? max([-getFamPositionHorizontal(node), 0])!
         : 0;
       const y =
         -(node.indi && node.spouse ? node.height! / 2 - node.indi.height! : 0) +
@@ -78,7 +79,7 @@ export abstract class CompositeRenderer {
       return [x, y];
     }
     const famXOffset = node.family
-      ? d3.max([-getFamPositionVertical(node), 0])
+      ? max([-getFamPositionVertical(node), 0])
       : 0;
     const x =
       -(node.indi && node.spouse ? node.width! / 2 - node.indi.width! : 0) +
@@ -157,7 +158,7 @@ function getHSize(node: TreeNode, horizontal: boolean): number {
   }
   const indiHSize =
     (node.indi ? node.indi.width! : 0) + (node.spouse ? node.spouse.width! : 0);
-  return d3.max([indiHSize, node.family ? node.family.width! : 0])!;
+  return max([indiHSize, node.family ? node.family.width! : 0])!;
 }
 
 function getFamVSize(node: TreeNode, horizontal: boolean): number {
@@ -170,12 +171,12 @@ function getFamVSize(node: TreeNode, horizontal: boolean): number {
 /** Returns the vertical size of individual boxes. */
 function getIndiVSize(node: TreeNode, horizontal: boolean): number {
   if (horizontal) {
-    return d3.max([
+    return max([
       node.indi ? node.indi.width! : 0,
       node.spouse ? node.spouse.width! : 0,
     ])!;
   }
-  return d3.max([
+  return max([
     node.indi ? node.indi.height! : 0,
     node.spouse ? node.spouse.height! : 0,
   ])!;

@@ -1,6 +1,6 @@
-import * as d3 from 'd3';
-import { DataProvider, Indi, Fam } from '../api';
-import { ChildNodes, TreeNode, LinkType, otherSideLinkType } from './api';
+import { ChildNodes, LinkType, otherSideLinkType, TreeNode } from './api';
+import { DataProvider, Fam, Indi } from '../api';
+import { hierarchy, HierarchyNode } from 'd3-hierarchy';
 import { HierarchyFilter } from './hierarchy-filter';
 import { IdGenerator } from '../id-generator';
 import { nonEmpty } from '../utils';
@@ -75,8 +75,8 @@ export class HierarchyCreator {
       return childNodes.length ? childNodes : null;
     };
     return {
-      upRoot: d3.hierarchy(upRoot!, getChildNodes),
-      downRoot: d3.hierarchy(downRoot!, getChildNodes),
+      upRoot: hierarchy(upRoot!, getChildNodes),
+      downRoot: hierarchy(downRoot!, getChildNodes),
     };
   }
 
@@ -420,8 +420,8 @@ export class HierarchyCreator {
 }
 
 export interface Hierarchy {
-  upRoot: d3.HierarchyNode<TreeNode>;
-  downRoot: d3.HierarchyNode<TreeNode>;
+  upRoot: HierarchyNode<TreeNode>;
+  downRoot: HierarchyNode<TreeNode>;
 }
 
 /* Id of indi or fam */
@@ -445,7 +445,7 @@ export class EntryId {
 }
 
 export function getRootsCount(
-  upRoot: d3.HierarchyNode<TreeNode>,
+  upRoot: HierarchyNode<TreeNode>,
   data: DataProvider<Indi, Fam>
 ): number {
   const upIndi = upRoot.data.indi && data.getIndi(upRoot.data.indi.id);

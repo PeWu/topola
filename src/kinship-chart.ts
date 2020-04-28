@@ -1,12 +1,12 @@
-import * as d3 from 'd3';
-import { Chart, ChartInfo, ChartOptions, DataProvider, Indi, Fam } from './api';
+import { HierarchyNode } from 'd3-hierarchy';
+import { KinshipChartRenderer } from './kinship/renderer';
 import { TreeNode } from './kinship/api';
+import { Chart, ChartInfo, ChartOptions } from './api';
 import {
   HierarchyCreator,
   EntryId,
   getRootsCount,
 } from './kinship/hierarchy-creator';
-import { KinshipChartRenderer } from './kinship/renderer';
 
 export class KinshipChart implements Chart {
   readonly renderer: KinshipChartRenderer;
@@ -36,10 +36,10 @@ export class KinshipChart implements Chart {
     );
   }
 
-  private setChildNodesGenerationNumber(node: d3.HierarchyNode<TreeNode>) {
+  private setChildNodesGenerationNumber(node: HierarchyNode<TreeNode>) {
     const childNodes = this.getChildNodesByType(node);
     const setGenerationNumber = (
-      childNodes: Array<d3.HierarchyNode<TreeNode>>,
+      childNodes: Array<HierarchyNode<TreeNode>>,
       value: number
     ) =>
       childNodes.forEach(
@@ -54,17 +54,17 @@ export class KinshipChart implements Chart {
   }
 
   private getChildNodesByType(
-    node: d3.HierarchyNode<TreeNode>
+    node: HierarchyNode<TreeNode>
   ): HierarchyTreeNodes {
     if (!node || !node.children) return EMPTY_HIERARCHY_TREE_NODES;
     // Maps id to node object for all children of the input node
     const childNodesById = new Map(
       node.children.map(
-        n => [n.data.id, n] as [string, d3.HierarchyNode<TreeNode>]
+        n => [n.data.id, n] as [string, HierarchyNode<TreeNode>]
       )
     );
     const nodeToHNode = (n: TreeNode) =>
-      childNodesById.get(n.id) as d3.HierarchyNode<TreeNode>;
+      childNodesById.get(n.id) as HierarchyNode<TreeNode>;
     const childNodes = node.data.childNodes;
     return {
       indiParents: childNodes.indiParents.map(nodeToHNode),
@@ -77,11 +77,11 @@ export class KinshipChart implements Chart {
 }
 
 interface HierarchyTreeNodes {
-  indiParents: Array<d3.HierarchyNode<TreeNode>>;
-  indiSiblings: Array<d3.HierarchyNode<TreeNode>>;
-  spouseParents: Array<d3.HierarchyNode<TreeNode>>;
-  spouseSiblings: Array<d3.HierarchyNode<TreeNode>>;
-  children: Array<d3.HierarchyNode<TreeNode>>;
+  indiParents: Array<HierarchyNode<TreeNode>>;
+  indiSiblings: Array<HierarchyNode<TreeNode>>;
+  spouseParents: Array<HierarchyNode<TreeNode>>;
+  spouseSiblings: Array<HierarchyNode<TreeNode>>;
+  children: Array<HierarchyNode<TreeNode>>;
 }
 const EMPTY_HIERARCHY_TREE_NODES: HierarchyTreeNodes = {
   indiParents: [],

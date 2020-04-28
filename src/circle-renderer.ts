@@ -1,5 +1,5 @@
-import * as d3 from 'd3';
-
+import { FamDetails, IndiDetails } from './data';
+import { HierarchyNode } from 'd3-hierarchy';
 import {
   Renderer,
   RendererOptions,
@@ -7,7 +7,6 @@ import {
   TreeNodeSelection,
   TreeEntry,
 } from './api';
-import { FamDetails, IndiDetails } from './data';
 
 /** Renders person or married couple inside a sircle. */
 export class CircleRenderer implements Renderer {
@@ -25,7 +24,7 @@ export class CircleRenderer implements Renderer {
     return [0, 0];
   }
 
-  updateNodes(nodes: Array<d3.HierarchyNode<TreeNode>>) {
+  updateNodes(nodes: Array<HierarchyNode<TreeNode>>) {
     nodes.forEach(node => {
       [node.data.width, node.data.height] = node.data.family
         ? [120, 120]

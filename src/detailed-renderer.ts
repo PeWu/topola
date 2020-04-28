@@ -1,5 +1,7 @@
-import * as d3 from 'd3';
-
+import { BaseType, Selection, select } from 'd3-selection';
+import { FamDetails, IndiDetails } from './data';
+import { formatDateOrRange } from './date-format';
+import { max } from 'd3-array';
 import {
   Renderer,
   RendererOptions,
@@ -7,8 +9,6 @@ import {
   TreeNode,
   TreeNodeSelection,
 } from './api';
-import { FamDetails, IndiDetails } from './data';
-import { formatDateOrRange } from './date-format';
 import {
   CompositeRenderer,
   getFamPositionHorizontal,
@@ -34,8 +34,7 @@ export function getLength(text: string, textClass: string): number {
   if (textLengthCache.has(cacheKey)) {
     return textLengthCache.get(cacheKey)!;
   }
-  const g = d3
-    .select('svg')
+  const g = select('svg')
     .append('g')
     .attr('class', 'detailed node');
   const x = g
@@ -104,7 +103,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     if (deathDate || deathPlace) {
       detailsList[listIndex].symbol = '+';
     } else if (indi.isConfirmedDeath()) {
-      detailsList.push({symbol:'+', text:''});
+      detailsList.push({ symbol: '+', text: '' });
     }
     return detailsList;
   }
@@ -132,16 +131,16 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const indi = this.options.data.getIndi(id)!;
     const details = this.getIndiDetails(indi);
 
-    const height = d3.max([
+    const height = max([
       INDI_MIN_HEIGHT + details.length * 14,
       indi.getImageUrl() ? IMAGE_HEIGHT : 0,
     ])!;
 
-    const maxDetailsWidth = d3.max(
+    const maxDetailsWidth = max(
       details.map(x => getLength(x.text, 'details'))
     )!;
     const width =
-      d3.max([
+      max([
         maxDetailsWidth + 22,
         getLength(indi.getFirstName() || '', 'name') + 8,
         getLength(indi.getLastName() || '', 'name') + 8,
@@ -155,11 +154,11 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const fam = this.options.data.getFam(id)!;
     const details = this.getFamDetails(fam);
 
-    const height = d3.max([10 + details.length * 14, FAM_MIN_HEIGHT])!;
-    const maxDetailsWidth = d3.max(
+    const height = max([10 + details.length * 14, FAM_MIN_HEIGHT])!;
+    const maxDetailsWidth = max(
       details.map(x => getLength(x.text, 'details'))
     )!;
-    const width = d3.max([maxDetailsWidth + 22, FAM_MIN_WIDTH])!;
+    const width = max([maxDetailsWidth + 22, FAM_MIN_WIDTH])!;
     return [width, height];
   }
 
@@ -175,11 +174,11 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
           const result: OffsetIndi[] = [];
           const famXOffset =
             !this.options.horizontal && node.data.family
-              ? d3.max([-getFamPositionVertical(node.data), 0])!
+              ? max([-getFamPositionVertical(node.data), 0])!
               : 0;
           const famYOffset =
             this.options.horizontal && node.data.family
-              ? d3.max([-getFamPositionHorizontal(node.data), 0])!
+              ? max([-getFamPositionHorizontal(node.data), 0])!
               : 0;
           if (node.data.indi) {
             result.push({
@@ -324,9 +323,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
 }`;
   }
 
-  private transition<T>(
-    selection: d3.Selection<d3.BaseType, T, d3.BaseType, {}>
-  ) {
+  private transition<T>(selection: Selection<BaseType, T, BaseType, {}>) {
     return this.options.animate
       ? selection
           .transition()
@@ -338,17 +335,16 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   private getFamTransform(node: TreeNode): string {
     if (this.options.horizontal) {
       return `translate(${(node.indi && node.indi.width) ||
-        node.spouse!.width}, ${d3.max([getFamPositionHorizontal(node), 0])})`;
+        node.spouse!.width}, ${max([getFamPositionHorizontal(node), 0])})`;
     }
-    return `translate(${d3.max([
-      getFamPositionVertical(node),
-      0,
-    ])}, ${(node.indi && node.indi.height) || node.spouse!.height})`;
+    return `translate(${max([getFamPositionVertical(node), 0])}, ${(node.indi &&
+      node.indi.height) ||
+      node.spouse!.height})`;
   }
 
   private renderIndi(
-    enter: d3.Selection<d3.BaseType, OffsetIndi, d3.BaseType, {}>,
-    update: d3.Selection<d3.BaseType, OffsetIndi, d3.BaseType, {}>
+    enter: Selection<BaseType, OffsetIndi, BaseType, {}>,
+    update: Selection<BaseType, OffsetIndi, BaseType, {}>
   ) {
     if (this.options.indiHrefFunc) {
       enter = enter
@@ -414,7 +410,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       details.set(node.indi.id, detailsList);
     });
 
-    const maxDetails = d3.max(Array.from(details.values(), v => v.length))!;
+    const maxDetails = max(Array.from(details.values(), v => v.length))!;
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
@@ -516,7 +512,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       const detailsList = this.getFamDetails(fam);
       details.set(famId, detailsList);
     });
-    const maxDetails = d3.max(Array.from(details.values(), v => v.length))!;
+    const maxDetails = max(Array.from(details.values(), v => v.length))!;
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {

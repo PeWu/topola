@@ -1,5 +1,4 @@
-import * as d3 from 'd3';
-
+import { select } from 'd3-selection';
 import {
   Chart,
   ChartInfo,
@@ -113,7 +112,7 @@ class SimpleChartHandle implements ChartHandle {
     const chart = new this.options.chartType(chartOptions);
     const info = chart.render();
     if (this.options.updateSvgSize !== false) {
-      d3.select(chartOptions.svgSelector)
+      select(chartOptions.svgSelector)
         .attr('width', info.size[0])
         .attr('height', info.size[1]);
     }

@@ -1,5 +1,4 @@
-import * as d3 from 'd3';
-
+import { select } from 'd3-selection';
 import {
   Renderer,
   RendererOptions,
@@ -15,8 +14,7 @@ const MIN_WIDTH = 50;
 
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text: string) {
-  const g = d3
-    .select('svg')
+  const g = select('svg')
     .append('g')
     .attr('class', 'simple node');
   const x = g

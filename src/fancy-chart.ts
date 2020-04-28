@@ -1,4 +1,6 @@
-import * as d3 from 'd3';
+import { BaseType, Selection } from 'd3-selection';
+import { HierarchyPointNode } from 'd3-hierarchy';
+import { min } from 'd3-array';
 import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
 import { ChartUtil, getChartInfo, linkId, ChartSizeInfo } from './chart-util';
 import { DUMMY_ROOT_NODE_ID, layOutDescendants } from './descendant-chart';
@@ -61,8 +63,8 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
 
   /** Creates a path from parent to the child node (vertical layout). */
   private linkVertical(
-    s: d3.HierarchyPointNode<TreeNode>,
-    d: d3.HierarchyPointNode<TreeNode>
+    s: HierarchyPointNode<TreeNode>,
+    d: HierarchyPointNode<TreeNode>
   ) {
     const sAnchor = this.options.renderer.getFamilyAnchor(s.data);
     const dAnchor =
@@ -74,7 +76,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     return branch(dx, dy, sx, sy);
   }
 
-  private linkAdditionalMarriage(node: d3.HierarchyPointNode<TreeNode>) {
+  private linkAdditionalMarriage(node: HierarchyPointNode<TreeNode>) {
     const nodeIndex = node.parent!.children!.findIndex(n => n.id === node.id);
     // Assert nodeIndex > 0.
     const siblingNode = node.parent!.children![nodeIndex - 1];
@@ -90,7 +92,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
 
   renderBackground(
     chartInfo: ChartSizeInfo,
-    svg: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>
+    svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     svg
       .select('g')
@@ -111,8 +113,8 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
   }
 
   renderLeaves(
-    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
-    svg: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>
+    nodes: Array<HierarchyPointNode<TreeNode>>,
+    svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     const gradient = svg
       .select('g')
@@ -137,14 +139,14 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     );
 
     const minGeneration =
-      d3.min(backgroundNodes, node => node.data.generation) || 0;
-    const sizeFunction = (node: d3.HierarchyPointNode<TreeNode>) =>
+      min(backgroundNodes, node => node.data.generation) || 0;
+    const sizeFunction = (node: HierarchyPointNode<TreeNode>) =>
       280 - 180 / Math.sqrt(1 + node.data.generation! - minGeneration);
     {
       const boundNodes = svg
         .select('g')
         .selectAll('g.background')
-        .data(backgroundNodes, (d: d3.HierarchyPointNode<Node>) => d.id!);
+        .data(backgroundNodes, (d: HierarchyPointNode<Node>) => d.id!);
       const enter = boundNodes.enter().append('g' as string);
       enter
         .merge(boundNodes)
@@ -169,7 +171,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       const boundNodes = svg
         .select('g')
         .selectAll('g.background2')
-        .data(backgroundNodes, (d: d3.HierarchyPointNode<TreeNode>) => d.id!);
+        .data(backgroundNodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
       const enter = boundNodes.enter().append('g' as string);
       enter
         .merge(boundNodes)
@@ -193,12 +195,12 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
   }
 
   renderLinks(
-    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
-    svg: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>
+    nodes: Array<HierarchyPointNode<TreeNode>>,
+    svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     const link = (
-      parent: d3.HierarchyPointNode<TreeNode>,
-      child: d3.HierarchyPointNode<TreeNode>
+      parent: HierarchyPointNode<TreeNode>,
+      child: HierarchyPointNode<TreeNode>
     ) => {
       if (child.data.additionalMarriage) {
         return this.linkAdditionalMarriage(child);
@@ -220,8 +222,8 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
   }
 
   renderTreeTrunk(
-    nodes: Array<d3.HierarchyPointNode<TreeNode>>,
-    svg: d3.Selection<d3.BaseType, {}, d3.BaseType, {}>
+    nodes: Array<HierarchyPointNode<TreeNode>>,
+    svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     const trunkNodes = nodes.filter(
       n => !n.parent || n.parent.id === DUMMY_ROOT_NODE_ID
@@ -229,7 +231,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     svg
       .select('g')
       .selectAll('g.trunk')
-      .data(trunkNodes, (d: d3.HierarchyPointNode<TreeNode>) => d.id!)
+      .data(trunkNodes, (d: HierarchyPointNode<TreeNode>) => d.id!)
       .enter()
       .append('g')
       .attr('class', 'trunk')

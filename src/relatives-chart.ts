@@ -1,6 +1,8 @@
-import * as d3 from 'd3';
-
 import { getAncestorsTree } from './ancestor-chart';
+import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
+import { IdGenerator } from './id-generator';
+import { layOutDescendants } from './descendant-chart';
+import { max, min } from 'd3-array';
 import {
   Chart,
   ChartInfo,
@@ -17,8 +19,6 @@ import {
   H_SPACING,
   V_SPACING,
 } from './chart-util';
-import { layOutDescendants } from './descendant-chart';
-import { IdGenerator } from './id-generator';
 
 /** A view of a family that hides one child individual. */
 class FilterChildFam implements Fam {
@@ -56,7 +56,7 @@ class FilterChildData implements DataProvider<Indi, Fam> {
 /** Information about the subtree of descendants of an ancestor. */
 interface AncestorData {
   // Descendants.
-  descendantNodes: Array<d3.HierarchyPointNode<TreeNode>>;
+  descendantNodes: Array<HierarchyPointNode<TreeNode>>;
   // Dimensions of the subtree bounding box.
   width: number;
   height: number;
@@ -82,10 +82,10 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
   }
 
   layOutAncestorDescendants(
-    ancestorsRoot: d3.HierarchyNode<TreeNode>,
-    focusedNode: d3.HierarchyPointNode<TreeNode>
+    ancestorsRoot: HierarchyNode<TreeNode>,
+    focusedNode: HierarchyPointNode<TreeNode>
   ) {
-    // let ancestorDescentants: Array<d3.HierarchyPointNode<TreeNode>> = [];
+    // let ancestorDescentants: Array<HierarchyPointNode<TreeNode>> = [];
 
     const ancestorData = new Map<string, AncestorData>();
 
@@ -231,7 +231,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
         } else if (data.left) {
           parentNode.x =
             nodeX +
-            d3.min([
+            min([
               nodeWidth / 2 -
                 parentData.width! / 2 -
                 spouseWidth / 2 -
@@ -240,7 +240,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
             ])!;
         } else {
           parentNode.x =
-            nodeX + d3.max([parentData.width! / 2 - nodeWidth / 2, middleX])!;
+            nodeX + max([parentData.width! / 2 - nodeWidth / 2, middleX])!;
         }
       }
 
@@ -288,11 +288,11 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
             nodeWidth / 2 + parentData.width! / 2 - spouseWidth + H_SPACING / 2;
         } else if (data.left) {
           parentNode.x =
-            nodeX + d3.min([nodeWidth / 2 - parentData.width! / 2, middleX])!;
+            nodeX + min([nodeWidth / 2 - parentData.width! / 2, middleX])!;
         } else {
           parentNode.x =
             nodeX +
-            d3.max([
+            max([
               parentData.width! / 2 - nodeWidth / 2 + indiWidth / 2 + H_SPACING,
               middleX,
             ])!;
