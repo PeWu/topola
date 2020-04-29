@@ -433,10 +433,9 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
 
     // Render id.
     const id = enter
-      .filter(data => getIndi(data)!.showId())
       .append('text')
       .attr('class', 'id')
-      .text(data => data.indi.id)
+      .text(data => getIndi(data)!.showId() ? data.indi.id : '')
       .merge(update.select('text.id'));
     this.transition(id).attr(
       'transform',
