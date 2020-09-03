@@ -7747,6 +7747,16 @@ var QUALIFIERS_I18N = new Map([
             ['after', 'po'],
         ]),
     ],
+    [
+        'ru',
+        new Map([
+            ['cal', 'выч.'],
+            ['abt', 'ок.'],
+            ['est', 'прибл.'],
+            ['before', 'до'],
+            ['after', 'после'],
+        ]),
+    ],
 ]);
 var shortMonthCache = new Map();
 function getShortMonth(month, locale) {
