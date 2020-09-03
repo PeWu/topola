@@ -26,6 +26,8 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
       ['before', 'przed'],
       ['after', 'po'],
     ]),
+  ],
+  [
     'ru',
     new Map([
       ['cal', 'выч.'],
