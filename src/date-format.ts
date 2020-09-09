@@ -1,6 +1,6 @@
 import { Date as GedcomDate, DateOrRange } from './data';
 
-/** Month on English. */
+/** Month in English is used as fallback if a requested translation is not found. */
 const MONTHS_EN: Map<number, string> = new Map([
   [1, 'Jan'],
   [2, 'Feb'],
