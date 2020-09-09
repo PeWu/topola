@@ -27,8 +27,8 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
       ['before', 'vor'],
       ['after', 'nach'],
     ]),
-   ],
-   [
+  ],
+  [
     'fr',
     new Map([
       ['cal', 'calc.'],
@@ -37,8 +37,8 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
       ['before', 'avant'],
       ['after', 'après'],
     ]),
-   ],
-   [
+  ],
+  [
     'it',
     new Map([
       ['cal', 'calc.'],
@@ -47,8 +47,8 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
       ['before', 'prima del'],
       ['after', 'dopo del'],
     ]),
-    ],
-    [
+  ],
+  [
     'pl',
     new Map([
       ['cal', 'wyl.'],
@@ -57,8 +57,8 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
       ['before', 'przed'],
       ['after', 'po'],
     ]),
-     ],
-   [
+  ],
+  [
     'ru',
     new Map([
       ['cal', 'выч.'],
