@@ -1,5 +1,6 @@
 import { Date as GedcomDate, DateOrRange } from './data';
 
+/** Month on English. */
 const MONTHS_EN: Map<number, string> = new Map([
   [1, 'Jan'],
   [2, 'Feb'],
@@ -18,6 +19,36 @@ const MONTHS_EN: Map<number, string> = new Map([
 /** Translations of the GEDCOM date qualifiers. */
 const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
   [
+    'de',
+    new Map([
+      ['cal', 'errech.'],
+      ['abt', 'etwa'],
+      ['est', 'geschät.'],
+      ['before', 'vor'],
+      ['after', 'nach'],
+    ]),
+  ],
+  [
+    'fr',
+    new Map([
+      ['cal', 'calc.'],
+      ['abt', 'vers'],
+      ['est', 'est.'],
+      ['before', 'avant'],
+      ['after', 'après'],
+    ]),
+  ],
+  [
+    'it',
+    new Map([
+      ['cal', 'calc.'],
+      ['abt', 'circa il'],
+      ['est', 'stim.'],
+      ['before', 'prima del'],
+      ['after', 'dopo del'],
+    ]),
+  ],
+  [
     'pl',
     new Map([
       ['cal', 'wyl.'],
@@ -30,17 +61,7 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
     new Map([
       ['cal', 'выч.'],
       ['abt', 'ок.'],
-      ['est', 'прибл.'],
-      ['before', 'до'],
-      ['after', 'после'],
-    ]),
-  ],
-  [
-    'ru',
-    new Map([
-      ['cal', 'выч.'],
-      ['abt', 'ок.'],
-      ['est', 'прибл.'],
+      ['est', 'оцен.'],
       ['before', 'до'],
       ['after', 'после'],
     ]),
