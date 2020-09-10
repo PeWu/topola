@@ -1,19 +1,112 @@
 import { Date as GedcomDate, DateOrRange } from './data';
 
-/** Month on English. */
-const MONTHS_EN: Map<number, string> = new Map([
-  [1, 'Jan'],
-  [2, 'Feb'],
-  [3, 'Mar'],
-  [4, 'Apr'],
-  [5, 'May'],
-  [6, 'Jun'],
-  [7, 'Jul'],
-  [8, 'Aug'],
-  [9, 'Sep'],
-  [10, 'Oct'],
-  [11, 'Nov'],
-  [12, 'Dec'],
+/** Month in English is used as fallback if a requested translation is not found. */
+/** Format: Number of Month, Name of Month (3-8 chars), Name of Month in genitive (3-8 chars). */
+/** Using: with Day - 20 Jan 2020, 20 stycznia 2020, */
+/**     without Day - Jan 2020, Styczeń 2020. */
+const MONTHS_I18N: Map<number, Map<string, string>> = new Map([
+  [
+    'de',
+    new Map([
+      [1, 'Jan', 'Jan'],
+      [2, 'Feb', 'Feb'],
+      [3, 'März', 'März'],
+      [4, 'Apr', 'Apr'],
+      [5, 'May', 'May'],
+      [6, 'Jun', 'Jun'],
+      [7, 'Jul', 'Jul'],
+      [8, 'Aug', 'Aug'],
+      [9, 'Sep', 'Sep'],
+      [10, 'Oct', 'Oct'],
+      [11, 'Nov', 'Nov'],
+      [12, 'Dec', 'Dec'],
+    ]),
+  ],
+  [
+    'en',
+    new Map([
+      [1, 'Jan', 'Jan'],
+      [2, 'Feb', 'Feb'],
+      [3, 'Mar', 'Mar'],
+      [4, 'Apr', 'Apr'],
+      [5, 'May', 'May'],
+      [6, 'Jun', 'Jun'],
+      [7, 'Jul', 'Jul'],
+      [8, 'Aug', 'Aug'],
+      [9, 'Sep', 'Sep'],
+      [10, 'Oct', 'Oct'],
+      [11, 'Nov', 'Nov'],
+      [12, 'Dec', 'Dec'],
+    ]),
+  ],
+  [
+    'fr',
+    new Map([
+      [1, 'Jan', 'Jan'],
+      [2, 'Feb', 'Feb'],
+      [3, 'Mar', 'Mar'],
+      [4, 'Apr', 'Apr'],
+      [5, 'May', 'May'],
+      [6, 'Jun', 'Jun'],
+      [7, 'Jul', 'Jul'],
+      [8, 'Aug', 'Aug'],
+      [9, 'Sep', 'Sep'],
+      [10, 'Oct', 'Oct'],
+      [11, 'Nov', 'Nov'],
+      [12, 'Dec', 'Dec'],
+    ]),
+  ],
+  [
+    'it',
+    new Map([
+      [1, 'Jan', 'Jan'],
+      [2, 'Feb', 'Feb'],
+      [3, 'Mar', 'Mar'],
+      [4, 'Apr', 'Apr'],
+      [5, 'May', 'May'],
+      [6, 'Jun', 'Jun'],
+      [7, 'Jul', 'Jul'],
+      [8, 'Aug', 'Aug'],
+      [9, 'Sep', 'Sep'],
+      [10, 'Oct', 'Oct'],
+      [11, 'Nov', 'Nov'],
+      [12, 'Dec', 'Dec'],
+    ]),
+  ],
+  [
+    'pl',
+    new Map([
+      [1, 'Styc', 'stycznia'],
+      [2, 'Luty', 'lutego'],
+      [3, 'Mar', 'Mar'],
+      [4, 'Apr', 'Apr'],
+      [5, 'May', 'May'],
+      [6, 'Jun', 'Jun'],
+      [7, 'Jul', 'Jul'],
+      [8, 'Aug', 'Aug'],
+      [9, 'Sep', 'Sep'],
+      [10, 'Oct', 'Oct'],
+      [11, 'Nov', 'Nov'],
+      [12, 'Dec', 'Dec'],
+    ]),
+  ],
+  [
+    'ru',
+    new Map([
+      [1, 'Янв', 'янв'],
+      [2, 'Фев', 'фев'],
+      [3, 'Мар', 'марта'],
+      [4, 'Апр', 'апр'],
+      [5, 'Май', 'мая'],
+      [6, 'Июн', 'июня'],
+      [7, 'Июл', 'июля'],
+      [8, 'Авг', 'авг'],
+      [9, 'Сен', 'сент'],
+      [10, 'Окт', 'окт'],
+      [11, 'Ноя', 'нояб'],
+      [12, 'Дек', 'дек'],
+    ]),
+  ],
 ]);
 
 /** Translations of the GEDCOM date qualifiers. */
