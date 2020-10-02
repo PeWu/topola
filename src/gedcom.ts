@@ -89,7 +89,7 @@ function parseDate(parts: string[]): Date | undefined {
 
 /** Parses a GEDCOM date or date range. */
 export function getDate(gedcomDate: string): DateOrRange | undefined {
-  const parts = gedcomDate.split(' ');
+  const parts = gedcomDate.replace(/@.*@/, '').trim().split(' ');
   const firstPart = parts[0].toLowerCase();
   if (firstPart.startsWith('bet')) {
     const i = parts.findIndex(x => x.toLowerCase() === 'and');

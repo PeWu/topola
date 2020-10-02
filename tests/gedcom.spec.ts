@@ -6,17 +6,24 @@ describe('GEDCOM parser', () => {
     it('should parse a simple date', () => {
       expect(getDate('9 JUN 2019')).toEqual({date: {day: 9, month: 6, year: 2019}});
     });
+
     it('should parse partial dates', () => {
       expect(getDate('2019')).toEqual({date: {year: 2019}});
       expect(getDate('JUN 2019')).toEqual({date: {month: 6, year: 2019}});
       expect(getDate('9 JUN')).toEqual({date: {day: 9, month: 6}});
     });
+
     it('should parse dates before year 1000', () => {
       expect(getDate('6')).toEqual({date: {year: 6}});
       expect(getDate('66')).toEqual({date: {year: 66}});
       expect(getDate('966')).toEqual({date: {year: 966}});
       expect(getDate('JUN 966')).toEqual({date: {month: 6, year: 966}});
       expect(getDate('9 JUN 966')).toEqual({date: {day: 9, month: 6, year: 966}});
+    });
+
+    it('should handle calendar type specification', () => {
+      expect(getDate('@#DJULIAN@ 9 JUN 1539'))
+          .toEqual({date: {day: 9, month: 6, year: 1539}});
     });
   });
 
@@ -26,11 +33,12 @@ describe('GEDCOM parser', () => {
       0 @I1@ INDI
       1 NAME John /Doe/
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].firstName).toBe('John');
       expect(sut.indis[0].lastName).toBe('Doe');
     });
+
     it('should parse maiden name correctly', () => {
       let gedcom = `
       0 @I1@ INDI
@@ -38,12 +46,13 @@ describe('GEDCOM parser', () => {
       1 NAME /Smith/
       2 TYPE maiden
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].firstName).toBe('Jane');
       expect(sut.indis[0].lastName).toBe('Doe');
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
+
     it('should consider the first NAME record as main', () => {
       let gedcom = `
       0 @I1@ INDI
@@ -53,12 +62,13 @@ describe('GEDCOM parser', () => {
       2 TYPE maiden
       1 NAME Tony /Stark/
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].firstName).toBe('John');
       expect(sut.indis[0].lastName).toBe('Doe');
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
+
     it('should parse NAME with maiden correctly', () => {
       let gedcom = `
       0 @I1@ INDI
@@ -66,12 +76,13 @@ describe('GEDCOM parser', () => {
       2 TYPE maiden
       1 NAME John /Doe/
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].firstName).toBe('John');
       expect(sut.indis[0].lastName).toBe('Doe');
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
+
     it('should treat maiden first name is the main if nothing else provided', () => {
       let gedcom = `
       0 @I1@ INDI
@@ -79,19 +90,20 @@ describe('GEDCOM parser', () => {
       2 TYPE maiden
       1 NAME /Doe/
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].firstName).toBe('John');
       expect(sut.indis[0].lastName).toBe('Doe');
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
+
     it('should parse correctly if no main NAME', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NAME /Smith/
       2 TYPE maiden
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].firstName).toBeUndefined();
       expect(sut.indis[0].lastName).toBeUndefined();
@@ -105,18 +117,19 @@ describe('GEDCOM parser', () => {
       0 @I1@ INDI
       1 NOTE Hello
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].notes!.length).toBe(1);
       expect(sut.indis[0].notes![0]).toBe('Hello');
     });
+
     it('should parse single note correctly', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NOTE Hello
       2 CONT World
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].notes!.length).toBe(2);
       expect(sut.indis[0].notes![0]).toBe('Hello');
@@ -130,16 +143,17 @@ describe('GEDCOM parser', () => {
       0 @I1@ INDI
       1 NCHI 10
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].numberOfChildren).toBe(10);
     });
+
     it('should parse number of marriages correctly', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NMR 5
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].numberOfMarriages).toBe(5);
     });
@@ -157,7 +171,7 @@ describe('GEDCOM parser', () => {
       3 CONT line2
       3 CONT line3
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].events!.length).toBe(1);
       expect(sut.indis[0].events![0].type).toBe('Simple');
@@ -169,6 +183,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].events![0].notes![1]).toBe('line2');
       expect(sut.indis[0].events![0].notes![2]).toBe('line3');
     });
+
     it('should birthday correctly', () => {
       let gedcom = `
       0 @I1@ INDI
@@ -176,7 +191,7 @@ describe('GEDCOM parser', () => {
       2 DATE 23 Sep 1926
       2 PLAC 247 Candlewood Path, Dix Hills, NY 11746
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis[0].birth!.date!.day).toBe(23);
       expect(sut.indis[0].birth!.date!.month).toBe(9);
@@ -196,10 +211,10 @@ describe('GEDCOM parser', () => {
       2 FILE images.jpg
       2 TITL description
       `;
-  
+
       let sut = gedcomToJson(gedcom);
       expect(sut.indis.length).toBe(1);
-  
+
       expect(sut.indis[0].images!.length).toBe(2);
       expect(sut.indis[0].images![0].url).toBe('main.jpg');
       expect(sut.indis[0].images![0].title).toBe('some');
