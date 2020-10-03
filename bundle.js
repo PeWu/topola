@@ -8295,7 +8295,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
         var id = enter
             .append('text')
             .attr('class', 'id')
-            .text(function (data) { return (getIndi(data).showId() ? data.indi.id : ''); })
+            .text(function (data) { return getIndi(data).showId() ? data.indi.id : ''; })
             .merge(update.select('text.id'));
         this.transition(id).attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
         // Render sex.
@@ -8647,10 +8647,7 @@ function parseDate(parts) {
 }
 /** Parses a GEDCOM date or date range. */
 function getDate(gedcomDate) {
-    var parts = gedcomDate
-        .replace(/@.*@/, '')
-        .trim()
-        .split(' ');
+    var parts = gedcomDate.replace(/@.*@/, '').trim().split(' ');
     var firstPart = parts[0].toLowerCase();
     if (firstPart.startsWith('bet')) {
         var i = parts.findIndex(function (x) { return x.toLowerCase() === 'and'; });
