@@ -7805,7 +7805,6 @@ function formatDate(date, locale) {
 exports.formatDate = formatDate;
 /** Formats a DateOrRange object. */
 function formatDateOrRange(dateOrRange, locale) {
-    locale = 'ru';
     if (dateOrRange.date) {
         return formatDate(dateOrRange.date, locale);
     }
