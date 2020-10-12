@@ -1,5 +1,21 @@
 import { Date as GedcomDate, DateOrRange } from './data';
 
+/** Month in English is used as fallback if a requested translation is not found. */
+const MONTHS_EN: Map<number, string> = new Map([
+  [1, 'Jan'],
+  [2, 'Feb'],
+  [3, 'Mar'],
+  [4, 'Apr'],
+  [5, 'May'],
+  [6, 'Jun'],
+  [7, 'Jul'],
+  [8, 'Aug'],
+  [9, 'Sep'],
+  [10, 'Oct'],
+  [11, 'Nov'],
+  [12, 'Dec'],
+]);
+
 /** Translations of the GEDCOM date qualifiers. */
 const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
   [
@@ -54,7 +70,24 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
   ],
 ]);
 
-function getQualifier(qualifier: string, locale: string | undefined) {
+const shortMonthCache = new Map<string, string>();
+
+function getShortMonth(month: number, locale?: string) {
+  if (!Intl || !Intl.DateTimeFormat) {
+    return MONTHS_EN.get(month);
+  }
+  const cacheKey = `${month}|${locale || ''}`;
+  if (shortMonthCache.has(cacheKey)) {
+    return shortMonthCache.get(cacheKey);
+  }
+  const result = new Intl.DateTimeFormat(locale, { month: 'short' }).format(
+    new Date(2000, month - 1)
+  );
+  shortMonthCache.set(cacheKey, result);
+  return result;
+}
+
+function getQualifier(qualifier: string, locale?: string) {
   const language = locale && locale.split(/[-_]/)[0];
   const languageMap = language && QUALIFIERS_I18N.get(language);
   return languageMap ? languageMap.get(qualifier) : qualifier;
@@ -73,6 +106,19 @@ function formatDateOnly(
   if (!day && !month && !year) {
     return '';
   }
+
+  // Fall back to formatting the date manually in case of
+  // - locale not provided
+  // - English (to avoid formatting like 'Oct 11, 2009')
+  // - Lack of i18n support in the browser
+  if (!Intl || !Intl.DateTimeFormat || !locale || locale === 'en') {
+    return [
+      day,
+      month && getShortMonth(month, locale),
+      year
+    ].join(' ');
+  }
+
   const format = {
     day: day ? 'numeric' : undefined,
     month: month ? 'short' : undefined,
