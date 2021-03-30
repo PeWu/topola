@@ -354,7 +354,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       update = update.select('a');
     }
     if (this.options.indiCallback) {
-      enter.on('click', data =>
+      enter.on('click', (event, data) =>
         this.options.indiCallback!({
           id: data.indi.id,
           generation: data.generation,
@@ -488,7 +488,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         .attr('href', node => this.options.famHrefFunc!(node.data.family!.id));
     }
     if (this.options.famCallback) {
-      enter.on('click', node =>
+      enter.on('click', (event, node) =>
         this.options.famCallback!({
           id: node.data.family!.id,
           generation: node.data.generation!,
