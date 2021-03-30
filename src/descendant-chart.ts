@@ -31,7 +31,7 @@ function removeDummyNode(allNodes: Array<HierarchyPointNode<TreeNode>>) {
       node.parent.id === DUMMY_ROOT_NODE_ID &&
       !node.data.additionalMarriage
     ) {
-      delete node.parent;
+      node.parent = null;
     }
     node.x += dx;
     node.y += dy;

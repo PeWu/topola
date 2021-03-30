@@ -119,7 +119,7 @@ function formatDateOnly(
     ].join(' ');
   }
 
-  const format = {
+  const format: Intl.DateTimeFormatOptions = {
     day: day ? 'numeric' : undefined,
     month: month ? 'short' : undefined,
     year: year ? 'numeric' : undefined,
