@@ -2,52 +2,87 @@
 Array.prototype.flat||Object.defineProperty(Array.prototype,"flat",{configurable:!0,value:function r(){var t=isNaN(arguments[0])?1:Number(arguments[0]);return t?Array.prototype.reduce.call(this,function(a,e){return Array.isArray(e)?a.push.apply(a,r.call(e,t-1)):a.push(e),a},[]):Array.prototype.slice.call(this)},writable:!0}),Array.prototype.flatMap||Object.defineProperty(Array.prototype,"flatMap",{configurable:!0,value:function(r){return Array.prototype.map.apply(this,arguments).flat()},writable:!0})
 
 },{}],2:[function(require,module,exports){
-// https://d3js.org/d3-array/ v2.4.0 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-array/ v2.12.1 Copyright 2021 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
-(global = global || self, factory(global.d3 = global.d3 || {}));
-}(this, function (exports) { 'use strict';
+(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
+}(this, (function (exports) { 'use strict';
 
 function ascending(a, b) {
   return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
 }
 
-function bisector(compare) {
-  if (compare.length === 1) compare = ascendingComparator(compare);
-  return {
-    left: function(a, x, lo, hi) {
-      if (lo == null) lo = 0;
-      if (hi == null) hi = a.length;
-      while (lo < hi) {
-        var mid = lo + hi >>> 1;
-        if (compare(a[mid], x) < 0) lo = mid + 1;
-        else hi = mid;
-      }
-      return lo;
-    },
-    right: function(a, x, lo, hi) {
-      if (lo == null) lo = 0;
-      if (hi == null) hi = a.length;
-      while (lo < hi) {
-        var mid = lo + hi >>> 1;
-        if (compare(a[mid], x) > 0) hi = mid;
-        else lo = mid + 1;
-      }
-      return lo;
+function bisector(f) {
+  let delta = f;
+  let compare = f;
+
+  if (f.length === 1) {
+    delta = (d, x) => f(d) - x;
+    compare = ascendingComparator(f);
+  }
+
+  function left(a, x, lo, hi) {
+    if (lo == null) lo = 0;
+    if (hi == null) hi = a.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (compare(a[mid], x) < 0) lo = mid + 1;
+      else hi = mid;
     }
-  };
+    return lo;
+  }
+
+  function right(a, x, lo, hi) {
+    if (lo == null) lo = 0;
+    if (hi == null) hi = a.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >>> 1;
+      if (compare(a[mid], x) > 0) hi = mid;
+      else lo = mid + 1;
+    }
+    return lo;
+  }
+
+  function center(a, x, lo, hi) {
+    if (lo == null) lo = 0;
+    if (hi == null) hi = a.length;
+    const i = left(a, x, lo, hi - 1);
+    return i > lo && delta(a[i - 1], x) > -delta(a[i], x) ? i - 1 : i;
+  }
+
+  return {left, center, right};
 }
 
 function ascendingComparator(f) {
-  return function(d, x) {
-    return ascending(f(d), x);
-  };
+  return (d, x) => ascending(f(d), x);
 }
 
-var ascendingBisect = bisector(ascending);
-var bisectRight = ascendingBisect.right;
-var bisectLeft = ascendingBisect.left;
+function number(x) {
+  return x === null ? NaN : +x;
+}
+
+function* numbers(values, valueof) {
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value != null && (value = +value) >= value) {
+        yield value;
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null && (value = +value) >= value) {
+        yield value;
+      }
+    }
+  }
+}
+
+const ascendingBisect = bisector(ascending);
+const bisectRight = ascendingBisect.right;
+const bisectLeft = ascendingBisect.left;
+const bisectCenter = bisector(number).center;
 
 function count(values, valueof) {
   let count = 0;
@@ -68,7 +103,7 @@ function count(values, valueof) {
   return count;
 }
 
-function length(array) {
+function length$1(array) {
   return array.length | 0;
 }
 
@@ -87,7 +122,7 @@ function reducer(reduce) {
 function cross(...values) {
   const reduce = typeof values[values.length - 1] === "function" && reducer(values.pop());
   values = values.map(arrayify);
-  const lengths = values.map(length);
+  const lengths = values.map(length$1);
   const j = values.length - 1;
   const index = new Array(j + 1).fill(0);
   const product = [];
@@ -174,6 +209,138 @@ function extent(values, valueof) {
   return [min, max];
 }
 
+// https://github.com/python/cpython/blob/a74eea238f5baba15797e2e8b570d153bc8690a7/Modules/mathmodule.c#L1423
+class Adder {
+  constructor() {
+    this._partials = new Float64Array(32);
+    this._n = 0;
+  }
+  add(x) {
+    const p = this._partials;
+    let i = 0;
+    for (let j = 0; j < this._n && j < 32; j++) {
+      const y = p[j],
+        hi = x + y,
+        lo = Math.abs(x) < Math.abs(y) ? x - (hi - y) : y - (hi - x);
+      if (lo) p[i++] = lo;
+      x = hi;
+    }
+    p[i] = x;
+    this._n = i + 1;
+    return this;
+  }
+  valueOf() {
+    const p = this._partials;
+    let n = this._n, x, y, lo, hi = 0;
+    if (n > 0) {
+      hi = p[--n];
+      while (n > 0) {
+        x = hi;
+        y = p[--n];
+        hi = x + y;
+        lo = y - (hi - x);
+        if (lo) break;
+      }
+      if (n > 0 && ((lo < 0 && p[n - 1] < 0) || (lo > 0 && p[n - 1] > 0))) {
+        y = lo * 2;
+        x = hi + y;
+        if (y == x - hi) hi = x;
+      }
+    }
+    return hi;
+  }
+}
+
+function fsum(values, valueof) {
+  const adder = new Adder();
+  if (valueof === undefined) {
+    for (let value of values) {
+      if (value = +value) {
+        adder.add(value);
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if (value = +valueof(value, ++index, values)) {
+        adder.add(value);
+      }
+    }
+  }
+  return +adder;
+}
+
+function fcumsum(values, valueof) {
+  const adder = new Adder();
+  let index = -1;
+  return Float64Array.from(values, valueof === undefined
+      ? v => adder.add(+v || 0)
+      : v => adder.add(+valueof(v, ++index, values) || 0)
+  );
+}
+
+class InternMap extends Map {
+  constructor(entries, key = keyof) {
+    super();
+    Object.defineProperties(this, {_intern: {value: new Map()}, _key: {value: key}});
+    if (entries != null) for (const [key, value] of entries) this.set(key, value);
+  }
+  get(key) {
+    return super.get(intern_get(this, key));
+  }
+  has(key) {
+    return super.has(intern_get(this, key));
+  }
+  set(key, value) {
+    return super.set(intern_set(this, key), value);
+  }
+  delete(key) {
+    return super.delete(intern_delete(this, key));
+  }
+}
+
+class InternSet extends Set {
+  constructor(values, key = keyof) {
+    super();
+    Object.defineProperties(this, {_intern: {value: new Map()}, _key: {value: key}});
+    if (values != null) for (const value of values) this.add(value);
+  }
+  has(value) {
+    return super.has(intern_get(this, value));
+  }
+  add(value) {
+    return super.add(intern_set(this, value));
+  }
+  delete(value) {
+    return super.delete(intern_delete(this, value));
+  }
+}
+
+function intern_get({_intern, _key}, value) {
+  const key = _key(value);
+  return _intern.has(key) ? _intern.get(key) : value;
+}
+
+function intern_set({_intern, _key}, value) {
+  const key = _key(value);
+  if (_intern.has(key)) return _intern.get(key);
+  _intern.set(key, value);
+  return value;
+}
+
+function intern_delete({_intern, _key}, value) {
+  const key = _key(value);
+  if (_intern.has(key)) {
+    value = _intern.get(value);
+    _intern.delete(key);
+  }
+  return value;
+}
+
+function keyof(value) {
+  return value !== null && typeof value === "object" ? value.valueOf() : value;
+}
+
 function identity(x) {
   return x;
 }
@@ -194,10 +361,23 @@ function rollups(values, reduce, ...keys) {
   return nest(values, Array.from, reduce, keys);
 }
 
+function index(values, ...keys) {
+  return nest(values, identity, unique, keys);
+}
+
+function indexes(values, ...keys) {
+  return nest(values, Array.from, unique, keys);
+}
+
+function unique(values) {
+  if (values.length !== 1) throw new Error("duplicate key");
+  return values[0];
+}
+
 function nest(values, map, reduce, keys) {
   return (function regroup(values, i) {
     if (i >= keys.length) return reduce(values);
-    const groups = new Map();
+    const groups = new InternMap();
     const keyof = keys[i++];
     let index = -1;
     for (const value of values) {
@@ -213,6 +393,40 @@ function nest(values, map, reduce, keys) {
   })(values, 0);
 }
 
+function permute(source, keys) {
+  return Array.from(keys, key => source[key]);
+}
+
+function sort(values, ...F) {
+  if (typeof values[Symbol.iterator] !== "function") throw new TypeError("values is not iterable");
+  values = Array.from(values);
+  let [f = ascending] = F;
+  if (f.length === 1 || F.length > 1) {
+    const index = Uint32Array.from(values, (d, i) => i);
+    if (F.length > 1) {
+      F = F.map(f => values.map(f));
+      index.sort((i, j) => {
+        for (const f of F) {
+          const c = ascending(f[i], f[j]);
+          if (c) return c;
+        }
+      });
+    } else {
+      f = values.map(f);
+      index.sort((i, j) => ascending(f[i], f[j]));
+    }
+    return permute(values, index);
+  }
+  return values.sort(f);
+}
+
+function groupSort(values, reduce, key) {
+  return (reduce.length === 1
+    ? sort(rollup(values, reduce, key), (([ak, av], [bk, bv]) => ascending(av, bv) || ascending(ak, bk)))
+    : sort(group(values, key), (([ak, av], [bk, bv]) => reduce(av, bv) || ascending(ak, bk))))
+    .map(([key]) => key);
+}
+
 var array = Array.prototype;
 
 var slice = array.slice;
@@ -221,20 +435,6 @@ function constant(x) {
   return function() {
     return x;
   };
-}
-
-function range(start, stop, step) {
-  start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
-
-  var i = -1,
-      n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
-      range = new Array(n);
-
-  while (++i < n) {
-    range[i] = start + i * step;
-  }
-
-  return range;
 }
 
 var e10 = Math.sqrt(50),
@@ -254,15 +454,18 @@ function ticks(start, stop, count) {
   if ((step = tickIncrement(start, stop, count)) === 0 || !isFinite(step)) return [];
 
   if (step > 0) {
-    start = Math.ceil(start / step);
-    stop = Math.floor(stop / step);
-    ticks = new Array(n = Math.ceil(stop - start + 1));
-    while (++i < n) ticks[i] = (start + i) * step;
+    let r0 = Math.round(start / step), r1 = Math.round(stop / step);
+    if (r0 * step < start) ++r0;
+    if (r1 * step > stop) --r1;
+    ticks = new Array(n = r1 - r0 + 1);
+    while (++i < n) ticks[i] = (r0 + i) * step;
   } else {
-    start = Math.floor(start * step);
-    stop = Math.ceil(stop * step);
-    ticks = new Array(n = Math.ceil(start - stop + 1));
-    while (++i < n) ticks[i] = (start - i) / step;
+    step = -step;
+    let r0 = Math.round(start * step), r1 = Math.round(stop * step);
+    if (r0 / step < start) ++r0;
+    if (r1 / step > stop) --r1;
+    ticks = new Array(n = r1 - r0 + 1);
+    while (++i < n) ticks[i] = (r0 + i) / step;
   }
 
   if (reverse) ticks.reverse();
@@ -287,6 +490,23 @@ function tickStep(start, stop, count) {
   else if (error >= e5) step1 *= 5;
   else if (error >= e2) step1 *= 2;
   return stop < start ? -step1 : step1;
+}
+
+function nice(start, stop, count) {
+  let prestep;
+  while (true) {
+    const step = tickIncrement(start, stop, count);
+    if (step === prestep || step === 0 || !isFinite(step)) {
+      return [start, stop];
+    } else if (step > 0) {
+      start = Math.floor(start / step) * step;
+      stop = Math.ceil(stop / step) * step;
+    } else if (step < 0) {
+      start = Math.ceil(start * step) / step;
+      stop = Math.floor(stop * step) / step;
+    }
+    prestep = step;
+  }
 }
 
 function sturges(values) {
@@ -315,10 +535,34 @@ function bin() {
         x1 = xz[1],
         tz = threshold(values, x0, x1);
 
-    // Convert number of thresholds into uniform thresholds.
+    // Convert number of thresholds into uniform thresholds, and nice the
+    // default domain accordingly.
     if (!Array.isArray(tz)) {
-      tz = tickStep(x0, x1, tz);
-      tz = range(Math.ceil(x0 / tz) * tz, x1, tz); // exclusive
+      const max = x1, tn = +tz;
+      if (domain === extent) [x0, x1] = nice(x0, x1, tn);
+      tz = ticks(x0, x1, tn);
+
+      // If the last threshold is coincident with the domain’s upper bound, the
+      // last bin will be zero-width. If the default domain is used, and this
+      // last threshold is coincident with the maximum input value, we can
+      // extend the niced upper bound by one tick to ensure uniform bin widths;
+      // otherwise, we simply remove the last threshold. Note that we don’t
+      // coerce values or the domain to numbers, and thus must be careful to
+      // compare order (>=) rather than strict equality (===)!
+      if (tz[tz.length - 1] >= x1) {
+        if (max >= x1 && domain === extent) {
+          const step = tickIncrement(x0, x1, tn);
+          if (isFinite(step)) {
+            if (step > 0) {
+              x1 = (Math.floor(x1 / step) + 1) * step;
+            } else if (step < 0) {
+              x1 = (Math.ceil(x1 * -step) + 1) / -step;
+            }
+          }
+        } else {
+          tz.pop();
+        }
+      }
     }
 
     // Remove any thresholds outside the domain.
@@ -445,27 +689,6 @@ function swap(array, i, j) {
   const t = array[i];
   array[i] = array[j];
   array[j] = t;
-}
-
-function number(x) {
-  return x === null ? NaN : +x;
-}
-
-function* numbers(values, valueof) {
-  if (valueof === undefined) {
-    for (let value of values) {
-      if (value != null && (value = +value) >= value) {
-        yield value;
-      }
-    }
-  } else {
-    let index = -1;
-    for (let value of values) {
-      if ((value = valueof(value, ++index, values)) != null && (value = +value) >= value) {
-        yield value;
-      }
-    }
-  }
 }
 
 function quantile(values, p, valueof) {
@@ -597,8 +820,18 @@ function pair(a, b) {
   return [a, b];
 }
 
-function permute(source, keys) {
-  return Array.from(keys, key => source[key]);
+function range(start, stop, step) {
+  start = +start, stop = +stop, step = (n = arguments.length) < 2 ? (stop = start, start = 0, 1) : n < 3 ? 1 : +step;
+
+  var i = -1,
+      n = Math.max(0, Math.ceil((stop - start) / step)) | 0,
+      range = new Array(n);
+
+  while (++i < n) {
+    range[i] = start + i * step;
+  }
+
+  return range;
 }
 
 function least(values, compare = ascending) {
@@ -696,19 +929,18 @@ function scan(values, compare) {
   return index < 0 ? undefined : index;
 }
 
-function shuffle(array, i0 = 0, i1 = array.length) {
-  var m = i1 - (i0 = +i0),
-      t,
-      i;
+var shuffle = shuffler(Math.random);
 
-  while (m) {
-    i = Math.random() * m-- | 0;
-    t = array[m + i0];
-    array[m + i0] = array[i + i0];
-    array[i + i0] = t;
-  }
-
-  return array;
+function shuffler(random) {
+  return function shuffle(array, i0 = 0, i1 = array.length) {
+    let m = i1 - (i0 = +i0);
+    while (m) {
+      const i = random() * m-- | 0, t = array[m + i0];
+      array[m + i0] = array[i + i0];
+      array[i + i0] = t;
+    }
+    return array;
+  };
 }
 
 function sum(values, valueof) {
@@ -732,7 +964,7 @@ function sum(values, valueof) {
 
 function transpose(matrix) {
   if (!(n = matrix.length)) return [];
-  for (var i = -1, m = min(matrix, length$1), transpose = new Array(m); ++i < m;) {
+  for (var i = -1, m = min(matrix, length), transpose = new Array(m); ++i < m;) {
     for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n;) {
       row[j] = matrix[j][i];
     }
@@ -740,7 +972,7 @@ function transpose(matrix) {
   return transpose;
 }
 
-function length$1(d) {
+function length(d) {
   return d.length;
 }
 
@@ -748,9 +980,143 @@ function zip() {
   return transpose(arguments);
 }
 
+function every(values, test) {
+  if (typeof test !== "function") throw new TypeError("test is not a function");
+  let index = -1;
+  for (const value of values) {
+    if (!test(value, ++index, values)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function some(values, test) {
+  if (typeof test !== "function") throw new TypeError("test is not a function");
+  let index = -1;
+  for (const value of values) {
+    if (test(value, ++index, values)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function filter(values, test) {
+  if (typeof test !== "function") throw new TypeError("test is not a function");
+  const array = [];
+  let index = -1;
+  for (const value of values) {
+    if (test(value, ++index, values)) {
+      array.push(value);
+    }
+  }
+  return array;
+}
+
+function map(values, mapper) {
+  if (typeof values[Symbol.iterator] !== "function") throw new TypeError("values is not iterable");
+  if (typeof mapper !== "function") throw new TypeError("mapper is not a function");
+  return Array.from(values, (value, index) => mapper(value, index, values));
+}
+
+function reduce(values, reducer, value) {
+  if (typeof reducer !== "function") throw new TypeError("reducer is not a function");
+  const iterator = values[Symbol.iterator]();
+  let done, next, index = -1;
+  if (arguments.length < 3) {
+    ({done, value} = iterator.next());
+    if (done) return;
+    ++index;
+  }
+  while (({done, value: next} = iterator.next()), !done) {
+    value = reducer(value, next, ++index, values);
+  }
+  return value;
+}
+
+function reverse(values) {
+  if (typeof values[Symbol.iterator] !== "function") throw new TypeError("values is not iterable");
+  return Array.from(values).reverse();
+}
+
+function difference(values, ...others) {
+  values = new Set(values);
+  for (const other of others) {
+    for (const value of other) {
+      values.delete(value);
+    }
+  }
+  return values;
+}
+
+function disjoint(values, other) {
+  const iterator = other[Symbol.iterator](), set = new Set();
+  for (const v of values) {
+    if (set.has(v)) return false;
+    let value, done;
+    while (({value, done} = iterator.next())) {
+      if (done) break;
+      if (Object.is(v, value)) return false;
+      set.add(value);
+    }
+  }
+  return true;
+}
+
+function set(values) {
+  return values instanceof Set ? values : new Set(values);
+}
+
+function intersection(values, ...others) {
+  values = new Set(values);
+  others = others.map(set);
+  out: for (const value of values) {
+    for (const other of others) {
+      if (!other.has(value)) {
+        values.delete(value);
+        continue out;
+      }
+    }
+  }
+  return values;
+}
+
+function superset(values, other) {
+  const iterator = values[Symbol.iterator](), set = new Set();
+  for (const o of other) {
+    if (set.has(o)) continue;
+    let value, done;
+    while (({value, done} = iterator.next())) {
+      if (done) return false;
+      set.add(value);
+      if (Object.is(o, value)) break;
+    }
+  }
+  return true;
+}
+
+function subset(values, other) {
+  return superset(other, values);
+}
+
+function union(...others) {
+  const set = new Set();
+  for (const other of others) {
+    for (const o of other) {
+      set.add(o);
+    }
+  }
+  return set;
+}
+
+exports.Adder = Adder;
+exports.InternMap = InternMap;
+exports.InternSet = InternSet;
 exports.ascending = ascending;
 exports.bin = bin;
 exports.bisect = bisectRight;
+exports.bisectCenter = bisectCenter;
 exports.bisectLeft = bisectLeft;
 exports.bisectRight = bisectRight;
 exports.bisector = bisector;
@@ -759,14 +1125,25 @@ exports.cross = cross;
 exports.cumsum = cumsum;
 exports.descending = descending;
 exports.deviation = deviation;
+exports.difference = difference;
+exports.disjoint = disjoint;
+exports.every = every;
 exports.extent = extent;
+exports.fcumsum = fcumsum;
+exports.filter = filter;
+exports.fsum = fsum;
 exports.greatest = greatest;
 exports.greatestIndex = greatestIndex;
 exports.group = group;
+exports.groupSort = groupSort;
 exports.groups = groups;
 exports.histogram = bin;
+exports.index = index;
+exports.indexes = indexes;
+exports.intersection = intersection;
 exports.least = least;
 exports.leastIndex = leastIndex;
+exports.map = map;
 exports.max = max;
 exports.maxIndex = maxIndex;
 exports.mean = mean;
@@ -774,17 +1151,25 @@ exports.median = median;
 exports.merge = merge;
 exports.min = min;
 exports.minIndex = minIndex;
+exports.nice = nice;
 exports.pairs = pairs;
 exports.permute = permute;
 exports.quantile = quantile;
 exports.quantileSorted = quantileSorted;
 exports.quickselect = quickselect;
 exports.range = range;
+exports.reduce = reduce;
+exports.reverse = reverse;
 exports.rollup = rollup;
 exports.rollups = rollups;
 exports.scan = scan;
 exports.shuffle = shuffle;
+exports.shuffler = shuffler;
+exports.some = some;
+exports.sort = sort;
+exports.subset = subset;
 exports.sum = sum;
+exports.superset = superset;
 exports.thresholdFreedmanDiaconis = freedmanDiaconis;
 exports.thresholdScott = scott;
 exports.thresholdSturges = sturges;
@@ -792,15 +1177,16 @@ exports.tickIncrement = tickIncrement;
 exports.tickStep = tickStep;
 exports.ticks = ticks;
 exports.transpose = transpose;
+exports.union = union;
 exports.variance = variance;
 exports.zip = zip;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
 
 },{}],3:[function(require,module,exports){
-// https://d3js.org/d3-color/ v1.4.1 Copyright 2020 Mike Bostock
+// https://d3js.org/d3-color/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -1188,11 +1574,11 @@ function hsl2rgb(h, m1, m2) {
       : m1) * 255;
 }
 
-var deg2rad = Math.PI / 180;
-var rad2deg = 180 / Math.PI;
+const radians = Math.PI / 180;
+const degrees = 180 / Math.PI;
 
 // https://observablehq.com/@mbostock/lab-and-rgb
-var K = 18,
+const K = 18,
     Xn = 0.96422,
     Yn = 1,
     Zn = 0.82521,
@@ -1274,7 +1660,7 @@ function hclConvert(o) {
   if (o instanceof Hcl) return new Hcl(o.h, o.c, o.l, o.opacity);
   if (!(o instanceof Lab)) o = labConvert(o);
   if (o.a === 0 && o.b === 0) return new Hcl(NaN, 0 < o.l && o.l < 100 ? 0 : NaN, o.l, o.opacity);
-  var h = Math.atan2(o.b, o.a) * rad2deg;
+  var h = Math.atan2(o.b, o.a) * degrees;
   return new Hcl(h < 0 ? h + 360 : h, Math.sqrt(o.a * o.a + o.b * o.b), o.l, o.opacity);
 }
 
@@ -1295,7 +1681,7 @@ function Hcl(h, c, l, opacity) {
 
 function hcl2lab(o) {
   if (isNaN(o.h)) return new Lab(o.l, 0, 0, o.opacity);
-  var h = o.h * deg2rad;
+  var h = o.h * radians;
   return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
 }
 
@@ -1330,7 +1716,7 @@ function cubehelixConvert(o) {
       bl = b - l,
       k = (E * (g - l) - C * bl) / D,
       s = Math.sqrt(k * k + bl * bl) / (E * l * (1 - l)), // NaN if l=0 or l=1
-      h = s ? Math.atan2(k, bl) * rad2deg - 120 : NaN;
+      h = s ? Math.atan2(k, bl) * degrees - 120 : NaN;
   return new Cubehelix(h < 0 ? h + 360 : h, s, l, o.opacity);
 }
 
@@ -1355,7 +1741,7 @@ define(Cubehelix, cubehelix, extend(Color, {
     return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
   },
   rgb: function() {
-    var h = isNaN(this.h) ? 0 : (this.h + 120) * deg2rad,
+    var h = isNaN(this.h) ? 0 : (this.h + 120) * radians,
         l = +this.l,
         a = isNaN(this.s) ? 0 : this.s * l * (1 - l),
         cosh = Math.cos(h),
@@ -1383,14 +1769,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }));
 
 },{}],4:[function(require,module,exports){
-// https://d3js.org/d3-dispatch/ v1.0.6 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-dispatch/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
 (global = global || self, factory(global.d3 = global.d3 || {}));
 }(this, function (exports) { 'use strict';
 
-var noop = {value: function() {}};
+var noop = {value: () => {}};
 
 function dispatch() {
   for (var i = 0, n = arguments.length, _ = {}, t; i < n; ++i) {
@@ -1480,16 +1866,14 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }));
 
 },{}],5:[function(require,module,exports){
-// https://d3js.org/d3-ease/ v1.0.6 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-ease/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
 (global = global || self, factory(global.d3 = global.d3 || {}));
 }(this, function (exports) { 'use strict';
 
-function linear(t) {
-  return +t;
-}
+const linear = t => +t;
 
 function quadIn(t) {
   return t * t;
@@ -1557,7 +1941,7 @@ var pi = Math.PI,
     halfPi = pi / 2;
 
 function sinIn(t) {
-  return 1 - Math.cos(t * halfPi);
+  return (+t === 1) ? 1 : 1 - Math.cos(t * halfPi);
 }
 
 function sinOut(t) {
@@ -1568,16 +1952,21 @@ function sinInOut(t) {
   return (1 - Math.cos(pi * t)) / 2;
 }
 
+// tpmt is two power minus ten times t scaled to [0,1]
+function tpmt(x) {
+  return (Math.pow(2, -10 * x) - 0.0009765625) * 1.0009775171065494;
+}
+
 function expIn(t) {
-  return Math.pow(2, 10 * t - 10);
+  return tpmt(1 - +t);
 }
 
 function expOut(t) {
-  return 1 - Math.pow(2, -10 * t);
+  return 1 - tpmt(t);
 }
 
 function expInOut(t) {
-  return ((t *= 2) <= 1 ? Math.pow(2, 10 * t - 10) : 2 - Math.pow(2, 10 - 10 * t)) / 2;
+  return ((t *= 2) <= 1 ? tpmt(1 - t) : 2 - tpmt(t - 1)) / 2;
 }
 
 function circleIn(t) {
@@ -1621,7 +2010,7 @@ var backIn = (function custom(s) {
   s = +s;
 
   function backIn(t) {
-    return t * t * ((s + 1) * t - s);
+    return (t = +t) * t * (s * (t - 1) + t);
   }
 
   backIn.overshoot = custom;
@@ -1633,7 +2022,7 @@ var backOut = (function custom(s) {
   s = +s;
 
   function backOut(t) {
-    return --t * t * ((s + 1) * t + s) + 1;
+    return --t * t * ((t + 1) * s + t) + 1;
   }
 
   backOut.overshoot = custom;
@@ -1661,7 +2050,7 @@ var elasticIn = (function custom(a, p) {
   var s = Math.asin(1 / (a = Math.max(1, a))) * (p /= tau);
 
   function elasticIn(t) {
-    return a * Math.pow(2, 10 * --t) * Math.sin((s - t) / p);
+    return a * tpmt(-(--t)) * Math.sin((s - t) / p);
   }
 
   elasticIn.amplitude = function(a) { return custom(a, p * tau); };
@@ -1674,7 +2063,7 @@ var elasticOut = (function custom(a, p) {
   var s = Math.asin(1 / (a = Math.max(1, a))) * (p /= tau);
 
   function elasticOut(t) {
-    return 1 - a * Math.pow(2, -10 * (t = +t)) * Math.sin((t + s) / p);
+    return 1 - a * tpmt(t = +t) * Math.sin((t + s) / p);
   }
 
   elasticOut.amplitude = function(a) { return custom(a, p * tau); };
@@ -1688,8 +2077,8 @@ var elasticInOut = (function custom(a, p) {
 
   function elasticInOut(t) {
     return ((t = t * 2 - 1) < 0
-        ? a * Math.pow(2, 10 * t) * Math.sin((s - t) / p)
-        : 2 - a * Math.pow(2, -10 * t) * Math.sin((s + t) / p)) / 2;
+        ? a * tpmt(-t) * Math.sin((s - t) / p)
+        : 2 - a * tpmt(t) * Math.sin((s + t) / p)) / 2;
   }
 
   elasticInOut.amplitude = function(a) { return custom(a, p * tau); };
@@ -2536,7 +2925,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 },{}],7:[function(require,module,exports){
-// https://d3js.org/d3-hierarchy/ v1.1.9 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-hierarchy/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -2641,43 +3030,50 @@ function node_count() {
   return this.eachAfter(count);
 }
 
-function node_each(callback) {
-  var node = this, current, next = [node], children, i, n;
-  do {
-    current = next.reverse(), next = [];
-    while (node = current.pop()) {
-      callback(node), children = node.children;
-      if (children) for (i = 0, n = children.length; i < n; ++i) {
-        next.push(children[i]);
-      }
-    }
-  } while (next.length);
+function node_each(callback, that) {
+  let index = -1;
+  for (const node of this) {
+    callback.call(that, node, ++index, this);
+  }
   return this;
 }
 
-function node_eachBefore(callback) {
-  var node = this, nodes = [node], children, i;
+function node_eachBefore(callback, that) {
+  var node = this, nodes = [node], children, i, index = -1;
   while (node = nodes.pop()) {
-    callback(node), children = node.children;
-    if (children) for (i = children.length - 1; i >= 0; --i) {
-      nodes.push(children[i]);
+    callback.call(that, node, ++index, this);
+    if (children = node.children) {
+      for (i = children.length - 1; i >= 0; --i) {
+        nodes.push(children[i]);
+      }
     }
   }
   return this;
 }
 
-function node_eachAfter(callback) {
-  var node = this, nodes = [node], next = [], children, i, n;
+function node_eachAfter(callback, that) {
+  var node = this, nodes = [node], next = [], children, i, n, index = -1;
   while (node = nodes.pop()) {
-    next.push(node), children = node.children;
-    if (children) for (i = 0, n = children.length; i < n; ++i) {
-      nodes.push(children[i]);
+    next.push(node);
+    if (children = node.children) {
+      for (i = 0, n = children.length; i < n; ++i) {
+        nodes.push(children[i]);
+      }
     }
   }
   while (node = next.pop()) {
-    callback(node);
+    callback.call(that, node, ++index, this);
   }
   return this;
+}
+
+function node_find(callback, that) {
+  let index = -1;
+  for (const node of this) {
+    if (callback.call(that, node, ++index, this)) {
+      return node;
+    }
+  }
 }
 
 function node_sum(value) {
@@ -2738,11 +3134,7 @@ function node_ancestors() {
 }
 
 function node_descendants() {
-  var nodes = [];
-  this.each(function(node) {
-    nodes.push(node);
-  });
-  return nodes;
+  return Array.from(this);
 }
 
 function node_leaves() {
@@ -2765,9 +3157,30 @@ function node_links() {
   return links;
 }
 
+function* node_iterator() {
+  var node = this, current, next = [node], children, i, n;
+  do {
+    current = next.reverse(), next = [];
+    while (node = current.pop()) {
+      yield node;
+      if (children = node.children) {
+        for (i = 0, n = children.length; i < n; ++i) {
+          next.push(children[i]);
+        }
+      }
+    }
+  } while (next.length);
+}
+
 function hierarchy(data, children) {
+  if (data instanceof Map) {
+    data = [undefined, data];
+    if (children === undefined) children = mapChildren;
+  } else if (children === undefined) {
+    children = objectChildren;
+  }
+
   var root = new Node(data),
-      valued = +data.value && (root.value = data.value),
       node,
       nodes = [root],
       child,
@@ -2775,14 +3188,11 @@ function hierarchy(data, children) {
       i,
       n;
 
-  if (children == null) children = defaultChildren;
-
   while (node = nodes.pop()) {
-    if (valued) node.value = +node.data.value;
-    if ((childs = children(node.data)) && (n = childs.length)) {
-      node.children = new Array(n);
+    if ((childs = children(node.data)) && (n = (childs = Array.from(childs)).length)) {
+      node.children = childs;
       for (i = n - 1; i >= 0; --i) {
-        nodes.push(child = node.children[i] = new Node(childs[i]));
+        nodes.push(child = childs[i] = new Node(childs[i]));
         child.parent = node;
         child.depth = node.depth + 1;
       }
@@ -2796,11 +3206,16 @@ function node_copy() {
   return hierarchy(this).eachBefore(copyData);
 }
 
-function defaultChildren(d) {
+function objectChildren(d) {
   return d.children;
 }
 
+function mapChildren(d) {
+  return Array.isArray(d) ? d[1] : null;
+}
+
 function copyData(node) {
+  if (node.data.value !== undefined) node.value = node.data.value;
   node.data = node.data.data;
 }
 
@@ -2823,6 +3238,7 @@ Node.prototype = hierarchy.prototype = {
   each: node_each,
   eachAfter: node_eachAfter,
   eachBefore: node_eachBefore,
+  find: node_find,
   sum: node_sum,
   sort: node_sort,
   path: node_path,
@@ -2830,10 +3246,15 @@ Node.prototype = hierarchy.prototype = {
   descendants: node_descendants,
   leaves: node_leaves,
   links: node_links,
-  copy: node_copy
+  copy: node_copy,
+  [Symbol.iterator]: node_iterator
 };
 
-var slice = Array.prototype.slice;
+function array(x) {
+  return typeof x === "object" && "length" in x
+    ? x // Array, TypedArray, NodeList, array-like
+    : Array.from(x); // Map, Set, iterable, string, or anything else
+}
 
 function shuffle(array) {
   var m = array.length,
@@ -2851,7 +3272,7 @@ function shuffle(array) {
 }
 
 function enclose(circles) {
-  var i = 0, n = (circles = shuffle(slice.call(circles))).length, B = [], p, e;
+  var i = 0, n = (circles = shuffle(Array.from(circles))).length, B = [], p, e;
 
   while (i < n) {
     p = circles[i];
@@ -2897,7 +3318,7 @@ function enclosesNot(a, b) {
 }
 
 function enclosesWeak(a, b) {
-  var dr = a.r - b.r + 1e-6, dx = b.x - a.x, dy = b.y - a.y;
+  var dr = a.r - b.r + Math.max(a.r, b.r, 1) * 1e-9, dx = b.x - a.x, dy = b.y - a.y;
   return dr > 0 && dr * dr > dx * dx + dy * dy;
 }
 
@@ -3012,7 +3433,7 @@ function Node$1(circle) {
 }
 
 function packEnclose(circles) {
-  if (!(n = circles.length)) return 0;
+  if (!(n = (circles = array(circles)).length)) return 0;
 
   var a, b, c, n, aa, ca, i, j, k, sj, sk;
 
@@ -3249,8 +3670,7 @@ function partition() {
   return partition;
 }
 
-var keyPrefix = "$", // Protect against keys like “__proto__”.
-    preroot = {depth: -1},
+var preroot = {depth: -1},
     ambiguous = {};
 
 function defaultId(d) {
@@ -3266,37 +3686,40 @@ function stratify() {
       parentId = defaultParentId;
 
   function stratify(data) {
-    var d,
+    var nodes = Array.from(data),
+        n = nodes.length,
+        d,
         i,
-        n = data.length,
         root,
         parent,
         node,
-        nodes = new Array(n),
         nodeId,
         nodeKey,
-        nodeByKey = {};
+        nodeByKey = new Map;
 
     for (i = 0; i < n; ++i) {
-      d = data[i], node = nodes[i] = new Node(d);
+      d = nodes[i], node = nodes[i] = new Node(d);
       if ((nodeId = id(d, i, data)) != null && (nodeId += "")) {
-        nodeKey = keyPrefix + (node.id = nodeId);
-        nodeByKey[nodeKey] = nodeKey in nodeByKey ? ambiguous : node;
+        nodeKey = node.id = nodeId;
+        nodeByKey.set(nodeKey, nodeByKey.has(nodeKey) ? ambiguous : node);
+      }
+      if ((nodeId = parentId(d, i, data)) != null && (nodeId += "")) {
+        node.parent = nodeId;
       }
     }
 
     for (i = 0; i < n; ++i) {
-      node = nodes[i], nodeId = parentId(data[i], i, data);
-      if (nodeId == null || !(nodeId += "")) {
-        if (root) throw new Error("multiple roots");
-        root = node;
-      } else {
-        parent = nodeByKey[keyPrefix + nodeId];
+      node = nodes[i];
+      if (nodeId = node.parent) {
+        parent = nodeByKey.get(nodeId);
         if (!parent) throw new Error("missing: " + nodeId);
         if (parent === ambiguous) throw new Error("ambiguous: " + nodeId);
         if (parent.children) parent.children.push(node);
         else parent.children = [node];
         node.parent = parent;
+      } else {
+        if (root) throw new Error("multiple roots");
+        root = node;
       }
     }
 
@@ -3759,11 +4182,11 @@ function binary(parent, x0, y0, x1, y1) {
         valueRight = value - valueLeft;
 
     if ((x1 - x0) > (y1 - y0)) {
-      var xk = (x0 * valueRight + x1 * valueLeft) / value;
+      var xk = value ? (x0 * valueRight + x1 * valueLeft) / value : x1;
       partition(i, k, valueLeft, x0, y0, xk, y1);
       partition(k, j, valueRight, xk, y0, x1, y1);
     } else {
-      var yk = (y0 * valueRight + y1 * valueLeft) / value;
+      var yk = value ? (y0 * valueRight + y1 * valueLeft) / value : y1;
       partition(i, k, valueLeft, x0, y0, x1, yk);
       partition(k, j, valueRight, x0, yk, x1, y1);
     }
@@ -3790,8 +4213,8 @@ var resquarify = (function custom(ratio) {
       while (++j < m) {
         row = rows[j], nodes = row.children;
         for (i = row.value = 0, n = nodes.length; i < n; ++i) row.value += nodes[i].value;
-        if (row.dice) treemapDice(row, x0, y0, x1, y0 += (y1 - y0) * row.value / value);
-        else treemapSlice(row, x0, y0, x0 += (x1 - x0) * row.value / value, y1);
+        if (row.dice) treemapDice(row, x0, y0, x1, value ? y0 += (y1 - y0) * row.value / value : y1);
+        else treemapSlice(row, x0, y0, value ? x0 += (x1 - x0) * row.value / value : x1, y1);
         value -= row.value;
       }
     } else {
@@ -3828,7 +4251,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }));
 
 },{}],8:[function(require,module,exports){
-// https://d3js.org/d3-interpolate/ v1.4.0 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-interpolate/ v2.0.1 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-color')) :
 typeof define === 'function' && define.amd ? define(['exports', 'd3-color'], factory) :
@@ -3867,11 +4290,7 @@ function basisClosed(values) {
   };
 }
 
-function constant(x) {
-  return function() {
-    return x;
-  };
-}
+var constant = x => () => x;
 
 function linear(a, d) {
   return function(t) {
@@ -4146,19 +4565,12 @@ function decompose(a, b, c, d, e, f) {
   };
 }
 
-var cssNode,
-    cssRoot,
-    cssView,
-    svgNode;
+var svgNode;
 
+/* eslint-disable no-undef */
 function parseCss(value) {
-  if (value === "none") return identity;
-  if (!cssNode) cssNode = document.createElement("DIV"), cssRoot = document.documentElement, cssView = document.defaultView;
-  cssNode.style.transform = value;
-  value = cssView.getComputedStyle(cssRoot.appendChild(cssNode), null).getPropertyValue("transform");
-  cssRoot.removeChild(cssNode);
-  value = value.slice(7, -1).split(",");
-  return decompose(+value[0], +value[1], +value[2], +value[3], +value[4], +value[5]);
+  const m = new (typeof DOMMatrix === "function" ? DOMMatrix : WebKitCSSMatrix)(value + "");
+  return m.isIdentity ? identity : decompose(m.a, m.b, m.c, m.d, m.e, m.f);
 }
 
 function parseSvg(value) {
@@ -4231,10 +4643,7 @@ function interpolateTransform(parse, pxComma, pxParen, degParen) {
 var interpolateTransformCss = interpolateTransform(parseCss, "px, ", "px)", "deg)");
 var interpolateTransformSvg = interpolateTransform(parseSvg, ", ", ")", ")");
 
-var rho = Math.SQRT2,
-    rho2 = 2,
-    rho4 = 4,
-    epsilon2 = 1e-12;
+var epsilon2 = 1e-12;
 
 function cosh(x) {
   return ((x = Math.exp(x)) + 1 / x) / 2;
@@ -4248,53 +4657,63 @@ function tanh(x) {
   return ((x = Math.exp(2 * x)) - 1) / (x + 1);
 }
 
-// p0 = [ux0, uy0, w0]
-// p1 = [ux1, uy1, w1]
-function zoom(p0, p1) {
-  var ux0 = p0[0], uy0 = p0[1], w0 = p0[2],
-      ux1 = p1[0], uy1 = p1[1], w1 = p1[2],
-      dx = ux1 - ux0,
-      dy = uy1 - uy0,
-      d2 = dx * dx + dy * dy,
-      i,
-      S;
+var zoom = (function zoomRho(rho, rho2, rho4) {
 
-  // Special case for u0 ≅ u1.
-  if (d2 < epsilon2) {
-    S = Math.log(w1 / w0) / rho;
-    i = function(t) {
-      return [
-        ux0 + t * dx,
-        uy0 + t * dy,
-        w0 * Math.exp(rho * t * S)
-      ];
-    };
+  // p0 = [ux0, uy0, w0]
+  // p1 = [ux1, uy1, w1]
+  function zoom(p0, p1) {
+    var ux0 = p0[0], uy0 = p0[1], w0 = p0[2],
+        ux1 = p1[0], uy1 = p1[1], w1 = p1[2],
+        dx = ux1 - ux0,
+        dy = uy1 - uy0,
+        d2 = dx * dx + dy * dy,
+        i,
+        S;
+
+    // Special case for u0 ≅ u1.
+    if (d2 < epsilon2) {
+      S = Math.log(w1 / w0) / rho;
+      i = function(t) {
+        return [
+          ux0 + t * dx,
+          uy0 + t * dy,
+          w0 * Math.exp(rho * t * S)
+        ];
+      };
+    }
+
+    // General case.
+    else {
+      var d1 = Math.sqrt(d2),
+          b0 = (w1 * w1 - w0 * w0 + rho4 * d2) / (2 * w0 * rho2 * d1),
+          b1 = (w1 * w1 - w0 * w0 - rho4 * d2) / (2 * w1 * rho2 * d1),
+          r0 = Math.log(Math.sqrt(b0 * b0 + 1) - b0),
+          r1 = Math.log(Math.sqrt(b1 * b1 + 1) - b1);
+      S = (r1 - r0) / rho;
+      i = function(t) {
+        var s = t * S,
+            coshr0 = cosh(r0),
+            u = w0 / (rho2 * d1) * (coshr0 * tanh(rho * s + r0) - sinh(r0));
+        return [
+          ux0 + u * dx,
+          uy0 + u * dy,
+          w0 * coshr0 / cosh(rho * s + r0)
+        ];
+      };
+    }
+
+    i.duration = S * 1000 * rho / Math.SQRT2;
+
+    return i;
   }
 
-  // General case.
-  else {
-    var d1 = Math.sqrt(d2),
-        b0 = (w1 * w1 - w0 * w0 + rho4 * d2) / (2 * w0 * rho2 * d1),
-        b1 = (w1 * w1 - w0 * w0 - rho4 * d2) / (2 * w1 * rho2 * d1),
-        r0 = Math.log(Math.sqrt(b0 * b0 + 1) - b0),
-        r1 = Math.log(Math.sqrt(b1 * b1 + 1) - b1);
-    S = (r1 - r0) / rho;
-    i = function(t) {
-      var s = t * S,
-          coshr0 = cosh(r0),
-          u = w0 / (rho2 * d1) * (coshr0 * tanh(rho * s + r0) - sinh(r0));
-      return [
-        ux0 + u * dx,
-        uy0 + u * dy,
-        w0 * coshr0 / cosh(rho * s + r0)
-      ];
-    };
-  }
+  zoom.rho = function(_) {
+    var _1 = Math.max(1e-3, +_), _2 = _1 * _1, _4 = _2 * _2;
+    return zoomRho(_1, _2, _4);
+  };
 
-  i.duration = S * 1000;
-
-  return i;
-}
+  return zoom;
+})(Math.SQRT2, 2, 4);
 
 function hsl(hue) {
   return function(start, end) {
@@ -4376,6 +4795,7 @@ var cubehelix$1 = cubehelix(hue);
 var cubehelixLong = cubehelix(nogamma);
 
 function piecewise(interpolate, values) {
+  if (values === undefined) values = interpolate, interpolate = value;
   var i = 0, n = values.length - 1, v = values[0], I = new Array(n < 0 ? 0 : n);
   while (i < n) I[i] = interpolate(v, v = values[++i]);
   return function(t) {
@@ -4423,7 +4843,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }));
 
 },{"d3-color":3}],9:[function(require,module,exports){
-// https://d3js.org/d3-selection/ v1.4.1 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-selection/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -4443,7 +4863,7 @@ var namespaces = {
 function namespace(name) {
   var prefix = name += "", i = prefix.indexOf(":");
   if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
-  return namespaces.hasOwnProperty(prefix) ? {space: namespaces[prefix], local: name} : name;
+  return namespaces.hasOwnProperty(prefix) ? {space: namespaces[prefix], local: name} : name; // eslint-disable-line no-prototype-builtins
 }
 
 function creatorInherit(name) {
@@ -4492,6 +4912,12 @@ function selection_select(select) {
   return new Selection(subgroups, this._parents);
 }
 
+function array(x) {
+  return typeof x === "object" && "length" in x
+    ? x // Array, TypedArray, NodeList, array-like
+    : Array.from(x); // Map, Set, iterable, string, or anything else
+}
+
 function empty() {
   return [];
 }
@@ -4502,8 +4928,16 @@ function selectorAll(selector) {
   };
 }
 
+function arrayAll(select) {
+  return function() {
+    var group = select.apply(this, arguments);
+    return group == null ? [] : array(group);
+  };
+}
+
 function selection_selectAll(select) {
-  if (typeof select !== "function") select = selectorAll(select);
+  if (typeof select === "function") select = arrayAll(select);
+  else select = selectorAll(select);
 
   for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
     for (var group = groups[j], n = group.length, node, i = 0; i < n; ++i) {
@@ -4521,6 +4955,46 @@ function matcher(selector) {
   return function() {
     return this.matches(selector);
   };
+}
+
+function childMatcher(selector) {
+  return function(node) {
+    return node.matches(selector);
+  };
+}
+
+var find = Array.prototype.find;
+
+function childFind(match) {
+  return function() {
+    return find.call(this.children, match);
+  };
+}
+
+function childFirst() {
+  return this.firstElementChild;
+}
+
+function selection_selectChild(match) {
+  return this.select(match == null ? childFirst
+      : childFind(typeof match === "function" ? match : childMatcher(match)));
+}
+
+var filter = Array.prototype.filter;
+
+function children() {
+  return this.children;
+}
+
+function childrenFilter(match) {
+  return function() {
+    return filter.call(this.children, match);
+  };
+}
+
+function selection_selectChildren(match) {
+  return this.selectAll(match == null ? children
+      : childrenFilter(typeof match === "function" ? match : childMatcher(match)));
 }
 
 function selection_filter(match) {
@@ -4567,8 +5041,6 @@ function constant(x) {
   };
 }
 
-var keyPrefix = "$"; // Protect against keys like “__proto__”.
-
 function bindIndex(parent, group, enter, update, exit, data) {
   var i = 0,
       node,
@@ -4598,7 +5070,7 @@ function bindIndex(parent, group, enter, update, exit, data) {
 function bindKey(parent, group, enter, update, exit, data, key) {
   var i,
       node,
-      nodeByKeyValue = {},
+      nodeByKeyValue = new Map,
       groupLength = group.length,
       dataLength = data.length,
       keyValues = new Array(groupLength),
@@ -4608,11 +5080,11 @@ function bindKey(parent, group, enter, update, exit, data, key) {
   // If multiple nodes have the same key, the duplicates are added to exit.
   for (i = 0; i < groupLength; ++i) {
     if (node = group[i]) {
-      keyValues[i] = keyValue = keyPrefix + key.call(node, node.__data__, i, group);
-      if (keyValue in nodeByKeyValue) {
+      keyValues[i] = keyValue = key.call(node, node.__data__, i, group) + "";
+      if (nodeByKeyValue.has(keyValue)) {
         exit[i] = node;
       } else {
-        nodeByKeyValue[keyValue] = node;
+        nodeByKeyValue.set(keyValue, node);
       }
     }
   }
@@ -4621,11 +5093,11 @@ function bindKey(parent, group, enter, update, exit, data, key) {
   // If there a node associated with this key, join and add it to update.
   // If there is not (or the key is a duplicate), add it to enter.
   for (i = 0; i < dataLength; ++i) {
-    keyValue = keyPrefix + key.call(parent, data[i], i, data);
-    if (node = nodeByKeyValue[keyValue]) {
+    keyValue = key.call(parent, data[i], i, data) + "";
+    if (node = nodeByKeyValue.get(keyValue)) {
       update[i] = node;
       node.__data__ = data[i];
-      nodeByKeyValue[keyValue] = null;
+      nodeByKeyValue.delete(keyValue);
     } else {
       enter[i] = new EnterNode(parent, data[i]);
     }
@@ -4633,18 +5105,18 @@ function bindKey(parent, group, enter, update, exit, data, key) {
 
   // Add any remaining nodes that were not bound to data to exit.
   for (i = 0; i < groupLength; ++i) {
-    if ((node = group[i]) && (nodeByKeyValue[keyValues[i]] === node)) {
+    if ((node = group[i]) && (nodeByKeyValue.get(keyValues[i]) === node)) {
       exit[i] = node;
     }
   }
 }
 
+function datum(node) {
+  return node.__data__;
+}
+
 function selection_data(value, key) {
-  if (!value) {
-    data = new Array(this.size()), j = -1;
-    this.each(function(d) { data[++j] = d; });
-    return data;
-  }
+  if (!arguments.length) return Array.from(this, datum);
 
   var bind = key ? bindKey : bindIndex,
       parents = this._parents,
@@ -4656,7 +5128,7 @@ function selection_data(value, key) {
     var parent = parents[j],
         group = groups[j],
         groupLength = group.length,
-        data = value.call(parent, parent && parent.__data__, j, parents),
+        data = array(value.call(parent, parent && parent.__data__, j, parents)),
         dataLength = data.length,
         enterGroup = enter[j] = new Array(dataLength),
         updateGroup = update[j] = new Array(dataLength),
@@ -4695,6 +5167,7 @@ function selection_join(onenter, onupdate, onexit) {
 }
 
 function selection_merge(selection) {
+  if (!(selection instanceof Selection)) throw new Error("invalid merge");
 
   for (var groups0 = this._groups, groups1 = selection._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
     for (var group0 = groups0[j], group1 = groups1[j], n = group0.length, merge = merges[j] = new Array(n), node, i = 0; i < n; ++i) {
@@ -4756,9 +5229,7 @@ function selection_call() {
 }
 
 function selection_nodes() {
-  var nodes = new Array(this.size()), i = -1;
-  this.each(function() { nodes[++i] = this; });
-  return nodes;
+  return Array.from(this);
 }
 
 function selection_node() {
@@ -4774,8 +5245,8 @@ function selection_node() {
 }
 
 function selection_size() {
-  var size = 0;
-  this.each(function() { ++size; });
+  let size = 0;
+  for (const node of this) ++size; // eslint-disable-line no-unused-vars
   return size;
 }
 
@@ -5111,36 +5582,9 @@ function selection_datum(value) {
       : this.node().__data__;
 }
 
-var filterEvents = {};
-
-exports.event = null;
-
-if (typeof document !== "undefined") {
-  var element = document.documentElement;
-  if (!("onmouseenter" in element)) {
-    filterEvents = {mouseenter: "mouseover", mouseleave: "mouseout"};
-  }
-}
-
-function filterContextListener(listener, index, group) {
-  listener = contextListener(listener, index, group);
+function contextListener(listener) {
   return function(event) {
-    var related = event.relatedTarget;
-    if (!related || (related !== this && !(related.compareDocumentPosition(this) & 8))) {
-      listener.call(this, event);
-    }
-  };
-}
-
-function contextListener(listener, index, group) {
-  return function(event1) {
-    var event0 = exports.event; // Events can be reentrant (e.g., focus).
-    exports.event = event1;
-    try {
-      listener.call(this, this.__data__, index, group);
-    } finally {
-      exports.event = event0;
-    }
+    listener.call(this, event, this.__data__);
   };
 }
 
@@ -5158,7 +5602,7 @@ function onRemove(typename) {
     if (!on) return;
     for (var j = 0, i = -1, m = on.length, o; j < m; ++j) {
       if (o = on[j], (!typename.type || o.type === typename.type) && o.name === typename.name) {
-        this.removeEventListener(o.type, o.listener, o.capture);
+        this.removeEventListener(o.type, o.listener, o.options);
       } else {
         on[++i] = o;
       }
@@ -5168,26 +5612,25 @@ function onRemove(typename) {
   };
 }
 
-function onAdd(typename, value, capture) {
-  var wrap = filterEvents.hasOwnProperty(typename.type) ? filterContextListener : contextListener;
-  return function(d, i, group) {
-    var on = this.__on, o, listener = wrap(value, i, group);
+function onAdd(typename, value, options) {
+  return function() {
+    var on = this.__on, o, listener = contextListener(value);
     if (on) for (var j = 0, m = on.length; j < m; ++j) {
       if ((o = on[j]).type === typename.type && o.name === typename.name) {
-        this.removeEventListener(o.type, o.listener, o.capture);
-        this.addEventListener(o.type, o.listener = listener, o.capture = capture);
+        this.removeEventListener(o.type, o.listener, o.options);
+        this.addEventListener(o.type, o.listener = listener, o.options = options);
         o.value = value;
         return;
       }
     }
-    this.addEventListener(typename.type, listener, capture);
-    o = {type: typename.type, name: typename.name, value: value, listener: listener, capture: capture};
+    this.addEventListener(typename.type, listener, options);
+    o = {type: typename.type, name: typename.name, value: value, listener: listener, options: options};
     if (!on) this.__on = [o];
     else on.push(o);
   };
 }
 
-function selection_on(typename, value, capture) {
+function selection_on(typename, value, options) {
   var typenames = parseTypenames(typename + ""), i, n = typenames.length, t;
 
   if (arguments.length < 2) {
@@ -5203,20 +5646,8 @@ function selection_on(typename, value, capture) {
   }
 
   on = value ? onAdd : onRemove;
-  if (capture == null) capture = false;
-  for (i = 0; i < n; ++i) this.each(on(typenames[i], value, capture));
+  for (i = 0; i < n; ++i) this.each(on(typenames[i], value, options));
   return this;
-}
-
-function customEvent(event1, listener, that, args) {
-  var event0 = exports.event;
-  event1.sourceEvent = exports.event;
-  exports.event = event1;
-  try {
-    return listener.apply(that, args);
-  } finally {
-    exports.event = event0;
-  }
 }
 
 function dispatchEvent(node, type, params) {
@@ -5252,6 +5683,14 @@ function selection_dispatch(type, params) {
       : dispatchConstant)(type, params));
 }
 
+function* selection_iterator() {
+  for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
+    for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
+      if (node = group[i]) yield node;
+    }
+  }
+}
+
 var root = [null];
 
 function Selection(groups, parents) {
@@ -5263,16 +5702,23 @@ function selection() {
   return new Selection([[document.documentElement]], root);
 }
 
+function selection_selection() {
+  return this;
+}
+
 Selection.prototype = selection.prototype = {
   constructor: Selection,
   select: selection_select,
   selectAll: selection_selectAll,
+  selectChild: selection_selectChild,
+  selectChildren: selection_selectChildren,
   filter: selection_filter,
   data: selection_data,
   enter: selection_enter,
   exit: selection_exit,
   join: selection_join,
   merge: selection_merge,
+  selection: selection_selection,
   order: selection_order,
   sort: selection_sort,
   call: selection_call,
@@ -5295,7 +5741,8 @@ Selection.prototype = selection.prototype = {
   clone: selection_clone,
   datum: selection_datum,
   on: selection_on,
-  dispatch: selection_dispatch
+  dispatch: selection_dispatch,
+  [Symbol.iterator]: selection_iterator
 };
 
 function select(selector) {
@@ -5336,77 +5783,60 @@ Local.prototype = local.prototype = {
   }
 };
 
-function sourceEvent() {
-  var current = exports.event, source;
-  while (source = current.sourceEvent) current = source;
-  return current;
+function sourceEvent(event) {
+  let sourceEvent;
+  while (sourceEvent = event.sourceEvent) event = sourceEvent;
+  return event;
 }
 
-function point(node, event) {
-  var svg = node.ownerSVGElement || node;
-
-  if (svg.createSVGPoint) {
-    var point = svg.createSVGPoint();
-    point.x = event.clientX, point.y = event.clientY;
-    point = point.matrixTransform(node.getScreenCTM().inverse());
-    return [point.x, point.y];
+function pointer(event, node) {
+  event = sourceEvent(event);
+  if (node === undefined) node = event.currentTarget;
+  if (node) {
+    var svg = node.ownerSVGElement || node;
+    if (svg.createSVGPoint) {
+      var point = svg.createSVGPoint();
+      point.x = event.clientX, point.y = event.clientY;
+      point = point.matrixTransform(node.getScreenCTM().inverse());
+      return [point.x, point.y];
+    }
+    if (node.getBoundingClientRect) {
+      var rect = node.getBoundingClientRect();
+      return [event.clientX - rect.left - node.clientLeft, event.clientY - rect.top - node.clientTop];
+    }
   }
-
-  var rect = node.getBoundingClientRect();
-  return [event.clientX - rect.left - node.clientLeft, event.clientY - rect.top - node.clientTop];
+  return [event.pageX, event.pageY];
 }
 
-function mouse(node) {
-  var event = sourceEvent();
-  if (event.changedTouches) event = event.changedTouches[0];
-  return point(node, event);
+function pointers(events, node) {
+  if (events.target) { // i.e., instanceof Event, not TouchList or iterable
+    events = sourceEvent(events);
+    if (node === undefined) node = events.currentTarget;
+    events = events.touches || [events];
+  }
+  return Array.from(events, event => pointer(event, node));
 }
 
 function selectAll(selector) {
   return typeof selector === "string"
       ? new Selection([document.querySelectorAll(selector)], [document.documentElement])
-      : new Selection([selector == null ? [] : selector], root);
+      : new Selection([selector == null ? [] : array(selector)], root);
 }
 
-function touch(node, touches, identifier) {
-  if (arguments.length < 3) identifier = touches, touches = sourceEvent().changedTouches;
-
-  for (var i = 0, n = touches ? touches.length : 0, touch; i < n; ++i) {
-    if ((touch = touches[i]).identifier === identifier) {
-      return point(node, touch);
-    }
-  }
-
-  return null;
-}
-
-function touches(node, touches) {
-  if (touches == null) touches = sourceEvent().touches;
-
-  for (var i = 0, n = touches ? touches.length : 0, points = new Array(n); i < n; ++i) {
-    points[i] = point(node, touches[i]);
-  }
-
-  return points;
-}
-
-exports.clientPoint = point;
 exports.create = create;
 exports.creator = creator;
-exports.customEvent = customEvent;
 exports.local = local;
 exports.matcher = matcher;
-exports.mouse = mouse;
 exports.namespace = namespace;
 exports.namespaces = namespaces;
+exports.pointer = pointer;
+exports.pointers = pointers;
 exports.select = select;
 exports.selectAll = selectAll;
 exports.selection = selection;
 exports.selector = selector;
 exports.selectorAll = selectorAll;
 exports.style = styleValue;
-exports.touch = touch;
-exports.touches = touches;
 exports.window = defaultView;
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -5414,7 +5844,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }));
 
 },{}],10:[function(require,module,exports){
-// https://d3js.org/d3-timer/ v1.0.10 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-timer/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -5535,7 +5965,7 @@ function sleep(time) {
 function timeout$1(callback, delay, time) {
   var t = new Timer;
   delay = delay == null ? 0 : +delay;
-  t.restart(function(elapsed) {
+  t.restart(elapsed => {
     t.stop();
     callback(elapsed + delay);
   }, delay, time);
@@ -5545,12 +5975,16 @@ function timeout$1(callback, delay, time) {
 function interval$1(callback, delay, time) {
   var t = new Timer, total = delay;
   if (delay == null) return t.restart(callback, delay, time), t;
-  delay = +delay, time = time == null ? now() : +time;
-  t.restart(function tick(elapsed) {
-    elapsed += total;
-    t.restart(tick, total += delay, time);
-    callback(elapsed);
-  }, delay, time);
+  t._restart = t.restart;
+  t.restart = function(callback, delay, time) {
+    delay = +delay, time = time == null ? now() : +time;
+    t._restart(function tick(elapsed) {
+      elapsed += total;
+      t._restart(tick, total += delay, time);
+      callback(elapsed);
+    }, delay, time);
+  };
+  t.restart(callback, delay, time);
   return t;
 }
 
@@ -5565,7 +5999,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 }));
 
 },{}],11:[function(require,module,exports){
-// https://d3js.org/d3-transition/ v1.3.2 Copyright 2019 Mike Bostock
+// https://d3js.org/d3-transition/ v2.0.0 Copyright 2020 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3-selection'), require('d3-dispatch'), require('d3-timer'), require('d3-interpolate'), require('d3-color'), require('d3-ease')) :
 typeof define === 'function' && define.amd ? define(['exports', 'd3-selection', 'd3-dispatch', 'd3-timer', 'd3-interpolate', 'd3-color', 'd3-ease'], factory) :
@@ -6016,6 +6450,19 @@ function transition_ease(value) {
       : get(this.node(), id).ease;
 }
 
+function easeVarying(id, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (typeof v !== "function") throw new Error;
+    set(this, id).ease = v;
+  };
+}
+
+function transition_easeVarying(value) {
+  if (typeof value !== "function") throw new Error;
+  return this.each(easeVarying(this._id, value));
+}
+
 function transition_filter(match) {
   if (typeof match !== "function") match = d3Selection.matcher(match);
 
@@ -6327,6 +6774,9 @@ function transition_end() {
 
       schedule.on = on1;
     });
+
+    // The selection was empty, resolve end immediately
+    if (size === 0) resolve();
   });
 }
 
@@ -6375,7 +6825,9 @@ Transition.prototype = transition.prototype = {
   delay: transition_delay,
   duration: transition_duration,
   ease: transition_ease,
-  end: transition_end
+  easeVarying: transition_easeVarying,
+  end: transition_end,
+  [Symbol.iterator]: selection_prototype[Symbol.iterator]
 };
 
 var defaultTiming = {
@@ -6389,7 +6841,7 @@ function inherit(node, id) {
   var timing;
   while (!(timing = node.__transition) || !(timing = timing[id])) {
     if (!(node = node.parentNode)) {
-      return defaultTiming.time = d3Timer.now(), defaultTiming;
+      throw new Error(`transition ${id} not found`);
     }
   }
   return timing;
@@ -6915,6 +7367,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.AncestorChart = exports.getAncestorsTree = void 0;
 var chart_util_1 = require("./chart-util");
 var d3_hierarchy_1 = require("d3-hierarchy");
 var id_generator_1 = require("./id-generator");
@@ -7041,9 +7494,14 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":16,"./id-generator":26,"d3-hierarchy":7}],16:[function(require,module,exports){
+},{"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+
+},{}],17:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChartUtil = exports.getChartInfoWithoutMargin = exports.getChartInfo = exports.linkId = exports.V_SPACING = exports.H_SPACING = void 0;
 var d3_selection_1 = require("d3-selection");
 var d3_flextree_1 = require("d3-flextree");
 var d3_array_1 = require("d3-array");
@@ -7354,9 +7812,10 @@ var ChartUtil = /** @class */ (function () {
 }());
 exports.ChartUtil = ChartUtil;
 
-},{"d3-array":2,"d3-flextree":6,"d3-selection":9,"d3-transition":11}],17:[function(require,module,exports){
+},{"d3-array":2,"d3-flextree":6,"d3-selection":9,"d3-transition":11}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CircleRenderer = void 0;
 /** Renders person or married couple inside a sircle. */
 var CircleRenderer = /** @class */ (function () {
     function CircleRenderer(options) {
@@ -7428,9 +7887,10 @@ var CircleRenderer = /** @class */ (function () {
 }());
 exports.CircleRenderer = CircleRenderer;
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getFamPositionHorizontal = exports.getFamPositionVertical = exports.CompositeRenderer = void 0;
 var d3_array_1 = require("d3-array");
 /**
  * Common code for tree nodes that are composed of individual and family boxes.
@@ -7601,9 +8061,10 @@ function getVSize(node, horizontal) {
     return getIndiVSize(node, horizontal) + getFamVSize(node, horizontal);
 }
 
-},{"d3-array":2}],19:[function(require,module,exports){
+},{"d3-array":2}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.JsonDataProvider = void 0;
 /** Details of an individual based on Json input. */
 var JsonIndiDetails = /** @class */ (function () {
     function JsonIndiDetails(json) {
@@ -7718,9 +8179,25 @@ var JsonDataProvider = /** @class */ (function () {
 }());
 exports.JsonDataProvider = JsonDataProvider;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.formatDateOrRange = exports.formatDate = void 0;
+/** Month in English is used as fallback if a requested translation is not found. */
+var MONTHS_EN = new Map([
+    [1, 'Jan'],
+    [2, 'Feb'],
+    [3, 'Mar'],
+    [4, 'Apr'],
+    [5, 'May'],
+    [6, 'Jun'],
+    [7, 'Jul'],
+    [8, 'Aug'],
+    [9, 'Sep'],
+    [10, 'Oct'],
+    [11, 'Nov'],
+    [12, 'Dec'],
+]);
 /** Translations of the GEDCOM date qualifiers. */
 var QUALIFIERS_I18N = new Map([
     [
@@ -7774,6 +8251,19 @@ var QUALIFIERS_I18N = new Map([
         ]),
     ],
 ]);
+var shortMonthCache = new Map();
+function getShortMonth(month, locale) {
+    if (!Intl || !Intl.DateTimeFormat) {
+        return MONTHS_EN.get(month);
+    }
+    var cacheKey = month + "|" + (locale || '');
+    if (shortMonthCache.has(cacheKey)) {
+        return shortMonthCache.get(cacheKey);
+    }
+    var result = new Intl.DateTimeFormat(locale, { month: 'short' }).format(new Date(2000, month - 1));
+    shortMonthCache.set(cacheKey, result);
+    return result;
+}
 function getQualifier(qualifier, locale) {
     var language = locale && locale.split(/[-_]/)[0];
     var languageMap = language && QUALIFIERS_I18N.get(language);
@@ -7786,6 +8276,17 @@ function getQualifier(qualifier, locale) {
 function formatDateOnly(day, month, year, locale) {
     if (!day && !month && !year) {
         return '';
+    }
+    // Fall back to formatting the date manually in case of
+    // - locale not provided
+    // - English (to avoid formatting like 'Oct 11, 2009')
+    // - Lack of i18n support in the browser
+    if (!Intl || !Intl.DateTimeFormat || !locale || locale === 'en') {
+        return [
+            day,
+            month && getShortMonth(month, locale),
+            year
+        ].join(' ');
     }
     var format = {
         day: day ? 'numeric' : undefined,
@@ -7826,9 +8327,10 @@ function formatDateOrRange(dateOrRange, locale) {
 }
 exports.formatDateOrRange = formatDateOrRange;
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DescendantChart = exports.layOutDescendants = exports.DUMMY_ROOT_NODE_ID = void 0;
 var d3_hierarchy_1 = require("d3-hierarchy");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
@@ -7853,7 +8355,7 @@ function removeDummyNode(allNodes) {
         if (node.parent &&
             node.parent.id === exports.DUMMY_ROOT_NODE_ID &&
             !node.data.additionalMarriage) {
-            delete node.parent;
+            node.parent = null;
         }
         node.x += dx;
         node.y += dy;
@@ -7991,22 +8493,25 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":16,"./id-generator":26,"d3-hierarchy":7}],22:[function(require,module,exports){
+},{"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],23:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DetailedRenderer = exports.getLength = void 0;
 var d3_selection_1 = require("d3-selection");
 var date_format_1 = require("./date-format");
 var d3_array_1 = require("d3-array");
@@ -8219,7 +8724,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
             update = update.select('a');
         }
         if (this.options.indiCallback) {
-            enter.on('click', function (data) {
+            enter.on('click', function (event, data) {
                 return _this.options.indiCallback({
                     id: data.indi.id,
                     generation: data.generation,
@@ -8337,7 +8842,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
                 .attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); });
         }
         if (this.options.famCallback) {
-            enter.on('click', function (node) {
+            enter.on('click', function (event, node) {
                 return _this.options.famCallback({
                     id: node.data.family.id,
                     generation: node.data.generation,
@@ -8384,9 +8889,10 @@ var DetailedRenderer = /** @class */ (function (_super) {
 }(composite_renderer_1.CompositeRenderer));
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"./composite-renderer":18,"./date-format":20,"d3-array":2,"d3-selection":9,"d3-transition":11}],23:[function(require,module,exports){
+},{"./composite-renderer":19,"./date-format":21,"d3-array":2,"d3-selection":9,"d3-transition":11}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.FancyChart = void 0;
 var d3_array_1 = require("d3-array");
 var chart_util_1 = require("./chart-util");
 var descendant_chart_1 = require("./descendant-chart");
@@ -8571,9 +9077,10 @@ var FancyChart = /** @class */ (function () {
 }());
 exports.FancyChart = FancyChart;
 
-},{"./chart-util":16,"./descendant-chart":21,"d3-array":2}],24:[function(require,module,exports){
+},{"./chart-util":17,"./descendant-chart":22,"d3-array":2}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.gedcomEntriesToJson = exports.gedcomToJson = exports.getDate = void 0;
 var parse_gedcom_1 = require("parse-gedcom");
 /** Returns the first entry with the given tag or undefined if not found. */
 function findTag(tree, tag) {
@@ -8843,9 +9350,10 @@ function gedcomEntriesToJson(gedcom) {
 }
 exports.gedcomEntriesToJson = gedcomEntriesToJson;
 
-},{"parse-gedcom":13}],25:[function(require,module,exports){
+},{"parse-gedcom":13}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HourglassChart = void 0;
 var ancestor_chart_1 = require("./ancestor-chart");
 var chart_util_1 = require("./chart-util");
 var descendant_chart_1 = require("./descendant-chart");
@@ -8875,9 +9383,10 @@ var HourglassChart = /** @class */ (function () {
 }());
 exports.HourglassChart = HourglassChart;
 
-},{"./ancestor-chart":15,"./chart-util":16,"./descendant-chart":21}],26:[function(require,module,exports){
+},{"./ancestor-chart":15,"./chart-util":17,"./descendant-chart":22}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.IdGenerator = void 0;
 /** Provides unique identifiers. */
 var IdGenerator = /** @class */ (function () {
     function IdGenerator() {
@@ -8900,32 +9409,41 @@ var IdGenerator = /** @class */ (function () {
 }());
 exports.IdGenerator = IdGenerator;
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
-function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 require("array-flat-polyfill");
-__export(require("./ancestor-chart"));
-__export(require("./chart-util"));
-__export(require("./circle-renderer"));
-__export(require("./composite-renderer"));
-__export(require("./data"));
-__export(require("./date-format"));
-__export(require("./fancy-chart"));
-__export(require("./descendant-chart"));
-__export(require("./detailed-renderer"));
-__export(require("./gedcom"));
-__export(require("./hourglass-chart"));
-__export(require("./kinship-chart"));
-__export(require("./relatives-chart"));
-__export(require("./simple-api"));
-__export(require("./simple-renderer"));
+__exportStar(require("./ancestor-chart"), exports);
+__exportStar(require("./api"), exports);
+__exportStar(require("./chart-util"), exports);
+__exportStar(require("./circle-renderer"), exports);
+__exportStar(require("./composite-renderer"), exports);
+__exportStar(require("./data"), exports);
+__exportStar(require("./date-format"), exports);
+__exportStar(require("./fancy-chart"), exports);
+__exportStar(require("./descendant-chart"), exports);
+__exportStar(require("./detailed-renderer"), exports);
+__exportStar(require("./gedcom"), exports);
+__exportStar(require("./hourglass-chart"), exports);
+__exportStar(require("./kinship-chart"), exports);
+__exportStar(require("./relatives-chart"), exports);
+__exportStar(require("./simple-api"), exports);
+__exportStar(require("./simple-renderer"), exports);
 
-},{"./ancestor-chart":15,"./chart-util":16,"./circle-renderer":17,"./composite-renderer":18,"./data":19,"./date-format":20,"./descendant-chart":21,"./detailed-renderer":22,"./fancy-chart":23,"./gedcom":24,"./hourglass-chart":25,"./kinship-chart":28,"./relatives-chart":33,"./simple-api":34,"./simple-renderer":35,"array-flat-polyfill":1}],28:[function(require,module,exports){
+},{"./ancestor-chart":15,"./api":16,"./chart-util":17,"./circle-renderer":18,"./composite-renderer":19,"./data":20,"./date-format":21,"./descendant-chart":22,"./detailed-renderer":23,"./fancy-chart":24,"./gedcom":25,"./hourglass-chart":26,"./kinship-chart":29,"./relatives-chart":34,"./simple-api":35,"./simple-renderer":36,"array-flat-polyfill":1}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KinshipChart = void 0;
 var renderer_1 = require("./kinship/renderer");
 var hierarchy_creator_1 = require("./kinship/hierarchy-creator");
 var KinshipChart = /** @class */ (function () {
@@ -8981,9 +9499,10 @@ var EMPTY_HIERARCHY_TREE_NODES = {
     children: [],
 };
 
-},{"./kinship/hierarchy-creator":30,"./kinship/renderer":32}],29:[function(require,module,exports){
+},{"./kinship/hierarchy-creator":31,"./kinship/renderer":33}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.otherSideLinkType = exports.LinkType = exports.ChildNodes = void 0;
 var ChildNodes = /** @class */ (function () {
     function ChildNodes(overrides) {
         if (overrides === void 0) { overrides = {}; }
@@ -9039,9 +9558,10 @@ function otherSideLinkType(type) {
 }
 exports.otherSideLinkType = otherSideLinkType;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getRootsCount = exports.EntryId = exports.HierarchyCreator = void 0;
 var api_1 = require("./api");
 var d3_hierarchy_1 = require("d3-hierarchy");
 var hierarchy_filter_1 = require("./hierarchy-filter");
@@ -9376,9 +9896,10 @@ function getRootsCount(upRoot, data) {
 }
 exports.getRootsCount = getRootsCount;
 
-},{"../id-generator":26,"../utils":36,"./api":29,"./hierarchy-filter":31,"d3-hierarchy":7}],31:[function(require,module,exports){
+},{"../id-generator":27,"../utils":37,"./api":30,"./hierarchy-filter":32,"d3-hierarchy":7}],32:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.HierarchyFilter = void 0;
 var HierarchyFilter = /** @class */ (function () {
     function HierarchyFilter(overrides) {
         if (overrides === void 0) { overrides = {}; }
@@ -9409,16 +9930,15 @@ var HierarchyFilter = /** @class */ (function () {
 }());
 exports.HierarchyFilter = HierarchyFilter;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.KinshipChartRenderer = void 0;
 var d3_array_1 = require("d3-array");
 var api_1 = require("./api");
 var chart_util_1 = require("../chart-util");
@@ -9549,7 +10069,7 @@ var KinshipChartRenderer = /** @class */ (function () {
             return {
                 treeDir: treeDir,
                 linkType: linkType,
-                points: __spreadArrays(anchorPoints, [{ x: utils_1.last(anchorPoints).x, y: y }]),
+                points: __spreadArray(__spreadArray([], anchorPoints), [{ x: utils_1.last(anchorPoints).x, y: y }]),
             };
         });
     };
@@ -9632,10 +10152,10 @@ var KinshipChartRenderer = /** @class */ (function () {
         var pointsFrom = this.linkAnchorPoints(from, type, isUpTree);
         var pointsTo = this.linkAnchorPoints(to, api_1.otherSideLinkType(type), !isUpTree).reverse();
         var y = this.getLinkY(from, type);
-        return __spreadArrays(pointsFrom, [
+        return __spreadArray(__spreadArray(__spreadArray([], pointsFrom), [
             { x: pointsFrom[pointsFrom.length - 1].x, y: y },
             { x: pointsTo[0].x, y: y }
-        ], pointsTo);
+        ]), pointsTo);
     };
     KinshipChartRenderer.prototype.additionalMarriageLinkPoints = function (node) {
         var nodeIndex = node.parent.children.findIndex(function (n) { return n.data.id === node.data.id; });
@@ -9724,7 +10244,7 @@ var KinshipChartRenderer = /** @class */ (function () {
 }());
 exports.KinshipChartRenderer = KinshipChartRenderer;
 
-},{"../chart-util":16,"../utils":36,"./api":29,"d3-array":2}],33:[function(require,module,exports){
+},{"../chart-util":17,"../utils":37,"./api":30,"d3-array":2}],34:[function(require,module,exports){
 "use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -9737,14 +10257,13 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from) {
+    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+        to[j] = from[i];
+    return to;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.RelativesChart = void 0;
 var ancestor_chart_1 = require("./ancestor-chart");
 var id_generator_1 = require("./id-generator");
 var descendant_chart_1 = require("./descendant-chart");
@@ -9766,7 +10285,7 @@ var FilterChildFam = /** @class */ (function () {
         return this.fam.getMother();
     };
     FilterChildFam.prototype.getChildren = function () {
-        var children = __spreadArrays(this.fam.getChildren());
+        var children = __spreadArray([], this.fam.getChildren());
         var index = children.indexOf(this.childId);
         if (index !== -1) {
             children.splice(index, 1);
@@ -10006,9 +10525,10 @@ var RelativesChart = /** @class */ (function () {
 }());
 exports.RelativesChart = RelativesChart;
 
-},{"./ancestor-chart":15,"./chart-util":16,"./descendant-chart":21,"./id-generator":26,"d3-array":2}],34:[function(require,module,exports){
+},{"./ancestor-chart":15,"./chart-util":17,"./descendant-chart":22,"./id-generator":27,"d3-array":2}],35:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createChart = void 0;
 var d3_selection_1 = require("d3-selection");
 var data_1 = require("./data");
 var DEFAULT_SVG_SELECTOR = 'svg';
@@ -10080,22 +10600,25 @@ function createChart(options) {
 }
 exports.createChart = createChart;
 
-},{"./data":19,"d3-selection":9}],35:[function(require,module,exports){
+},{"./data":20,"d3-selection":9}],36:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SimpleRenderer = void 0;
 var d3_selection_1 = require("d3-selection");
 var composite_renderer_1 = require("./composite-renderer");
 var MIN_HEIGHT = 27;
@@ -10196,9 +10719,10 @@ var SimpleRenderer = /** @class */ (function (_super) {
 }(composite_renderer_1.CompositeRenderer));
 exports.SimpleRenderer = SimpleRenderer;
 
-},{"./composite-renderer":18,"d3-selection":9}],36:[function(require,module,exports){
+},{"./composite-renderer":19,"d3-selection":9}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.points2pathd = exports.zip = exports.last = exports.nonEmpty = void 0;
 function nonEmpty(array) {
     return !!(array && array.length);
 }
@@ -10221,5 +10745,5 @@ function points2pathd(points) {
 }
 exports.points2pathd = points2pathd;
 
-},{}]},{},[27])(27)
+},{}]},{},[28])(28)
 });
