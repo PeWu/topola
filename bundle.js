@@ -8201,6 +8201,16 @@ var MONTHS_EN = new Map([
 /** Translations of the GEDCOM date qualifiers. */
 var QUALIFIERS_I18N = new Map([
     [
+        'cs',
+        new Map([
+            ['cal', 'vypočt.'],
+            ['abt', 'o'],
+            ['est', 'ocenil'],
+            ['before', 'před'],
+            ['after', 'po'],
+        ]),
+    ],
+    [
         'de',
         new Map([
             ['cal', 'errech.'],
