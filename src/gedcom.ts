@@ -282,12 +282,6 @@ function createFam(entry: GedcomEntry): JsonFam {
     fam.wife = pointerToId(wifeTag.data);
   }
 
-  // Engagement (usually before Marriage)
-  const engagement = createEvent(findTag(entry.tree, 'ENGA'));
-  if (engagement) {
-    fam.engagement = engagement;
-  }
-
   // Marriage
   const marriage = createEvent(findTag(entry.tree, 'MARR'));
   if (marriage) {
