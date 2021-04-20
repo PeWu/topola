@@ -245,6 +245,11 @@ function createIndi(
     indi.birth = birth;
   }
 
+  // Events
+  indi.events = findTags(entry.tree, 'EVEN')
+    .map(createEvent)
+    .filter((x): x is JsonEvent => x !== null);
+
   // Death date and place.
   const death = createEvent(findTag(entry.tree, 'DEAT'));
   if (death) {
@@ -253,11 +258,6 @@ function createIndi(
 
   // Notes.
   indi.notes = createNotes(findTag(entry.tree, 'NOTE'));
-
-  // Events
-  indi.events = findTags(entry.tree, 'EVEN')
-    .map(createEvent)
-    .filter((x): x is JsonEvent => x !== null);
 
   return indi;
 }
