@@ -21,9 +21,9 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
   [
     'cs',
     new Map([
-      ['cal', 'vypočt.'],
-      ['abt', 'o'],
-      ['est', 'ocenil'],
+      ['cal', 'vypoč.'],
+      ['abt', 'okolo'],
+      ['est', 'odhad.'],
       ['before', 'před'],
       ['after', 'po'],
     ]),
