@@ -1,3 +1,5 @@
+/// <reference path="parse-gedcom.d.ts" />
+
 import { GedcomEntry, parse as parseGedcom } from 'parse-gedcom';
 
 import {

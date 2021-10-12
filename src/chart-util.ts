@@ -1,3 +1,5 @@
+/// <reference path="d3-flextree.d.ts" />
+
 import { BaseType, select, Selection } from 'd3-selection';
 import { ChartOptions, TreeNode } from './api';
 import { flextree } from 'd3-flextree';
