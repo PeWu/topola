@@ -15,6 +15,7 @@
           svgSelector: '#relatives',
           chartType: topola.RelativesChart,
           renderer: topola.DetailedRenderer,
+          colors: topola.ChartColors.COLOR_BY_SEX,
         }).render();
       });
       d3.json('data/data.json', (json) => {

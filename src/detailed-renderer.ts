@@ -1,4 +1,5 @@
 import { BaseType, select, Selection } from 'd3-selection';
+import { ChartColors } from '.';
 import { FamDetails, IndiDetails } from './data';
 import { formatDateOrRange } from './date-format';
 import { max } from 'd3-array';
@@ -67,6 +68,17 @@ interface OffsetIndi {
 export class DetailedRenderer extends CompositeRenderer implements Renderer {
   constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {
     super(options);
+  }
+
+  private getColoringClass() {
+    switch (this.options.colors) {
+      case ChartColors.NO_COLOR:
+        return 'nocolor';
+      case ChartColors.COLOR_BY_SEX:
+        return 'bysex';
+      default:
+        return 'bygeneration';
+    }
   }
 
   /** Extracts lines of details for a person. */
@@ -270,51 +282,67 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   font-style: italic;
 }
 
-.detailed rect {
-  fill: #ffffdd;
+.detailed rect.nocolor {
+  fill: #ffffff;
 }
 
-.generation-11 .detailed rect, .generation1 .detailed rect {
-  fill: #edffdb;
+.detailed rect.bysex {
+  fill: #eeeeee;
 }
 
-.generation-10 .detailed rect, .generation2 .detailed rect {
-  fill: #dbffdb;
-}
-
-.generation-9 .detailed rect, .generation3 .detailed rect {
-  fill: #dbffed;
-}
-
-.generation-8 .detailed rect, .generation4 .detailed rect {
+.detailed rect.bysex.male {
   fill: #dbffff;
 }
 
-.generation-7 .detailed rect, .generation5 .detailed rect {
-  fill: #dbedff;
-}
-
-.generation-6 .detailed rect, .generation6 .detailed rect {
-  fill: #dbdbff;
-}
-
-.generation-5 .detailed rect, .generation7 .detailed rect {
-  fill: #eddbff;
-}
-
-.generation-4 .detailed rect, .generation8 .detailed rect {
-  fill: #ffdbff;
-}
-
-.generation-3 .detailed rect, .generation9 .detailed rect {
+.detailed rect.bysex.female {
   fill: #ffdbed;
 }
 
-.generation-2 .detailed rect, .generation10 .detailed rect {
+.detailed rect.bygeneration {
+  fill: #ffffdd;
+}
+
+.generation-11 .detailed rect.bygeneration, .generation1 .detailed rect.bygeneration {
+  fill: #edffdb;
+}
+
+.generation-10 .detailed rect.bygeneration, .generation2 .detailed rect.bygeneration {
+  fill: #dbffdb;
+}
+
+.generation-9 .detailed rect.bygeneration, .generation3 .detailed rect.bygeneration {
+  fill: #dbffed;
+}
+
+.generation-8 .detailed rect.bygeneration, .generation4 .detailed rect.bygeneration {
+  fill: #dbffff;
+}
+
+.generation-7 .detailed rect.bygeneration, .generation5 .detailed rect.bygeneration {
+  fill: #dbedff;
+}
+
+.generation-6 .detailed rect.bygeneration, .generation6 .detailed rect.bygeneration {
+  fill: #dbdbff;
+}
+
+.generation-5 .detailed rect.bygeneration, .generation7 .detailed rect.bygeneration {
+  fill: #eddbff;
+}
+
+.generation-4 .detailed rect.bygeneration, .generation8 .detailed rect.bygeneration {
+  fill: #ffdbff;
+}
+
+.generation-3 .detailed rect.bygeneration, .generation9 .detailed rect.bygeneration {
+  fill: #ffdbed;
+}
+
+.generation-2 .detailed rect.bygeneration, .generation10 .detailed rect.bygeneration {
   fill: #ffdbdb;
 }
 
-.generation-1 .detailed rect, .generation11 .detailed rect {
+.generation-1 .detailed rect.bygeneration, .generation11 .detailed rect.bygeneration {
   fill: #ffeddb;
 }`;
   }
@@ -337,6 +365,18 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     return `translate(${max([getFamPositionVertical(node), 0])}, ${
       (node.indi && node.indi.height) || node.spouse!.height
     })`;
+  }
+
+  private getSexClass(indiId: string) {
+    const sex = this.options.data.getIndi(indiId)?.getSex();
+    switch (sex) {
+      case 'M':
+        return 'male';
+      case 'F':
+        return 'female';
+      default:
+        return '';
+    }
   }
 
   private renderIndi(
@@ -362,7 +402,13 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('rect')
       .attr('rx', 5)
       .attr('stroke-width', 0)
-      .attr('class', 'background')
+      .attr(
+        'class',
+        (node) =>
+          `background ${this.getColoringClass()} ${this.getSexClass(
+            node.indi.id
+          )}`
+      )
       .merge(update.select('rect.background'));
     this.transition(background)
       .attr('width', (node) => node.indi.width!)
@@ -503,6 +549,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     // Box.
     enter
       .append('rect')
+      .attr('class', this.getColoringClass())
       .attr('rx', 5)
       .attr('ry', 5)
       .attr('width', (node) => node.data.family!.width!)
