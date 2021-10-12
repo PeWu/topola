@@ -7497,6 +7497,13 @@ exports.AncestorChart = AncestorChart;
 },{"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ChartColors = void 0;
+var ChartColors;
+(function (ChartColors) {
+    ChartColors[ChartColors["NO_COLOR"] = 0] = "NO_COLOR";
+    ChartColors[ChartColors["COLOR_BY_GENERATION"] = 1] = "COLOR_BY_GENERATION";
+    ChartColors[ChartColors["COLOR_BY_SEX"] = 2] = "COLOR_BY_SEX";
+})(ChartColors = exports.ChartColors || (exports.ChartColors = {}));
 
 },{}],17:[function(require,module,exports){
 "use strict";
@@ -7587,10 +7594,7 @@ var ChartUtil = /** @class */ (function () {
         var svg = d3_selection_1.select(this.options.svgSelector);
         var group = svg.select('g');
         var transition = this.options.animate
-            ? group
-                .transition()
-                .delay(HIDE_TIME_MS)
-                .duration(MOVE_TIME_MS)
+            ? group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
             : group;
         transition.attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
     };
@@ -7665,7 +7669,10 @@ var ChartUtil = /** @class */ (function () {
         var svg = this.getSvgForRendering();
         var nodeAnimation = this.renderNodes(nodes, svg);
         var linkAnimation = this.renderLinks(nodes, svg);
-        return Promise.all([nodeAnimation, linkAnimation]);
+        return Promise.all([
+            nodeAnimation,
+            linkAnimation,
+        ]);
     };
     ChartUtil.prototype.renderNodes = function (nodes, svg) {
         var _this = this;
@@ -7689,8 +7696,7 @@ var ChartUtil = /** @class */ (function () {
                 .merge(boundNodes)
                 .attr('class', function (node) { return "node generation" + node.data.generation; });
             nodeEnter.attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
-                    node.data.height / 2) + ")";
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
             });
             if (_this.options.animate) {
                 nodeEnter
@@ -7709,8 +7715,7 @@ var ChartUtil = /** @class */ (function () {
                     .on('end', transitionDone)
                 : boundNodes;
             updateTransition.attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
-                    node.data.height / 2) + ")";
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
             });
             _this.options.renderer.render(nodeEnter, boundNodes);
             if (_this.options.animate) {
@@ -8292,11 +8297,7 @@ function formatDateOnly(day, month, year, locale) {
     // - English (to avoid formatting like 'Oct 11, 2009')
     // - Lack of i18n support in the browser
     if (!Intl || !Intl.DateTimeFormat || !locale || locale === 'en') {
-        return [
-            day,
-            month && getShortMonth(month, locale),
-            year
-        ].join(' ');
+        return [day, month && getShortMonth(month, locale), year].join(' ');
     }
     var format = {
         day: day ? 'numeric' : undefined,
@@ -8523,6 +8524,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DetailedRenderer = exports.getLength = void 0;
 var d3_selection_1 = require("d3-selection");
+var _1 = require(".");
 var date_format_1 = require("./date-format");
 var d3_array_1 = require("d3-array");
 require("d3-transition");
@@ -8543,13 +8545,8 @@ function getLength(text, textClass) {
     if (textLengthCache.has(cacheKey)) {
         return textLengthCache.get(cacheKey);
     }
-    var g = d3_selection_1.select('svg')
-        .append('g')
-        .attr('class', 'detailed node');
-    var x = g
-        .append('text')
-        .attr('class', textClass)
-        .text(text);
+    var g = d3_selection_1.select('svg').append('g').attr('class', 'detailed node');
+    var x = g.append('text').attr('class', textClass).text(text);
     var length = x.node().getComputedTextLength();
     g.remove();
     textLengthCache.set(cacheKey, length);
@@ -8571,6 +8568,16 @@ var DetailedRenderer = /** @class */ (function (_super) {
         _this.options = options;
         return _this;
     }
+    DetailedRenderer.prototype.getColoringClass = function () {
+        switch (this.options.colors) {
+            case _1.ChartColors.NO_COLOR:
+                return 'nocolor';
+            case _1.ChartColors.COLOR_BY_SEX:
+                return 'bysex';
+            default:
+                return 'bygeneration';
+        }
+    };
     /** Extracts lines of details for a person. */
     DetailedRenderer.prototype.getIndiDetails = function (indi) {
         var detailsList = [];
@@ -8706,7 +8713,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
         this.renderFamily(familyEnter, familyUpdate);
     };
     DetailedRenderer.prototype.getCss = function () {
-        return "\n.detailed text {\n  font-family: verdana, arial, sans-serif;\n  font-size: 12px;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect, .generation1 .detailed rect {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect, .generation2 .detailed rect {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect, .generation3 .detailed rect {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect, .generation4 .detailed rect {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect, .generation5 .detailed rect {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect, .generation6 .detailed rect {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect, .generation7 .detailed rect {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect, .generation8 .detailed rect {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect, .generation9 .detailed rect {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect, .generation10 .detailed rect {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect, .generation11 .detailed rect {\n  fill: #ffeddb;\n}";
+        return "\n.detailed text {\n  font-family: verdana, arial, sans-serif;\n  font-size: 12px;\n}\n\n.detailed .name {\n  font-weight: bold;\n}\n\n.link {\n  fill: none;\n  stroke: #000;\n  stroke-width: 1px;\n}\n\n.additional-marriage {\n  stroke-dasharray: 2;\n}\n\n.detailed rect {\n  stroke: black;\n}\n\n.detailed {\n  stroke-width: 2px;\n}\n\n.detailed .details {\n  font-size: 10px;\n}\n\n.detailed .id {\n  font-size: 10px;\n  font-style: italic;\n}\n\n.detailed rect.nocolor {\n  fill: #ffffff;\n}\n\n.detailed rect.bysex {\n  fill: #eeeeee;\n}\n\n.detailed rect.bysex.male {\n  fill: #dbffff;\n}\n\n.detailed rect.bysex.female {\n  fill: #ffdbed;\n}\n\n.detailed rect.bygeneration {\n  fill: #ffffdd;\n}\n\n.generation-11 .detailed rect.bygeneration, .generation1 .detailed rect.bygeneration {\n  fill: #edffdb;\n}\n\n.generation-10 .detailed rect.bygeneration, .generation2 .detailed rect.bygeneration {\n  fill: #dbffdb;\n}\n\n.generation-9 .detailed rect.bygeneration, .generation3 .detailed rect.bygeneration {\n  fill: #dbffed;\n}\n\n.generation-8 .detailed rect.bygeneration, .generation4 .detailed rect.bygeneration {\n  fill: #dbffff;\n}\n\n.generation-7 .detailed rect.bygeneration, .generation5 .detailed rect.bygeneration {\n  fill: #dbedff;\n}\n\n.generation-6 .detailed rect.bygeneration, .generation6 .detailed rect.bygeneration {\n  fill: #dbdbff;\n}\n\n.generation-5 .detailed rect.bygeneration, .generation7 .detailed rect.bygeneration {\n  fill: #eddbff;\n}\n\n.generation-4 .detailed rect.bygeneration, .generation8 .detailed rect.bygeneration {\n  fill: #ffdbff;\n}\n\n.generation-3 .detailed rect.bygeneration, .generation9 .detailed rect.bygeneration {\n  fill: #ffdbed;\n}\n\n.generation-2 .detailed rect.bygeneration, .generation10 .detailed rect.bygeneration {\n  fill: #ffdbdb;\n}\n\n.generation-1 .detailed rect.bygeneration, .generation11 .detailed rect.bygeneration {\n  fill: #ffeddb;\n}";
     };
     DetailedRenderer.prototype.transition = function (selection) {
         return this.options.animate
@@ -8718,12 +8725,21 @@ var DetailedRenderer = /** @class */ (function (_super) {
     };
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
-            return "translate(" + ((node.indi && node.indi.width) ||
-                node.spouse.width) + ", " + d3_array_1.max([composite_renderer_1.getFamPositionHorizontal(node), 0]) + ")";
+            return "translate(" + ((node.indi && node.indi.width) || node.spouse.width) + ", " + d3_array_1.max([composite_renderer_1.getFamPositionHorizontal(node), 0]) + ")";
         }
-        return "translate(" + d3_array_1.max([composite_renderer_1.getFamPositionVertical(node), 0]) + ", " + ((node.indi &&
-            node.indi.height) ||
-            node.spouse.height) + ")";
+        return "translate(" + d3_array_1.max([composite_renderer_1.getFamPositionVertical(node), 0]) + ", " + ((node.indi && node.indi.height) || node.spouse.height) + ")";
+    };
+    DetailedRenderer.prototype.getSexClass = function (indiId) {
+        var _a;
+        var sex = (_a = this.options.data.getIndi(indiId)) === null || _a === void 0 ? void 0 : _a.getSex();
+        switch (sex) {
+            case 'M':
+                return 'male';
+            case 'F':
+                return 'female';
+            default:
+                return '';
+        }
     };
     DetailedRenderer.prototype.renderIndi = function (enter, update) {
         var _this = this;
@@ -8746,7 +8762,9 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .append('rect')
             .attr('rx', 5)
             .attr('stroke-width', 0)
-            .attr('class', 'background')
+            .attr('class', function (node) {
+            return "background " + _this.getColoringClass() + " " + _this.getSexClass(node.indi.id);
+        })
             .merge(update.select('rect.background'));
         this.transition(background)
             .attr('width', function (node) { return node.indi.width; })
@@ -8810,7 +8828,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
         var id = enter
             .append('text')
             .attr('class', 'id')
-            .text(function (data) { return getIndi(data).showId() ? data.indi.id : ''; })
+            .text(function (data) { return (getIndi(data).showId() ? data.indi.id : ''); })
             .merge(update.select('text.id'));
         this.transition(id).attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
         // Render sex.
@@ -8849,7 +8867,9 @@ var DetailedRenderer = /** @class */ (function (_super) {
         if (this.options.famHrefFunc) {
             enter = enter
                 .append('a')
-                .attr('href', function (node) { return _this.options.famHrefFunc(node.data.family.id); });
+                .attr('href', function (node) {
+                return _this.options.famHrefFunc(node.data.family.id);
+            });
         }
         if (this.options.famCallback) {
             enter.on('click', function (event, node) {
@@ -8862,6 +8882,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
         // Box.
         enter
             .append('rect')
+            .attr('class', this.getColoringClass())
             .attr('rx', 5)
             .attr('ry', 5)
             .attr('width', function (node) { return node.data.family.width; })
@@ -8899,7 +8920,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
 }(composite_renderer_1.CompositeRenderer));
 exports.DetailedRenderer = DetailedRenderer;
 
-},{"./composite-renderer":19,"./date-format":21,"d3-array":2,"d3-selection":9,"d3-transition":11}],24:[function(require,module,exports){
+},{".":28,"./composite-renderer":19,"./date-format":21,"d3-array":2,"d3-selection":9,"d3-transition":11}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FancyChart = void 0;
@@ -8966,10 +8987,7 @@ var FancyChart = /** @class */ (function () {
             .select('g')
             .append('radialGradient')
             .attr('id', 'gradient');
-        gradient
-            .append('stop')
-            .attr('offset', '0%')
-            .attr('stop-color', '#8f8');
+        gradient.append('stop').attr('offset', '0%').attr('stop-color', '#8f8');
         gradient
             .append('stop')
             .attr('offset', '80%')
@@ -8995,8 +9013,7 @@ var FancyChart = /** @class */ (function () {
                 .merge(boundNodes)
                 .attr('class', 'background')
                 .attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
-                    node.data.height / 2) + ")";
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
             });
             var background = enter.append('g').attr('class', 'background');
             background
@@ -9017,8 +9034,7 @@ var FancyChart = /** @class */ (function () {
                 .merge(boundNodes)
                 .attr('class', 'background2')
                 .attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y -
-                    node.data.height / 2) + ")";
+                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
             });
             var background = enter.append('g').attr('class', 'background2');
             background
@@ -10040,8 +10056,7 @@ var KinshipChartRenderer = /** @class */ (function () {
                 .style('fill', 'none')
                 .merge(boundLinkStubs.select('circle'))
                 .attr('transform', function (d) {
-                return "translate(" + utils_1.last(d.points).x + ", " + (utils_1.last(d.points).y +
-                    LINK_STUB_CIRCLE_R * d.treeDir) + ")";
+                return "translate(" + utils_1.last(d.points).x + ", " + (utils_1.last(d.points).y + LINK_STUB_CIRCLE_R * d.treeDir) + ")";
             });
         });
         boundLinkStubs.exit().remove();
@@ -10564,6 +10579,7 @@ function createChartOptions(chartOptions, renderOptions, options) {
             indiCallback: chartOptions.indiCallback,
             famCallback: chartOptions.famCallback,
             horizontal: chartOptions.horizontal,
+            colors: chartOptions.colors,
             animate: animate,
             locale: chartOptions.locale,
         }),
@@ -10635,13 +10651,8 @@ var MIN_HEIGHT = 27;
 var MIN_WIDTH = 50;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text) {
-    var g = d3_selection_1.select('svg')
-        .append('g')
-        .attr('class', 'simple node');
-    var x = g
-        .append('text')
-        .attr('class', 'name')
-        .text(text);
+    var g = d3_selection_1.select('svg').append('g').attr('class', 'simple node');
+    var x = g.append('text').attr('class', 'name').text(text);
     var w = x.node().getComputedTextLength();
     g.remove();
     return w;
@@ -10678,10 +10689,7 @@ var SimpleRenderer = /** @class */ (function (_super) {
         return [width, height];
     };
     SimpleRenderer.prototype.render = function (enter, update) {
-        var selection = enter
-            .merge(update)
-            .append('g')
-            .attr('class', 'simple');
+        var selection = enter.merge(update).append('g').attr('class', 'simple');
         this.renderIndi(selection, function (node) { return node.indi; });
         var spouseSelection = selection
             .filter(function (node) { return !!node.data.spouse; })
