@@ -1,4 +1,4 @@
-import { select } from "d3-selection";
+import { select } from 'd3-selection';
 import {
   Chart,
   ChartInfo,
@@ -7,15 +7,15 @@ import {
   IndiInfo,
   Renderer,
   RendererOptions,
-} from "./api";
+} from './api';
 import {
   FamDetails,
   IndiDetails,
   JsonDataProvider,
   JsonGedcomData,
-} from "./data";
+} from './data';
 
-const DEFAULT_SVG_SELECTOR = "svg";
+const DEFAULT_SVG_SELECTOR = 'svg';
 
 export interface ChartType {
   new (options: ChartOptions): Chart;
@@ -62,10 +62,10 @@ function createChartOptions(
 ): ChartOptions {
   const data = new JsonDataProvider(chartOptions.json);
   const indiHrefFunc = chartOptions.indiUrl
-    ? (id: string) => chartOptions.indiUrl!.replace("${id}", id)
+    ? (id: string) => chartOptions.indiUrl!.replace('${id}', id)
     : undefined;
   const famHrefFunc = chartOptions.famUrl
-    ? (id: string) => chartOptions.famUrl!.replace("${id}", id)
+    ? (id: string) => chartOptions.famUrl!.replace('${id}', id)
     : undefined;
 
   // If startIndi nor startFam is provided, select the first indi in the data.
@@ -113,8 +113,8 @@ class SimpleChartHandle implements ChartHandle {
     const info = chart.render();
     if (this.options.updateSvgSize !== false) {
       select(chartOptions.svgSelector)
-        .attr("width", info.size[0])
-        .attr("height", info.size[1]);
+        .attr('width', info.size[0])
+        .attr('height', info.size[1]);
     }
     return info;
   }

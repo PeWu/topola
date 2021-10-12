@@ -1,12 +1,12 @@
-import { HierarchyNode } from "d3-hierarchy";
-import { KinshipChartRenderer } from "./kinship/renderer";
-import { TreeNode } from "./kinship/api";
-import { Chart, ChartInfo, ChartOptions } from "./api";
+import { HierarchyNode } from 'd3-hierarchy';
+import { KinshipChartRenderer } from './kinship/renderer';
+import { TreeNode } from './kinship/api';
+import { Chart, ChartInfo, ChartOptions } from './api';
 import {
   HierarchyCreator,
   EntryId,
   getRootsCount,
-} from "./kinship/hierarchy-creator";
+} from './kinship/hierarchy-creator';
 
 export class KinshipChart implements Chart {
   readonly renderer: KinshipChartRenderer;

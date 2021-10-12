@@ -1,8 +1,8 @@
-import { getAncestorsTree } from "./ancestor-chart";
-import { HierarchyNode, HierarchyPointNode } from "d3-hierarchy";
-import { IdGenerator } from "./id-generator";
-import { layOutDescendants } from "./descendant-chart";
-import { max, min } from "d3-array";
+import { getAncestorsTree } from './ancestor-chart';
+import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
+import { IdGenerator } from './id-generator';
+import { layOutDescendants } from './descendant-chart';
+import { max, min } from 'd3-array';
 import {
   Chart,
   ChartInfo,
@@ -11,14 +11,14 @@ import {
   Fam,
   Indi,
   TreeNode,
-} from "./api";
+} from './api';
 import {
   ChartUtil,
   getChartInfo,
   getChartInfoWithoutMargin,
   H_SPACING,
   V_SPACING,
-} from "./chart-util";
+} from './chart-util';
 
 /** A view of a family that hides one child individual. */
 class FilterChildFam implements Fam {

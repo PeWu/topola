@@ -1,9 +1,9 @@
-import { BaseType, Selection } from "d3-selection";
-import { HierarchyPointNode } from "d3-hierarchy";
-import { min } from "d3-array";
-import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from "./api";
-import { ChartUtil, getChartInfo, linkId, ChartSizeInfo } from "./chart-util";
-import { DUMMY_ROOT_NODE_ID, layOutDescendants } from "./descendant-chart";
+import { BaseType, Selection } from 'd3-selection';
+import { HierarchyPointNode } from 'd3-hierarchy';
+import { min } from 'd3-array';
+import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
+import { ChartUtil, getChartInfo, linkId, ChartSizeInfo } from './chart-util';
+import { DUMMY_ROOT_NODE_ID, layOutDescendants } from './descendant-chart';
 
 /** Returns an SVG line definition for a tree branch between two points. */
 function branch(x1: number, y1: number, x2: number, y2: number): string {
@@ -95,21 +95,21 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     svg
-      .select("g")
-      .append("rect")
-      .attr("x", -chartInfo.origin[0])
-      .attr("y", -chartInfo.origin[1])
-      .attr("width", chartInfo.size[0])
-      .attr("height", chartInfo.origin[1])
-      .attr("fill", "#cff");
+      .select('g')
+      .append('rect')
+      .attr('x', -chartInfo.origin[0])
+      .attr('y', -chartInfo.origin[1])
+      .attr('width', chartInfo.size[0])
+      .attr('height', chartInfo.origin[1])
+      .attr('fill', '#cff');
     svg
-      .select("g")
-      .append("rect")
-      .attr("x", -chartInfo.origin[0])
-      .attr("y", 0)
-      .attr("width", chartInfo.size[0])
-      .attr("height", chartInfo.size[1] - chartInfo.origin[1])
-      .attr("fill", "#494");
+      .select('g')
+      .append('rect')
+      .attr('x', -chartInfo.origin[0])
+      .attr('y', 0)
+      .attr('width', chartInfo.size[0])
+      .attr('height', chartInfo.size[1] - chartInfo.origin[1])
+      .attr('fill', '#494');
   }
 
   renderLeaves(
@@ -117,20 +117,20 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     const gradient = svg
-      .select("g")
-      .append("radialGradient")
-      .attr("id", "gradient");
-    gradient.append("stop").attr("offset", "0%").attr("stop-color", "#8f8");
+      .select('g')
+      .append('radialGradient')
+      .attr('id', 'gradient');
+    gradient.append('stop').attr('offset', '0%').attr('stop-color', '#8f8');
     gradient
-      .append("stop")
-      .attr("offset", "80%")
-      .attr("stop-color", "#8f8")
-      .attr("stop-opacity", 0.5);
+      .append('stop')
+      .attr('offset', '80%')
+      .attr('stop-color', '#8f8')
+      .attr('stop-opacity', 0.5);
     gradient
-      .append("stop")
-      .attr("offset", "100%")
-      .attr("stop-color", "#8f8")
-      .attr("stop-opacity", 0);
+      .append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#8f8')
+      .attr('stop-opacity', 0);
     const backgroundNodes = nodes.filter(
       (n) => n.parent && n.parent.id !== DUMMY_ROOT_NODE_ID
     );
@@ -141,55 +141,55 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       280 - 180 / Math.sqrt(1 + node.data.generation! - minGeneration);
     {
       const boundNodes = svg
-        .select("g")
-        .selectAll("g.background")
+        .select('g')
+        .selectAll('g.background')
         .data(backgroundNodes, (d: HierarchyPointNode<Node>) => d.id!);
-      const enter = boundNodes.enter().append("g" as string);
+      const enter = boundNodes.enter().append('g' as string);
       enter
         .merge(boundNodes)
-        .attr("class", "background")
+        .attr('class', 'background')
         .attr(
-          "transform",
+          'transform',
           (node) =>
             `translate(${node.x - node.data.width! / 2}, ${
               node.y - node.data.height! / 2
             })`
         );
 
-      const background = enter.append("g").attr("class", "background");
+      const background = enter.append('g').attr('class', 'background');
       background
-        .append("circle")
-        .attr("class", "background")
-        .attr("r", sizeFunction)
-        .attr("cx", (node) => node.data.width! / 2)
-        .attr("cy", (node) => node.data.height! / 2)
-        .style("fill", "#493");
+        .append('circle')
+        .attr('class', 'background')
+        .attr('r', sizeFunction)
+        .attr('cx', (node) => node.data.width! / 2)
+        .attr('cy', (node) => node.data.height! / 2)
+        .style('fill', '#493');
     }
     {
       const boundNodes = svg
-        .select("g")
-        .selectAll("g.background2")
+        .select('g')
+        .selectAll('g.background2')
         .data(backgroundNodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
-      const enter = boundNodes.enter().append("g" as string);
+      const enter = boundNodes.enter().append('g' as string);
       enter
         .merge(boundNodes)
-        .attr("class", "background2")
+        .attr('class', 'background2')
         .attr(
-          "transform",
+          'transform',
           (node) =>
             `translate(${node.x - node.data.width! / 2}, ${
               node.y - node.data.height! / 2
             })`
         );
 
-      const background = enter.append("g").attr("class", "background2");
+      const background = enter.append('g').attr('class', 'background2');
       background
-        .append("circle")
-        .attr("class", "background")
-        .attr("r", sizeFunction)
-        .attr("cx", (node) => node.data.width! / 2)
-        .attr("cy", (node) => node.data.height! / 2)
-        .style("fill", "url(#gradient)");
+        .append('circle')
+        .attr('class', 'background')
+        .attr('r', sizeFunction)
+        .attr('cx', (node) => node.data.width! / 2)
+        .attr('cy', (node) => node.data.height! / 2)
+        .style('fill', 'url(#gradient)');
     }
   }
 
@@ -209,15 +209,15 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
 
     const links = nodes.filter((n) => !!n.parent);
     svg
-      .select("g")
-      .selectAll("path.branch")
+      .select('g')
+      .selectAll('path.branch')
       .data(links, linkId)
       .enter()
-      .append("path")
-      .attr("class", (node) =>
-        node.data.additionalMarriage ? "branch additional-marriage" : "branch"
+      .append('path')
+      .attr('class', (node) =>
+        node.data.additionalMarriage ? 'branch additional-marriage' : 'branch'
       )
-      .attr("d", (node) => link(node.parent!, node));
+      .attr('d', (node) => link(node.parent!, node));
   }
 
   renderTreeTrunk(
@@ -228,16 +228,16 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       (n) => !n.parent || n.parent.id === DUMMY_ROOT_NODE_ID
     );
     svg
-      .select("g")
-      .selectAll("g.trunk")
+      .select('g')
+      .selectAll('g.trunk')
       .data(trunkNodes, (d: HierarchyPointNode<TreeNode>) => d.id!)
       .enter()
-      .append("g")
-      .attr("class", "trunk")
-      .attr("transform", (node) => `translate(${node.x}, ${node.y})`)
-      .append("path")
+      .append('g')
+      .attr('class', 'trunk')
+      .attr('transform', (node) => `translate(${node.x}, ${node.y})`)
+      .append('path')
       .attr(
-        "d",
+        'd',
         `
           M 10 20
           L 10 40
@@ -260,7 +260,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     info.size[1] += 250;
 
     const svg = this.util.getSvgForRendering();
-    svg.append("style").text(`
+    svg.append('style').text(`
       .branch, .trunk {
         fill: #632;
         stroke: #632;

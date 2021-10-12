@@ -1,6 +1,6 @@
-import { HierarchyNode } from "d3-hierarchy";
-import { max } from "d3-array";
-import { TreeEntry, TreeNode } from "./api";
+import { HierarchyNode } from 'd3-hierarchy';
+import { max } from 'd3-array';
+import { TreeEntry, TreeNode } from './api';
 
 /**
  * Common code for tree nodes that are composed of individual and family boxes.

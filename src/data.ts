@@ -1,4 +1,4 @@
-import { DataProvider, Fam, Indi } from "./api";
+import { DataProvider, Fam, Indi } from './api';
 
 export interface Date {
   qualifier?: string;

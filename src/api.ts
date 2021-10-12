@@ -1,5 +1,5 @@
-import { BaseType, Selection } from "d3-selection";
-import { HierarchyNode, HierarchyPointNode } from "d3-hierarchy";
+import { BaseType, Selection } from 'd3-selection';
+import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
 
 /** Individual or family ID with dimensions. */
 export interface TreeEntry {

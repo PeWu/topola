@@ -1,6 +1,6 @@
 // Data type definitions for the d3-flextree library.
-declare module "d3-flextree" {
-  import { HierarchyNode, HierarchyPointNode } from "d3-hierarchy";
+declare module 'd3-flextree' {
+  import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
 
   export interface FlexTreeLayout<Datum> {
     (root: HierarchyNode<Datum>): HierarchyPointNode<Datum>;

@@ -1,4 +1,4 @@
-import { TreeNode as BaseTreeNode } from "../api";
+import { TreeNode as BaseTreeNode } from '../api';
 
 export class ChildNodes {
   static readonly EMPTY = new ChildNodes();

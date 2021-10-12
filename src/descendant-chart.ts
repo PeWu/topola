@@ -1,9 +1,9 @@
-import { HierarchyNode, HierarchyPointNode, stratify } from "d3-hierarchy";
-import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from "./api";
-import { ChartUtil, getChartInfo, LayoutOptions } from "./chart-util";
-import { IdGenerator } from "./id-generator";
+import { HierarchyNode, HierarchyPointNode, stratify } from 'd3-hierarchy';
+import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
+import { ChartUtil, getChartInfo, LayoutOptions } from './chart-util';
+import { IdGenerator } from './id-generator';
 
-export const DUMMY_ROOT_NODE_ID = "DUMMY_ROOT_NODE";
+export const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
 
 export function layOutDescendants(
   options: ChartOptions,

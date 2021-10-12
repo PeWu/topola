@@ -1,7 +1,7 @@
-import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from "./api";
-import { ChartUtil, getChartInfo } from "./chart-util";
-import { HierarchyNode, stratify } from "d3-hierarchy";
-import { IdGenerator } from "./id-generator";
+import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
+import { ChartUtil, getChartInfo } from './chart-util';
+import { HierarchyNode, stratify } from 'd3-hierarchy';
+import { IdGenerator } from './id-generator';
 
 export function getAncestorsTree(options: ChartOptions) {
   const ancestorChartOptions = { ...options };

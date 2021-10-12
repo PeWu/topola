@@ -1,9 +1,9 @@
-import { BaseType, select, Selection } from "d3-selection";
-import { ChartOptions, TreeNode } from "./api";
-import { flextree } from "d3-flextree";
-import { HierarchyNode, HierarchyPointNode } from "d3-hierarchy";
-import { max, min } from "d3-array";
-import "d3-transition";
+import { BaseType, select, Selection } from 'd3-selection';
+import { ChartOptions, TreeNode } from './api';
+import { flextree } from 'd3-flextree';
+import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
+import { max, min } from 'd3-array';
+import 'd3-transition';
 
 type SVGSelection = Selection<BaseType, {}, BaseType, {}>;
 
@@ -130,12 +130,12 @@ export class ChartUtil {
 
   updateSvgDimensions(chartInfo: ChartSizeInfo) {
     const svg = select(this.options.svgSelector);
-    const group = svg.select("g");
+    const group = svg.select('g');
     const transition = this.options.animate
       ? group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
       : group;
     transition.attr(
-      "transform",
+      'transform',
       `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`
     );
   }
@@ -146,8 +146,8 @@ export class ChartUtil {
   ): Array<HierarchyPointNode<N>> {
     // Add styles so that calculating text size is correct.
     const svg = select(this.options.svgSelector);
-    if (svg.select("style").empty()) {
-      svg.append("style").text(this.options.renderer.getCss());
+    if (svg.select('style').empty()) {
+      svg.append('style').text(this.options.renderer.getCss());
     }
 
     // Assign generation number.
@@ -233,11 +233,11 @@ export class ChartUtil {
   ): Promise<void> {
     const animationPromise = new Promise<void>((resolve) => {
       const boundNodes = svg
-        .select("g")
-        .selectAll("g.node")
+        .select('g')
+        .selectAll('g.node')
         .data(nodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
 
-      const nodeEnter = boundNodes.enter().append("g" as string);
+      const nodeEnter = boundNodes.enter().append('g' as string);
 
       let transitionsPending =
         boundNodes.exit().size() + boundNodes.size() + nodeEnter.size();
@@ -253,9 +253,9 @@ export class ChartUtil {
 
       nodeEnter
         .merge(boundNodes)
-        .attr("class", (node) => `node generation${node.data.generation}`);
+        .attr('class', (node) => `node generation${node.data.generation}`);
       nodeEnter.attr(
-        "transform",
+        'transform',
         (node: HierarchyPointNode<TreeNode>) =>
           `translate(${node.x - node.data.width! / 2}, ${
             node.y - node.data.height! / 2
@@ -263,22 +263,22 @@ export class ChartUtil {
       );
       if (this.options.animate) {
         nodeEnter
-          .style("opacity", 0)
+          .style('opacity', 0)
           .transition()
           .delay(HIDE_TIME_MS + MOVE_TIME_MS)
           .duration(HIDE_TIME_MS)
-          .style("opacity", 1)
-          .on("end", transitionDone);
+          .style('opacity', 1)
+          .on('end', transitionDone);
       }
       const updateTransition = this.options.animate
         ? boundNodes
             .transition()
             .delay(HIDE_TIME_MS)
             .duration(MOVE_TIME_MS)
-            .on("end", transitionDone)
+            .on('end', transitionDone)
         : boundNodes;
       updateTransition.attr(
-        "transform",
+        'transform',
         (node: HierarchyPointNode<TreeNode>) =>
           `translate(${node.x - node.data.width! / 2}, ${
             node.y - node.data.height! / 2
@@ -290,9 +290,9 @@ export class ChartUtil {
           .exit()
           .transition()
           .duration(HIDE_TIME_MS)
-          .style("opacity", 0)
+          .style('opacity', 0)
           .remove()
-          .on("end", transitionDone);
+          .on('end', transitionDone);
       } else {
         boundNodes.exit().remove();
       }
@@ -329,16 +329,16 @@ export class ChartUtil {
         (n) => !!n.parent || n.data.additionalMarriage
       );
       const boundLinks = svg
-        .select("g")
-        .selectAll("path.link")
+        .select('g')
+        .selectAll('path.link')
         .data(links, linkId);
       const path = boundLinks
         .enter()
-        .insert("path", "g")
-        .attr("class", (node) =>
-          node.data.additionalMarriage ? "link additional-marriage" : "link"
+        .insert('path', 'g')
+        .attr('class', (node) =>
+          node.data.additionalMarriage ? 'link additional-marriage' : 'link'
         )
-        .attr("d", (node) => link(node.parent!, node));
+        .attr('d', (node) => link(node.parent!, node));
 
       let transitionsPending =
         boundLinks.exit().size() + boundLinks.size() + path.size();
@@ -357,27 +357,27 @@ export class ChartUtil {
             .transition()
             .delay(HIDE_TIME_MS)
             .duration(MOVE_TIME_MS)
-            .on("end", transitionDone)
+            .on('end', transitionDone)
         : boundLinks;
-      linkTransition.attr("d", (node) => link(node.parent!, node));
+      linkTransition.attr('d', (node) => link(node.parent!, node));
 
       if (this.options.animate) {
         path
-          .style("opacity", 0)
+          .style('opacity', 0)
           .transition()
           .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
           .duration(0)
-          .style("opacity", 1)
-          .on("end", transitionDone);
+          .style('opacity', 1)
+          .on('end', transitionDone);
       }
       if (this.options.animate) {
         boundLinks
           .exit()
           .transition()
           .duration(0)
-          .style("opacity", 0)
+          .style('opacity', 0)
           .remove()
-          .on("end", transitionDone);
+          .on('end', transitionDone);
       } else {
         boundLinks.exit().remove();
       }
@@ -387,8 +387,8 @@ export class ChartUtil {
 
   getSvgForRendering(): SVGSelection {
     const svg = select(this.options.svgSelector) as SVGSelection;
-    if (svg.select("g").empty()) {
-      svg.append("g");
+    if (svg.select('g').empty()) {
+      svg.append('g');
     }
     return svg;
   }

@@ -1,9 +1,9 @@
-import { ChildNodes, LinkType, otherSideLinkType, TreeNode } from "./api";
-import { DataProvider, Fam, Indi } from "../api";
-import { hierarchy, HierarchyNode } from "d3-hierarchy";
-import { HierarchyFilter } from "./hierarchy-filter";
-import { IdGenerator } from "../id-generator";
-import { nonEmpty } from "../utils";
+import { ChildNodes, LinkType, otherSideLinkType, TreeNode } from './api';
+import { DataProvider, Fam, Indi } from '../api';
+import { hierarchy, HierarchyNode } from 'd3-hierarchy';
+import { HierarchyFilter } from './hierarchy-filter';
+import { IdGenerator } from '../id-generator';
+import { nonEmpty } from '../utils';
 
 export class HierarchyCreator {
   static readonly UP_FILTER = HierarchyFilter.allRejecting().modify({
@@ -40,7 +40,7 @@ export class HierarchyCreator {
   private expandStartId(startEntryId: EntryId): [EntryId, string | null] {
     if (startEntryId.isFam) return [startEntryId, null];
     const indi = this.data.getIndi(startEntryId.id);
-    if (!indi) throw new Error("Invalid startId");
+    if (!indi) throw new Error('Invalid startId');
     const famsIds = indi.getFamiliesAsSpouse();
     if (famsIds.length) return [EntryId.fam(famsIds[0]), startEntryId.id];
     return [startEntryId, null];
@@ -49,7 +49,7 @@ export class HierarchyCreator {
   createHierarchy(): Hierarchy {
     const upRoot = this.idToNode(this.startEntryId, null, null, false);
     const downRoot = this.idToNode(this.startEntryId, null, null, false);
-    if (!upRoot || !downRoot) throw new Error("Invalid root node");
+    if (!upRoot || !downRoot) throw new Error('Invalid root node');
     if (this.startFamIndi) {
       upRoot!.indi = { id: this.startFamIndi };
       downRoot!.indi = { id: this.startFamIndi };
@@ -430,7 +430,7 @@ export class EntryId {
   }
 
   constructor(indiId: string | null, famId: string | null) {
-    if (!indiId && !famId) throw new Error("Invalid EntryId");
+    if (!indiId && !famId) throw new Error('Invalid EntryId');
     this.id = (indiId || famId) as string;
     this.isFam = !!famId;
   }

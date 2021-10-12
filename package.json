@@ -14,7 +14,7 @@
     "watch-test": "nodemon --ext ts --exec 'jasmine-ts \"tests/**/*.spec.ts\"'",
     "predeploy": "npm run build-demo",
     "deploy": "gh-pages -d demo",
-    "prettier": "prettier --write src/**/*.ts && prettier --write src/*.ts"
+    "prettier": "prettier --single-quote --write src/**/*.ts && prettier --single-quote --write src/*.ts"
   },
   "author": "Przemek Wiech",
   "license": "Apache 2.0",
