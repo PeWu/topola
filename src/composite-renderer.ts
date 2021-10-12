@@ -1,6 +1,6 @@
-import { HierarchyNode } from 'd3-hierarchy';
-import { max } from 'd3-array';
-import { TreeEntry, TreeNode } from './api';
+import { HierarchyNode } from "d3-hierarchy";
+import { max } from "d3-array";
+import { TreeEntry, TreeNode } from "./api";
 
 /**
  * Common code for tree nodes that are composed of individual and family boxes.
@@ -25,7 +25,7 @@ export abstract class CompositeRenderer {
   updateNodes(nodes: Array<HierarchyNode<TreeNode>>) {
     // Calculate individual vertical size per depth.
     const indiVSizePerDepth = new Map<number, number>();
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       this.setPreferredIndiSize(node.data.indi);
       this.setPreferredIndiSize(node.data.spouse);
       const family = node.data.family;
@@ -42,7 +42,7 @@ export abstract class CompositeRenderer {
     });
 
     // Set same width for each depth.
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (this.options.horizontal) {
         if (node.data.indi) {
           node.data.indi.width = indiVSizePerDepth.get(node.depth);

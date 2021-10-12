@@ -1,9 +1,9 @@
-import { BaseType, select, Selection } from 'd3-selection';
-import { ChartOptions, TreeNode } from './api';
-import { flextree } from 'd3-flextree';
-import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
-import { max, min } from 'd3-array';
-import 'd3-transition';
+import { BaseType, select, Selection } from "d3-selection";
+import { ChartOptions, TreeNode } from "./api";
+import { flextree } from "d3-flextree";
+import { HierarchyNode, HierarchyPointNode } from "d3-hierarchy";
+import { max, min } from "d3-array";
+import "d3-transition";
 
 type SVGSelection = Selection<BaseType, {}, BaseType, {}>;
 
@@ -54,10 +54,10 @@ export function getChartInfo(
   nodes: Array<HierarchyPointNode<TreeNode>>
 ): ChartSizeInfo {
   // Calculate chart boundaries.
-  const x0 = min(nodes, d => d.x - d.data.width! / 2)! - MARGIN;
-  const y0 = min(nodes, d => d.y - d.data.height! / 2)! - MARGIN;
-  const x1 = max(nodes, d => d.x + d.data.width! / 2)! + MARGIN;
-  const y1 = max(nodes, d => d.y + d.data.height! / 2)! + MARGIN;
+  const x0 = min(nodes, (d) => d.x - d.data.width! / 2)! - MARGIN;
+  const y0 = min(nodes, (d) => d.y - d.data.height! / 2)! - MARGIN;
+  const x1 = max(nodes, (d) => d.x + d.data.width! / 2)! + MARGIN;
+  const y1 = max(nodes, (d) => d.y + d.data.height! / 2)! + MARGIN;
   return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 
@@ -65,10 +65,10 @@ export function getChartInfoWithoutMargin(
   nodes: Array<HierarchyPointNode<TreeNode>>
 ): ChartSizeInfo {
   // Calculate chart boundaries.
-  const x0 = min(nodes, d => d.x - d.data.width! / 2)!;
-  const y0 = min(nodes, d => d.y - d.data.height! / 2)!;
-  const x1 = max(nodes, d => d.x + d.data.width! / 2)!;
-  const y1 = max(nodes, d => d.y + d.data.height! / 2)!;
+  const x0 = min(nodes, (d) => d.x - d.data.width! / 2)!;
+  const y0 = min(nodes, (d) => d.y - d.data.height! / 2)!;
+  const x1 = max(nodes, (d) => d.x + d.data.width! / 2)!;
+  const y1 = max(nodes, (d) => d.y + d.data.height! / 2)!;
   return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
 
@@ -116,7 +116,7 @@ export class ChartUtil {
 
   private linkAdditionalMarriage(node: HierarchyPointNode<TreeNode>) {
     const nodeIndex = node.parent!.children!.findIndex(
-      n => n.data.id === node.data.id
+      (n) => n.data.id === node.data.id
     );
     // Assert nodeIndex > 0.
     const siblingNode = node.parent!.children![nodeIndex - 1];
@@ -130,15 +130,12 @@ export class ChartUtil {
 
   updateSvgDimensions(chartInfo: ChartSizeInfo) {
     const svg = select(this.options.svgSelector);
-    const group = svg.select('g');
+    const group = svg.select("g");
     const transition = this.options.animate
-      ? group
-          .transition()
-          .delay(HIDE_TIME_MS)
-          .duration(MOVE_TIME_MS)
+      ? group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
       : group;
     transition.attr(
-      'transform',
+      "transform",
       `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`
     );
   }
@@ -149,12 +146,12 @@ export class ChartUtil {
   ): Array<HierarchyPointNode<N>> {
     // Add styles so that calculating text size is correct.
     const svg = select(this.options.svgSelector);
-    if (svg.select('style').empty()) {
-      svg.append('style').text(this.options.renderer.getCss());
+    if (svg.select("style").empty()) {
+      svg.append("style").text(this.options.renderer.getCss());
     }
 
     // Assign generation number.
-    root.each(node => {
+    root.each((node) => {
       node.data.generation =
         node.depth * (layoutOptions.flipVertically ? -1 : 1) +
         (this.options.baseGeneration || 0);
@@ -164,7 +161,7 @@ export class ChartUtil {
     this.options.renderer.updateNodes(root.descendants());
 
     const vSizePerDepth = new Map<number, number>();
-    root.each(node => {
+    root.each((node) => {
       const depth = node.depth;
       const maxVSize = max([
         this.options.horizontal ? node.data.width! : node.data.height!,
@@ -174,7 +171,7 @@ export class ChartUtil {
     });
 
     // Set sizes of whole nodes.
-    root.each(node => {
+    root.each((node) => {
       const vSize = vSizePerDepth.get(node.depth);
       if (this.options.horizontal) {
         node.data.width = vSize;
@@ -189,15 +186,17 @@ export class ChartUtil {
       layoutOptions.hSpacing !== undefined ? layoutOptions.hSpacing : H_SPACING;
     // Assigns the x and y position for the nodes.
     const treemap = flextree<N>()
-      .nodeSize(node => {
+      .nodeSize((node) => {
         if (this.options.horizontal) {
-          const maxChildSize = max(node.children || [], n => n.data.width) || 0;
+          const maxChildSize =
+            max(node.children || [], (n) => n.data.width) || 0;
           return [
             node.data.height!,
             (maxChildSize + node.data.width!) / 2 + vSpacing,
           ];
         }
-        const maxChildSize = max(node.children || [], n => n.data.height) || 0;
+        const maxChildSize =
+          max(node.children || [], (n) => n.data.height) || 0;
         return [
           node.data.width!,
           (maxChildSize + node.data.height!) / 2 + vSpacing,
@@ -207,7 +206,7 @@ export class ChartUtil {
     const nodes = treemap(root).descendants();
 
     // Swap x-y coordinates for horizontal layout.
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (layoutOptions.flipVertically) {
         node.y = -node.y;
       }
@@ -222,22 +221,23 @@ export class ChartUtil {
     const svg = this.getSvgForRendering();
     const nodeAnimation = this.renderNodes(nodes, svg);
     const linkAnimation = this.renderLinks(nodes, svg);
-    return (Promise.all([nodeAnimation, linkAnimation]) as unknown) as Promise<
-      void
-    >;
+    return Promise.all([
+      nodeAnimation,
+      linkAnimation,
+    ]) as unknown as Promise<void>;
   }
 
   renderNodes(
     nodes: Array<HierarchyPointNode<TreeNode>>,
     svg: SVGSelection
   ): Promise<void> {
-    const animationPromise = new Promise<void>(resolve => {
+    const animationPromise = new Promise<void>((resolve) => {
       const boundNodes = svg
-        .select('g')
-        .selectAll('g.node')
+        .select("g")
+        .selectAll("g.node")
         .data(nodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
 
-      const nodeEnter = boundNodes.enter().append('g' as string);
+      const nodeEnter = boundNodes.enter().append("g" as string);
 
       let transitionsPending =
         boundNodes.exit().size() + boundNodes.size() + nodeEnter.size();
@@ -253,34 +253,36 @@ export class ChartUtil {
 
       nodeEnter
         .merge(boundNodes)
-        .attr('class', node => `node generation${node.data.generation}`);
+        .attr("class", (node) => `node generation${node.data.generation}`);
       nodeEnter.attr(
-        'transform',
+        "transform",
         (node: HierarchyPointNode<TreeNode>) =>
-          `translate(${node.x - node.data.width! / 2}, ${node.y -
-            node.data.height! / 2})`
+          `translate(${node.x - node.data.width! / 2}, ${
+            node.y - node.data.height! / 2
+          })`
       );
       if (this.options.animate) {
         nodeEnter
-          .style('opacity', 0)
+          .style("opacity", 0)
           .transition()
           .delay(HIDE_TIME_MS + MOVE_TIME_MS)
           .duration(HIDE_TIME_MS)
-          .style('opacity', 1)
-          .on('end', transitionDone);
+          .style("opacity", 1)
+          .on("end", transitionDone);
       }
       const updateTransition = this.options.animate
         ? boundNodes
             .transition()
             .delay(HIDE_TIME_MS)
             .duration(MOVE_TIME_MS)
-            .on('end', transitionDone)
+            .on("end", transitionDone)
         : boundNodes;
       updateTransition.attr(
-        'transform',
+        "transform",
         (node: HierarchyPointNode<TreeNode>) =>
-          `translate(${node.x - node.data.width! / 2}, ${node.y -
-            node.data.height! / 2})`
+          `translate(${node.x - node.data.width! / 2}, ${
+            node.y - node.data.height! / 2
+          })`
       );
       this.options.renderer.render(nodeEnter, boundNodes);
       if (this.options.animate) {
@@ -288,9 +290,9 @@ export class ChartUtil {
           .exit()
           .transition()
           .duration(HIDE_TIME_MS)
-          .style('opacity', 0)
+          .style("opacity", 0)
           .remove()
-          .on('end', transitionDone);
+          .on("end", transitionDone);
       } else {
         boundNodes.exit().remove();
       }
@@ -302,7 +304,7 @@ export class ChartUtil {
     nodes: Array<HierarchyPointNode<TreeNode>>,
     svg: SVGSelection
   ): Promise<void> {
-    const animationPromise = new Promise<void>(resolve => {
+    const animationPromise = new Promise<void>((resolve) => {
       const link = (
         parent: HierarchyPointNode<TreeNode>,
         child: HierarchyPointNode<TreeNode>
@@ -323,18 +325,20 @@ export class ChartUtil {
         return this.linkVertical(parent, child);
       };
 
-      const links = nodes.filter(n => !!n.parent || n.data.additionalMarriage);
+      const links = nodes.filter(
+        (n) => !!n.parent || n.data.additionalMarriage
+      );
       const boundLinks = svg
-        .select('g')
-        .selectAll('path.link')
+        .select("g")
+        .selectAll("path.link")
         .data(links, linkId);
       const path = boundLinks
         .enter()
-        .insert('path', 'g')
-        .attr('class', node =>
-          node.data.additionalMarriage ? 'link additional-marriage' : 'link'
+        .insert("path", "g")
+        .attr("class", (node) =>
+          node.data.additionalMarriage ? "link additional-marriage" : "link"
         )
-        .attr('d', node => link(node.parent!, node));
+        .attr("d", (node) => link(node.parent!, node));
 
       let transitionsPending =
         boundLinks.exit().size() + boundLinks.size() + path.size();
@@ -353,27 +357,27 @@ export class ChartUtil {
             .transition()
             .delay(HIDE_TIME_MS)
             .duration(MOVE_TIME_MS)
-            .on('end', transitionDone)
+            .on("end", transitionDone)
         : boundLinks;
-      linkTransition.attr('d', node => link(node.parent!, node));
+      linkTransition.attr("d", (node) => link(node.parent!, node));
 
       if (this.options.animate) {
         path
-          .style('opacity', 0)
+          .style("opacity", 0)
           .transition()
           .delay(2 * HIDE_TIME_MS + MOVE_TIME_MS)
           .duration(0)
-          .style('opacity', 1)
-          .on('end', transitionDone);
+          .style("opacity", 1)
+          .on("end", transitionDone);
       }
       if (this.options.animate) {
         boundLinks
           .exit()
           .transition()
           .duration(0)
-          .style('opacity', 0)
+          .style("opacity", 0)
           .remove()
-          .on('end', transitionDone);
+          .on("end", transitionDone);
       } else {
         boundLinks.exit().remove();
       }
@@ -383,8 +387,8 @@ export class ChartUtil {
 
   getSvgForRendering(): SVGSelection {
     const svg = select(this.options.svgSelector) as SVGSelection;
-    if (svg.select('g').empty()) {
-      svg.append('g');
+    if (svg.select("g").empty()) {
+      svg.append("g");
     }
     return svg;
   }

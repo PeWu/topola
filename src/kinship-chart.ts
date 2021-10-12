@@ -1,12 +1,12 @@
-import { HierarchyNode } from 'd3-hierarchy';
-import { KinshipChartRenderer } from './kinship/renderer';
-import { TreeNode } from './kinship/api';
-import { Chart, ChartInfo, ChartOptions } from './api';
+import { HierarchyNode } from "d3-hierarchy";
+import { KinshipChartRenderer } from "./kinship/renderer";
+import { TreeNode } from "./kinship/api";
+import { Chart, ChartInfo, ChartOptions } from "./api";
 import {
   HierarchyCreator,
   EntryId,
   getRootsCount,
-} from './kinship/hierarchy-creator';
+} from "./kinship/hierarchy-creator";
 
 export class KinshipChart implements Chart {
   readonly renderer: KinshipChartRenderer;
@@ -25,7 +25,7 @@ export class KinshipChart implements Chart {
       hierarchy.downRoot
     );
 
-    upNodes.concat(downNodes).forEach(node => {
+    upNodes.concat(downNodes).forEach((node) => {
       this.setChildNodesGenerationNumber(node);
     });
 
@@ -43,7 +43,7 @@ export class KinshipChart implements Chart {
       value: number
     ) =>
       childNodes.forEach(
-        n => (n.data.generation = node.data.generation! + value)
+        (n) => (n.data.generation = node.data.generation! + value)
       );
 
     setGenerationNumber(childNodes.indiParents, -1);
@@ -60,7 +60,7 @@ export class KinshipChart implements Chart {
     // Maps id to node object for all children of the input node
     const childNodesById = new Map(
       node.children.map(
-        n => [n.data.id, n] as [string, HierarchyNode<TreeNode>]
+        (n) => [n.data.id, n] as [string, HierarchyNode<TreeNode>]
       )
     );
     const nodeToHNode = (n: TreeNode) =>

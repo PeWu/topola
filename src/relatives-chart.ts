@@ -1,8 +1,8 @@
-import { getAncestorsTree } from './ancestor-chart';
-import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
-import { IdGenerator } from './id-generator';
-import { layOutDescendants } from './descendant-chart';
-import { max, min } from 'd3-array';
+import { getAncestorsTree } from "./ancestor-chart";
+import { HierarchyNode, HierarchyPointNode } from "d3-hierarchy";
+import { IdGenerator } from "./id-generator";
+import { layOutDescendants } from "./descendant-chart";
+import { max, min } from "d3-array";
 import {
   Chart,
   ChartInfo,
@@ -11,14 +11,14 @@ import {
   Fam,
   Indi,
   TreeNode,
-} from './api';
+} from "./api";
 import {
   ChartUtil,
   getChartInfo,
   getChartInfoWithoutMargin,
   H_SPACING,
   V_SPACING,
-} from './chart-util';
+} from "./chart-util";
 
 /** A view of a family that hides one child individual. */
 class FilterChildFam implements Fam {
@@ -73,7 +73,8 @@ interface AncestorData {
 
 /** Chart layout showing all relatives of a person. */
 export class RelativesChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart {
+  implements Chart
+{
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
@@ -89,7 +90,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
     const ancestorData = new Map<string, AncestorData>();
 
-    ancestorsRoot.eachAfter(node => {
+    ancestorsRoot.eachAfter((node) => {
       if (!node.parent) {
         return;
       }
@@ -113,11 +114,11 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       node.data.id = descendantNodes[0].id!;
       const chartInfo = getChartInfoWithoutMargin(descendantNodes);
 
-      const parentData = (node.children || []).map(childNode =>
+      const parentData = (node.children || []).map((childNode) =>
         ancestorData.get(childNode.data.id)
       );
       const parentHeight = parentData
-        .map(data => data!.height)
+        .map((data) => data!.height)
         .reduce((a, b) => a + b + V_SPACING, 0);
 
       const data: AncestorData = {
@@ -130,7 +131,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       ancestorData.set(node.data.id, data);
     });
 
-    ancestorsRoot.each(node => {
+    ancestorsRoot.each((node) => {
       if (!node.parent) {
         return;
       }
@@ -146,37 +147,39 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
         node.parent.children!.length === 1;
     });
 
-    ancestorsRoot.each(node => {
+    ancestorsRoot.each((node) => {
       const data = ancestorData.get(node.data.id);
       const thisNode = data ? data.descendantNodes[0] : focusedNode;
-      (node.children || []).forEach(child => {
+      (node.children || []).forEach((child) => {
         const childNode = ancestorData.get(child.data.id)!.descendantNodes[0];
         childNode.parent = thisNode;
       });
 
       if (node.data.indiParentNodeId && node.children) {
         thisNode.data.indiParentNodeId = node.children!.find(
-          childNode => childNode.id === node.data.indiParentNodeId
+          (childNode) => childNode.id === node.data.indiParentNodeId
         )!.data.id;
       }
       if (node.data.spouseParentNodeId && node.children) {
         thisNode.data.spouseParentNodeId = node.children!.find(
-          childNode => childNode.id === node.data.spouseParentNodeId
+          (childNode) => childNode.id === node.data.spouseParentNodeId
         )!.data.id;
       }
     });
 
-    ancestorsRoot.each(node => {
+    ancestorsRoot.each((node) => {
       const nodeData = ancestorData.get(node.data.id);
       // Lay out the nodes produced by laying out descendants of ancestors
       // instead of the ancestor nodes from ancestorsRoot.
       const thisNode = nodeData ? nodeData.descendantNodes[0] : focusedNode;
       const indiParent =
         node.children &&
-        node.children.find(child => child.id === node.data.indiParentNodeId);
+        node.children.find((child) => child.id === node.data.indiParentNodeId);
       const spouseParent =
         node.children &&
-        node.children.find(child => child.id === node.data.spouseParentNodeId);
+        node.children.find(
+          (child) => child.id === node.data.spouseParentNodeId
+        );
       const nodeX = thisNode.x;
       const nodeY = thisNode.y;
       const nodeWidth = thisNode.data.width!;
@@ -210,7 +213,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
         // Move all nodes by (dx, dy). The ancestor node,
         // ie. data.descendantNodes[0] is now at (0, 0).
-        data.descendantNodes.forEach(node => {
+        data.descendantNodes.forEach((node) => {
           node.x += dx;
           node.y += dy;
         });
@@ -268,7 +271,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
         // Move all nodes by (dx, dy). The ancestor node,
         // ie. data.descendantNodes[0] is now at (0, 0).
-        data.descendantNodes.forEach(node => {
+        data.descendantNodes.forEach((node) => {
           node.x += dx;
           node.y += dy;
         });
@@ -300,7 +303,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       }
     });
     return Array.from(ancestorData.values())
-      .map(data => data.descendantNodes)
+      .map((data) => data.descendantNodes)
       .reduce((a, b) => a.concat(b), []);
   }
 

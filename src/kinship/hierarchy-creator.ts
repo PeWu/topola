@@ -1,9 +1,9 @@
-import { ChildNodes, LinkType, otherSideLinkType, TreeNode } from './api';
-import { DataProvider, Fam, Indi } from '../api';
-import { hierarchy, HierarchyNode } from 'd3-hierarchy';
-import { HierarchyFilter } from './hierarchy-filter';
-import { IdGenerator } from '../id-generator';
-import { nonEmpty } from '../utils';
+import { ChildNodes, LinkType, otherSideLinkType, TreeNode } from "./api";
+import { DataProvider, Fam, Indi } from "../api";
+import { hierarchy, HierarchyNode } from "d3-hierarchy";
+import { HierarchyFilter } from "./hierarchy-filter";
+import { IdGenerator } from "../id-generator";
+import { nonEmpty } from "../utils";
 
 export class HierarchyCreator {
   static readonly UP_FILTER = HierarchyFilter.allRejecting().modify({
@@ -40,7 +40,7 @@ export class HierarchyCreator {
   private expandStartId(startEntryId: EntryId): [EntryId, string | null] {
     if (startEntryId.isFam) return [startEntryId, null];
     const indi = this.data.getIndi(startEntryId.id);
-    if (!indi) throw new Error('Invalid startId');
+    if (!indi) throw new Error("Invalid startId");
     const famsIds = indi.getFamiliesAsSpouse();
     if (famsIds.length) return [EntryId.fam(famsIds[0]), startEntryId.id];
     return [startEntryId, null];
@@ -49,7 +49,7 @@ export class HierarchyCreator {
   createHierarchy(): Hierarchy {
     const upRoot = this.idToNode(this.startEntryId, null, null, false);
     const downRoot = this.idToNode(this.startEntryId, null, null, false);
-    if (!upRoot || !downRoot) throw new Error('Invalid root node');
+    if (!upRoot || !downRoot) throw new Error("Invalid root node");
     if (this.startFamIndi) {
       upRoot!.indi = { id: this.startFamIndi };
       downRoot!.indi = { id: this.startFamIndi };
@@ -117,13 +117,10 @@ export class HierarchyCreator {
     const spouse = parentNode.spouse
       ? this.data.getIndi(parentNode.spouse.id)
       : null;
-    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(
-      indi
-    );
-    const [
-      spouseParentsFamsIds,
-      spouseSiblingsIds,
-    ] = this.getParentsAndSiblings(spouse);
+    const [indiParentsFamsIds, indiSiblingsIds] =
+      this.getParentsAndSiblings(indi);
+    const [spouseParentsFamsIds, spouseSiblingsIds] =
+      this.getParentsAndSiblings(spouse);
     const childrenIds = fam.getChildren();
     return new ChildNodes({
       indiParents: filter.indiParents
@@ -169,9 +166,8 @@ export class HierarchyCreator {
     parentNode: TreeNode,
     filter: HierarchyFilter
   ): ChildNodes {
-    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(
-      indi
-    );
+    const [indiParentsFamsIds, indiSiblingsIds] =
+      this.getParentsAndSiblings(indi);
     return new ChildNodes({
       indiParents: filter.indiParents
         ? this.famAsSpouseIdsToNodes(
@@ -215,7 +211,7 @@ export class HierarchyCreator {
         father ? father.getFamiliesAsSpouse() : [],
         mother ? mother.getFamiliesAsSpouse() : []
       )
-      .filter(id => id !== indiFamcId);
+      .filter((id) => id !== indiFamcId);
     parentFamsIds.unshift(indiFamcId!);
 
     const siblingsIds = Array.from(indiFamc.getChildren());
@@ -229,7 +225,7 @@ export class HierarchyCreator {
     parentNode: TreeNode,
     childNodeType: LinkType
   ): TreeNode[] {
-    return indiIds.flatMap(id =>
+    return indiIds.flatMap((id) =>
       this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType)
     );
   }
@@ -250,7 +246,7 @@ export class HierarchyCreator {
       return node ? [node] : [];
     }
 
-    const famsNodes: TreeNode[] = famsIds.map(id => {
+    const famsNodes: TreeNode[] = famsIds.map((id) => {
       return {
         id,
         indi: { id: indiId },
@@ -282,7 +278,7 @@ export class HierarchyCreator {
       parentNode,
       childNodeType
     );
-    nodes.slice(1).forEach(node => (node.primaryMarriage = nodes[0]));
+    nodes.slice(1).forEach((node) => (node.primaryMarriage = nodes[0]));
     return nodes;
   }
 
@@ -293,10 +289,10 @@ export class HierarchyCreator {
     duplicateCheck = true
   ): TreeNode[] {
     return entryIds
-      .map(entryId =>
+      .map((entryId) =>
         this.idToNode(entryId, parentNode, childNodeType, duplicateCheck)
       )
-      .filter(node => node != null) as TreeNode[];
+      .filter((node) => node != null) as TreeNode[];
   }
 
   private idToNode(
@@ -336,14 +332,10 @@ export class HierarchyCreator {
       return [];
     }
     const fam = this.data.getFam(node!.family!.id);
-    const [
-      indiParentsPresent,
-      indiSiblingsPresent,
-    ] = this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null);
-    const [
-      spouseParentsPresent,
-      spouseSiblingsPresent,
-    ] = this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null);
+    const [indiParentsPresent, indiSiblingsPresent] =
+      this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null);
+    const [spouseParentsPresent, spouseSiblingsPresent] =
+      this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null);
     const childrenPresent = nonEmpty(fam!.getChildren());
 
     return [
@@ -355,7 +347,7 @@ export class HierarchyCreator {
     ]
       .flat()
       .filter(
-        linkType =>
+        (linkType) =>
           !this.isChildNodeTypeForbidden(linkType, node) &&
           !node.childNodes.get(linkType).length
       );
@@ -438,7 +430,7 @@ export class EntryId {
   }
 
   constructor(indiId: string | null, famId: string | null) {
-    if (!indiId && !famId) throw new Error('Invalid EntryId');
+    if (!indiId && !famId) throw new Error("Invalid EntryId");
     this.id = (indiId || famId) as string;
     this.isFam = !!famId;
   }

@@ -1,33 +1,28 @@
-import { select } from 'd3-selection';
+import { select } from "d3-selection";
 import {
   Renderer,
   RendererOptions,
   TreeEntry,
   TreeNode,
   TreeNodeSelection,
-} from './api';
-import { FamDetails, IndiDetails } from './data';
-import { CompositeRenderer } from './composite-renderer';
+} from "./api";
+import { FamDetails, IndiDetails } from "./data";
+import { CompositeRenderer } from "./composite-renderer";
 
 const MIN_HEIGHT = 27;
 const MIN_WIDTH = 50;
 
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text: string) {
-  const g = select('svg')
-    .append('g')
-    .attr('class', 'simple node');
-  const x = g
-    .append('text')
-    .attr('class', 'name')
-    .text(text);
+  const g = select("svg").append("g").attr("class", "simple node");
+  const x = g.append("text").attr("class", "name").text(text);
   const w = (x.node() as SVGTextContentElement).getComputedTextLength();
   g.remove();
   return w;
 }
 
 function getName(indi: IndiDetails) {
-  return [indi.getFirstName() || '', indi.getLastName() || ''].join(' ');
+  return [indi.getFirstName() || "", indi.getLastName() || ""].join(" ");
 }
 
 function getYears(indi: IndiDetails) {
@@ -38,9 +33,9 @@ function getYears(indi: IndiDetails) {
   const deathYear = deathDate && deathDate.date && deathDate.date.year;
 
   if (!birthYear && !deathYear) {
-    return '';
+    return "";
   }
-  return `${birthYear || ''} – ${deathYear || ''}`;
+  return `${birthYear || ""} – ${deathYear || ""}`;
 }
 
 /**
@@ -65,16 +60,13 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
   }
 
   render(enter: TreeNodeSelection, update: TreeNodeSelection): void {
-    const selection = enter
-      .merge(update)
-      .append('g')
-      .attr('class', 'simple');
-    this.renderIndi(selection, node => node.indi!);
+    const selection = enter.merge(update).append("g").attr("class", "simple");
+    this.renderIndi(selection, (node) => node.indi!);
     const spouseSelection = selection
-      .filter(node => !!node.data.spouse)
-      .append('g')
-      .attr('transform', node => `translate(0, ${node.data.indi!.height})`);
-    this.renderIndi(spouseSelection, node => node.spouse!);
+      .filter((node) => !!node.data.spouse)
+      .append("g")
+      .attr("transform", (node) => `translate(0, ${node.data.indi!.height})`);
+    this.renderIndi(spouseSelection, (node) => node.spouse!);
   }
 
   getCss() {
@@ -110,39 +102,39 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
     // Optionally add a link.
     const group = this.options.indiHrefFunc
       ? selection
-          .append('a')
-          .attr('href', node =>
+          .append("a")
+          .attr("href", (node) =>
             this.options.indiHrefFunc!(indiFunc(node.data).id)
           )
       : selection;
 
     // Box.
     group
-      .append('rect')
-      .attr('width', node => indiFunc(node.data).width!)
-      .attr('height', node => indiFunc(node.data).height!);
+      .append("rect")
+      .attr("width", (node) => indiFunc(node.data).width!)
+      .attr("height", (node) => indiFunc(node.data).height!);
 
     // Text.
     group
-      .append('text')
-      .attr('text-anchor', 'middle')
-      .attr('class', 'name')
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("class", "name")
       .attr(
-        'transform',
-        node => `translate(${indiFunc(node.data).width! / 2}, 17)`
+        "transform",
+        (node) => `translate(${indiFunc(node.data).width! / 2}, 17)`
       )
-      .text(node =>
+      .text((node) =>
         getName(this.options.data.getIndi(indiFunc(node.data).id)!)
       );
     group
-      .append('text')
-      .attr('text-anchor', 'middle')
-      .attr('class', 'details')
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("class", "details")
       .attr(
-        'transform',
-        node => `translate(${indiFunc(node.data).width! / 2}, 33)`
+        "transform",
+        (node) => `translate(${indiFunc(node.data).width! / 2}, 33)`
       )
-      .text(node =>
+      .text((node) =>
         getYears(this.options.data.getIndi(indiFunc(node.data).id)!)
       );
   }

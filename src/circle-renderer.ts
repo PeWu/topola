@@ -1,12 +1,12 @@
-import { FamDetails, IndiDetails } from './data';
-import { HierarchyNode } from 'd3-hierarchy';
+import { FamDetails, IndiDetails } from "./data";
+import { HierarchyNode } from "d3-hierarchy";
 import {
   Renderer,
   RendererOptions,
   TreeNode,
   TreeNodeSelection,
   TreeEntry,
-} from './api';
+} from "./api";
 
 /** Renders person or married couple inside a sircle. */
 export class CircleRenderer implements Renderer {
@@ -25,7 +25,7 @@ export class CircleRenderer implements Renderer {
   }
 
   updateNodes(nodes: Array<HierarchyNode<TreeNode>>) {
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       [node.data.width, node.data.height] = node.data.family
         ? [120, 120]
         : [80, 80];
@@ -34,52 +34,52 @@ export class CircleRenderer implements Renderer {
 
   getName(entry: TreeEntry | undefined) {
     if (!entry) {
-      return '';
+      return "";
     }
     const indi = this.options.data.getIndi(entry.id)!;
     const firstName = indi.getFirstName();
-    return firstName ? firstName.split(' ')[0] : '';
+    return firstName ? firstName.split(" ")[0] : "";
   }
 
   render(enter: TreeNodeSelection, update: TreeNodeSelection): void {
-    enter = enter.append('g').attr('class', 'circle');
-    update = update.select('g');
+    enter = enter.append("g").attr("class", "circle");
+    update = update.select("g");
 
     enter
-      .append('circle')
-      .attr('r', node => node.data.width! / 2)
-      .attr('cx', node => node.data.width! / 2)
-      .attr('cy', node => node.data.height! / 2);
+      .append("circle")
+      .attr("r", (node) => node.data.width! / 2)
+      .attr("cx", (node) => node.data.width! / 2)
+      .attr("cy", (node) => node.data.height! / 2);
     enter
-      .filter(node => !!node.data.family)
-      .append('text')
-      .attr('text-anchor', 'middle')
+      .filter((node) => !!node.data.family)
+      .append("text")
+      .attr("text-anchor", "middle")
       .attr(
-        'transform',
-        node =>
+        "transform",
+        (node) =>
           `translate(${node.data.width! / 2}, ${node.data.height! / 2 - 4})`
       )
-      .text(node => this.getName(node.data.indi));
+      .text((node) => this.getName(node.data.indi));
     enter
-      .filter(node => !!node.data.family)
-      .append('text')
-      .attr('text-anchor', 'middle')
+      .filter((node) => !!node.data.family)
+      .append("text")
+      .attr("text-anchor", "middle")
       .attr(
-        'transform',
-        node =>
+        "transform",
+        (node) =>
           `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 14})`
       )
-      .text(node => this.getName(node.data.spouse));
+      .text((node) => this.getName(node.data.spouse));
     enter
-      .filter(node => !node.data.family)
-      .append('text')
-      .attr('text-anchor', 'middle')
+      .filter((node) => !node.data.family)
+      .append("text")
+      .attr("text-anchor", "middle")
       .attr(
-        'transform',
-        node =>
+        "transform",
+        (node) =>
           `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 4})`
       )
-      .text(node => this.getName(node.data.indi));
+      .text((node) => this.getName(node.data.indi));
   }
 
   getCss() {
