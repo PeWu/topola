@@ -65,7 +65,11 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
     const spouseSelection = selection
       .filter((node) => !!node.data.spouse)
       .append('g')
-      .attr('transform', (node) => `translate(0, ${node.data.indi!.height})`);
+      .attr('transform', (node) =>
+        this.options.horizontal
+          ? `translate(0, ${node.data.indi!.height})`
+          : `translate(${node.data.indi!.width}, 0)`
+      );
     this.renderIndi(spouseSelection, (node) => node.spouse!);
   }
 
