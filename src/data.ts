@@ -29,6 +29,7 @@ export interface JsonEvent extends DateOrRange {
 export interface JsonImage {
   url: string;
   title?: string;
+  originalSizeUrl?: string;
 }
 
 /** Json representation of an individual. */
