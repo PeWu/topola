@@ -1,3 +1,4 @@
+import { ChartColors } from '.';
 import { select } from 'd3-selection';
 import {
   Chart,
@@ -48,6 +49,7 @@ export interface SimpleChartOptions {
   chartType: ChartType;
   renderer: RendererType;
   horizontal?: boolean;
+  colors?: ChartColors;
   // Animate when transforming chart.
   animate?: boolean;
   // Update the width and height of the selected SVG. Defaults to true.
@@ -82,6 +84,7 @@ function createChartOptions(
       indiCallback: chartOptions.indiCallback,
       famCallback: chartOptions.famCallback,
       horizontal: chartOptions.horizontal,
+      colors: chartOptions.colors,
       animate,
       locale: chartOptions.locale,
     }),

@@ -100,6 +100,12 @@ export interface FamInfo {
   generation: number;
 }
 
+export enum ChartColors {
+  NO_COLOR,
+  COLOR_BY_GENERATION,
+  COLOR_BY_SEX,
+}
+
 export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   // Creates HTTP link based on ID.
   indiHrefFunc?: (id: string) => string;
@@ -108,6 +114,8 @@ export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   famCallback?: (id: FamInfo) => void;
   data: DataProvider<IndiT, FamT>;
   horizontal?: boolean;
+  // How to use colors.
+  colors?: ChartColors;
   // Animate showing and transforming charts.
   animate?: boolean;
   locale?: string;

@@ -1,3 +1,5 @@
+/// <reference path="parse-gedcom.d.ts" />
+
 import { GedcomEntry, parse as parseGedcom } from 'parse-gedcom';
 
 import {
@@ -12,12 +14,12 @@ import {
 
 /** Returns the first entry with the given tag or undefined if not found. */
 function findTag(tree: GedcomEntry[], tag: string): GedcomEntry | undefined {
-  return tree.find(entry => entry.tag === tag);
+  return tree.find((entry) => entry.tag === tag);
 }
 
 /** Returns all entries with the given tag. */
 function findTags(tree: GedcomEntry[], tag: string): GedcomEntry[] {
-  return tree.filter(entry => entry.tag === tag);
+  return tree.filter((entry) => entry.tag === tag);
 }
 
 /**
@@ -92,7 +94,7 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
   const parts = gedcomDate.replace(/@.*@/, '').trim().split(' ');
   const firstPart = parts[0].toLowerCase();
   if (firstPart.startsWith('bet')) {
-    const i = parts.findIndex(x => x.toLowerCase() === 'and');
+    const i = parts.findIndex((x) => x.toLowerCase() === 'and');
     const from = parseDate(parts.slice(1, i));
     const to = parseDate(parts.slice(i + 1));
     return { dateRange: { from, to } };
@@ -118,7 +120,7 @@ function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
   if (!notesTag || notesTag.tag !== 'NOTE') return undefined;
 
   return findTags(notesTag.tree, 'CONT')
-    .filter(x => x.data)
+    .filter((x) => x.data)
     .reduce((a, i) => a.concat(i.data), [notesTag.data]);
 }
 
@@ -158,7 +160,7 @@ function createIndi(
   objects: Map<string, GedcomEntry>
 ): JsonIndi {
   const id = pointerToId(entry.pointer);
-  const fams = findTags(entry.tree, 'FAMS').map(entry =>
+  const fams = findTags(entry.tree, 'FAMS').map((entry) =>
     pointerToId(entry.data)
   );
   const indi: JsonIndi = { id, fams };
@@ -169,7 +171,7 @@ function createIndi(
     const type = findTag(nameTag.tree, 'TYPE');
     return type !== undefined && type.data === 'maiden';
   };
-  const main = nameTags.find(x => !isMaiden(x));
+  const main = nameTags.find((x) => !isMaiden(x));
   const maiden = nameTags.find(isMaiden);
 
   if (main) {
@@ -265,7 +267,7 @@ function createIndi(
 /** Creates a JsonFam object from an FAM entry in GEDCOM. */
 function createFam(entry: GedcomEntry): JsonFam {
   const id = pointerToId(entry.pointer);
-  const children = findTags(entry.tree, 'CHIL').map(entry =>
+  const children = findTags(entry.tree, 'CHIL').map((entry) =>
     pointerToId(entry.data)
   );
   const fam: JsonFam = { id, children };
@@ -292,7 +294,7 @@ function createFam(entry: GedcomEntry): JsonFam {
 
 /** Creates a map from ID to entry from an array of entries. */
 function createMap(entries: GedcomEntry[]): Map<string, GedcomEntry> {
-  return new Map(entries.map(entry => [pointerToId(entry.pointer), entry]));
+  return new Map(entries.map((entry) => [pointerToId(entry.pointer), entry]));
 }
 
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
@@ -303,7 +305,7 @@ export function gedcomToJson(gedcomContents: string): JsonGedcomData {
 /** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
 export function gedcomEntriesToJson(gedcom: GedcomEntry[]): JsonGedcomData {
   const objects = createMap(findTags(gedcom, 'OBJE'));
-  const indis = findTags(gedcom, 'INDI').map(entry =>
+  const indis = findTags(gedcom, 'INDI').map((entry) =>
     createIndi(entry, objects)
   );
   const fams = findTags(gedcom, 'FAM').map(createFam);

@@ -38,7 +38,8 @@ export function getAncestorsTree(options: ChartOptions) {
 
 /** Renders an ancestors chart. */
 export class AncestorChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart {
+  implements Chart
+{
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {

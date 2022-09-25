@@ -25,7 +25,7 @@ function removeDummyNode(allNodes: Array<HierarchyPointNode<TreeNode>>) {
   // Move first node to (0, 0) coordinates.
   const dx = -nodes[0].x;
   const dy = -nodes[0].y;
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     if (
       node.parent &&
       node.parent.id === DUMMY_ROOT_NODE_ID &&
@@ -50,7 +50,8 @@ function getSpouse(indiId: string, fam: Fam): string | null {
 
 /** Renders a descendants chart. */
 export class DescendantChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart {
+  implements Chart
+{
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
@@ -72,7 +73,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       ];
     }
     // Marriages.
-    const nodes = famIds.map(famId => {
+    const nodes = famIds.map((famId) => {
       const entry: TreeNode = {
         id: famId,
         indi: {
@@ -89,7 +90,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       }
       return entry;
     });
-    nodes.slice(1).forEach(node => {
+    nodes.slice(1).forEach((node) => {
       node.additionalMarriage = true;
     });
     return nodes;
@@ -118,7 +119,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       : [this.getFamNode(this.options.startFam!)];
 
     const idGenerator = this.options.idGenerator || new IdGenerator();
-    nodes.forEach(node => (node.id = idGenerator.getId(node.id)));
+    nodes.forEach((node) => (node.id = idGenerator.getId(node.id)));
 
     // If there are multiple root nodes, i.e. the start individual has multiple
     // marriages, create a dummy root node.
@@ -130,13 +131,13 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
         width: 1,
       };
       parents.push(dummyNode);
-      nodes.forEach(node => (node.parentId = dummyNode.id));
+      nodes.forEach((node) => (node.parentId = dummyNode.id));
     }
 
     parents.push(...nodes);
 
     const stack: TreeNode[] = [];
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       if (node.family) {
         stack.push(node);
       }
@@ -145,9 +146,9 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       const entry = stack.pop()!;
       const fam = this.options.data.getFam(entry.family!.id)!;
       const children = fam.getChildren();
-      children.forEach(childId => {
+      children.forEach((childId) => {
         const childNodes = this.getNodes(childId);
-        childNodes.forEach(node => {
+        childNodes.forEach((node) => {
           node.parentId = entry.id;
           if (node.family) {
             node.id = `${idGenerator.getId(node.family.id)}`;

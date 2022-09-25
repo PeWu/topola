@@ -25,7 +25,7 @@ export class CircleRenderer implements Renderer {
   }
 
   updateNodes(nodes: Array<HierarchyNode<TreeNode>>) {
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       [node.data.width, node.data.height] = node.data.family
         ? [120, 120]
         : [80, 80];
@@ -47,39 +47,39 @@ export class CircleRenderer implements Renderer {
 
     enter
       .append('circle')
-      .attr('r', node => node.data.width! / 2)
-      .attr('cx', node => node.data.width! / 2)
-      .attr('cy', node => node.data.height! / 2);
+      .attr('r', (node) => node.data.width! / 2)
+      .attr('cx', (node) => node.data.width! / 2)
+      .attr('cy', (node) => node.data.height! / 2);
     enter
-      .filter(node => !!node.data.family)
+      .filter((node) => !!node.data.family)
       .append('text')
       .attr('text-anchor', 'middle')
       .attr(
         'transform',
-        node =>
+        (node) =>
           `translate(${node.data.width! / 2}, ${node.data.height! / 2 - 4})`
       )
-      .text(node => this.getName(node.data.indi));
+      .text((node) => this.getName(node.data.indi));
     enter
-      .filter(node => !!node.data.family)
+      .filter((node) => !!node.data.family)
       .append('text')
       .attr('text-anchor', 'middle')
       .attr(
         'transform',
-        node =>
+        (node) =>
           `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 14})`
       )
-      .text(node => this.getName(node.data.spouse));
+      .text((node) => this.getName(node.data.spouse));
     enter
-      .filter(node => !node.data.family)
+      .filter((node) => !node.data.family)
       .append('text')
       .attr('text-anchor', 'middle')
       .attr(
         'transform',
-        node =>
+        (node) =>
           `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 4})`
       )
-      .text(node => this.getName(node.data.indi));
+      .text((node) => this.getName(node.data.indi));
   }
 
   getCss() {

@@ -8,7 +8,8 @@ import { layOutDescendants } from './descendant-chart';
  * a descendant chart for a family.
  */
 export class HourglassChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart {
+  implements Chart
+{
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {

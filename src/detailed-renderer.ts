@@ -1,4 +1,5 @@
 import { BaseType, select, Selection } from 'd3-selection';
+import { ChartColors } from '.';
 import { FamDetails, IndiDetails } from './data';
 import { formatDateOrRange } from './date-format';
 import { max } from 'd3-array';
@@ -35,13 +36,8 @@ export function getLength(text: string, textClass: string): number {
   if (textLengthCache.has(cacheKey)) {
     return textLengthCache.get(cacheKey)!;
   }
-  const g = select('svg')
-    .append('g')
-    .attr('class', 'detailed node');
-  const x = g
-    .append('text')
-    .attr('class', textClass)
-    .text(text);
+  const g = select('svg').append('g').attr('class', 'detailed node');
+  const x = g.append('text').attr('class', textClass).text(text);
   const length = (x.node() as SVGTextContentElement).getComputedTextLength();
   g.remove();
   textLengthCache.set(cacheKey, length);
@@ -72,6 +68,17 @@ interface OffsetIndi {
 export class DetailedRenderer extends CompositeRenderer implements Renderer {
   constructor(readonly options: RendererOptions<IndiDetails, FamDetails>) {
     super(options);
+  }
+
+  private getColoringClass() {
+    switch (this.options.colors) {
+      case ChartColors.NO_COLOR:
+        return 'nocolor';
+      case ChartColors.COLOR_BY_SEX:
+        return 'bysex';
+      default:
+        return 'bygeneration';
+    }
   }
 
   /** Extracts lines of details for a person. */
@@ -138,7 +145,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     ])!;
 
     const maxDetailsWidth = max(
-      details.map(x => getLength(x.text, 'details'))
+      details.map((x) => getLength(x.text, 'details'))
     )!;
     const width =
       max([
@@ -157,7 +164,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
 
     const height = max([10 + details.length * 14, FAM_MIN_HEIGHT])!;
     const maxDetailsWidth = max(
-      details.map(x => getLength(x.text, 'details'))
+      details.map((x) => getLength(x.text, 'details'))
     )!;
     const width = max([maxDetailsWidth + 22, FAM_MIN_WIDTH])!;
     return [width, height];
@@ -171,7 +178,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .merge(update)
       .selectAll('g.indi')
       .data(
-        node => {
+        (node) => {
           const result: OffsetIndi[] = [];
           const famXOffset =
             !this.options.horizontal && node.data.family
@@ -214,24 +221,24 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'indi');
     this.transition(indiEnter.merge(indiUpdate)).attr(
       'transform',
-      node => `translate(${node.xOffset}, ${node.yOffset})`
+      (node) => `translate(${node.xOffset}, ${node.yOffset})`
     );
 
     this.renderIndi(indiEnter, indiUpdate);
 
     const familyEnter = enter
-      .select(function(node) {
+      .select(function (node) {
         return node.data.family ? this : null;
       })
       .append('g' as string)
       .attr('class', 'family');
     const familyUpdate = update
-      .select(function(node) {
+      .select(function (node) {
         return node.data.family ? this : null;
       })
       .select('g.family');
 
-    this.transition(familyEnter.merge(familyUpdate)).attr('transform', node =>
+    this.transition(familyEnter.merge(familyUpdate)).attr('transform', (node) =>
       this.getFamTransform(node.data)
     );
     this.renderFamily(familyEnter, familyUpdate);
@@ -275,51 +282,67 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   font-style: italic;
 }
 
-.detailed rect {
-  fill: #ffffdd;
+.detailed rect.nocolor {
+  fill: #ffffff;
 }
 
-.generation-11 .detailed rect, .generation1 .detailed rect {
-  fill: #edffdb;
+.detailed rect.bysex {
+  fill: #eeeeee;
 }
 
-.generation-10 .detailed rect, .generation2 .detailed rect {
-  fill: #dbffdb;
-}
-
-.generation-9 .detailed rect, .generation3 .detailed rect {
-  fill: #dbffed;
-}
-
-.generation-8 .detailed rect, .generation4 .detailed rect {
+.detailed rect.bysex.male {
   fill: #dbffff;
 }
 
-.generation-7 .detailed rect, .generation5 .detailed rect {
-  fill: #dbedff;
-}
-
-.generation-6 .detailed rect, .generation6 .detailed rect {
-  fill: #dbdbff;
-}
-
-.generation-5 .detailed rect, .generation7 .detailed rect {
-  fill: #eddbff;
-}
-
-.generation-4 .detailed rect, .generation8 .detailed rect {
-  fill: #ffdbff;
-}
-
-.generation-3 .detailed rect, .generation9 .detailed rect {
+.detailed rect.bysex.female {
   fill: #ffdbed;
 }
 
-.generation-2 .detailed rect, .generation10 .detailed rect {
+.detailed rect.bygeneration {
+  fill: #ffffdd;
+}
+
+.generation-11 .detailed rect.bygeneration, .generation1 .detailed rect.bygeneration {
+  fill: #edffdb;
+}
+
+.generation-10 .detailed rect.bygeneration, .generation2 .detailed rect.bygeneration {
+  fill: #dbffdb;
+}
+
+.generation-9 .detailed rect.bygeneration, .generation3 .detailed rect.bygeneration {
+  fill: #dbffed;
+}
+
+.generation-8 .detailed rect.bygeneration, .generation4 .detailed rect.bygeneration {
+  fill: #dbffff;
+}
+
+.generation-7 .detailed rect.bygeneration, .generation5 .detailed rect.bygeneration {
+  fill: #dbedff;
+}
+
+.generation-6 .detailed rect.bygeneration, .generation6 .detailed rect.bygeneration {
+  fill: #dbdbff;
+}
+
+.generation-5 .detailed rect.bygeneration, .generation7 .detailed rect.bygeneration {
+  fill: #eddbff;
+}
+
+.generation-4 .detailed rect.bygeneration, .generation8 .detailed rect.bygeneration {
+  fill: #ffdbff;
+}
+
+.generation-3 .detailed rect.bygeneration, .generation9 .detailed rect.bygeneration {
+  fill: #ffdbed;
+}
+
+.generation-2 .detailed rect.bygeneration, .generation10 .detailed rect.bygeneration {
   fill: #ffdbdb;
 }
 
-.generation-1 .detailed rect, .generation11 .detailed rect {
+.generation-1 .detailed rect.bygeneration, .generation11 .detailed rect.bygeneration {
   fill: #ffeddb;
 }`;
   }
@@ -335,12 +358,25 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
 
   private getFamTransform(node: TreeNode): string {
     if (this.options.horizontal) {
-      return `translate(${(node.indi && node.indi.width) ||
-        node.spouse!.width}, ${max([getFamPositionHorizontal(node), 0])})`;
+      return `translate(${
+        (node.indi && node.indi.width) || node.spouse!.width
+      }, ${max([getFamPositionHorizontal(node), 0])})`;
     }
-    return `translate(${max([getFamPositionVertical(node), 0])}, ${(node.indi &&
-      node.indi.height) ||
-      node.spouse!.height})`;
+    return `translate(${max([getFamPositionVertical(node), 0])}, ${
+      (node.indi && node.indi.height) || node.spouse!.height
+    })`;
+  }
+
+  private getSexClass(indiId: string) {
+    const sex = this.options.data.getIndi(indiId)?.getSex();
+    switch (sex) {
+      case 'M':
+        return 'male';
+      case 'F':
+        return 'female';
+      default:
+        return '';
+    }
   }
 
   private renderIndi(
@@ -350,7 +386,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     if (this.options.indiHrefFunc) {
       enter = enter
         .append('a')
-        .attr('href', data => this.options.indiHrefFunc!(data.indi.id));
+        .attr('href', (data) => this.options.indiHrefFunc!(data.indi.id));
       update = update.select('a');
     }
     if (this.options.indiCallback) {
@@ -366,22 +402,28 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('rect')
       .attr('rx', 5)
       .attr('stroke-width', 0)
-      .attr('class', 'background')
+      .attr(
+        'class',
+        (node) =>
+          `background ${this.getColoringClass()} ${this.getSexClass(
+            node.indi.id
+          )}`
+      )
       .merge(update.select('rect.background'));
     this.transition(background)
-      .attr('width', node => node.indi.width!)
-      .attr('height', node => node.indi.height!);
+      .attr('width', (node) => node.indi.width!)
+      .attr('height', (node) => node.indi.height!);
 
     // Clip path.
     const getClipId = (id: string) => `clip-${id}`;
     enter
       .append('clipPath')
-      .attr('id', node => getClipId(node.indi.id))
+      .attr('id', (node) => getClipId(node.indi.id))
       .append('rect')
       .attr('rx', 5)
       .merge(update.select('clipPath rect'))
-      .attr('width', node => node.indi.width!)
-      .attr('height', node => node.indi.height!);
+      .attr('width', (node) => node.indi.width!)
+      .attr('height', (node) => node.indi.height!);
 
     const getIndi = (data: OffsetIndi) =>
       this.options.data.getIndi(data.indi.id);
@@ -394,52 +436,58 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('class', 'name')
-      .attr('transform', node => `translate(${getDetailsWidth(node) / 2}, 17)`)
-      .text(node => getIndi(node)!.getFirstName());
+      .attr(
+        'transform',
+        (node) => `translate(${getDetailsWidth(node) / 2}, 17)`
+      )
+      .text((node) => getIndi(node)!.getFirstName());
     enter
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('class', 'name')
-      .attr('transform', node => `translate(${getDetailsWidth(node) / 2}, 33)`)
-      .text(node => getIndi(node)!.getLastName());
+      .attr(
+        'transform',
+        (node) => `translate(${getDetailsWidth(node) / 2}, 33)`
+      )
+      .text((node) => getIndi(node)!.getLastName());
 
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
-    enter.each(node => {
+    enter.each((node) => {
       const indi = getIndi(node)!;
       const detailsList = this.getIndiDetails(indi);
       details.set(node.indi.id, detailsList);
     });
 
-    const maxDetails = max(Array.from(details.values(), v => v.length))!;
+    const maxDetails = max(Array.from(details.values(), (v) => v.length))!;
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
       const lineGroup = enter.filter(
-        data => details.get(data.indi.id)!.length > i
+        (data) => details.get(data.indi.id)!.length > i
       );
       lineGroup
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
         .attr('transform', `translate(9, ${49 + i * 14})`)
-        .text(data => details.get(data.indi.id)![i].symbol);
+        .text((data) => details.get(data.indi.id)![i].symbol);
       lineGroup
         .append('text')
         .attr('class', 'details')
         .attr('transform', `translate(15, ${49 + i * 14})`)
-        .text(data => details.get(data.indi.id)![i].text);
+        .text((data) => details.get(data.indi.id)![i].text);
     }
 
     // Render id.
     const id = enter
       .append('text')
       .attr('class', 'id')
-      .text(data => getIndi(data)!.showId() ? data.indi.id : '')
+      .text((data) => (getIndi(data)!.showId() ? data.indi.id : ''))
       .merge(update.select('text.id'));
     this.transition(id).attr(
       'transform',
-      data => `translate(9, ${data.indi.height! - 5})`
+      (data) => `translate(9, ${data.indi.height! - 5})`
     );
 
     // Render sex.
@@ -447,27 +495,27 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('text')
       .attr('class', 'details sex')
       .attr('text-anchor', 'end')
-      .text(data => SEX_SYMBOLS.get(getIndi(data)!.getSex() || '') || '')
+      .text((data) => SEX_SYMBOLS.get(getIndi(data)!.getSex() || '') || '')
       .merge(update.select('text.sex'));
     this.transition(sex).attr(
       'transform',
-      data =>
+      (data) =>
         `translate(${getDetailsWidth(data) - 5}, ${data.indi.height! - 5})`
     );
 
     // Image.
     enter
-      .filter(data => !!getIndi(data)!.getImageUrl())
+      .filter((data) => !!getIndi(data)!.getImageUrl())
       .append('image')
       .attr('width', IMAGE_WIDTH)
-      .attr('height', data => data.indi.height!)
+      .attr('height', (data) => data.indi.height!)
       .attr('preserveAspectRatio', 'xMidYMin')
       .attr(
         'transform',
-        data => `translate(${data.indi.width! - IMAGE_WIDTH}, 0)`
+        (data) => `translate(${data.indi.width! - IMAGE_WIDTH}, 0)`
       )
-      .attr('clip-path', data => `url(#${getClipId(data.indi.id)})`)
-      .attr('href', data => getIndi(data)!.getImageUrl());
+      .attr('clip-path', (data) => `url(#${getClipId(data.indi.id)})`)
+      .attr('href', (data) => getIndi(data)!.getImageUrl());
 
     // Border on top.
     const border = enter
@@ -477,15 +525,17 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'border')
       .merge(update.select('rect.border'));
     this.transition(border)
-      .attr('width', data => data.indi.width!)
-      .attr('height', data => data.indi.height!);
+      .attr('width', (data) => data.indi.width!)
+      .attr('height', (data) => data.indi.height!);
   }
 
   private renderFamily(enter: TreeNodeSelection, update: TreeNodeSelection) {
     if (this.options.famHrefFunc) {
       enter = enter
         .append('a')
-        .attr('href', node => this.options.famHrefFunc!(node.data.family!.id));
+        .attr('href', (node) =>
+          this.options.famHrefFunc!(node.data.family!.id)
+        );
     }
     if (this.options.famCallback) {
       enter.on('click', (event, node) =>
@@ -499,38 +549,39 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     // Box.
     enter
       .append('rect')
+      .attr('class', this.getColoringClass())
       .attr('rx', 5)
       .attr('ry', 5)
-      .attr('width', node => node.data.family!.width!)
-      .attr('height', node => node.data.family!.height!);
+      .attr('width', (node) => node.data.family!.width!)
+      .attr('height', (node) => node.data.family!.height!);
 
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
-    enter.each(node => {
+    enter.each((node) => {
       const famId = node.data.family!.id;
       const fam = this.options.data.getFam(famId)!;
       const detailsList = this.getFamDetails(fam);
       details.set(famId, detailsList);
     });
-    const maxDetails = max(Array.from(details.values(), v => v.length))!;
+    const maxDetails = max(Array.from(details.values(), (v) => v.length))!;
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
       const lineGroup = enter.filter(
-        node => details.get(node.data.family!.id)!.length > i
+        (node) => details.get(node.data.family!.id)!.length > i
       );
       lineGroup
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
         .attr('transform', `translate(9, ${16 + i * 14})`)
-        .text(node => details.get(node.data.family!.id)![i].symbol);
+        .text((node) => details.get(node.data.family!.id)![i].symbol);
       lineGroup
         .append('text')
         .attr('text-anchor', 'start')
         .attr('class', 'details')
         .attr('transform', `translate(15, ${16 + i * 14})`)
-        .text(node => details.get(node.data.family!.id)![i].text);
+        .text((node) => details.get(node.data.family!.id)![i].text);
     }
   }
 }

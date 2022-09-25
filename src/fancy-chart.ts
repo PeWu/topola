@@ -77,7 +77,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
   }
 
   private linkAdditionalMarriage(node: HierarchyPointNode<TreeNode>) {
-    const nodeIndex = node.parent!.children!.findIndex(n => n.id === node.id);
+    const nodeIndex = node.parent!.children!.findIndex((n) => n.id === node.id);
     // Assert nodeIndex > 0.
     const siblingNode = node.parent!.children![nodeIndex - 1];
     const sAnchor = this.options.renderer.getIndiAnchor(node.data);
@@ -120,10 +120,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       .select('g')
       .append('radialGradient')
       .attr('id', 'gradient');
-    gradient
-      .append('stop')
-      .attr('offset', '0%')
-      .attr('stop-color', '#8f8');
+    gradient.append('stop').attr('offset', '0%').attr('stop-color', '#8f8');
     gradient
       .append('stop')
       .attr('offset', '80%')
@@ -135,11 +132,11 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       .attr('stop-color', '#8f8')
       .attr('stop-opacity', 0);
     const backgroundNodes = nodes.filter(
-      n => n.parent && n.parent.id !== DUMMY_ROOT_NODE_ID
+      (n) => n.parent && n.parent.id !== DUMMY_ROOT_NODE_ID
     );
 
     const minGeneration =
-      min(backgroundNodes, node => node.data.generation) || 0;
+      min(backgroundNodes, (node) => node.data.generation) || 0;
     const sizeFunction = (node: HierarchyPointNode<TreeNode>) =>
       280 - 180 / Math.sqrt(1 + node.data.generation! - minGeneration);
     {
@@ -153,9 +150,10 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .attr('class', 'background')
         .attr(
           'transform',
-          node =>
-            `translate(${node.x - node.data.width! / 2}, ${node.y -
-              node.data.height! / 2})`
+          (node) =>
+            `translate(${node.x - node.data.width! / 2}, ${
+              node.y - node.data.height! / 2
+            })`
         );
 
       const background = enter.append('g').attr('class', 'background');
@@ -163,8 +161,8 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .append('circle')
         .attr('class', 'background')
         .attr('r', sizeFunction)
-        .attr('cx', node => node.data.width! / 2)
-        .attr('cy', node => node.data.height! / 2)
+        .attr('cx', (node) => node.data.width! / 2)
+        .attr('cy', (node) => node.data.height! / 2)
         .style('fill', '#493');
     }
     {
@@ -178,9 +176,10 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .attr('class', 'background2')
         .attr(
           'transform',
-          node =>
-            `translate(${node.x - node.data.width! / 2}, ${node.y -
-              node.data.height! / 2})`
+          (node) =>
+            `translate(${node.x - node.data.width! / 2}, ${
+              node.y - node.data.height! / 2
+            })`
         );
 
       const background = enter.append('g').attr('class', 'background2');
@@ -188,8 +187,8 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .append('circle')
         .attr('class', 'background')
         .attr('r', sizeFunction)
-        .attr('cx', node => node.data.width! / 2)
-        .attr('cy', node => node.data.height! / 2)
+        .attr('cx', (node) => node.data.width! / 2)
+        .attr('cy', (node) => node.data.height! / 2)
         .style('fill', 'url(#gradient)');
     }
   }
@@ -208,17 +207,17 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       return this.linkVertical(child, parent);
     };
 
-    const links = nodes.filter(n => !!n.parent);
+    const links = nodes.filter((n) => !!n.parent);
     svg
       .select('g')
       .selectAll('path.branch')
       .data(links, linkId)
       .enter()
       .append('path')
-      .attr('class', node =>
+      .attr('class', (node) =>
         node.data.additionalMarriage ? 'branch additional-marriage' : 'branch'
       )
-      .attr('d', node => link(node.parent!, node));
+      .attr('d', (node) => link(node.parent!, node));
   }
 
   renderTreeTrunk(
@@ -226,7 +225,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     svg: Selection<BaseType, {}, BaseType, {}>
   ) {
     const trunkNodes = nodes.filter(
-      n => !n.parent || n.parent.id === DUMMY_ROOT_NODE_ID
+      (n) => !n.parent || n.parent.id === DUMMY_ROOT_NODE_ID
     );
     svg
       .select('g')
@@ -235,7 +234,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       .enter()
       .append('g')
       .attr('class', 'trunk')
-      .attr('transform', node => `translate(${node.x}, ${node.y})`)
+      .attr('transform', (node) => `translate(${node.x}, ${node.y})`)
       .append('path')
       .attr(
         'd',

@@ -122,11 +122,7 @@ function formatDateOnly(
   // - English (to avoid formatting like 'Oct 11, 2009')
   // - Lack of i18n support in the browser
   if (!Intl || !Intl.DateTimeFormat || !locale || locale === 'en') {
-    return [
-      day,
-      month && getShortMonth(month, locale),
-      year
-    ].join(' ');
+    return [day, month && getShortMonth(month, locale), year].join(' ');
   }
 
   const format: Intl.DateTimeFormatOptions = {

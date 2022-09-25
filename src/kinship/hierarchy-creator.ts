@@ -117,13 +117,10 @@ export class HierarchyCreator {
     const spouse = parentNode.spouse
       ? this.data.getIndi(parentNode.spouse.id)
       : null;
-    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(
-      indi
-    );
-    const [
-      spouseParentsFamsIds,
-      spouseSiblingsIds,
-    ] = this.getParentsAndSiblings(spouse);
+    const [indiParentsFamsIds, indiSiblingsIds] =
+      this.getParentsAndSiblings(indi);
+    const [spouseParentsFamsIds, spouseSiblingsIds] =
+      this.getParentsAndSiblings(spouse);
     const childrenIds = fam.getChildren();
     return new ChildNodes({
       indiParents: filter.indiParents
@@ -169,9 +166,8 @@ export class HierarchyCreator {
     parentNode: TreeNode,
     filter: HierarchyFilter
   ): ChildNodes {
-    const [indiParentsFamsIds, indiSiblingsIds] = this.getParentsAndSiblings(
-      indi
-    );
+    const [indiParentsFamsIds, indiSiblingsIds] =
+      this.getParentsAndSiblings(indi);
     return new ChildNodes({
       indiParents: filter.indiParents
         ? this.famAsSpouseIdsToNodes(
@@ -215,7 +211,7 @@ export class HierarchyCreator {
         father ? father.getFamiliesAsSpouse() : [],
         mother ? mother.getFamiliesAsSpouse() : []
       )
-      .filter(id => id !== indiFamcId);
+      .filter((id) => id !== indiFamcId);
     parentFamsIds.unshift(indiFamcId!);
 
     const siblingsIds = Array.from(indiFamc.getChildren());
@@ -229,7 +225,7 @@ export class HierarchyCreator {
     parentNode: TreeNode,
     childNodeType: LinkType
   ): TreeNode[] {
-    return indiIds.flatMap(id =>
+    return indiIds.flatMap((id) =>
       this.indiIdToFamAsSpouseNodes(id, parentNode, childNodeType)
     );
   }
@@ -250,7 +246,7 @@ export class HierarchyCreator {
       return node ? [node] : [];
     }
 
-    const famsNodes: TreeNode[] = famsIds.map(id => {
+    const famsNodes: TreeNode[] = famsIds.map((id) => {
       return {
         id,
         indi: { id: indiId },
@@ -282,7 +278,7 @@ export class HierarchyCreator {
       parentNode,
       childNodeType
     );
-    nodes.slice(1).forEach(node => (node.primaryMarriage = nodes[0]));
+    nodes.slice(1).forEach((node) => (node.primaryMarriage = nodes[0]));
     return nodes;
   }
 
@@ -293,10 +289,10 @@ export class HierarchyCreator {
     duplicateCheck = true
   ): TreeNode[] {
     return entryIds
-      .map(entryId =>
+      .map((entryId) =>
         this.idToNode(entryId, parentNode, childNodeType, duplicateCheck)
       )
-      .filter(node => node != null) as TreeNode[];
+      .filter((node) => node != null) as TreeNode[];
   }
 
   private idToNode(
@@ -336,14 +332,10 @@ export class HierarchyCreator {
       return [];
     }
     const fam = this.data.getFam(node!.family!.id);
-    const [
-      indiParentsPresent,
-      indiSiblingsPresent,
-    ] = this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null);
-    const [
-      spouseParentsPresent,
-      spouseSiblingsPresent,
-    ] = this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null);
+    const [indiParentsPresent, indiSiblingsPresent] =
+      this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null);
+    const [spouseParentsPresent, spouseSiblingsPresent] =
+      this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null);
     const childrenPresent = nonEmpty(fam!.getChildren());
 
     return [
@@ -355,7 +347,7 @@ export class HierarchyCreator {
     ]
       .flat()
       .filter(
-        linkType =>
+        (linkType) =>
           !this.isChildNodeTypeForbidden(linkType, node) &&
           !node.childNodes.get(linkType).length
       );
