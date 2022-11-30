@@ -25,6 +25,18 @@ describe('GEDCOM parser', () => {
       expect(getDate('@#DJULIAN@ 9 JUN 1539'))
           .toEqual({date: {day: 9, month: 6, year: 1539}});
     });
+
+    it('should handle arbitrary date phrase in parentheses', () => {
+      expect(getDate('(August)')).toEqual({date: {text: 'August'}});
+    });
+
+    it('should handle parsable date in parentheses', () => {
+      expect(getDate('(9 JUN)')).toEqual({date: {day: 9, month: 6}});
+    });
+
+    it('should handle arbitrary date phrase if parsing fails', () => {
+      expect(getDate('(August 2022)')).toEqual({date: {text: 'August 2022'}});
+    });
   });
 
   describe('Name', () => {

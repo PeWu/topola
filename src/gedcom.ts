@@ -61,13 +61,17 @@ function parseDate(parts: string[]): Date | undefined {
     return undefined;
   }
   const result: Date = {};
-  const firstPart = parts[0].toLowerCase();
 
-  if (firstPart.startsWith('(') && parts[parts.length - 1].endsWith(')')) {
-    result.text = parts.join(' ');
-    result.text = result.text.substring(1, result.text.length - 1);
-    return result;
+  // Remove parentheses if they surround the text.
+  if (parts[0].startsWith('(') && parts[parts.length - 1].endsWith(')')) {
+    parts[0] = parts[0].substring(1);
+    const lastPart = parts[parts.length - 1];
+    parts[parts.length - 1] = lastPart.substring(0, lastPart.length - 1);
   }
+
+  const fullText = parts.join(' ');
+
+  const firstPart = parts[0].toLowerCase();
   if (firstPart === 'cal' || firstPart === 'abt' || firstPart === 'est') {
     result.qualifier = firstPart;
     parts = parts.slice(1);
@@ -85,6 +89,11 @@ function parseDate(parts: string[]): Date | undefined {
   }
   if (parts.length && parts[0].match(/^\d\d?$/)) {
     result.day = Number(parts[0]);
+    parts = parts.slice(0, parts.length - 1);
+  }
+  if (parts.length) {
+    // A part didn't get parsed. Return the whole text verbatim.
+    return { text: fullText };
   }
   return result;
 }
