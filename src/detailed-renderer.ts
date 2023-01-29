@@ -17,7 +17,7 @@ import {
   getFamPositionVertical,
 } from './composite-renderer';
 
-const INDI_MIN_HEIGHT = 58;
+const INDI_MIN_HEIGHT = 44;
 const INDI_MIN_WIDTH = 64;
 const FAM_MIN_HEIGHT = 10;
 const FAM_MIN_WIDTH = 15;
@@ -139,9 +139,10 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   getPreferredIndiSize(id: string): [number, number] {
     const indi = this.options.data.getIndi(id)!;
     const details = this.getIndiDetails(indi);
+    const idAndSexHeight = indi.showId() || indi.showSex() ? DETAILS_HEIGHT : 0;
 
     const height = max([
-      INDI_MIN_HEIGHT + details.length * DETAILS_HEIGHT,
+      INDI_MIN_HEIGHT + details.length * DETAILS_HEIGHT + idAndSexHeight,
       indi.getImageUrl() ? IMAGE_HEIGHT : 0,
     ])!;
 
