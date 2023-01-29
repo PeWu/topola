@@ -24,6 +24,7 @@ const FAM_MIN_WIDTH = 15;
 const IMAGE_WIDTH = 70;
 /** Minimum box height when an image is present. */
 const IMAGE_HEIGHT = 90;
+const DETAILS_HEIGHT = 14;
 
 const ANIMATION_DELAY_MS = 200;
 const ANIMATION_DURATION_MS = 500;
@@ -140,7 +141,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const details = this.getIndiDetails(indi);
 
     const height = max([
-      INDI_MIN_HEIGHT + details.length * 14,
+      INDI_MIN_HEIGHT + details.length * DETAILS_HEIGHT,
       indi.getImageUrl() ? IMAGE_HEIGHT : 0,
     ])!;
 
@@ -162,7 +163,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const fam = this.options.data.getFam(id)!;
     const details = this.getFamDetails(fam);
 
-    const height = max([10 + details.length * 14, FAM_MIN_HEIGHT])!;
+    const height = max([10 + details.length * DETAILS_HEIGHT, FAM_MIN_HEIGHT])!;
     const maxDetailsWidth = max(
       details.map((x) => getLength(x.text, 'details'))
     )!;
@@ -470,12 +471,12 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
-        .attr('transform', `translate(9, ${49 + i * 14})`)
+        .attr('transform', `translate(9, ${49 + i * DETAILS_HEIGHT})`)
         .text((data) => details.get(data.indi.id)![i].symbol);
       lineGroup
         .append('text')
         .attr('class', 'details')
-        .attr('transform', `translate(15, ${49 + i * 14})`)
+        .attr('transform', `translate(15, ${49 + i * DETAILS_HEIGHT})`)
         .text((data) => details.get(data.indi.id)![i].text);
     }
 
@@ -577,13 +578,13 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         .append('text')
         .attr('text-anchor', 'middle')
         .attr('class', 'details')
-        .attr('transform', `translate(9, ${16 + i * 14})`)
+        .attr('transform', `translate(9, ${16 + i * DETAILS_HEIGHT})`)
         .text((node) => details.get(node.data.family!.id)![i].symbol);
       lineGroup
         .append('text')
         .attr('text-anchor', 'start')
         .attr('class', 'details')
-        .attr('transform', `translate(15, ${16 + i * 14})`)
+        .attr('transform', `translate(15, ${16 + i * DETAILS_HEIGHT})`)
         .text((node) => details.get(node.data.family!.id)![i].text);
     }
   }
