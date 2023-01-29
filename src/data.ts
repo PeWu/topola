@@ -48,6 +48,7 @@ export interface JsonIndi {
   notes?: string[];
   events?: JsonEvent[];
   hideId?: boolean;
+  hideSex?: boolean;
 }
 
 /** Json representation of a family. */
@@ -84,6 +85,7 @@ export interface IndiDetails extends Indi {
   getNotes(): string[] | null;
   getEvents(): JsonEvent[] | null;
   showId(): boolean;
+  showSex(): boolean;
 }
 
 /** Details of a family record. */
@@ -156,6 +158,9 @@ class JsonIndiDetails implements IndiDetails {
   }
   showId() {
     return !this.json.hideId;
+  }
+  showSex() {
+    return !this.json.hideSex;
   }
 }
 

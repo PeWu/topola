@@ -495,7 +495,10 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('text')
       .attr('class', 'details sex')
       .attr('text-anchor', 'end')
-      .text((data) => SEX_SYMBOLS.get(getIndi(data)!.getSex() || '') || '')
+      .text((data) => {
+        const sexSymbol = SEX_SYMBOLS.get(getIndi(data)!.getSex() || '') || '';
+        return getIndi(data)!.showSex() ? sexSymbol : '';
+      })
       .merge(update.select('text.sex'));
     this.transition(sex).attr(
       'transform',
