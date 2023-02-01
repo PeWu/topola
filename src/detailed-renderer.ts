@@ -551,15 +551,6 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       );
     }
 
-    // Box.
-    enter
-      .append('rect')
-      .attr('class', this.getColoringClass())
-      .attr('rx', 5)
-      .attr('ry', 5)
-      .attr('width', (node) => node.data.family!.width!)
-      .attr('height', (node) => node.data.family!.height!);
-
     // Extract details.
     const details = new Map<string, DetailsLine[]>();
     enter.each((node) => {
@@ -569,6 +560,19 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       details.set(famId, detailsList);
     });
     const maxDetails = max(Array.from(details.values(), (v) => v.length))!;
+
+    // Box.
+    enter
+      .filter((node) => {
+        const detail = details.get(node.data.family!.id)!;
+        return 0 < detail.length
+      })
+      .append('rect')
+      .attr('class', this.getColoringClass())
+      .attr('rx', 5)
+      .attr('ry', 5)
+      .attr('width', (node) => node.data.family!.width!)
+      .attr('height', (node) => node.data.family!.height!);
 
     // Render details.
     for (let i = 0; i < maxDetails; ++i) {
