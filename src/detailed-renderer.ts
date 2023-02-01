@@ -565,7 +565,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     enter
       .filter((node) => {
         const detail = details.get(node.data.family!.id)!;
-        return 0 < detail.length
+        return 0 < detail.length;
       })
       .append('rect')
       .attr('class', this.getColoringClass())
