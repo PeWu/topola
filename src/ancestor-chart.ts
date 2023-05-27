@@ -80,11 +80,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       if (!fam) {
         continue;
       }
-      const [father, mother] =
-        entry.family!.id === this.options.startFam &&
-        this.options.swapStartSpouses
-          ? [fam.getMother(), fam.getFather()]
-          : [fam.getFather(), fam.getMother()];
+      const [father, mother] = this.getParents(fam, entry);
       if (!father && !mother) {
         continue;
       }
@@ -133,5 +129,30 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
     const info = getChartInfo(nodes);
     this.util.updateSvgDimensions(info);
     return Object.assign(info, { animationPromise });
+  }
+
+  private getParents(fam: Fam, entry: TreeNode) {
+    let [father, mother] = [fam.getFather(), fam.getMother()];
+    if(!father && !mother) {
+      // get indis whose FAMS contains this family
+      const res: any[] = Array.from((this.options.data as any).indis.entries())
+          .filter((e: any[]) => e[1]?.json?.fams && e[1].json.fams.includes(entry.family?.id));
+      const getFromRes = function(pRes: any, sex: "M" | "F") {
+        const r = pRes.find((e: any) => e[1].json.sex === sex);
+        return r.length === 2
+            ? r[1].json?.id || null
+            : null;
+      }
+      father = getFromRes(res, "M");
+      mother = getFromRes(res, "F");
+    }
+
+    if(this.options.swapStartSpouses) {
+      const pivot = father;
+      father = mother;
+      mother = pivot;
+    }
+
+    return [father || null, mother];
   }
 }

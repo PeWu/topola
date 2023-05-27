@@ -56,10 +56,42 @@ describe('Ancestor chart', () => {
     const data = new JsonDataProvider(json);
     const chart = new AncestorChart({
       data,
-      startFam: 'F1',
+      startFam: json.fams[0].id,
       renderer: new FakeRenderer(),
       svgSelector: 'svg',
     });
     chart.render();
   });
+
+  it('should work with FAM values only', () => {
+    // I5+I6
+    //   F3
+    //   |
+    //   I3+I4
+    //     F2
+    //     |
+    //   +-++
+    //   |  |
+    //   I1+I2
+    //     F1
+    const json: JsonGedcomData = {
+      fams: [
+        {id: 'F1', children: []},
+      ],
+      indis: [
+        {id: 'I1', fams: ['F1'], sex: "M"},
+        {id: 'I2', fams: ['F1'], sex: "F"},
+        {id: 'I3', famc: 'F1', sex: "F"},
+      ],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new AncestorChart({
+      data,
+      startFam: json.fams[0].id,
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+    });
+    chart.render();
+  });
+
 });
