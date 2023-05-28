@@ -153,6 +153,6 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       mother = pivot;
     }
 
-    return [father || null, mother];
+    return [father || null, mother || null];
   }
 }
