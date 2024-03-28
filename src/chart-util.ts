@@ -249,7 +249,7 @@ export class ChartUtil {
           resolve();
         }
       };
-      if (!this.options.animate) {
+      if (!this.options.animate || transitionsPending === 0) {
         resolve();
       }
 
@@ -350,7 +350,7 @@ export class ChartUtil {
           resolve();
         }
       };
-      if (!this.options.animate) {
+      if (!this.options.animate || transitionsPending === 0) {
         resolve();
       }
 
