@@ -32,11 +32,21 @@ function pointerToId(pointer: string): string {
 
 /** Extracts the first and last name from a GEDCOM name field. */
 function extractName(name: string): { firstName?: string; lastName?: string } {
-  const arr = name.split('/');
-  if (arr.length === 1) {
-    return { firstName: arr[0].trim() };
+  const matches = name.match(/\/([^\/]+)\//);
+  if (matches) {
+    const lastName = matches[1].trim();
+    // Replace the last name part (including slashes) and trim the result
+    let firstName = name.replace(matches[0], '').trim();
+    // Replace any occurrence of double spaces with a single space
+    firstName = firstName.replace(/\s\s+/g, ' ');
+    return { 
+      firstName: firstName || undefined, 
+      lastName: lastName 
+    };
+  } else {
+    // If no last name is found, just return the trimmed and cleaned firstName
+    return { firstName: name.trim().replace(/\s\s+/g, ' ') };
   }
-  return { firstName: arr[0].trim(), lastName: arr[1].trim() };
 }
 
 /** Maps month abbreviations used in GEDCOM to month numbers. */
