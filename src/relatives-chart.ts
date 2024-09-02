@@ -76,18 +76,18 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
   implements Chart
 {
   readonly util: ChartUtil;
+  readonly options: ChartOptions;
 
-  constructor(readonly options: ChartOptions) {
-    this.util = new ChartUtil(options);
+  constructor(inputOptions: ChartOptions) {
+    this.options = { ...inputOptions };
     this.options.idGenerator = this.options.idGenerator || new IdGenerator();
+    this.util = new ChartUtil(this.options);
   }
 
   layOutAncestorDescendants(
     ancestorsRoot: HierarchyNode<TreeNode>,
     focusedNode: HierarchyPointNode<TreeNode>
   ) {
-    // let ancestorDescentants: Array<HierarchyPointNode<TreeNode>> = [];
-
     const ancestorData = new Map<string, AncestorData>();
 
     ancestorsRoot.eachAfter((node) => {
@@ -112,8 +112,14 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       // The id could be modified because of duplicates. This can happen when
       // drawing one family in multiple places of the chart).
       node.data.id = descendantNodes[0].id!;
-      const chartInfo = getChartInfoWithoutMargin(descendantNodes);
+      if (node.data.indi?.expander !== undefined) {
+        descendantNodes[0].data.indi!.expander = node.data.indi.expander;
+      }
+      if (node.data.spouse?.expander !== undefined) {
+        descendantNodes[0].data.spouse!.expander = node.data.spouse.expander;
+      }
 
+      const chartInfo = getChartInfoWithoutMargin(descendantNodes);
       const parentData = (node.children || []).map((childNode) =>
         ancestorData.get(childNode.data.id)
       );
@@ -314,6 +320,17 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       idGenerator: undefined,
     });
     const ancestorsRoot = getAncestorsTree(ancestorOptions);
+
+    // The ancestor root node and first descendant node is the start node.
+    if (ancestorsRoot.data.indi?.expander !== undefined) {
+      descendantNodes[0].data.indi!.expander =
+        ancestorsRoot.data.indi?.expander;
+    }
+    if (ancestorsRoot.data.spouse?.expander !== undefined) {
+      descendantNodes[0].data.spouse!.expander =
+        ancestorsRoot.data.spouse?.expander;
+    }
+
     const ancestorDescentants = this.layOutAncestorDescendants(
       ancestorsRoot,
       descendantNodes[0]

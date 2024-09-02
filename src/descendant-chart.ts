@@ -1,5 +1,13 @@
 import { HierarchyNode, HierarchyPointNode, stratify } from 'd3-hierarchy';
-import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
+import {
+  Chart,
+  ChartInfo,
+  ChartOptions,
+  ExpanderState,
+  Fam,
+  Indi,
+  TreeNode,
+} from './api';
 import { ChartUtil, getChartInfo, LayoutOptions } from './chart-util';
 import { IdGenerator } from './id-generator';
 
@@ -146,17 +154,25 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       const entry = stack.pop()!;
       const fam = this.options.data.getFam(entry.family!.id)!;
       const children = fam.getChildren();
-      children.forEach((childId) => {
-        const childNodes = this.getNodes(childId);
-        childNodes.forEach((node) => {
-          node.parentId = entry.id;
-          if (node.family) {
-            node.id = `${idGenerator.getId(node.family.id)}`;
-            stack.push(node);
-          }
+      const collapsed = this.options.collapsedFamily?.has(entry.id);
+      if (children.length) {
+        entry.family!.expander = collapsed
+          ? ExpanderState.PLUS
+          : ExpanderState.MINUS;
+      }
+      if (!collapsed) {
+        children.forEach((childId) => {
+          const childNodes = this.getNodes(childId);
+          childNodes.forEach((node) => {
+            node.parentId = entry.id;
+            if (node.family) {
+              node.id = `${idGenerator.getId(node.family.id)}`;
+              stack.push(node);
+            }
+          });
+          parents.push(...childNodes);
         });
-        parents.push(...childNodes);
-      });
+      }
     }
     return stratify<TreeNode>()(parents);
   }

@@ -1,18 +1,25 @@
-/// <reference path="d3-flextree.d.ts" />
+/// <reference path='d3-flextree.d.ts' />
 
 import { BaseType, select, Selection } from 'd3-selection';
-import { ChartOptions, TreeNode } from './api';
+import {
+  ChartOptions,
+  ExpanderDirection,
+  ExpanderState,
+  TreeNode,
+  TreeNodeSelection,
+} from './api';
 import { flextree } from 'd3-flextree';
 import { HierarchyNode, HierarchyPointNode } from 'd3-hierarchy';
 import { max, min } from 'd3-array';
 import 'd3-transition';
+import { getVSize } from './composite-renderer';
 
 type SVGSelection = Selection<BaseType, {}, BaseType, {}>;
 
 /** Horizontal distance between boxes. */
 export const H_SPACING = 15;
 /** Vertical distance between boxes. */
-export const V_SPACING = 30;
+export const V_SPACING = 34;
 /** Margin around the whole drawing. */
 const MARGIN = 15;
 
@@ -34,6 +41,16 @@ export interface ChartSizeInfo {
   size: [number, number];
   // The coordinates of the start indi or fam.
   origin: [number, number];
+}
+
+function getExpanderCss() {
+  return `
+.expander {
+  fill: white;
+  stroke: black;
+  stroke-width: 2px;
+  cursor: pointer;
+}`;
 }
 
 /** Assigns an identifier to a link. */
@@ -149,7 +166,9 @@ export class ChartUtil {
     // Add styles so that calculating text size is correct.
     const svg = select(this.options.svgSelector);
     if (svg.select('style').empty()) {
-      svg.append('style').text(this.options.renderer.getCss());
+      svg
+        .append('style')
+        .text(this.options.renderer.getCss() + getExpanderCss());
     }
 
     // Assign generation number.
@@ -223,9 +242,11 @@ export class ChartUtil {
     const svg = this.getSvgForRendering();
     const nodeAnimation = this.renderNodes(nodes, svg);
     const linkAnimation = this.renderLinks(nodes, svg);
+    const expanderAnimation = this.renderControls(nodes, svg);
     return Promise.all([
       nodeAnimation,
       linkAnimation,
+      expanderAnimation,
     ]) as unknown as Promise<void>;
   }
 
@@ -384,6 +405,200 @@ export class ChartUtil {
         boundLinks.exit().remove();
       }
     });
+    return animationPromise;
+  }
+
+  renderExpander(
+    nodes: TreeNodeSelection,
+    stateGetter: (
+      node: HierarchyPointNode<TreeNode>
+    ) => ExpanderState | undefined,
+    clickCallback?: (id: string) => void
+  ) {
+    nodes.on('click', (event, data) => {
+      clickCallback?.(data.id!);
+    });
+    nodes.append('rect').attr('width', 12).attr('height', 12);
+    nodes
+      .append('line')
+      .attr('x1', 3)
+      .attr('y1', 6)
+      .attr('x2', 9)
+      .attr('y2', 6)
+      .attr('stroke', 'black');
+    nodes
+      .select(function (node) {
+        return stateGetter(node) === ExpanderState.PLUS ? this : null;
+      })
+      .append('line')
+      .attr('x1', 6)
+      .attr('y1', 3)
+      .attr('x2', 6)
+      .attr('y2', 9)
+      .attr('stroke', 'black');
+  }
+
+  renderFamilyControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
+    const familyExpandersEnter = enter
+      .select(function (node) {
+        const expander = node.data.family?.expander;
+        return expander !== undefined ? this : null;
+      })
+      .append('g')
+      .attr('class', 'familyExpander expander');
+    const familyExpandersUpdate = update
+      .select(function (node) {
+        const expander = node.data.family?.expander;
+        return expander !== undefined ? this : null;
+      })
+      .select('g.familyExpander');
+    const familyExpanders = familyExpandersEnter.merge(
+      familyExpandersUpdate as any
+    );
+
+    familyExpanders.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+      const anchor = this.options.renderer.getFamilyAnchor(node.data);
+      return `translate(${anchor[0] - 6}, ${
+        -node.data.height! / 2 + getVSize(node.data, !!this.options.horizontal)
+      })`;
+    });
+    this.renderExpander(
+      familyExpanders,
+      (node) => node.data.family?.expander,
+      (id) => this.options.expanderCallback?.(id, ExpanderDirection.FAMILY)
+    );
+  }
+
+  renderIndiControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
+    const indiExpandersEnter = enter
+      .select(function (node) {
+        const expander = node.data.indi?.expander;
+        return expander !== undefined ? this : null;
+      })
+      .append('g')
+      .attr('class', 'indiExpander expander');
+    const indiExpandersUpdate = update
+      .select(function (node) {
+        const expander = node.data.indi?.expander;
+        return expander !== undefined ? this : null;
+      })
+      .select('g.indiExpander');
+    const indiExpanders = indiExpandersEnter.merge(indiExpandersUpdate as any);
+
+    indiExpanders.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+      const anchor = this.options.renderer.getIndiAnchor(node.data);
+      return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
+    });
+    this.renderExpander(
+      indiExpanders,
+      (node) => node.data.indi?.expander,
+      (id) => this.options.expanderCallback?.(id, ExpanderDirection.INDI)
+    );
+  }
+
+  renderSpouseControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
+    const spouseExpandersEnter = enter
+      .select(function (node) {
+        const expander = node.data.spouse?.expander;
+        return expander !== undefined ? this : null;
+      })
+      .append('g')
+      .attr('class', 'spouseExpander expander');
+    const spouseExpandersUpdate = update
+      .select(function (node) {
+        const expander = node.data.spouse?.expander;
+        return expander !== undefined ? this : null;
+      })
+      .select('g.spouseExpander');
+    const spouseExpanders = spouseExpandersEnter.merge(
+      spouseExpandersUpdate as any
+    );
+
+    spouseExpanders.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+      const anchor = this.options.renderer.getSpouseAnchor(node.data);
+      return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
+    });
+    this.renderExpander(
+      spouseExpanders,
+      (node) => node.data.spouse?.expander,
+      (id) => this.options.expanderCallback?.(id, ExpanderDirection.SPOUSE)
+    );
+  }
+
+  renderControls(
+    nodes: Array<HierarchyPointNode<TreeNode>>,
+    svg: SVGSelection
+  ): Promise<void> {
+    if (!this.options.expanders) {
+      return Promise.resolve();
+    }
+    const animationPromise = new Promise<void>((resolve) => {
+      const boundNodes = svg
+        .select('g')
+        .selectAll('g.controls')
+        .data(nodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
+
+      const nodeEnter = boundNodes
+        .enter()
+        .append('g' as string)
+        .attr('class', 'controls');
+      nodeEnter.attr(
+        'transform',
+        (node: HierarchyPointNode<TreeNode>) =>
+          `translate(${node.x}, ${node.y})`
+      );
+
+      let transitionsPending =
+        boundNodes.exit().size() + boundNodes.size() + nodeEnter.size();
+      const transitionDone = () => {
+        transitionsPending--;
+        if (transitionsPending === 0) {
+          resolve();
+        }
+      };
+      if (!this.options.animate || transitionsPending === 0) {
+        resolve();
+      }
+
+      const updateTransition = this.options.animate
+        ? boundNodes
+            .transition()
+            .delay(HIDE_TIME_MS)
+            .duration(MOVE_TIME_MS)
+            .on('end', transitionDone)
+        : boundNodes;
+      updateTransition.attr(
+        'transform',
+        (node: HierarchyPointNode<TreeNode>) =>
+          `translate(${node.x}, ${node.y})`
+      );
+      if (this.options.animate) {
+        nodeEnter
+          .style('opacity', 0)
+          .transition()
+          .delay(HIDE_TIME_MS + MOVE_TIME_MS)
+          .duration(HIDE_TIME_MS)
+          .style('opacity', 1)
+          .on('end', transitionDone);
+      }
+
+      this.renderFamilyControls(nodeEnter, boundNodes);
+      this.renderIndiControls(nodeEnter, boundNodes);
+      this.renderSpouseControls(nodeEnter, boundNodes);
+
+      if (this.options.animate) {
+        boundNodes
+          .exit()
+          .transition()
+          .duration(HIDE_TIME_MS)
+          .style('opacity', 0)
+          .remove()
+          .on('end', transitionDone);
+      } else {
+        boundNodes.exit().remove();
+      }
+    });
+
     return animationPromise;
   }
 

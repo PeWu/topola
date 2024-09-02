@@ -19,8 +19,6 @@ import {
 
 const INDI_MIN_HEIGHT = 44;
 const INDI_MIN_WIDTH = 64;
-const FAM_MIN_HEIGHT = 10;
-const FAM_MIN_WIDTH = 15;
 const IMAGE_WIDTH = 70;
 /** Minimum box height when an image is present. */
 const IMAGE_HEIGHT = 90;
@@ -163,12 +161,15 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   getPreferredFamSize(id: string): [number, number] {
     const fam = this.options.data.getFam(id)!;
     const details = this.getFamDetails(fam);
+    if (!details.length) {
+      return [0, 0];
+    }
 
-    const height = max([10 + details.length * DETAILS_HEIGHT, FAM_MIN_HEIGHT])!;
+    const height = 10 + details.length * DETAILS_HEIGHT;
     const maxDetailsWidth = max(
       details.map((x) => getLength(x.text, 'details'))
     )!;
-    const width = max([maxDetailsWidth + 22, FAM_MIN_WIDTH])!;
+    const width = maxDetailsWidth + 22;
     return [width, height];
   }
 

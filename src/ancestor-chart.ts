@@ -1,4 +1,12 @@
-import { Chart, ChartInfo, ChartOptions, Fam, Indi, TreeNode } from './api';
+import {
+  Chart,
+  ChartInfo,
+  ChartOptions,
+  ExpanderState,
+  Fam,
+  Indi,
+  TreeNode,
+} from './api';
 import { ChartUtil, getChartInfo } from './chart-util';
 import { HierarchyNode, stratify } from 'd3-hierarchy';
 import { IdGenerator } from './id-generator';
@@ -93,13 +101,18 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         const indi = this.options.data.getIndi(mother)!;
         const famc = indi.getFamilyAsChild();
         if (famc) {
-          const id = idGenerator.getId(famc);
-          entry.spouseParentNodeId = id;
-          stack.push({
-            id,
-            parentId: entry.id,
-            family: { id: famc },
-          });
+          if (this.options.collapsedSpouse?.has(entry.id)) {
+            entry.spouse.expander = ExpanderState.PLUS;
+          } else {
+            const id = idGenerator.getId(famc);
+            entry.spouseParentNodeId = id;
+            entry.spouse.expander = ExpanderState.MINUS;
+            stack.push({
+              id,
+              parentId: entry.id,
+              family: { id: famc },
+            });
+          }
         }
       }
       if (father) {
@@ -107,13 +120,18 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         const indi = this.options.data.getIndi(father)!;
         const famc = indi.getFamilyAsChild();
         if (famc) {
-          const id = idGenerator.getId(famc);
-          entry.indiParentNodeId = id;
-          stack.push({
-            id,
-            parentId: entry.id,
-            family: { id: famc },
-          });
+          if (this.options.collapsedIndi?.has(entry.id)) {
+            entry.indi.expander = ExpanderState.PLUS;
+          } else {
+            const id = idGenerator.getId(famc);
+            entry.indiParentNodeId = id;
+            entry.indi.expander = ExpanderState.MINUS;
+            stack.push({
+              id,
+              parentId: entry.id,
+              family: { id: famc },
+            });
+          }
         }
       }
       parents.push(entry);

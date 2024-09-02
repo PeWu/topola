@@ -1,5 +1,12 @@
 import { getAncestorsTree } from './ancestor-chart';
-import { Chart, ChartInfo, ChartOptions, Fam, Indi } from './api';
+import {
+  Chart,
+  ChartInfo,
+  ChartOptions,
+  ExpanderDirection,
+  Fam,
+  Indi,
+} from './api';
 import { ChartUtil, getChartInfo } from './chart-util';
 import { layOutDescendants } from './descendant-chart';
 
@@ -23,6 +30,16 @@ export class HourglassChart<IndiT extends Indi, FamT extends Fam>
     });
 
     const descendantNodes = layOutDescendants(this.options);
+
+    // The first ancestor node and descendant node is the start node.
+    if (ancestorNodes[0].data.indi?.expander !== undefined) {
+      descendantNodes[0].data.indi!.expander =
+        ancestorNodes[0].data.indi?.expander;
+    }
+    if (ancestorNodes[0].data.spouse?.expander !== undefined) {
+      descendantNodes[0].data.spouse!.expander =
+        ancestorNodes[0].data.spouse?.expander;
+    }
 
     // slice(1) removes the duplicated start node.
     const nodes = ancestorNodes.slice(1).concat(descendantNodes);

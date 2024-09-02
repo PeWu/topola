@@ -4,6 +4,7 @@ import {
   Chart,
   ChartInfo,
   ChartOptions,
+  ExpanderDirection,
   FamInfo,
   IndiInfo,
   Renderer,
@@ -55,6 +56,8 @@ export interface SimpleChartOptions {
   // Update the width and height of the selected SVG. Defaults to true.
   updateSvgSize?: boolean;
   locale?: string;
+  // [Beta] Show [+]/[-] controls that expand/collapse parts of the chart.
+  expanders?: boolean;
 }
 
 function createChartOptions(
@@ -75,25 +78,28 @@ function createChartOptions(
     renderOptions.startIndi = chartOptions.json.indis[0].id;
   }
   const animate = !options.initialRender && chartOptions.animate;
+  const renderer = new chartOptions.renderer({
+    data,
+    indiHrefFunc,
+    famHrefFunc,
+    indiCallback: chartOptions.indiCallback,
+    famCallback: chartOptions.famCallback,
+    horizontal: chartOptions.horizontal,
+    colors: chartOptions.colors,
+    animate,
+    locale: chartOptions.locale,
+  });
+
   return {
     data,
-    renderer: new chartOptions.renderer({
-      data,
-      indiHrefFunc,
-      famHrefFunc,
-      indiCallback: chartOptions.indiCallback,
-      famCallback: chartOptions.famCallback,
-      horizontal: chartOptions.horizontal,
-      colors: chartOptions.colors,
-      animate,
-      locale: chartOptions.locale,
-    }),
+    renderer,
     startIndi: renderOptions.startIndi,
     startFam: renderOptions.startFam,
     svgSelector: chartOptions.svgSelector || DEFAULT_SVG_SELECTOR,
     horizontal: chartOptions.horizontal,
     baseGeneration: renderOptions.baseGeneration,
     animate,
+    expanders: chartOptions.expanders,
   };
 }
 
@@ -105,21 +111,52 @@ export interface ChartHandle {
 class SimpleChartHandle implements ChartHandle {
   private initialRender = true;
 
+  private readonly collapsedIndi: Set<string> = new Set<string>();
+  private readonly collapsedSpouse: Set<string> = new Set<string>();
+  private readonly collapsedFamily: Set<string> = new Set<string>();
+  private chartOptions: ChartOptions;
+
   constructor(readonly options: SimpleChartOptions) {}
 
   render(renderOptions: RenderOptions = {}): ChartInfo {
-    const chartOptions = createChartOptions(this.options, renderOptions, {
+    this.chartOptions = createChartOptions(this.options, renderOptions, {
       initialRender: this.initialRender,
     });
+    this.chartOptions.collapsedFamily = this.collapsedFamily;
+    this.chartOptions.collapsedIndi = this.collapsedIndi;
+    this.chartOptions.collapsedSpouse = this.collapsedSpouse;
+    this.chartOptions.expanderCallback = (id, direction) =>
+      this.expanderCallback(id, direction, renderOptions);
+
     this.initialRender = false;
-    const chart = new this.options.chartType(chartOptions);
+
+    const chart = new this.options.chartType(this.chartOptions);
     const info = chart.render();
     if (this.options.updateSvgSize !== false) {
-      select(chartOptions.svgSelector)
+      select(this.chartOptions.svgSelector)
         .attr('width', info.size[0])
         .attr('height', info.size[1]);
     }
     return info;
+  }
+
+  expanderCallback(
+    id: string,
+    direction: ExpanderDirection,
+    renderOptions: RenderOptions
+  ) {
+    const set =
+      direction === ExpanderDirection.FAMILY
+        ? this.collapsedFamily
+        : direction === ExpanderDirection.INDI
+        ? this.collapsedIndi
+        : this.collapsedSpouse;
+    if (set.has(id)) {
+      set.delete(id);
+    } else {
+      set.add(id);
+    }
+    this.render(renderOptions);
   }
 
   /**

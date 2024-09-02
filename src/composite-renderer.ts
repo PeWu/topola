@@ -183,6 +183,6 @@ function getIndiVSize(node: TreeNode, horizontal: boolean): number {
 }
 
 /** Returns the vertical size. */
-function getVSize(node: TreeNode, horizontal: boolean): number {
+export function getVSize(node: TreeNode, horizontal: boolean): number {
   return getIndiVSize(node, horizontal) + getFamVSize(node, horizontal);
 }

@@ -6,6 +6,18 @@ export interface TreeEntry {
   id: string;
   width?: number;
   height?: number;
+  expander?: ExpanderState;
+}
+
+export enum ExpanderState {
+  PLUS,
+  MINUS,
+}
+
+export enum ExpanderDirection {
+  INDI,
+  SPOUSE,
+  FAMILY,
 }
 
 /** Represents a node in the d3 graph structure. */
@@ -154,4 +166,15 @@ export interface ChartOptions {
   animate?: boolean;
   // Pass an instance of an id generator if this is a part of a larger.
   idGenerator?: { getId: (id: string) => string };
+  // Called when [+] or [-] buttons are clicked to expand or collapse parts of
+  // the chart.
+  expanderCallback?: (id: string, direction: ExpanderDirection) => void;
+  // [Beta] Show [+]/[-] controls that expand/collapse parts of the chart.
+  expanders?: boolean;
+  // [Beta] Set of nodes that have the family direction collapsed.
+  collapsedFamily?: Set<string>;
+  // [Beta] Set of nodes that have the individual direction collapsed.
+  collapsedIndi?: Set<string>;
+  // [Beta] Set of nodes that have the spouse direction collapsed.
+  collapsedSpouse?: Set<string>;
 }
