@@ -17,7 +17,7 @@
     "prettier": "prettier --single-quote --write src/**/*.ts && prettier --single-quote --write src/*.ts"
   },
   "author": "Przemek Wiech",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "devDependencies": {
     "@types/d3-array": "^2.9.0",
     "@types/d3-hierarchy": "^2.0.0",
