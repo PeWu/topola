@@ -415,6 +415,8 @@ export class ChartUtil {
     ) => ExpanderState | undefined,
     clickCallback?: (id: string) => void
   ) {
+    nodes = nodes.filter((node) => stateGetter(node) !== undefined);
+
     nodes.on('click', (event, data) => {
       clickCallback?.(data.id!);
     });
@@ -427,9 +429,7 @@ export class ChartUtil {
       .attr('y2', 6)
       .attr('stroke', 'black');
     nodes
-      .select(function (node) {
-        return stateGetter(node) === ExpanderState.PLUS ? this : null;
-      })
+      .filter((node) => stateGetter(node) === ExpanderState.PLUS)
       .append('line')
       .attr('x1', 6)
       .attr('y1', 3)
@@ -439,90 +439,72 @@ export class ChartUtil {
   }
 
   renderFamilyControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    const familyExpandersEnter = enter
-      .select(function (node) {
-        const expander = node.data.family?.expander;
-        return expander !== undefined ? this : null;
-      })
+    const merged = update
+      .merge(enter)
+      .filter((node) => node.data.family?.expander !== undefined)
       .append('g')
-      .attr('class', 'familyExpander expander');
-    const familyExpandersUpdate = update
-      .select(function (node) {
-        const expander = node.data.family?.expander;
-        return expander !== undefined ? this : null;
-      })
-      .select('g.familyExpander');
-    const familyExpanders = familyExpandersEnter.merge(
-      familyExpandersUpdate as any
-    );
-
-    familyExpanders.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
-      const anchor = this.options.renderer.getFamilyAnchor(node.data);
-      return `translate(${anchor[0] - 6}, ${
-        -node.data.height! / 2 + getVSize(node.data, !!this.options.horizontal)
-      })`;
-    });
+      .attr('class', 'familyExpander expander')
+      .attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+        const anchor = this.options.renderer.getFamilyAnchor(node.data);
+        return `translate(${anchor[0] - 6}, ${
+          -node.data.height! / 2 +
+          getVSize(node.data, !!this.options.horizontal)
+        })`;
+      });
     this.renderExpander(
-      familyExpanders,
+      merged,
       (node) => node.data.family?.expander,
       (id) => this.options.expanderCallback?.(id, ExpanderDirection.FAMILY)
     );
+
+    update
+      .select('g.familyExpander')
+      .filter((node) => node.data.family?.expander === undefined)
+      .remove();
   }
 
   renderIndiControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    const indiExpandersEnter = enter
-      .select(function (node) {
-        const expander = node.data.indi?.expander;
-        return expander !== undefined ? this : null;
-      })
+    const merged = update
+      .merge(enter)
+      .filter((node) => node.data.indi?.expander !== undefined)
       .append('g')
-      .attr('class', 'indiExpander expander');
-    const indiExpandersUpdate = update
-      .select(function (node) {
-        const expander = node.data.indi?.expander;
-        return expander !== undefined ? this : null;
-      })
-      .select('g.indiExpander');
-    const indiExpanders = indiExpandersEnter.merge(indiExpandersUpdate as any);
-
-    indiExpanders.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
-      const anchor = this.options.renderer.getIndiAnchor(node.data);
-      return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
-    });
+      .attr('class', 'indiExpander expander')
+      .attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+        const anchor = this.options.renderer.getIndiAnchor(node.data);
+        return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
+      });
     this.renderExpander(
-      indiExpanders,
+      merged,
       (node) => node.data.indi?.expander,
       (id) => this.options.expanderCallback?.(id, ExpanderDirection.INDI)
     );
+
+    update
+      .select('g.indiExpander')
+      .filter((node) => node.data.indi?.expander === undefined)
+      .remove();
   }
 
   renderSpouseControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    const spouseExpandersEnter = enter
-      .select(function (node) {
-        const expander = node.data.spouse?.expander;
-        return expander !== undefined ? this : null;
-      })
+    const merged = update
+      .merge(enter)
+      .filter((node) => node.data.spouse?.expander !== undefined)
       .append('g')
-      .attr('class', 'spouseExpander expander');
-    const spouseExpandersUpdate = update
-      .select(function (node) {
-        const expander = node.data.spouse?.expander;
-        return expander !== undefined ? this : null;
-      })
-      .select('g.spouseExpander');
-    const spouseExpanders = spouseExpandersEnter.merge(
-      spouseExpandersUpdate as any
-    );
-
-    spouseExpanders.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
-      const anchor = this.options.renderer.getSpouseAnchor(node.data);
-      return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
-    });
+      .attr('class', 'spouseExpander expander')
+      .attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+        const anchor = this.options.renderer.getSpouseAnchor(node.data);
+        return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
+      });
     this.renderExpander(
-      spouseExpanders,
+      merged,
       (node) => node.data.spouse?.expander,
       (id) => this.options.expanderCallback?.(id, ExpanderDirection.SPOUSE)
     );
+
+    update
+      .select('g.spouseExpander')
+      .filter((node) => node.data.spouse?.expander === undefined)
+      .remove();
   }
 
   renderControls(
