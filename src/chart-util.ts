@@ -438,73 +438,91 @@ export class ChartUtil {
       .attr('stroke', 'black');
   }
 
-  renderFamilyControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    const merged = update
-      .merge(enter)
-      .filter((node) => node.data.family?.expander !== undefined)
+  renderFamilyControls(nodes: TreeNodeSelection) {
+    const boundNodes = nodes
+      .selectAll('g.familyExpander')
+      .data((node) => (node.data.family?.expander !== undefined ? [node] : []));
+
+    const nodeEnter: TreeNodeSelection = boundNodes
+      .enter()
       .append('g')
-      .attr('class', 'familyExpander expander')
-      .attr('transform', (node: HierarchyPointNode<TreeNode>) => {
-        const anchor = this.options.renderer.getFamilyAnchor(node.data);
-        return `translate(${anchor[0] - 6}, ${
-          -node.data.height! / 2 +
-          getVSize(node.data, !!this.options.horizontal)
-        })`;
-      });
+      .attr('class', 'familyExpander expander');
+
+    const merged = nodeEnter.merge(boundNodes);
+
+    const updateTransition = this.options.animate
+      ? merged.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
+      : merged;
+
+    updateTransition.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+      const anchor = this.options.renderer.getFamilyAnchor(node.data);
+      return `translate(${anchor[0] - 6}, ${
+        -node.data.height! / 2 +
+        getVSize(node.data, !!this.options.horizontal)
+      })`;
+  });
     this.renderExpander(
       merged,
       (node) => node.data.family?.expander,
       (id) => this.options.expanderCallback?.(id, ExpanderDirection.FAMILY)
     );
-
-    update
-      .select('g.familyExpander')
-      .filter((node) => node.data.family?.expander === undefined)
-      .remove();
+    boundNodes.exit().remove();
   }
 
-  renderIndiControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    const merged = update
-      .merge(enter)
-      .filter((node) => node.data.indi?.expander !== undefined)
+  renderIndiControls(nodes: TreeNodeSelection) {
+    const boundNodes = nodes
+      .selectAll('g.indiExpander')
+      .data((node) => (node.data.indi?.expander !== undefined ? [node] : []));
+
+    const nodeEnter: TreeNodeSelection = boundNodes
+      .enter()
       .append('g')
-      .attr('class', 'indiExpander expander')
-      .attr('transform', (node: HierarchyPointNode<TreeNode>) => {
-        const anchor = this.options.renderer.getIndiAnchor(node.data);
-        return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
-      });
+      .attr('class', 'indiExpander expander');
+
+    const merged = nodeEnter.merge(boundNodes);
+
+    const updateTransition = this.options.animate
+      ? merged.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
+      : merged;
+
+    updateTransition.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+      const anchor = this.options.renderer.getIndiAnchor(node.data);
+      return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
+    });
     this.renderExpander(
       merged,
       (node) => node.data.indi?.expander,
       (id) => this.options.expanderCallback?.(id, ExpanderDirection.INDI)
     );
-
-    update
-      .select('g.indiExpander')
-      .filter((node) => node.data.indi?.expander === undefined)
-      .remove();
+    boundNodes.exit().remove();
   }
 
-  renderSpouseControls(enter: TreeNodeSelection, update: TreeNodeSelection) {
-    const merged = update
-      .merge(enter)
-      .filter((node) => node.data.spouse?.expander !== undefined)
+  renderSpouseControls(nodes: TreeNodeSelection) {
+    const boundNodes = nodes
+      .selectAll('g.spouseExpander')
+      .data((node) => (node.data.spouse?.expander !== undefined ? [node] : []));
+
+    const nodeEnter: TreeNodeSelection = boundNodes
+      .enter()
       .append('g')
-      .attr('class', 'spouseExpander expander')
-      .attr('transform', (node: HierarchyPointNode<TreeNode>) => {
-        const anchor = this.options.renderer.getSpouseAnchor(node.data);
-        return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
-      });
+      .attr('class', 'spouseExpander expander');
+
+    const merged = nodeEnter.merge(boundNodes);
+
+    const updateTransition = this.options.animate
+      ? merged.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
+      : merged;
+
+    updateTransition.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
+      const anchor = this.options.renderer.getSpouseAnchor(node.data);
+      return `translate(${anchor[0] - 6}, ${-node.data.height! / 2 - 12})`;
+    });
     this.renderExpander(
       merged,
       (node) => node.data.spouse?.expander,
       (id) => this.options.expanderCallback?.(id, ExpanderDirection.SPOUSE)
     );
-
-    update
-      .select('g.spouseExpander')
-      .filter((node) => node.data.spouse?.expander === undefined)
-      .remove();
+    boundNodes.exit().remove();
   }
 
   renderControls(
@@ -564,9 +582,10 @@ export class ChartUtil {
           .on('end', transitionDone);
       }
 
-      this.renderFamilyControls(nodeEnter, boundNodes);
-      this.renderIndiControls(nodeEnter, boundNodes);
-      this.renderSpouseControls(nodeEnter, boundNodes);
+      const merged = nodeEnter.merge(boundNodes);
+      this.renderFamilyControls(merged);
+      this.renderIndiControls(merged);
+      this.renderSpouseControls(merged);
 
       if (this.options.animate) {
         boundNodes
