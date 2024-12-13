@@ -22,8 +22,8 @@ const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
     'cs',
     new Map([
       ['cal', 'vypočt.'],
-      ['abt', 'o'],
-      ['est', 'ocenil'],
+      ['abt', 'okolo'],
+      ['est', 'odhadem'],
       ['before', 'před'],
       ['after', 'po'],
     ]),
@@ -156,8 +156,8 @@ export function formatDateOrRange(
     return '';
   }
   const from =
-    dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from);
-  const to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to);
+    dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from, locale);
+  const to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to, locale);
   if (from && to) {
     return `${from} .. ${to}`;
   }
