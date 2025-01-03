@@ -166,12 +166,13 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
 function createIndi(
   entry: GedcomEntry,
-  objects: Map<string, GedcomEntry>
+  objects: Map<string, GedcomEntry>,
+  existingIds: Set<string>
 ): JsonIndi {
-  const id = pointerToId(entry.pointer);
-  const fams = findTags(entry.tree, 'FAMS').map((entry) =>
-    pointerToId(entry.data)
-  );
+  const id = pointerToId(entry.pointer)!;
+  const fams = findTags(entry.tree, 'FAMS')
+    .map((entry) => pointerToId(entry.data))
+    .filter((id) => existingIds.has(id));
   const indi: JsonIndi = { id, fams };
 
   // Name.
@@ -224,7 +225,10 @@ function createIndi(
   // Family with parents.
   const famcTag = findTag(entry.tree, 'FAMC');
   if (famcTag) {
-    indi.famc = pointerToId(famcTag.data);
+    const id = pointerToId(famcTag.data);
+    if (existingIds.has(id)) {
+      indi.famc = id;
+    }
   }
 
   // Image URL.
@@ -274,23 +278,29 @@ function createIndi(
 }
 
 /** Creates a JsonFam object from an FAM entry in GEDCOM. */
-function createFam(entry: GedcomEntry): JsonFam {
-  const id = pointerToId(entry.pointer);
-  const children = findTags(entry.tree, 'CHIL').map((entry) =>
-    pointerToId(entry.data)
-  );
+function createFam(entry: GedcomEntry, existingIds: Set<string>): JsonFam {
+  const id = pointerToId(entry.pointer)!;
+  const children = findTags(entry.tree, 'CHIL')
+    .map((entry) => pointerToId(entry.data))
+    .filter((id) => existingIds.has(id));
   const fam: JsonFam = { id, children };
 
   // Husband.
   const husbTag = findTag(entry.tree, 'HUSB');
   if (husbTag) {
-    fam.husb = pointerToId(husbTag.data);
+    const id = pointerToId(husbTag.data);
+    if (existingIds.has(id)) {
+      fam.husb = pointerToId(husbTag.data);
+    }
   }
 
   // Wife.
   const wifeTag = findTag(entry.tree, 'WIFE');
   if (wifeTag) {
-    fam.wife = pointerToId(wifeTag.data);
+    const id = pointerToId(wifeTag.data);
+    if (existingIds.has(id)) {
+      fam.wife = pointerToId(wifeTag.data);
+    }
   }
 
   // Marriage
@@ -303,7 +313,7 @@ function createFam(entry: GedcomEntry): JsonFam {
 
 /** Creates a map from ID to entry from an array of entries. */
 function createMap(entries: GedcomEntry[]): Map<string, GedcomEntry> {
-  return new Map(entries.map((entry) => [pointerToId(entry.pointer), entry]));
+  return new Map(entries.map((entry) => [pointerToId(entry.pointer)!, entry]));
 }
 
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
@@ -314,9 +324,14 @@ export function gedcomToJson(gedcomContents: string): JsonGedcomData {
 /** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
 export function gedcomEntriesToJson(gedcom: GedcomEntry[]): JsonGedcomData {
   const objects = createMap(findTags(gedcom, 'OBJE'));
-  const indis = findTags(gedcom, 'INDI').map((entry) =>
-    createIndi(entry, objects)
+  const existingIds = new Set(
+    gedcom.map((entry) => pointerToId(entry.pointer)!).filter((id) => !!id)
   );
-  const fams = findTags(gedcom, 'FAM').map(createFam);
+  const indis = findTags(gedcom, 'INDI').map((entry) =>
+    createIndi(entry, objects, existingIds)
+  );
+  const fams = findTags(gedcom, 'FAM').map((entry) =>
+    createFam(entry, existingIds)
+  );
   return { indis, fams };
 }

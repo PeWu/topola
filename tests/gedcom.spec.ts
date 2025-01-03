@@ -40,7 +40,7 @@ describe('GEDCOM parser', () => {
   });
 
   describe('Name', () => {
-    it('should parse name correctly', () => {
+    it('should parse name', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NAME John /Doe/
@@ -51,7 +51,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].lastName).toBe('Doe');
     });
 
-    it('should parse maiden name correctly', () => {
+    it('should parse maiden name', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NAME Jane /Doe/
@@ -81,7 +81,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].maidenName).toBe('Smith');
     });
 
-    it('should parse NAME with maiden correctly', () => {
+    it('should parse NAME with maiden', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NAME /Smith/
@@ -124,7 +124,7 @@ describe('GEDCOM parser', () => {
   });
 
   describe('Notes', () => {
-    it('should parse single note correctly', () => {
+    it('should parse single note', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NOTE Hello
@@ -135,7 +135,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].notes![0]).toBe('Hello');
     });
 
-    it('should parse single note correctly', () => {
+    it('should parse single note', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NOTE Hello
@@ -150,7 +150,7 @@ describe('GEDCOM parser', () => {
   });
 
   describe('Meta', () => {
-    it('should parse number of children correctly', () => {
+    it('should parse number of children', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NCHI 10
@@ -160,7 +160,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].numberOfChildren).toBe(10);
     });
 
-    it('should parse number of marriages correctly', () => {
+    it('should parse number of marriages', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NMR 5
@@ -172,7 +172,7 @@ describe('GEDCOM parser', () => {
   });
 
   describe('Events', () => {
-    it('should parse events correctly', () => {
+    it('should parse events', () => {
       let gedcom = `
       0 @I1@ INDI
       1 EVEN
@@ -196,7 +196,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].events![0].notes![2]).toBe('line3');
     });
 
-    it('should birthday correctly', () => {
+    it('should parse birthday', () => {
       let gedcom = `
       0 @I1@ INDI
       1 BIRT
@@ -213,7 +213,7 @@ describe('GEDCOM parser', () => {
   });
 
   describe('Images', () => {
-    it('should parse multiple image objects correctly', () => {
+    it('should parse multiple image objects', () => {
       let gedcom = `
       0 @I1@ INDI
       1 OBJE
@@ -232,6 +232,56 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].images![0].title).toBe('some');
       expect(sut.indis[0].images![1].url).toBe('images.jpg');
       expect(sut.indis[0].images![1].title).toBe('description');
+    });
+
+    it('should parse images as separate OBJE objects', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 OBJE @O1@
+      0 @O1@ OBJE
+      1 FILE image.jpg
+      1 TITL description
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis.length).toBe(1);
+
+      expect(sut.indis[0].images!.length).toBe(1);
+      expect(sut.indis[0].images![0].url).toBe('image.jpg');
+      expect(sut.indis[0].images![0].title).toBe('description');
+    });
+
+    it('should handle @VOID@ object references', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 OBJE @VOID@
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis.length).toBe(1);
+
+      expect(sut.indis[0].images!.length).toBe(0);
+    });
+  });
+
+  describe('References', () => {
+    it('should ignore @VOID@ references', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 FAMC @VOID@
+      2 FAMS @VOID@
+      0 @F1@ FAM
+      1 HUSB @VOID@
+      1 WIFE @VOID@
+      1 CHIL @VOID@
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].famc).toBeUndefined();
+      expect(sut.indis[0].fams?.length).toBe(0);
+      expect(sut.fams[0].husb).toBeUndefined();
+      expect(sut.fams[0].wife).toBeUndefined();
+      expect(sut.fams[0].children?.length).toBe(0);
     });
   });
 });
