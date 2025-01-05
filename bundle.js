@@ -7367,7 +7367,9 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AncestorChart = exports.getAncestorsTree = void 0;
+exports.AncestorChart = void 0;
+exports.getAncestorsTree = getAncestorsTree;
+var api_1 = require("./api");
 var chart_util_1 = require("./chart-util");
 var d3_hierarchy_1 = require("d3-hierarchy");
 var id_generator_1 = require("./id-generator");
@@ -7398,7 +7400,6 @@ function getAncestorsTree(options) {
     }
     return ancestorsRoot;
 }
-exports.getAncestorsTree = getAncestorsTree;
 /** Renders an ancestors chart. */
 var AncestorChart = /** @class */ (function () {
     function AncestorChart(options) {
@@ -7407,6 +7408,7 @@ var AncestorChart = /** @class */ (function () {
     }
     /** Creates a d3 hierarchy from the input data. */
     AncestorChart.prototype.createHierarchy = function () {
+        var _a, _b;
         var parents = [];
         var stack = [];
         var idGenerator = this.options.idGenerator || new id_generator_1.IdGenerator();
@@ -7439,10 +7441,10 @@ var AncestorChart = /** @class */ (function () {
             if (!fam) {
                 continue;
             }
-            var _a = entry.family.id === this.options.startFam &&
+            var _c = entry.family.id === this.options.startFam &&
                 this.options.swapStartSpouses
                 ? [fam.getMother(), fam.getFather()]
-                : [fam.getFather(), fam.getMother()], father = _a[0], mother = _a[1];
+                : [fam.getFather(), fam.getMother()], father = _c[0], mother = _c[1];
             if (!father && !mother) {
                 continue;
             }
@@ -7451,13 +7453,19 @@ var AncestorChart = /** @class */ (function () {
                 var indi = this.options.data.getIndi(mother);
                 var famc = indi.getFamilyAsChild();
                 if (famc) {
-                    var id = idGenerator.getId(famc);
-                    entry.spouseParentNodeId = id;
-                    stack.push({
-                        id: id,
-                        parentId: entry.id,
-                        family: { id: famc },
-                    });
+                    if ((_a = this.options.collapsedSpouse) === null || _a === void 0 ? void 0 : _a.has(entry.id)) {
+                        entry.spouse.expander = api_1.ExpanderState.PLUS;
+                    }
+                    else {
+                        var id = idGenerator.getId(famc);
+                        entry.spouseParentNodeId = id;
+                        entry.spouse.expander = api_1.ExpanderState.MINUS;
+                        stack.push({
+                            id: id,
+                            parentId: entry.id,
+                            family: { id: famc },
+                        });
+                    }
                 }
             }
             if (father) {
@@ -7465,18 +7473,24 @@ var AncestorChart = /** @class */ (function () {
                 var indi = this.options.data.getIndi(father);
                 var famc = indi.getFamilyAsChild();
                 if (famc) {
-                    var id = idGenerator.getId(famc);
-                    entry.indiParentNodeId = id;
-                    stack.push({
-                        id: id,
-                        parentId: entry.id,
-                        family: { id: famc },
-                    });
+                    if ((_b = this.options.collapsedIndi) === null || _b === void 0 ? void 0 : _b.has(entry.id)) {
+                        entry.indi.expander = api_1.ExpanderState.PLUS;
+                    }
+                    else {
+                        var id = idGenerator.getId(famc);
+                        entry.indiParentNodeId = id;
+                        entry.indi.expander = api_1.ExpanderState.MINUS;
+                        stack.push({
+                            id: id,
+                            parentId: entry.id,
+                            family: { id: famc },
+                        });
+                    }
                 }
             }
             parents.push(entry);
         }
-        return d3_hierarchy_1.stratify()(parents);
+        return (0, d3_hierarchy_1.stratify)()(parents);
     };
     /**
      * Renders the tree, calling the provided renderer to draw boxes for
@@ -7486,7 +7500,7 @@ var AncestorChart = /** @class */ (function () {
         var root = this.createHierarchy();
         var nodes = this.util.layOutChart(root, { flipVertically: true });
         var animationPromise = this.util.renderChart(nodes);
-        var info = chart_util_1.getChartInfo(nodes);
+        var info = (0, chart_util_1.getChartInfo)(nodes);
         this.util.updateSvgDimensions(info);
         return Object.assign(info, { animationPromise: animationPromise });
     };
@@ -7494,65 +7508,82 @@ var AncestorChart = /** @class */ (function () {
 }());
 exports.AncestorChart = AncestorChart;
 
-},{"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],16:[function(require,module,exports){
+},{"./api":16,"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChartColors = void 0;
+exports.ChartColors = exports.ExpanderDirection = exports.ExpanderState = void 0;
+var ExpanderState;
+(function (ExpanderState) {
+    ExpanderState[ExpanderState["PLUS"] = 0] = "PLUS";
+    ExpanderState[ExpanderState["MINUS"] = 1] = "MINUS";
+})(ExpanderState || (exports.ExpanderState = ExpanderState = {}));
+var ExpanderDirection;
+(function (ExpanderDirection) {
+    ExpanderDirection[ExpanderDirection["INDI"] = 0] = "INDI";
+    ExpanderDirection[ExpanderDirection["SPOUSE"] = 1] = "SPOUSE";
+    ExpanderDirection[ExpanderDirection["FAMILY"] = 2] = "FAMILY";
+})(ExpanderDirection || (exports.ExpanderDirection = ExpanderDirection = {}));
 var ChartColors;
 (function (ChartColors) {
     ChartColors[ChartColors["NO_COLOR"] = 0] = "NO_COLOR";
     ChartColors[ChartColors["COLOR_BY_GENERATION"] = 1] = "COLOR_BY_GENERATION";
     ChartColors[ChartColors["COLOR_BY_SEX"] = 2] = "COLOR_BY_SEX";
-})(ChartColors = exports.ChartColors || (exports.ChartColors = {}));
+})(ChartColors || (exports.ChartColors = ChartColors = {}));
 
 },{}],17:[function(require,module,exports){
 "use strict";
+/// <reference path='d3-flextree.d.ts' />
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ChartUtil = exports.getChartInfoWithoutMargin = exports.getChartInfo = exports.linkId = exports.V_SPACING = exports.H_SPACING = void 0;
+exports.ChartUtil = exports.V_SPACING = exports.H_SPACING = void 0;
+exports.linkId = linkId;
+exports.getChartInfo = getChartInfo;
+exports.getChartInfoWithoutMargin = getChartInfoWithoutMargin;
 var d3_selection_1 = require("d3-selection");
+var api_1 = require("./api");
 var d3_flextree_1 = require("d3-flextree");
 var d3_array_1 = require("d3-array");
 require("d3-transition");
+var composite_renderer_1 = require("./composite-renderer");
 /** Horizontal distance between boxes. */
 exports.H_SPACING = 15;
 /** Vertical distance between boxes. */
-exports.V_SPACING = 30;
+exports.V_SPACING = 34;
 /** Margin around the whole drawing. */
 var MARGIN = 15;
 var HIDE_TIME_MS = 200;
 var MOVE_TIME_MS = 500;
+function getExpanderCss() {
+    return "\n.expander {\n  fill: white;\n  stroke: black;\n  stroke-width: 2px;\n  cursor: pointer;\n}";
+}
 /** Assigns an identifier to a link. */
 function linkId(node) {
     if (!node.parent) {
-        return node.id + ":A";
+        return "".concat(node.id, ":A");
     }
     var _a = node.data.generation > node.parent.data.generation
         ? [node.data, node.parent.data]
         : [node.parent.data, node.data], child = _a[0], parent = _a[1];
     if (child.additionalMarriage) {
-        return child.id + ":A";
+        return "".concat(child.id, ":A");
     }
-    return parent.id + ":" + child.id;
+    return "".concat(parent.id, ":").concat(child.id);
 }
-exports.linkId = linkId;
 function getChartInfo(nodes) {
     // Calculate chart boundaries.
-    var x0 = d3_array_1.min(nodes, function (d) { return d.x - d.data.width / 2; }) - MARGIN;
-    var y0 = d3_array_1.min(nodes, function (d) { return d.y - d.data.height / 2; }) - MARGIN;
-    var x1 = d3_array_1.max(nodes, function (d) { return d.x + d.data.width / 2; }) + MARGIN;
-    var y1 = d3_array_1.max(nodes, function (d) { return d.y + d.data.height / 2; }) + MARGIN;
+    var x0 = (0, d3_array_1.min)(nodes, function (d) { return d.x - d.data.width / 2; }) - MARGIN;
+    var y0 = (0, d3_array_1.min)(nodes, function (d) { return d.y - d.data.height / 2; }) - MARGIN;
+    var x1 = (0, d3_array_1.max)(nodes, function (d) { return d.x + d.data.width / 2; }) + MARGIN;
+    var y1 = (0, d3_array_1.max)(nodes, function (d) { return d.y + d.data.height / 2; }) + MARGIN;
     return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
-exports.getChartInfo = getChartInfo;
 function getChartInfoWithoutMargin(nodes) {
     // Calculate chart boundaries.
-    var x0 = d3_array_1.min(nodes, function (d) { return d.x - d.data.width / 2; });
-    var y0 = d3_array_1.min(nodes, function (d) { return d.y - d.data.height / 2; });
-    var x1 = d3_array_1.max(nodes, function (d) { return d.x + d.data.width / 2; });
-    var y1 = d3_array_1.max(nodes, function (d) { return d.y + d.data.height / 2; });
+    var x0 = (0, d3_array_1.min)(nodes, function (d) { return d.x - d.data.width / 2; });
+    var y0 = (0, d3_array_1.min)(nodes, function (d) { return d.y - d.data.height / 2; });
+    var x1 = (0, d3_array_1.max)(nodes, function (d) { return d.x + d.data.width / 2; });
+    var y1 = (0, d3_array_1.max)(nodes, function (d) { return d.y + d.data.height / 2; });
     return { size: [x1 - x0, y1 - y0], origin: [-x0, -y0] };
 }
-exports.getChartInfoWithoutMargin = getChartInfoWithoutMargin;
 /** Utility class with common code for all chart types. */
 var ChartUtil = /** @class */ (function () {
     function ChartUtil(options) {
@@ -7567,7 +7598,7 @@ var ChartUtil = /** @class */ (function () {
         var _a = [s.x + sAnchor[0], s.y + sAnchor[1]], sx = _a[0], sy = _a[1];
         var _b = [d.x + dAnchor[0], d.y + dAnchor[1]], dx = _b[0], dy = _b[1];
         var midX = (s.x + s.data.width / 2 + d.x - d.data.width / 2) / 2;
-        return "M " + sx + " " + sy + "\n            L " + midX + " " + sy + ",\n              " + midX + " " + dy + ",\n              " + dx + " " + dy;
+        return "M ".concat(sx, " ").concat(sy, "\n            L ").concat(midX, " ").concat(sy, ",\n              ").concat(midX, " ").concat(dy, ",\n              ").concat(dx, " ").concat(dy);
     };
     /** Creates a path from parent to the child node (vertical layout). */
     ChartUtil.prototype.linkVertical = function (s, d) {
@@ -7578,7 +7609,7 @@ var ChartUtil = /** @class */ (function () {
         var _a = [s.x + sAnchor[0], s.y + sAnchor[1]], sx = _a[0], sy = _a[1];
         var _b = [d.x + dAnchor[0], d.y + dAnchor[1]], dx = _b[0], dy = _b[1];
         var midY = s.y + s.data.height / 2 + exports.V_SPACING / 2;
-        return "M " + sx + " " + sy + "\n            L " + sx + " " + midY + ",\n              " + dx + " " + midY + ",\n              " + dx + " " + dy;
+        return "M ".concat(sx, " ").concat(sy, "\n            L ").concat(sx, " ").concat(midY, ",\n              ").concat(dx, " ").concat(midY, ",\n              ").concat(dx, " ").concat(dy);
     };
     ChartUtil.prototype.linkAdditionalMarriage = function (node) {
         var nodeIndex = node.parent.children.findIndex(function (n) { return n.data.id === node.data.id; });
@@ -7588,23 +7619,25 @@ var ChartUtil = /** @class */ (function () {
         var dAnchor = this.options.renderer.getIndiAnchor(siblingNode.data);
         var _a = [node.x + sAnchor[0], node.y + sAnchor[1]], sx = _a[0], sy = _a[1];
         var _b = [siblingNode.x + dAnchor[0], siblingNode.y + dAnchor[1]], dx = _b[0], dy = _b[1];
-        return "M " + sx + ", " + sy + "\n            L " + dx + ", " + dy;
+        return "M ".concat(sx, ", ").concat(sy, "\n            L ").concat(dx, ", ").concat(dy);
     };
     ChartUtil.prototype.updateSvgDimensions = function (chartInfo) {
-        var svg = d3_selection_1.select(this.options.svgSelector);
+        var svg = (0, d3_selection_1.select)(this.options.svgSelector);
         var group = svg.select('g');
         var transition = this.options.animate
             ? group.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
             : group;
-        transition.attr('transform', "translate(" + chartInfo.origin[0] + ", " + chartInfo.origin[1] + ")");
+        transition.attr('transform', "translate(".concat(chartInfo.origin[0], ", ").concat(chartInfo.origin[1], ")"));
     };
     ChartUtil.prototype.layOutChart = function (root, layoutOptions) {
         var _this = this;
         if (layoutOptions === void 0) { layoutOptions = {}; }
         // Add styles so that calculating text size is correct.
-        var svg = d3_selection_1.select(this.options.svgSelector);
+        var svg = (0, d3_selection_1.select)(this.options.svgSelector);
         if (svg.select('style').empty()) {
-            svg.append('style').text(this.options.renderer.getCss());
+            svg
+                .append('style')
+                .text(this.options.renderer.getCss() + getExpanderCss());
         }
         // Assign generation number.
         root.each(function (node) {
@@ -7617,7 +7650,7 @@ var ChartUtil = /** @class */ (function () {
         var vSizePerDepth = new Map();
         root.each(function (node) {
             var depth = node.depth;
-            var maxVSize = d3_array_1.max([
+            var maxVSize = (0, d3_array_1.max)([
                 _this.options.horizontal ? node.data.width : node.data.height,
                 vSizePerDepth.get(depth),
             ]);
@@ -7636,16 +7669,16 @@ var ChartUtil = /** @class */ (function () {
         var vSpacing = layoutOptions.vSpacing !== undefined ? layoutOptions.vSpacing : exports.V_SPACING;
         var hSpacing = layoutOptions.hSpacing !== undefined ? layoutOptions.hSpacing : exports.H_SPACING;
         // Assigns the x and y position for the nodes.
-        var treemap = d3_flextree_1.flextree()
+        var treemap = (0, d3_flextree_1.flextree)()
             .nodeSize(function (node) {
             if (_this.options.horizontal) {
-                var maxChildSize_1 = d3_array_1.max(node.children || [], function (n) { return n.data.width; }) || 0;
+                var maxChildSize_1 = (0, d3_array_1.max)(node.children || [], function (n) { return n.data.width; }) || 0;
                 return [
                     node.data.height,
                     (maxChildSize_1 + node.data.width) / 2 + vSpacing,
                 ];
             }
-            var maxChildSize = d3_array_1.max(node.children || [], function (n) { return n.data.height; }) || 0;
+            var maxChildSize = (0, d3_array_1.max)(node.children || [], function (n) { return n.data.height; }) || 0;
             return [
                 node.data.width,
                 (maxChildSize + node.data.height) / 2 + vSpacing,
@@ -7669,9 +7702,11 @@ var ChartUtil = /** @class */ (function () {
         var svg = this.getSvgForRendering();
         var nodeAnimation = this.renderNodes(nodes, svg);
         var linkAnimation = this.renderLinks(nodes, svg);
+        var expanderAnimation = this.renderControls(nodes, svg);
         return Promise.all([
             nodeAnimation,
             linkAnimation,
+            expanderAnimation,
         ]);
     };
     ChartUtil.prototype.renderNodes = function (nodes, svg) {
@@ -7689,14 +7724,14 @@ var ChartUtil = /** @class */ (function () {
                     resolve();
                 }
             };
-            if (!_this.options.animate) {
+            if (!_this.options.animate || transitionsPending === 0) {
                 resolve();
             }
             nodeEnter
                 .merge(boundNodes)
-                .attr('class', function (node) { return "node generation" + node.data.generation; });
+                .attr('class', function (node) { return "node generation".concat(node.data.generation); });
             nodeEnter.attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
+                return "translate(".concat(node.x - node.data.width / 2, ", ").concat(node.y - node.data.height / 2, ")");
             });
             if (_this.options.animate) {
                 nodeEnter
@@ -7715,7 +7750,7 @@ var ChartUtil = /** @class */ (function () {
                     .on('end', transitionDone)
                 : boundNodes;
             updateTransition.attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
+                return "translate(".concat(node.x - node.data.width / 2, ", ").concat(node.y - node.data.height / 2, ")");
             });
             _this.options.renderer.render(nodeEnter, boundNodes);
             if (_this.options.animate) {
@@ -7771,7 +7806,7 @@ var ChartUtil = /** @class */ (function () {
                     resolve();
                 }
             };
-            if (!_this.options.animate) {
+            if (!_this.options.animate || transitionsPending === 0) {
                 resolve();
             }
             var linkTransition = _this.options.animate
@@ -7806,8 +7841,156 @@ var ChartUtil = /** @class */ (function () {
         });
         return animationPromise;
     };
+    ChartUtil.prototype.renderExpander = function (nodes, stateGetter, clickCallback) {
+        nodes = nodes.filter(function (node) { return stateGetter(node) !== undefined; });
+        nodes.on('click', function (event, data) {
+            clickCallback === null || clickCallback === void 0 ? void 0 : clickCallback(data.id);
+        });
+        nodes.append('rect').attr('width', 12).attr('height', 12);
+        nodes
+            .append('line')
+            .attr('x1', 3)
+            .attr('y1', 6)
+            .attr('x2', 9)
+            .attr('y2', 6)
+            .attr('stroke', 'black');
+        nodes
+            .filter(function (node) { return stateGetter(node) === api_1.ExpanderState.PLUS; })
+            .append('line')
+            .attr('x1', 6)
+            .attr('y1', 3)
+            .attr('x2', 6)
+            .attr('y2', 9)
+            .attr('stroke', 'black');
+    };
+    ChartUtil.prototype.renderFamilyControls = function (nodes) {
+        var _this = this;
+        var boundNodes = nodes
+            .selectAll('g.familyExpander')
+            .data(function (node) { var _a; return (((_a = node.data.family) === null || _a === void 0 ? void 0 : _a.expander) !== undefined ? [node] : []); });
+        var nodeEnter = boundNodes
+            .enter()
+            .append('g')
+            .attr('class', 'familyExpander expander');
+        var merged = nodeEnter.merge(boundNodes);
+        var updateTransition = this.options.animate
+            ? merged.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
+            : merged;
+        updateTransition.attr('transform', function (node) {
+            var anchor = _this.options.renderer.getFamilyAnchor(node.data);
+            return "translate(".concat(anchor[0] - 6, ", ").concat(-node.data.height / 2 +
+                (0, composite_renderer_1.getVSize)(node.data, !!_this.options.horizontal), ")");
+        });
+        this.renderExpander(merged, function (node) { var _a; return (_a = node.data.family) === null || _a === void 0 ? void 0 : _a.expander; }, function (id) { var _a, _b; return (_b = (_a = _this.options).expanderCallback) === null || _b === void 0 ? void 0 : _b.call(_a, id, api_1.ExpanderDirection.FAMILY); });
+        boundNodes.exit().remove();
+    };
+    ChartUtil.prototype.renderIndiControls = function (nodes) {
+        var _this = this;
+        var boundNodes = nodes
+            .selectAll('g.indiExpander')
+            .data(function (node) { var _a; return (((_a = node.data.indi) === null || _a === void 0 ? void 0 : _a.expander) !== undefined ? [node] : []); });
+        var nodeEnter = boundNodes
+            .enter()
+            .append('g')
+            .attr('class', 'indiExpander expander');
+        var merged = nodeEnter.merge(boundNodes);
+        var updateTransition = this.options.animate
+            ? merged.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
+            : merged;
+        updateTransition.attr('transform', function (node) {
+            var anchor = _this.options.renderer.getIndiAnchor(node.data);
+            return "translate(".concat(anchor[0] - 6, ", ").concat(-node.data.height / 2 - 12, ")");
+        });
+        this.renderExpander(merged, function (node) { var _a; return (_a = node.data.indi) === null || _a === void 0 ? void 0 : _a.expander; }, function (id) { var _a, _b; return (_b = (_a = _this.options).expanderCallback) === null || _b === void 0 ? void 0 : _b.call(_a, id, api_1.ExpanderDirection.INDI); });
+        boundNodes.exit().remove();
+    };
+    ChartUtil.prototype.renderSpouseControls = function (nodes) {
+        var _this = this;
+        var boundNodes = nodes
+            .selectAll('g.spouseExpander')
+            .data(function (node) { var _a; return (((_a = node.data.spouse) === null || _a === void 0 ? void 0 : _a.expander) !== undefined ? [node] : []); });
+        var nodeEnter = boundNodes
+            .enter()
+            .append('g')
+            .attr('class', 'spouseExpander expander');
+        var merged = nodeEnter.merge(boundNodes);
+        var updateTransition = this.options.animate
+            ? merged.transition().delay(HIDE_TIME_MS).duration(MOVE_TIME_MS)
+            : merged;
+        updateTransition.attr('transform', function (node) {
+            var anchor = _this.options.renderer.getSpouseAnchor(node.data);
+            return "translate(".concat(anchor[0] - 6, ", ").concat(-node.data.height / 2 - 12, ")");
+        });
+        this.renderExpander(merged, function (node) { var _a; return (_a = node.data.spouse) === null || _a === void 0 ? void 0 : _a.expander; }, function (id) { var _a, _b; return (_b = (_a = _this.options).expanderCallback) === null || _b === void 0 ? void 0 : _b.call(_a, id, api_1.ExpanderDirection.SPOUSE); });
+        boundNodes.exit().remove();
+    };
+    ChartUtil.prototype.renderControls = function (nodes, svg) {
+        var _this = this;
+        if (!this.options.expanders) {
+            return Promise.resolve();
+        }
+        var animationPromise = new Promise(function (resolve) {
+            var boundNodes = svg
+                .select('g')
+                .selectAll('g.controls')
+                .data(nodes, function (d) { return d.id; });
+            var nodeEnter = boundNodes
+                .enter()
+                .append('g')
+                .attr('class', 'controls');
+            nodeEnter.attr('transform', function (node) {
+                return "translate(".concat(node.x, ", ").concat(node.y, ")");
+            });
+            var transitionsPending = boundNodes.exit().size() + boundNodes.size() + nodeEnter.size();
+            var transitionDone = function () {
+                transitionsPending--;
+                if (transitionsPending === 0) {
+                    resolve();
+                }
+            };
+            if (!_this.options.animate || transitionsPending === 0) {
+                resolve();
+            }
+            var updateTransition = _this.options.animate
+                ? boundNodes
+                    .transition()
+                    .delay(HIDE_TIME_MS)
+                    .duration(MOVE_TIME_MS)
+                    .on('end', transitionDone)
+                : boundNodes;
+            updateTransition.attr('transform', function (node) {
+                return "translate(".concat(node.x, ", ").concat(node.y, ")");
+            });
+            if (_this.options.animate) {
+                nodeEnter
+                    .style('opacity', 0)
+                    .transition()
+                    .delay(HIDE_TIME_MS + MOVE_TIME_MS)
+                    .duration(HIDE_TIME_MS)
+                    .style('opacity', 1)
+                    .on('end', transitionDone);
+            }
+            var merged = nodeEnter.merge(boundNodes);
+            _this.renderFamilyControls(merged);
+            _this.renderIndiControls(merged);
+            _this.renderSpouseControls(merged);
+            if (_this.options.animate) {
+                boundNodes
+                    .exit()
+                    .transition()
+                    .duration(HIDE_TIME_MS)
+                    .style('opacity', 0)
+                    .remove()
+                    .on('end', transitionDone);
+            }
+            else {
+                boundNodes.exit().remove();
+            }
+        });
+        return animationPromise;
+    };
     ChartUtil.prototype.getSvgForRendering = function () {
-        var svg = d3_selection_1.select(this.options.svgSelector);
+        var svg = (0, d3_selection_1.select)(this.options.svgSelector);
         if (svg.select('g').empty()) {
             svg.append('g');
         }
@@ -7817,7 +8000,7 @@ var ChartUtil = /** @class */ (function () {
 }());
 exports.ChartUtil = ChartUtil;
 
-},{"d3-array":2,"d3-flextree":6,"d3-selection":9,"d3-transition":11}],18:[function(require,module,exports){
+},{"./api":16,"./composite-renderer":19,"d3-array":2,"d3-flextree":6,"d3-selection":9,"d3-transition":11}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CircleRenderer = void 0;
@@ -7865,7 +8048,7 @@ var CircleRenderer = /** @class */ (function () {
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('transform', function (node) {
-            return "translate(" + node.data.width / 2 + ", " + (node.data.height / 2 - 4) + ")";
+            return "translate(".concat(node.data.width / 2, ", ").concat(node.data.height / 2 - 4, ")");
         })
             .text(function (node) { return _this.getName(node.data.indi); });
         enter
@@ -7873,7 +8056,7 @@ var CircleRenderer = /** @class */ (function () {
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('transform', function (node) {
-            return "translate(" + node.data.width / 2 + ", " + (node.data.height / 2 + 14) + ")";
+            return "translate(".concat(node.data.width / 2, ", ").concat(node.data.height / 2 + 14, ")");
         })
             .text(function (node) { return _this.getName(node.data.spouse); });
         enter
@@ -7881,7 +8064,7 @@ var CircleRenderer = /** @class */ (function () {
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('transform', function (node) {
-            return "translate(" + node.data.width / 2 + ", " + (node.data.height / 2 + 4) + ")";
+            return "translate(".concat(node.data.width / 2, ", ").concat(node.data.height / 2 + 4, ")");
         })
             .text(function (node) { return _this.getName(node.data.indi); });
     };
@@ -7895,7 +8078,10 @@ exports.CircleRenderer = CircleRenderer;
 },{}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFamPositionHorizontal = exports.getFamPositionVertical = exports.CompositeRenderer = void 0;
+exports.CompositeRenderer = void 0;
+exports.getFamPositionVertical = getFamPositionVertical;
+exports.getFamPositionHorizontal = getFamPositionHorizontal;
+exports.getVSize = getVSize;
 var d3_array_1 = require("d3-array");
 /**
  * Common code for tree nodes that are composed of individual and family boxes.
@@ -7928,7 +8114,7 @@ var CompositeRenderer = /** @class */ (function () {
                 _a = _this.getPreferredFamSize(family.id), family.width = _a[0], family.height = _a[1];
             }
             var depth = node.depth;
-            var maxIndiVSize = d3_array_1.max([
+            var maxIndiVSize = (0, d3_array_1.max)([
                 getIndiVSize(node.data, !!_this.options.horizontal),
                 indiVSizePerDepth.get(depth),
             ]);
@@ -7964,14 +8150,14 @@ var CompositeRenderer = /** @class */ (function () {
         if (this.options.horizontal) {
             var x_1 = -node.width / 2 + getIndiVSize(node, this.options.horizontal) / 2;
             var famYOffset = node.family
-                ? d3_array_1.max([-getFamPositionHorizontal(node), 0])
+                ? (0, d3_array_1.max)([-getFamPositionHorizontal(node), 0])
                 : 0;
             var y_1 = -(node.indi && node.spouse ? node.height / 2 - node.indi.height : 0) +
                 famYOffset;
             return [x_1, y_1];
         }
         var famXOffset = node.family
-            ? d3_array_1.max([-getFamPositionVertical(node), 0])
+            ? (0, d3_array_1.max)([-getFamPositionVertical(node), 0])
             : 0;
         var x = -(node.indi && node.spouse ? node.width / 2 - node.indi.width : 0) +
             famXOffset;
@@ -8019,7 +8205,6 @@ function getFamPositionVertical(node) {
     }
     return indiWidth - familyWidth / 2;
 }
-exports.getFamPositionVertical = getFamPositionVertical;
 /**
  * Returns the relative position of the family box for the horizontal layout.
  */
@@ -8032,7 +8217,6 @@ function getFamPositionHorizontal(node) {
     }
     return indiHeight - familyHeight / 2;
 }
-exports.getFamPositionHorizontal = getFamPositionHorizontal;
 /** Returns the horizontal size. */
 function getHSize(node, horizontal) {
     if (horizontal) {
@@ -8040,7 +8224,7 @@ function getHSize(node, horizontal) {
             (node.spouse ? node.spouse.height : 0));
     }
     var indiHSize = (node.indi ? node.indi.width : 0) + (node.spouse ? node.spouse.width : 0);
-    return d3_array_1.max([indiHSize, node.family ? node.family.width : 0]);
+    return (0, d3_array_1.max)([indiHSize, node.family ? node.family.width : 0]);
 }
 function getFamVSize(node, horizontal) {
     if (horizontal) {
@@ -8051,12 +8235,12 @@ function getFamVSize(node, horizontal) {
 /** Returns the vertical size of individual boxes. */
 function getIndiVSize(node, horizontal) {
     if (horizontal) {
-        return d3_array_1.max([
+        return (0, d3_array_1.max)([
             node.indi ? node.indi.width : 0,
             node.spouse ? node.spouse.width : 0,
         ]);
     }
-    return d3_array_1.max([
+    return (0, d3_array_1.max)([
         node.indi ? node.indi.height : 0,
         node.spouse ? node.spouse.height : 0,
     ]);
@@ -8135,6 +8319,9 @@ var JsonIndiDetails = /** @class */ (function () {
     JsonIndiDetails.prototype.showId = function () {
         return !this.json.hideId;
     };
+    JsonIndiDetails.prototype.showSex = function () {
+        return !this.json.hideSex;
+    };
     return JsonIndiDetails;
 }());
 /** Details of a family based on Json input. */
@@ -8187,7 +8374,8 @@ exports.JsonDataProvider = JsonDataProvider;
 },{}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.formatDateOrRange = exports.formatDate = void 0;
+exports.formatDate = formatDate;
+exports.formatDateOrRange = formatDateOrRange;
 /** Month in English is used as fallback if a requested translation is not found. */
 var MONTHS_EN = new Map([
     [1, 'Jan'],
@@ -8209,8 +8397,8 @@ var QUALIFIERS_I18N = new Map([
         'cs',
         new Map([
             ['cal', 'vypočt.'],
-            ['abt', 'o'],
-            ['est', 'ocenil'],
+            ['abt', 'okolo'],
+            ['est', 'odhadem'],
             ['before', 'před'],
             ['after', 'po'],
         ]),
@@ -8271,7 +8459,7 @@ function getShortMonth(month, locale) {
     if (!Intl || !Intl.DateTimeFormat) {
         return MONTHS_EN.get(month);
     }
-    var cacheKey = month + "|" + (locale || '');
+    var cacheKey = "".concat(month, "|").concat(locale || '');
     if (shortMonthCache.has(cacheKey)) {
         return shortMonthCache.get(cacheKey);
     }
@@ -8314,7 +8502,6 @@ function formatDate(date, locale) {
         date.text,
     ].join(' ');
 }
-exports.formatDate = formatDate;
 /** Formats a DateOrRange object. */
 function formatDateOrRange(dateOrRange, locale) {
     if (dateOrRange.date) {
@@ -8323,26 +8510,27 @@ function formatDateOrRange(dateOrRange, locale) {
     if (!dateOrRange.dateRange) {
         return '';
     }
-    var from = dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from);
-    var to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to);
+    var from = dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from, locale);
+    var to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to, locale);
     if (from && to) {
-        return from + " .. " + to;
+        return "".concat(from, " .. ").concat(to);
     }
     if (from) {
-        return getQualifier('after', locale) + " " + from;
+        return "".concat(getQualifier('after', locale), " ").concat(from);
     }
     if (to) {
-        return getQualifier('before', locale) + " " + to;
+        return "".concat(getQualifier('before', locale), " ").concat(to);
     }
     return '';
 }
-exports.formatDateOrRange = formatDateOrRange;
 
 },{}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DescendantChart = exports.layOutDescendants = exports.DUMMY_ROOT_NODE_ID = void 0;
+exports.DescendantChart = exports.DUMMY_ROOT_NODE_ID = void 0;
+exports.layOutDescendants = layOutDescendants;
 var d3_hierarchy_1 = require("d3-hierarchy");
+var api_1 = require("./api");
 var chart_util_1 = require("./chart-util");
 var id_generator_1 = require("./id-generator");
 exports.DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
@@ -8352,7 +8540,6 @@ function layOutDescendants(options, layoutOptions) {
     var descendantsRoot = descendants.createHierarchy();
     return removeDummyNode(new chart_util_1.ChartUtil(options).layOutChart(descendantsRoot, layoutOptions));
 }
-exports.layOutDescendants = layOutDescendants;
 /** Removes the dummy root node if it was added in createHierarchy(). */
 function removeDummyNode(allNodes) {
     if (allNodes[0].id !== exports.DUMMY_ROOT_NODE_ID) {
@@ -8441,6 +8628,7 @@ var DescendantChart = /** @class */ (function () {
     /** Creates a d3 hierarchy from the input data. */
     DescendantChart.prototype.createHierarchy = function () {
         var _this = this;
+        var _a;
         var parents = [];
         var nodes = this.options.startIndi
             ? this.getNodes(this.options.startIndi)
@@ -8470,23 +8658,31 @@ var DescendantChart = /** @class */ (function () {
             var entry = stack.pop();
             var fam = this_1.options.data.getFam(entry.family.id);
             var children = fam.getChildren();
-            children.forEach(function (childId) {
-                var childNodes = _this.getNodes(childId);
-                childNodes.forEach(function (node) {
-                    node.parentId = entry.id;
-                    if (node.family) {
-                        node.id = "" + idGenerator.getId(node.family.id);
-                        stack.push(node);
-                    }
+            var collapsed = (_a = this_1.options.collapsedFamily) === null || _a === void 0 ? void 0 : _a.has(entry.id);
+            if (children.length) {
+                entry.family.expander = collapsed
+                    ? api_1.ExpanderState.PLUS
+                    : api_1.ExpanderState.MINUS;
+            }
+            if (!collapsed) {
+                children.forEach(function (childId) {
+                    var childNodes = _this.getNodes(childId);
+                    childNodes.forEach(function (node) {
+                        node.parentId = entry.id;
+                        if (node.family) {
+                            node.id = "".concat(idGenerator.getId(node.family.id));
+                            stack.push(node);
+                        }
+                    });
+                    parents.push.apply(parents, childNodes);
                 });
-                parents.push.apply(parents, childNodes);
-            });
+            }
         };
         var this_1 = this;
         while (stack.length) {
             _loop_1();
         }
-        return d3_hierarchy_1.stratify()(parents);
+        return (0, d3_hierarchy_1.stratify)()(parents);
     };
     /**
      * Renders the tree, calling the provided renderer to draw boxes for
@@ -8496,7 +8692,7 @@ var DescendantChart = /** @class */ (function () {
         var root = this.createHierarchy();
         var nodes = removeDummyNode(this.util.layOutChart(root));
         var animationPromise = this.util.renderChart(nodes);
-        var info = chart_util_1.getChartInfo(nodes);
+        var info = (0, chart_util_1.getChartInfo)(nodes);
         this.util.updateSvgDimensions(info);
         return Object.assign(info, { animationPromise: animationPromise });
     };
@@ -8504,7 +8700,7 @@ var DescendantChart = /** @class */ (function () {
 }());
 exports.DescendantChart = DescendantChart;
 
-},{"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],23:[function(require,module,exports){
+},{"./api":16,"./chart-util":17,"./id-generator":27,"d3-hierarchy":7}],23:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -8522,37 +8718,36 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DetailedRenderer = exports.getLength = void 0;
+exports.DetailedRenderer = void 0;
+exports.getLength = getLength;
 var d3_selection_1 = require("d3-selection");
 var _1 = require(".");
 var date_format_1 = require("./date-format");
 var d3_array_1 = require("d3-array");
 require("d3-transition");
 var composite_renderer_1 = require("./composite-renderer");
-var INDI_MIN_HEIGHT = 58;
+var INDI_MIN_HEIGHT = 44;
 var INDI_MIN_WIDTH = 64;
-var FAM_MIN_HEIGHT = 10;
-var FAM_MIN_WIDTH = 15;
 var IMAGE_WIDTH = 70;
 /** Minimum box height when an image is present. */
 var IMAGE_HEIGHT = 90;
+var DETAILS_HEIGHT = 14;
 var ANIMATION_DELAY_MS = 200;
 var ANIMATION_DURATION_MS = 500;
 var textLengthCache = new Map();
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text, textClass) {
-    var cacheKey = text + "|" + textClass;
+    var cacheKey = "".concat(text, "|").concat(textClass);
     if (textLengthCache.has(cacheKey)) {
         return textLengthCache.get(cacheKey);
     }
-    var g = d3_selection_1.select('svg').append('g').attr('class', 'detailed node');
+    var g = (0, d3_selection_1.select)('svg').append('g').attr('class', 'detailed node');
     var x = g.append('text').attr('class', textClass).text(text);
     var length = x.node().getComputedTextLength();
     g.remove();
     textLengthCache.set(cacheKey, length);
     return length;
 }
-exports.getLength = getLength;
 var SEX_SYMBOLS = new Map([
     ['F', '\u2640'],
     ['M', '\u2642'],
@@ -8582,10 +8777,10 @@ var DetailedRenderer = /** @class */ (function (_super) {
     DetailedRenderer.prototype.getIndiDetails = function (indi) {
         var detailsList = [];
         var birthDate = indi.getBirthDate() &&
-            date_format_1.formatDateOrRange(indi.getBirthDate(), this.options.locale);
+            (0, date_format_1.formatDateOrRange)(indi.getBirthDate(), this.options.locale);
         var birthPlace = indi.getBirthPlace();
         var deathDate = indi.getDeathDate() &&
-            date_format_1.formatDateOrRange(indi.getDeathDate(), this.options.locale);
+            (0, date_format_1.formatDateOrRange)(indi.getDeathDate(), this.options.locale);
         var deathPlace = indi.getDeathPlace();
         if (birthDate) {
             detailsList.push({ symbol: '', text: birthDate });
@@ -8615,7 +8810,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
     DetailedRenderer.prototype.getFamDetails = function (fam) {
         var detailsList = [];
         var marriageDate = fam.getMarriageDate() &&
-            date_format_1.formatDateOrRange(fam.getMarriageDate(), this.options.locale);
+            (0, date_format_1.formatDateOrRange)(fam.getMarriageDate(), this.options.locale);
         var marriagePlace = fam.getMarriagePlace();
         if (marriageDate) {
             detailsList.push({ symbol: '', text: marriageDate });
@@ -8631,12 +8826,13 @@ var DetailedRenderer = /** @class */ (function (_super) {
     DetailedRenderer.prototype.getPreferredIndiSize = function (id) {
         var indi = this.options.data.getIndi(id);
         var details = this.getIndiDetails(indi);
-        var height = d3_array_1.max([
-            INDI_MIN_HEIGHT + details.length * 14,
+        var idAndSexHeight = indi.showId() || indi.showSex() ? DETAILS_HEIGHT : 0;
+        var height = (0, d3_array_1.max)([
+            INDI_MIN_HEIGHT + details.length * DETAILS_HEIGHT + idAndSexHeight,
             indi.getImageUrl() ? IMAGE_HEIGHT : 0,
         ]);
-        var maxDetailsWidth = d3_array_1.max(details.map(function (x) { return getLength(x.text, 'details'); }));
-        var width = d3_array_1.max([
+        var maxDetailsWidth = (0, d3_array_1.max)(details.map(function (x) { return getLength(x.text, 'details'); }));
+        var width = (0, d3_array_1.max)([
             maxDetailsWidth + 22,
             getLength(indi.getFirstName() || '', 'name') + 8,
             getLength(indi.getLastName() || '', 'name') + 8,
@@ -8648,9 +8844,12 @@ var DetailedRenderer = /** @class */ (function (_super) {
     DetailedRenderer.prototype.getPreferredFamSize = function (id) {
         var fam = this.options.data.getFam(id);
         var details = this.getFamDetails(fam);
-        var height = d3_array_1.max([10 + details.length * 14, FAM_MIN_HEIGHT]);
-        var maxDetailsWidth = d3_array_1.max(details.map(function (x) { return getLength(x.text, 'details'); }));
-        var width = d3_array_1.max([maxDetailsWidth + 22, FAM_MIN_WIDTH]);
+        if (!details.length) {
+            return [0, 0];
+        }
+        var height = 10 + details.length * DETAILS_HEIGHT;
+        var maxDetailsWidth = (0, d3_array_1.max)(details.map(function (x) { return getLength(x.text, 'details'); }));
+        var width = maxDetailsWidth + 22;
         return [width, height];
     };
     DetailedRenderer.prototype.render = function (enter, update) {
@@ -8663,10 +8862,10 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .data(function (node) {
             var result = [];
             var famXOffset = !_this.options.horizontal && node.data.family
-                ? d3_array_1.max([-composite_renderer_1.getFamPositionVertical(node.data), 0])
+                ? (0, d3_array_1.max)([-(0, composite_renderer_1.getFamPositionVertical)(node.data), 0])
                 : 0;
             var famYOffset = _this.options.horizontal && node.data.family
-                ? d3_array_1.max([-composite_renderer_1.getFamPositionHorizontal(node.data), 0])
+                ? (0, d3_array_1.max)([-(0, composite_renderer_1.getFamPositionHorizontal)(node.data), 0])
                 : 0;
             if (node.data.indi) {
                 result.push({
@@ -8694,7 +8893,7 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .enter()
             .append('g')
             .attr('class', 'indi');
-        this.transition(indiEnter.merge(indiUpdate)).attr('transform', function (node) { return "translate(" + node.xOffset + ", " + node.yOffset + ")"; });
+        this.transition(indiEnter.merge(indiUpdate)).attr('transform', function (node) { return "translate(".concat(node.xOffset, ", ").concat(node.yOffset, ")"); });
         this.renderIndi(indiEnter, indiUpdate);
         var familyEnter = enter
             .select(function (node) {
@@ -8725,9 +8924,9 @@ var DetailedRenderer = /** @class */ (function (_super) {
     };
     DetailedRenderer.prototype.getFamTransform = function (node) {
         if (this.options.horizontal) {
-            return "translate(" + ((node.indi && node.indi.width) || node.spouse.width) + ", " + d3_array_1.max([composite_renderer_1.getFamPositionHorizontal(node), 0]) + ")";
+            return "translate(".concat((node.indi && node.indi.width) || node.spouse.width, ", ").concat((0, d3_array_1.max)([(0, composite_renderer_1.getFamPositionHorizontal)(node), 0]), ")");
         }
-        return "translate(" + d3_array_1.max([composite_renderer_1.getFamPositionVertical(node), 0]) + ", " + ((node.indi && node.indi.height) || node.spouse.height) + ")";
+        return "translate(".concat((0, d3_array_1.max)([(0, composite_renderer_1.getFamPositionVertical)(node), 0]), ", ").concat((node.indi && node.indi.height) || node.spouse.height, ")");
     };
     DetailedRenderer.prototype.getSexClass = function (indiId) {
         var _a;
@@ -8763,14 +8962,14 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .attr('rx', 5)
             .attr('stroke-width', 0)
             .attr('class', function (node) {
-            return "background " + _this.getColoringClass() + " " + _this.getSexClass(node.indi.id);
+            return "background ".concat(_this.getColoringClass(), " ").concat(_this.getSexClass(node.indi.id));
         })
             .merge(update.select('rect.background'));
         this.transition(background)
             .attr('width', function (node) { return node.indi.width; })
             .attr('height', function (node) { return node.indi.height; });
         // Clip path.
-        var getClipId = function (id) { return "clip-" + id; };
+        var getClipId = function (id) { return "clip-".concat(id); };
         enter
             .append('clipPath')
             .attr('id', function (node) { return getClipId(node.indi.id); })
@@ -8790,13 +8989,13 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 17)"; })
+            .attr('transform', function (node) { return "translate(".concat(getDetailsWidth(node) / 2, ", 17)"); })
             .text(function (node) { return getIndi(node).getFirstName(); });
         enter
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + getDetailsWidth(node) / 2 + ", 33)"; })
+            .attr('transform', function (node) { return "translate(".concat(getDetailsWidth(node) / 2, ", 33)"); })
             .text(function (node) { return getIndi(node).getLastName(); });
         // Extract details.
         var details = new Map();
@@ -8805,19 +9004,19 @@ var DetailedRenderer = /** @class */ (function (_super) {
             var detailsList = _this.getIndiDetails(indi);
             details.set(node.indi.id, detailsList);
         });
-        var maxDetails = d3_array_1.max(Array.from(details.values(), function (v) { return v.length; }));
+        var maxDetails = (0, d3_array_1.max)(Array.from(details.values(), function (v) { return v.length; }));
         var _loop_1 = function (i) {
             var lineGroup = enter.filter(function (data) { return details.get(data.indi.id).length > i; });
             lineGroup
                 .append('text')
                 .attr('text-anchor', 'middle')
                 .attr('class', 'details')
-                .attr('transform', "translate(9, " + (49 + i * 14) + ")")
+                .attr('transform', "translate(9, ".concat(49 + i * DETAILS_HEIGHT, ")"))
                 .text(function (data) { return details.get(data.indi.id)[i].symbol; });
             lineGroup
                 .append('text')
                 .attr('class', 'details')
-                .attr('transform', "translate(15, " + (49 + i * 14) + ")")
+                .attr('transform', "translate(15, ".concat(49 + i * DETAILS_HEIGHT, ")"))
                 .text(function (data) { return details.get(data.indi.id)[i].text; });
         };
         // Render details.
@@ -8830,16 +9029,19 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .attr('class', 'id')
             .text(function (data) { return (getIndi(data).showId() ? data.indi.id : ''); })
             .merge(update.select('text.id'));
-        this.transition(id).attr('transform', function (data) { return "translate(9, " + (data.indi.height - 5) + ")"; });
+        this.transition(id).attr('transform', function (data) { return "translate(9, ".concat(data.indi.height - 5, ")"); });
         // Render sex.
         var sex = enter
             .append('text')
             .attr('class', 'details sex')
             .attr('text-anchor', 'end')
-            .text(function (data) { return SEX_SYMBOLS.get(getIndi(data).getSex() || '') || ''; })
+            .text(function (data) {
+            var sexSymbol = SEX_SYMBOLS.get(getIndi(data).getSex() || '') || '';
+            return getIndi(data).showSex() ? sexSymbol : '';
+        })
             .merge(update.select('text.sex'));
         this.transition(sex).attr('transform', function (data) {
-            return "translate(" + (getDetailsWidth(data) - 5) + ", " + (data.indi.height - 5) + ")";
+            return "translate(".concat(getDetailsWidth(data) - 5, ", ").concat(data.indi.height - 5, ")");
         });
         // Image.
         enter
@@ -8848,8 +9050,8 @@ var DetailedRenderer = /** @class */ (function (_super) {
             .attr('width', IMAGE_WIDTH)
             .attr('height', function (data) { return data.indi.height; })
             .attr('preserveAspectRatio', 'xMidYMin')
-            .attr('transform', function (data) { return "translate(" + (data.indi.width - IMAGE_WIDTH) + ", 0)"; })
-            .attr('clip-path', function (data) { return "url(#" + getClipId(data.indi.id) + ")"; })
+            .attr('transform', function (data) { return "translate(".concat(data.indi.width - IMAGE_WIDTH, ", 0)"); })
+            .attr('clip-path', function (data) { return "url(#".concat(getClipId(data.indi.id), ")"); })
             .attr('href', function (data) { return getIndi(data).getImageUrl(); });
         // Border on top.
         var border = enter
@@ -8879,14 +9081,6 @@ var DetailedRenderer = /** @class */ (function (_super) {
                 });
             });
         }
-        // Box.
-        enter
-            .append('rect')
-            .attr('class', this.getColoringClass())
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .attr('width', function (node) { return node.data.family.width; })
-            .attr('height', function (node) { return node.data.family.height; });
         // Extract details.
         var details = new Map();
         enter.each(function (node) {
@@ -8895,20 +9089,32 @@ var DetailedRenderer = /** @class */ (function (_super) {
             var detailsList = _this.getFamDetails(fam);
             details.set(famId, detailsList);
         });
-        var maxDetails = d3_array_1.max(Array.from(details.values(), function (v) { return v.length; }));
+        var maxDetails = (0, d3_array_1.max)(Array.from(details.values(), function (v) { return v.length; }));
+        // Box.
+        enter
+            .filter(function (node) {
+            var detail = details.get(node.data.family.id);
+            return 0 < detail.length;
+        })
+            .append('rect')
+            .attr('class', this.getColoringClass())
+            .attr('rx', 5)
+            .attr('ry', 5)
+            .attr('width', function (node) { return node.data.family.width; })
+            .attr('height', function (node) { return node.data.family.height; });
         var _loop_2 = function (i) {
             var lineGroup = enter.filter(function (node) { return details.get(node.data.family.id).length > i; });
             lineGroup
                 .append('text')
                 .attr('text-anchor', 'middle')
                 .attr('class', 'details')
-                .attr('transform', "translate(9, " + (16 + i * 14) + ")")
+                .attr('transform', "translate(9, ".concat(16 + i * DETAILS_HEIGHT, ")"))
                 .text(function (node) { return details.get(node.data.family.id)[i].symbol; });
             lineGroup
                 .append('text')
                 .attr('text-anchor', 'start')
                 .attr('class', 'details')
-                .attr('transform', "translate(15, " + (16 + i * 14) + ")")
+                .attr('transform', "translate(15, ".concat(16 + i * DETAILS_HEIGHT, ")"))
                 .text(function (node) { return details.get(node.data.family.id)[i].text; });
         };
         // Render details.
@@ -8931,12 +9137,12 @@ var descendant_chart_1 = require("./descendant-chart");
 function branch(x1, y1, x2, y2) {
     var yMid = y2 + 110;
     if (x2 > x1 + 100) {
-        return "\n      M " + (x1 + 10) + "       " + y1 + "\n      C " + (x1 + 10) + "       " + (yMid + 25) + "\n        " + (x1 + 45) + "       " + (yMid + 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid + 5) + "\n        " + (x2 - 45) + "       " + yMid + "\n        " + (x2 + 2) + "        " + (yMid - 25) + "\n        " + (x2 + 2) + "        " + y2 + "\n      L " + (x2 - 2) + "        " + y2 + "\n      C " + (x2 - 2) + "        " + (yMid - 25) + "\n        " + (x2 - 45) + "       " + (yMid - 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid - 5) + "\n        " + (x1 + 45) + "       " + yMid + "\n        " + (x1 - 10) + "       " + (yMid + 25) + "\n        " + (x1 - 10) + "       " + y1;
+        return "\n      M ".concat(x1 + 10, "       ").concat(y1, "\n      C ").concat(x1 + 10, "       ").concat(yMid + 25, "\n        ").concat(x1 + 45, "       ").concat(yMid + 10, "\n        ").concat((x1 + x2) / 2, " ").concat(yMid + 5, "\n        ").concat(x2 - 45, "       ").concat(yMid, "\n        ").concat(x2 + 2, "        ").concat(yMid - 25, "\n        ").concat(x2 + 2, "        ").concat(y2, "\n      L ").concat(x2 - 2, "        ").concat(y2, "\n      C ").concat(x2 - 2, "        ").concat(yMid - 25, "\n        ").concat(x2 - 45, "       ").concat(yMid - 10, "\n        ").concat((x1 + x2) / 2, " ").concat(yMid - 5, "\n        ").concat(x1 + 45, "       ").concat(yMid, "\n        ").concat(x1 - 10, "       ").concat(yMid + 25, "\n        ").concat(x1 - 10, "       ").concat(y1);
     }
     if (x2 < x1 - 100) {
-        return "\n      M " + (x1 - 10) + "       " + y1 + "\n      C " + (x1 - 10) + "       " + (yMid + 25) + "\n        " + (x1 - 45) + "       " + (yMid + 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid + 5) + "\n        " + (x2 + 45) + "       " + yMid + "\n        " + (x2 - 2) + "        " + (yMid - 25) + "\n        " + (x2 - 2) + "        " + y2 + "\n      L " + (x2 + 2) + "        " + y2 + "\n      C " + (x2 + 2) + "        " + (yMid - 25) + "\n        " + (x2 + 45) + "       " + (yMid - 10) + "\n        " + (x1 + x2) / 2 + " " + (yMid - 5) + "\n        " + (x1 - 45) + "       " + yMid + "\n        " + (x1 + 10) + "       " + (yMid + 25) + "\n        " + (x1 + 10) + "       " + y1;
+        return "\n      M ".concat(x1 - 10, "       ").concat(y1, "\n      C ").concat(x1 - 10, "       ").concat(yMid + 25, "\n        ").concat(x1 - 45, "       ").concat(yMid + 10, "\n        ").concat((x1 + x2) / 2, " ").concat(yMid + 5, "\n        ").concat(x2 + 45, "       ").concat(yMid, "\n        ").concat(x2 - 2, "        ").concat(yMid - 25, "\n        ").concat(x2 - 2, "        ").concat(y2, "\n      L ").concat(x2 + 2, "        ").concat(y2, "\n      C ").concat(x2 + 2, "        ").concat(yMid - 25, "\n        ").concat(x2 + 45, "       ").concat(yMid - 10, "\n        ").concat((x1 + x2) / 2, " ").concat(yMid - 5, "\n        ").concat(x1 - 45, "       ").concat(yMid, "\n        ").concat(x1 + 10, "       ").concat(yMid + 25, "\n        ").concat(x1 + 10, "       ").concat(y1);
     }
-    return "\n    M " + (x1 + 10) + "       " + y1 + "\n    C " + (x1 + 10) + "       " + (yMid + 25) + "\n      " + (x2 + 2) + "        " + (yMid - 25) + "\n      " + (x2 + 2) + "        " + y2 + "\n    L " + (x2 - 2) + "        " + y2 + "\n    C " + (x2 - 2) + "        " + (yMid - 25) + "\n      " + (x1 - 10) + "       " + (yMid + 25) + "\n      " + (x1 - 10) + "       " + y1;
+    return "\n    M ".concat(x1 + 10, "       ").concat(y1, "\n    C ").concat(x1 + 10, "       ").concat(yMid + 25, "\n      ").concat(x2 + 2, "        ").concat(yMid - 25, "\n      ").concat(x2 + 2, "        ").concat(y2, "\n    L ").concat(x2 - 2, "        ").concat(y2, "\n    C ").concat(x2 - 2, "        ").concat(yMid - 25, "\n      ").concat(x1 - 10, "       ").concat(yMid + 25, "\n      ").concat(x1 - 10, "       ").concat(y1);
 }
 /** Renders a fancy descendants tree chart. */
 var FancyChart = /** @class */ (function () {
@@ -8962,7 +9168,7 @@ var FancyChart = /** @class */ (function () {
         var dAnchor = this.options.renderer.getIndiAnchor(siblingNode.data);
         var _a = [node.x + sAnchor[0], node.y + sAnchor[1]], sx = _a[0], sy = _a[1];
         var _b = [siblingNode.x + dAnchor[0], siblingNode.y + dAnchor[1]], dx = _b[0], dy = _b[1];
-        return "M " + sx + ", " + (sy + 2) + "\n              L " + dx + ", " + (dy + 10) + "\n              " + dx + ", " + (dy - 10) + "\n              " + sx + ", " + (sy - 2);
+        return "M ".concat(sx, ", ").concat(sy + 2, "\n              L ").concat(dx, ", ").concat(dy + 10, "\n              ").concat(dx, ", ").concat(dy - 10, "\n              ").concat(sx, ", ").concat(sy - 2);
     };
     FancyChart.prototype.renderBackground = function (chartInfo, svg) {
         svg
@@ -8999,7 +9205,7 @@ var FancyChart = /** @class */ (function () {
             .attr('stop-color', '#8f8')
             .attr('stop-opacity', 0);
         var backgroundNodes = nodes.filter(function (n) { return n.parent && n.parent.id !== descendant_chart_1.DUMMY_ROOT_NODE_ID; });
-        var minGeneration = d3_array_1.min(backgroundNodes, function (node) { return node.data.generation; }) || 0;
+        var minGeneration = (0, d3_array_1.min)(backgroundNodes, function (node) { return node.data.generation; }) || 0;
         var sizeFunction = function (node) {
             return 280 - 180 / Math.sqrt(1 + node.data.generation - minGeneration);
         };
@@ -9013,7 +9219,7 @@ var FancyChart = /** @class */ (function () {
                 .merge(boundNodes)
                 .attr('class', 'background')
                 .attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
+                return "translate(".concat(node.x - node.data.width / 2, ", ").concat(node.y - node.data.height / 2, ")");
             });
             var background = enter.append('g').attr('class', 'background');
             background
@@ -9034,7 +9240,7 @@ var FancyChart = /** @class */ (function () {
                 .merge(boundNodes)
                 .attr('class', 'background2')
                 .attr('transform', function (node) {
-                return "translate(" + (node.x - node.data.width / 2) + ", " + (node.y - node.data.height / 2) + ")";
+                return "translate(".concat(node.x - node.data.width / 2, ", ").concat(node.y - node.data.height / 2, ")");
             });
             var background = enter.append('g').attr('class', 'background2');
             background
@@ -9075,16 +9281,16 @@ var FancyChart = /** @class */ (function () {
             .enter()
             .append('g')
             .attr('class', 'trunk')
-            .attr('transform', function (node) { return "translate(" + node.x + ", " + node.y + ")"; })
+            .attr('transform', function (node) { return "translate(".concat(node.x, ", ").concat(node.y, ")"); })
             .append('path')
             .attr('d', "\n          M 10 20\n          L 10 40\n          C 10 60 10 90 40 90\n          L -40 90\n          C -10 90 -10 60 -10 40\n          L -10 20");
     };
     FancyChart.prototype.render = function () {
-        var nodes = descendant_chart_1.layOutDescendants(this.options, {
+        var nodes = (0, descendant_chart_1.layOutDescendants)(this.options, {
             flipVertically: true,
             vSpacing: 100,
         });
-        var info = chart_util_1.getChartInfo(nodes);
+        var info = (0, chart_util_1.getChartInfo)(nodes);
         info.origin[0] += 150;
         info.origin[1] += 150;
         info.size[0] += 300;
@@ -9105,8 +9311,11 @@ exports.FancyChart = FancyChart;
 
 },{"./chart-util":17,"./descendant-chart":22,"d3-array":2}],25:[function(require,module,exports){
 "use strict";
+/// <reference path="parse-gedcom.d.ts" />
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gedcomEntriesToJson = exports.gedcomToJson = exports.getDate = void 0;
+exports.getDate = getDate;
+exports.gedcomToJson = gedcomToJson;
+exports.gedcomEntriesToJson = gedcomEntriesToJson;
 var parse_gedcom_1 = require("parse-gedcom");
 /** Returns the first entry with the given tag or undefined if not found. */
 function findTag(tree, tag) {
@@ -9152,12 +9361,14 @@ function parseDate(parts) {
         return undefined;
     }
     var result = {};
-    var firstPart = parts[0].toLowerCase();
-    if (firstPart.startsWith('(') && parts[parts.length - 1].endsWith(')')) {
-        result.text = parts.join(' ');
-        result.text = result.text.substring(1, result.text.length - 1);
-        return result;
+    // Remove parentheses if they surround the text.
+    if (parts[0].startsWith('(') && parts[parts.length - 1].endsWith(')')) {
+        parts[0] = parts[0].substring(1);
+        var lastPart = parts[parts.length - 1];
+        parts[parts.length - 1] = lastPart.substring(0, lastPart.length - 1);
     }
+    var fullText = parts.join(' ');
+    var firstPart = parts[0].toLowerCase();
     if (firstPart === 'cal' || firstPart === 'abt' || firstPart === 'est') {
         result.qualifier = firstPart;
         parts = parts.slice(1);
@@ -9175,6 +9386,11 @@ function parseDate(parts) {
     }
     if (parts.length && parts[0].match(/^\d\d?$/)) {
         result.day = Number(parts[0]);
+        parts = parts.slice(0, parts.length - 1);
+    }
+    if (parts.length) {
+        // A part didn't get parsed. Return the whole text verbatim.
+        return { text: fullText };
     }
     return result;
 }
@@ -9201,7 +9417,6 @@ function getDate(gedcomDate) {
     }
     return undefined;
 }
-exports.getDate = getDate;
 /**
  * tries to treat an input tag as NOTE and parsse all lines of notes
  */
@@ -9241,11 +9456,11 @@ function createEvent(entry) {
     return undefined;
 }
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
-function createIndi(entry, objects) {
+function createIndi(entry, objects, existingIds) {
     var id = pointerToId(entry.pointer);
-    var fams = findTags(entry.tree, 'FAMS').map(function (entry) {
-        return pointerToId(entry.data);
-    });
+    var fams = findTags(entry.tree, 'FAMS')
+        .map(function (entry) { return pointerToId(entry.data); })
+        .filter(function (id) { return existingIds.has(id); });
     var indi = { id: id, fams: fams };
     // Name.
     var nameTags = findTags(entry.tree, 'NAME');
@@ -9291,7 +9506,10 @@ function createIndi(entry, objects) {
     // Family with parents.
     var famcTag = findTag(entry.tree, 'FAMC');
     if (famcTag) {
-        indi.famc = pointerToId(famcTag.data);
+        var id_1 = pointerToId(famcTag.data);
+        if (existingIds.has(id_1)) {
+            indi.famc = id_1;
+        }
     }
     // Image URL.
     var objeTags = findTags(entry.tree, 'OBJE');
@@ -9333,21 +9551,27 @@ function createIndi(entry, objects) {
     return indi;
 }
 /** Creates a JsonFam object from an FAM entry in GEDCOM. */
-function createFam(entry) {
+function createFam(entry, existingIds) {
     var id = pointerToId(entry.pointer);
-    var children = findTags(entry.tree, 'CHIL').map(function (entry) {
-        return pointerToId(entry.data);
-    });
+    var children = findTags(entry.tree, 'CHIL')
+        .map(function (entry) { return pointerToId(entry.data); })
+        .filter(function (id) { return existingIds.has(id); });
     var fam = { id: id, children: children };
     // Husband.
     var husbTag = findTag(entry.tree, 'HUSB');
     if (husbTag) {
-        fam.husb = pointerToId(husbTag.data);
+        var id_2 = pointerToId(husbTag.data);
+        if (existingIds.has(id_2)) {
+            fam.husb = pointerToId(husbTag.data);
+        }
     }
     // Wife.
     var wifeTag = findTag(entry.tree, 'WIFE');
     if (wifeTag) {
-        fam.wife = pointerToId(wifeTag.data);
+        var id_3 = pointerToId(wifeTag.data);
+        if (existingIds.has(id_3)) {
+            fam.wife = pointerToId(wifeTag.data);
+        }
     }
     // Marriage
     var marriage = createEvent(findTag(entry.tree, 'MARR'));
@@ -9362,19 +9586,20 @@ function createMap(entries) {
 }
 /** Parses a GEDCOM file into a JsonGedcomData structure. */
 function gedcomToJson(gedcomContents) {
-    return gedcomEntriesToJson(parse_gedcom_1.parse(gedcomContents));
+    return gedcomEntriesToJson((0, parse_gedcom_1.parse)(gedcomContents));
 }
-exports.gedcomToJson = gedcomToJson;
 /** Converts parsed GEDCOM entries into a JsonGedcomData structure. */
 function gedcomEntriesToJson(gedcom) {
     var objects = createMap(findTags(gedcom, 'OBJE'));
+    var existingIds = new Set(gedcom.map(function (entry) { return pointerToId(entry.pointer); }).filter(function (id) { return !!id; }));
     var indis = findTags(gedcom, 'INDI').map(function (entry) {
-        return createIndi(entry, objects);
+        return createIndi(entry, objects, existingIds);
     });
-    var fams = findTags(gedcom, 'FAM').map(createFam);
+    var fams = findTags(gedcom, 'FAM').map(function (entry) {
+        return createFam(entry, existingIds);
+    });
     return { indis: indis, fams: fams };
 }
-exports.gedcomEntriesToJson = gedcomEntriesToJson;
 
 },{"parse-gedcom":13}],26:[function(require,module,exports){
 "use strict";
@@ -9393,15 +9618,25 @@ var HourglassChart = /** @class */ (function () {
         this.util = new chart_util_1.ChartUtil(options);
     }
     HourglassChart.prototype.render = function () {
-        var ancestorsRoot = ancestor_chart_1.getAncestorsTree(this.options);
+        var _a, _b, _c, _d;
+        var ancestorsRoot = (0, ancestor_chart_1.getAncestorsTree)(this.options);
         var ancestorNodes = this.util.layOutChart(ancestorsRoot, {
             flipVertically: true,
         });
-        var descendantNodes = descendant_chart_1.layOutDescendants(this.options);
+        var descendantNodes = (0, descendant_chart_1.layOutDescendants)(this.options);
+        // The first ancestor node and descendant node is the start node.
+        if (((_a = ancestorNodes[0].data.indi) === null || _a === void 0 ? void 0 : _a.expander) !== undefined) {
+            descendantNodes[0].data.indi.expander =
+                (_b = ancestorNodes[0].data.indi) === null || _b === void 0 ? void 0 : _b.expander;
+        }
+        if (((_c = ancestorNodes[0].data.spouse) === null || _c === void 0 ? void 0 : _c.expander) !== undefined) {
+            descendantNodes[0].data.spouse.expander =
+                (_d = ancestorNodes[0].data.spouse) === null || _d === void 0 ? void 0 : _d.expander;
+        }
         // slice(1) removes the duplicated start node.
         var nodes = ancestorNodes.slice(1).concat(descendantNodes);
         var animationPromise = this.util.renderChart(nodes);
-        var info = chart_util_1.getChartInfo(nodes);
+        var info = (0, chart_util_1.getChartInfo)(nodes);
         this.util.updateSvgDimensions(info);
         return Object.assign(info, { animationPromise: animationPromise });
     };
@@ -9426,7 +9661,7 @@ var IdGenerator = /** @class */ (function () {
         if (this.ids.has(id)) {
             var num = this.ids.get(id);
             this.ids.set(id, num + 1);
-            return id + ":" + num;
+            return "".concat(id, ":").concat(num);
         }
         this.ids.set(id, 1);
         return id;
@@ -9439,7 +9674,11 @@ exports.IdGenerator = IdGenerator;
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -9484,7 +9723,7 @@ var KinshipChart = /** @class */ (function () {
         upNodes.concat(downNodes).forEach(function (node) {
             _this.setChildNodesGenerationNumber(node);
         });
-        return this.renderer.render(upNodes, downNodes, hierarchy_creator_1.getRootsCount(hierarchy.upRoot, this.options.data));
+        return this.renderer.render(upNodes, downNodes, (0, hierarchy_creator_1.getRootsCount)(hierarchy.upRoot, this.options.data));
     };
     KinshipChart.prototype.setChildNodesGenerationNumber = function (node) {
         var childNodes = this.getChildNodesByType(node);
@@ -9528,7 +9767,8 @@ var EMPTY_HIERARCHY_TREE_NODES = {
 },{"./kinship/hierarchy-creator":31,"./kinship/renderer":33}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.otherSideLinkType = exports.LinkType = exports.ChildNodes = void 0;
+exports.LinkType = exports.ChildNodes = void 0;
+exports.otherSideLinkType = otherSideLinkType;
 var ChildNodes = /** @class */ (function () {
     function ChildNodes(overrides) {
         if (overrides === void 0) { overrides = {}; }
@@ -9567,7 +9807,7 @@ var LinkType;
     LinkType[LinkType["SpouseParents"] = 2] = "SpouseParents";
     LinkType[LinkType["SpouseSiblings"] = 3] = "SpouseSiblings";
     LinkType[LinkType["Children"] = 4] = "Children";
-})(LinkType = exports.LinkType || (exports.LinkType = {}));
+})(LinkType || (exports.LinkType = LinkType = {}));
 function otherSideLinkType(type) {
     switch (type) {
         case LinkType.IndiParents:
@@ -9582,12 +9822,12 @@ function otherSideLinkType(type) {
             return LinkType.IndiParents;
     }
 }
-exports.otherSideLinkType = otherSideLinkType;
 
 },{}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRootsCount = exports.EntryId = exports.HierarchyCreator = void 0;
+exports.EntryId = exports.HierarchyCreator = void 0;
+exports.getRootsCount = getRootsCount;
 var api_1 = require("./api");
 var d3_hierarchy_1 = require("d3-hierarchy");
 var hierarchy_filter_1 = require("./hierarchy-filter");
@@ -9644,8 +9884,8 @@ var HierarchyCreator = /** @class */ (function () {
             return childNodes.length ? childNodes : null;
         };
         return {
-            upRoot: d3_hierarchy_1.hierarchy(upRoot, getChildNodes),
-            downRoot: d3_hierarchy_1.hierarchy(downRoot, getChildNodes),
+            upRoot: (0, d3_hierarchy_1.hierarchy)(upRoot, getChildNodes),
+            downRoot: (0, d3_hierarchy_1.hierarchy)(downRoot, getChildNodes),
         };
     };
     HierarchyCreator.prototype.fillNodeData = function (node, filter) {
@@ -9828,7 +10068,7 @@ var HierarchyCreator = /** @class */ (function () {
         var fam = this.data.getFam(node.family.id);
         var _a = this.areParentsAndSiblingsPresent(node.indi ? node.indi.id : null), indiParentsPresent = _a[0], indiSiblingsPresent = _a[1];
         var _b = this.areParentsAndSiblingsPresent(node.spouse ? node.spouse.id : null), spouseParentsPresent = _b[0], spouseSiblingsPresent = _b[1];
-        var childrenPresent = utils_1.nonEmpty(fam.getChildren());
+        var childrenPresent = (0, utils_1.nonEmpty)(fam.getChildren());
         return [
             indiParentsPresent ? [api_1.LinkType.IndiParents] : [],
             indiSiblingsPresent ? [api_1.LinkType.IndiSiblings] : [],
@@ -9845,7 +10085,7 @@ var HierarchyCreator = /** @class */ (function () {
     HierarchyCreator.prototype.isChildNodeTypeForbidden = function (childNodeType, parentNode) {
         if (childNodeType === null || !parentNode)
             return false;
-        switch (api_1.otherSideLinkType(parentNode.linkFromParentType)) {
+        switch ((0, api_1.otherSideLinkType)(parentNode.linkFromParentType)) {
             case api_1.LinkType.IndiParents:
             case api_1.LinkType.IndiSiblings:
                 if (childNodeType === api_1.LinkType.IndiParents ||
@@ -9920,7 +10160,6 @@ function getRootsCount(upRoot, data) {
     return ((upIndi ? upIndi.getFamiliesAsSpouse().length : 0) +
         (upSpouse ? upSpouse.getFamiliesAsSpouse().length - 1 : 0));
 }
-exports.getRootsCount = getRootsCount;
 
 },{"../id-generator":27,"../utils":37,"./api":30,"./hierarchy-filter":32,"d3-hierarchy":7}],32:[function(require,module,exports){
 "use strict";
@@ -9958,10 +10197,14 @@ exports.HierarchyFilter = HierarchyFilter;
 
 },{}],33:[function(require,module,exports){
 "use strict";
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KinshipChartRenderer = void 0;
@@ -10004,7 +10247,7 @@ var KinshipChartRenderer = /** @class */ (function () {
         if (rootsCount > 1) {
             this.renderRootDummyAdditionalMarriageLinkStub(allNodes[0]);
         }
-        var info = chart_util_1.getChartInfo(allNodesDeduped);
+        var info = (0, chart_util_1.getChartInfo)(allNodesDeduped);
         this.util.updateSvgDimensions(info);
         return Object.assign(info, { animationPromise: animationPromise });
     };
@@ -10023,7 +10266,7 @@ var KinshipChartRenderer = /** @class */ (function () {
             var linkPoints = node.data.primaryMarriage
                 ? _this.additionalMarriageLinkPoints(node)
                 : _this.linkPoints(node.parent, node, node.data.linkFromParentType);
-            return utils_1.points2pathd(linkPoints);
+            return (0, utils_1.points2pathd)(linkPoints);
         });
         boundLinkNodes.exit().remove();
         // Render link stubs container "g" element
@@ -10046,7 +10289,7 @@ var KinshipChartRenderer = /** @class */ (function () {
                 .append('path')
                 .attr('class', function (d) { return _this.cssClassForLinkStub(d.linkType); })
                 .merge(boundLinkStubs.select('path.link-stub'))
-                .attr('d', function (d) { return utils_1.points2pathd(d.points); });
+                .attr('d', function (d) { return (0, utils_1.points2pathd)(d.points); });
         })
             .call(function (g) {
             return g
@@ -10056,7 +10299,7 @@ var KinshipChartRenderer = /** @class */ (function () {
                 .style('fill', 'none')
                 .merge(boundLinkStubs.select('circle'))
                 .attr('transform', function (d) {
-                return "translate(" + utils_1.last(d.points).x + ", " + (utils_1.last(d.points).y + LINK_STUB_CIRCLE_R * d.treeDir) + ")";
+                return "translate(".concat((0, utils_1.last)(d.points).x, ", ").concat((0, utils_1.last)(d.points).y + LINK_STUB_CIRCLE_R * d.treeDir, ")");
             });
         });
         boundLinkStubs.exit().remove();
@@ -10094,7 +10337,7 @@ var KinshipChartRenderer = /** @class */ (function () {
             return {
                 treeDir: treeDir,
                 linkType: linkType,
-                points: __spreadArray(__spreadArray([], anchorPoints), [{ x: utils_1.last(anchorPoints).x, y: y }]),
+                points: __spreadArray(__spreadArray([], anchorPoints, true), [{ x: (0, utils_1.last)(anchorPoints).x, y: y }], false),
             };
         });
     };
@@ -10175,12 +10418,12 @@ var KinshipChartRenderer = /** @class */ (function () {
     KinshipChartRenderer.prototype.linkPoints = function (from, to, type) {
         var isUpTree = from.y > to.y;
         var pointsFrom = this.linkAnchorPoints(from, type, isUpTree);
-        var pointsTo = this.linkAnchorPoints(to, api_1.otherSideLinkType(type), !isUpTree).reverse();
+        var pointsTo = this.linkAnchorPoints(to, (0, api_1.otherSideLinkType)(type), !isUpTree).reverse();
         var y = this.getLinkY(from, type);
-        return __spreadArray(__spreadArray(__spreadArray([], pointsFrom), [
+        return __spreadArray(__spreadArray(__spreadArray([], pointsFrom, true), [
             { x: pointsFrom[pointsFrom.length - 1].x, y: y },
             { x: pointsTo[0].x, y: y }
-        ]), pointsTo);
+        ], false), pointsTo, true);
     };
     KinshipChartRenderer.prototype.additionalMarriageLinkPoints = function (node) {
         var nodeIndex = node.parent.children.findIndex(function (n) { return n.data.id === node.data.id; });
@@ -10253,13 +10496,13 @@ var KinshipChartRenderer = /** @class */ (function () {
             .call(function (g) {
             return g
                 .append('path')
-                .attr('d', "M 0 " + y + " L " + x + " " + y)
+                .attr('d', "M 0 ".concat(y, " L ").concat(x, " ").concat(y))
                 .attr('class', 'link additional-marriage');
         })
             .call(function (g) {
             return g
                 .append('circle')
-                .attr('transform', "translate(" + (x + r) + ", " + y + ")")
+                .attr('transform', "translate(".concat(x + r, ", ").concat(y, ")"))
                 .attr('r', r)
                 .style('stroke', 'black')
                 .style('fill', 'black');
@@ -10282,10 +10525,14 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from) {
-    for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
-        to[j] = from[i];
-    return to;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RelativesChart = void 0;
@@ -10310,7 +10557,7 @@ var FilterChildFam = /** @class */ (function () {
         return this.fam.getMother();
     };
     FilterChildFam.prototype.getChildren = function () {
-        var children = __spreadArray([], this.fam.getChildren());
+        var children = __spreadArray([], this.fam.getChildren(), true);
         var index = children.indexOf(this.childId);
         if (index !== -1) {
             children.splice(index, 1);
@@ -10335,16 +10582,16 @@ var FilterChildData = /** @class */ (function () {
 }());
 /** Chart layout showing all relatives of a person. */
 var RelativesChart = /** @class */ (function () {
-    function RelativesChart(options) {
-        this.options = options;
-        this.util = new chart_util_1.ChartUtil(options);
+    function RelativesChart(inputOptions) {
+        this.options = __assign({}, inputOptions);
         this.options.idGenerator = this.options.idGenerator || new id_generator_1.IdGenerator();
+        this.util = new chart_util_1.ChartUtil(this.options);
     }
     RelativesChart.prototype.layOutAncestorDescendants = function (ancestorsRoot, focusedNode) {
-        // let ancestorDescentants: Array<HierarchyPointNode<TreeNode>> = [];
         var _this = this;
         var ancestorData = new Map();
         ancestorsRoot.eachAfter(function (node) {
+            var _a, _b;
             if (!node.parent) {
                 return;
             }
@@ -10357,11 +10604,17 @@ var RelativesChart = /** @class */ (function () {
             descendantOptions.data = new FilterChildData(descendantOptions.data, child);
             descendantOptions.baseGeneration =
                 (_this.options.baseGeneration || 0) - node.depth;
-            var descendantNodes = descendant_chart_1.layOutDescendants(descendantOptions);
+            var descendantNodes = (0, descendant_chart_1.layOutDescendants)(descendantOptions);
             // The id could be modified because of duplicates. This can happen when
             // drawing one family in multiple places of the chart).
             node.data.id = descendantNodes[0].id;
-            var chartInfo = chart_util_1.getChartInfoWithoutMargin(descendantNodes);
+            if (((_a = node.data.indi) === null || _a === void 0 ? void 0 : _a.expander) !== undefined) {
+                descendantNodes[0].data.indi.expander = node.data.indi.expander;
+            }
+            if (((_b = node.data.spouse) === null || _b === void 0 ? void 0 : _b.expander) !== undefined) {
+                descendantNodes[0].data.spouse.expander = node.data.spouse.expander;
+            }
+            var chartInfo = (0, chart_util_1.getChartInfoWithoutMargin)(descendantNodes);
             var parentData = (node.children || []).map(function (childNode) {
                 return ancestorData.get(childNode.data.id);
             });
@@ -10463,7 +10716,7 @@ var RelativesChart = /** @class */ (function () {
                 else if (data.left) {
                     parentNode.x =
                         nodeX +
-                            d3_array_1.min([
+                            (0, d3_array_1.min)([
                                 nodeWidth / 2 -
                                     parentData.width / 2 -
                                     spouseWidth / 2 -
@@ -10473,7 +10726,7 @@ var RelativesChart = /** @class */ (function () {
                 }
                 else {
                     parentNode.x =
-                        nodeX + d3_array_1.max([parentData.width / 2 - nodeWidth / 2, middleX]);
+                        nodeX + (0, d3_array_1.max)([parentData.width / 2 - nodeWidth / 2, middleX]);
                 }
             }
             // Lay out the spouse's ancestors and their descendants.
@@ -10516,12 +10769,12 @@ var RelativesChart = /** @class */ (function () {
                 }
                 else if (data.left) {
                     parentNode.x =
-                        nodeX + d3_array_1.min([nodeWidth / 2 - parentData.width / 2, middleX]);
+                        nodeX + (0, d3_array_1.min)([nodeWidth / 2 - parentData.width / 2, middleX]);
                 }
                 else {
                     parentNode.x =
                         nodeX +
-                            d3_array_1.max([
+                            (0, d3_array_1.max)([
                                 parentData.width / 2 - nodeWidth / 2 + indiWidth / 2 + chart_util_1.H_SPACING,
                                 middleX,
                             ]);
@@ -10533,16 +10786,26 @@ var RelativesChart = /** @class */ (function () {
             .reduce(function (a, b) { return a.concat(b); }, []);
     };
     RelativesChart.prototype.render = function () {
-        var descendantNodes = descendant_chart_1.layOutDescendants(this.options);
+        var _a, _b, _c, _d;
+        var descendantNodes = (0, descendant_chart_1.layOutDescendants)(this.options);
         // Don't use common id generator because these nodes will not be drawn.
         var ancestorOptions = Object.assign({}, this.options, {
             idGenerator: undefined,
         });
-        var ancestorsRoot = ancestor_chart_1.getAncestorsTree(ancestorOptions);
+        var ancestorsRoot = (0, ancestor_chart_1.getAncestorsTree)(ancestorOptions);
+        // The ancestor root node and first descendant node is the start node.
+        if (((_a = ancestorsRoot.data.indi) === null || _a === void 0 ? void 0 : _a.expander) !== undefined) {
+            descendantNodes[0].data.indi.expander =
+                (_b = ancestorsRoot.data.indi) === null || _b === void 0 ? void 0 : _b.expander;
+        }
+        if (((_c = ancestorsRoot.data.spouse) === null || _c === void 0 ? void 0 : _c.expander) !== undefined) {
+            descendantNodes[0].data.spouse.expander =
+                (_d = ancestorsRoot.data.spouse) === null || _d === void 0 ? void 0 : _d.expander;
+        }
         var ancestorDescentants = this.layOutAncestorDescendants(ancestorsRoot, descendantNodes[0]);
         var nodes = descendantNodes.concat(ancestorDescentants);
         var animationPromise = this.util.renderChart(nodes);
-        var info = chart_util_1.getChartInfo(nodes);
+        var info = (0, chart_util_1.getChartInfo)(nodes);
         this.util.updateSvgDimensions(info);
         return Object.assign(info, { animationPromise: animationPromise });
     };
@@ -10553,8 +10816,9 @@ exports.RelativesChart = RelativesChart;
 },{"./ancestor-chart":15,"./chart-util":17,"./descendant-chart":22,"./id-generator":27,"d3-array":2}],35:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createChart = void 0;
+exports.createChart = createChart;
 var d3_selection_1 = require("d3-selection");
+var api_1 = require("./api");
 var data_1 = require("./data");
 var DEFAULT_SVG_SELECTOR = 'svg';
 function createChartOptions(chartOptions, renderOptions, options) {
@@ -10570,46 +10834,72 @@ function createChartOptions(chartOptions, renderOptions, options) {
         renderOptions.startIndi = chartOptions.json.indis[0].id;
     }
     var animate = !options.initialRender && chartOptions.animate;
+    var renderer = new chartOptions.renderer({
+        data: data,
+        indiHrefFunc: indiHrefFunc,
+        famHrefFunc: famHrefFunc,
+        indiCallback: chartOptions.indiCallback,
+        famCallback: chartOptions.famCallback,
+        horizontal: chartOptions.horizontal,
+        colors: chartOptions.colors,
+        animate: animate,
+        locale: chartOptions.locale,
+    });
     return {
         data: data,
-        renderer: new chartOptions.renderer({
-            data: data,
-            indiHrefFunc: indiHrefFunc,
-            famHrefFunc: famHrefFunc,
-            indiCallback: chartOptions.indiCallback,
-            famCallback: chartOptions.famCallback,
-            horizontal: chartOptions.horizontal,
-            colors: chartOptions.colors,
-            animate: animate,
-            locale: chartOptions.locale,
-        }),
+        renderer: renderer,
         startIndi: renderOptions.startIndi,
         startFam: renderOptions.startFam,
         svgSelector: chartOptions.svgSelector || DEFAULT_SVG_SELECTOR,
         horizontal: chartOptions.horizontal,
         baseGeneration: renderOptions.baseGeneration,
         animate: animate,
+        expanders: chartOptions.expanders,
     };
 }
 var SimpleChartHandle = /** @class */ (function () {
     function SimpleChartHandle(options) {
         this.options = options;
         this.initialRender = true;
+        this.collapsedIndi = new Set();
+        this.collapsedSpouse = new Set();
+        this.collapsedFamily = new Set();
     }
     SimpleChartHandle.prototype.render = function (renderOptions) {
+        var _this = this;
         if (renderOptions === void 0) { renderOptions = {}; }
-        var chartOptions = createChartOptions(this.options, renderOptions, {
+        this.chartOptions = createChartOptions(this.options, renderOptions, {
             initialRender: this.initialRender,
         });
+        this.chartOptions.collapsedFamily = this.collapsedFamily;
+        this.chartOptions.collapsedIndi = this.collapsedIndi;
+        this.chartOptions.collapsedSpouse = this.collapsedSpouse;
+        this.chartOptions.expanderCallback = function (id, direction) {
+            return _this.expanderCallback(id, direction, renderOptions);
+        };
         this.initialRender = false;
-        var chart = new this.options.chartType(chartOptions);
+        var chart = new this.options.chartType(this.chartOptions);
         var info = chart.render();
         if (this.options.updateSvgSize !== false) {
-            d3_selection_1.select(chartOptions.svgSelector)
+            (0, d3_selection_1.select)(this.chartOptions.svgSelector)
                 .attr('width', info.size[0])
                 .attr('height', info.size[1]);
         }
         return info;
+    };
+    SimpleChartHandle.prototype.expanderCallback = function (id, direction, renderOptions) {
+        var set = direction === api_1.ExpanderDirection.FAMILY
+            ? this.collapsedFamily
+            : direction === api_1.ExpanderDirection.INDI
+                ? this.collapsedIndi
+                : this.collapsedSpouse;
+        if (set.has(id)) {
+            set.delete(id);
+        }
+        else {
+            set.add(id);
+        }
+        this.render(renderOptions);
     };
     /**
      * Updates the chart input data.
@@ -10624,9 +10914,8 @@ var SimpleChartHandle = /** @class */ (function () {
 function createChart(options) {
     return new SimpleChartHandle(options);
 }
-exports.createChart = createChart;
 
-},{"./data":20,"d3-selection":9}],36:[function(require,module,exports){
+},{"./api":16,"./data":20,"d3-selection":9}],36:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -10651,7 +10940,7 @@ var MIN_HEIGHT = 27;
 var MIN_WIDTH = 50;
 /** Calculates the length of the given text in pixels when rendered. */
 function getLength(text) {
-    var g = d3_selection_1.select('svg').append('g').attr('class', 'simple node');
+    var g = (0, d3_selection_1.select)('svg').append('g').attr('class', 'simple node');
     var x = g.append('text').attr('class', 'name').text(text);
     var w = x.node().getComputedTextLength();
     g.remove();
@@ -10668,7 +10957,7 @@ function getYears(indi) {
     if (!birthYear && !deathYear) {
         return '';
     }
-    return (birthYear || '') + " \u2013 " + (deathYear || '');
+    return "".concat(birthYear || '', " \u2013 ").concat(deathYear || '');
 }
 /**
  * Simple rendering of an individual box showing only the person's name and
@@ -10689,12 +10978,17 @@ var SimpleRenderer = /** @class */ (function (_super) {
         return [width, height];
     };
     SimpleRenderer.prototype.render = function (enter, update) {
+        var _this = this;
         var selection = enter.merge(update).append('g').attr('class', 'simple');
         this.renderIndi(selection, function (node) { return node.indi; });
         var spouseSelection = selection
             .filter(function (node) { return !!node.data.spouse; })
             .append('g')
-            .attr('transform', function (node) { return "translate(0, " + node.data.indi.height + ")"; });
+            .attr('transform', function (node) {
+            return _this.options.horizontal
+                ? "translate(0, ".concat(node.data.indi.height, ")")
+                : "translate(".concat(node.data.indi.width, ", 0)");
+        });
         this.renderIndi(spouseSelection, function (node) { return node.spouse; });
     };
     SimpleRenderer.prototype.getCss = function () {
@@ -10720,7 +11014,7 @@ var SimpleRenderer = /** @class */ (function (_super) {
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'name')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 17)"; })
+            .attr('transform', function (node) { return "translate(".concat(indiFunc(node.data).width / 2, ", 17)"); })
             .text(function (node) {
             return getName(_this.options.data.getIndi(indiFunc(node.data).id));
         });
@@ -10728,7 +11022,7 @@ var SimpleRenderer = /** @class */ (function (_super) {
             .append('text')
             .attr('text-anchor', 'middle')
             .attr('class', 'details')
-            .attr('transform', function (node) { return "translate(" + indiFunc(node.data).width / 2 + ", 33)"; })
+            .attr('transform', function (node) { return "translate(".concat(indiFunc(node.data).width / 2, ", 33)"); })
             .text(function (node) {
             return getYears(_this.options.data.getIndi(indiFunc(node.data).id));
         });
@@ -10740,28 +11034,27 @@ exports.SimpleRenderer = SimpleRenderer;
 },{"./composite-renderer":19,"d3-selection":9}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.points2pathd = exports.zip = exports.last = exports.nonEmpty = void 0;
+exports.nonEmpty = nonEmpty;
+exports.last = last;
+exports.zip = zip;
+exports.points2pathd = points2pathd;
 function nonEmpty(array) {
     return !!(array && array.length);
 }
-exports.nonEmpty = nonEmpty;
 function last(array) {
     return array[array.length - 1];
 }
-exports.last = last;
 function zip(a, b) {
     return a.map(function (e, i) { return [e, b[i]]; });
 }
-exports.zip = zip;
 function points2pathd(points) {
-    var result = "M " + points[0].x + " " + points[0].y + " L";
+    var result = "M ".concat(points[0].x, " ").concat(points[0].y, " L");
     for (var _i = 0, _a = points.slice(1); _i < _a.length; _i++) {
         var s = _a[_i];
-        result += " " + s.x + " " + s.y;
+        result += " ".concat(s.x, " ").concat(s.y);
     }
     return result;
 }
-exports.points2pathd = points2pathd;
 
 },{}]},{},[28])(28)
 });
