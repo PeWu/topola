@@ -11,7 +11,7 @@
     "server": "browser-sync start --server demo --files demo",
     "start": "concurrently \"npm run watch\" \"npm run server\"",
     "test": "jest",
-    "watch-test": "nodemon --ext ts --exec 'jasmine-ts \"tests/**/*.spec.ts\"'",
+    "watch-test": "jest --watch",
     "predeploy": "npm run build-demo",
     "deploy": "gh-pages -d demo",
     "prettier": "prettier --single-quote --write src/**/*.ts && prettier --single-quote --write src/*.ts"
@@ -23,7 +23,6 @@
     "@types/d3-hierarchy": "^2.0.0",
     "@types/d3-selection": "^2.0.0",
     "@types/d3-transition": "^2.0.0",
-    "@types/jasmine": "^3.6.9",
     "@types/node": "^22.10.5",
     "browser-sync": "^3.0.3",
     "browserify": "^17.0.1",
