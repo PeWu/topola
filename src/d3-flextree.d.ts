@@ -8,8 +8,8 @@ declare module 'd3-flextree' {
     spacing(
       separation: (
         a: HierarchyPointNode<Datum>,
-        b: HierarchyPointNode<Datum>
-      ) => number
+        b: HierarchyPointNode<Datum>,
+      ) => number,
     ): this;
   }
 

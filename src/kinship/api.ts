@@ -34,7 +34,7 @@ export class ChildNodes {
       this.indiParents,
       this.children,
       this.spouseParents,
-      this.spouseSiblings
+      this.spouseSiblings,
     );
   }
 }

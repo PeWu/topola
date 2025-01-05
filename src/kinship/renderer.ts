@@ -21,10 +21,10 @@ export class KinshipChartRenderer {
 
   layOut(
     upRoot: HierarchyNode<TreeNode>,
-    downRoot: HierarchyNode<TreeNode>
+    downRoot: HierarchyNode<TreeNode>,
   ): [
     Array<HierarchyPointNode<TreeNode>>,
-    Array<HierarchyPointNode<TreeNode>>
+    Array<HierarchyPointNode<TreeNode>>,
   ] {
     const svg = this.util.getSvgForRendering();
     // Add styles so that calculating text size is correct.
@@ -41,7 +41,7 @@ export class KinshipChartRenderer {
   render(
     upNodes: Array<HierarchyPointNode<TreeNode>>,
     downNodes: Array<HierarchyPointNode<TreeNode>>,
-    rootsCount: number
+    rootsCount: number,
   ): ChartInfo {
     const allNodes = upNodes.concat(downNodes);
     const allNodesDeduped = allNodes.slice(1); // Remove duplicate start/center node
@@ -53,7 +53,7 @@ export class KinshipChartRenderer {
     // Render chart
     const animationPromise = this.util.renderNodes(
       allNodesDeduped,
-      this.util.getSvgForRendering()
+      this.util.getSvgForRendering(),
     );
     this.renderLinks(allNodes);
     if (rootsCount > 1) {
@@ -72,7 +72,7 @@ export class KinshipChartRenderer {
     // Render links
     const boundLinkNodes = svgg.selectAll('path.internode-link').data(
       nodes.filter((n) => !!n.parent),
-      keyFn
+      keyFn,
     );
     boundLinkNodes
       .enter()
@@ -90,9 +90,10 @@ export class KinshipChartRenderer {
     // Render link stubs container "g" element
     const boundLinkStubNodes = svgg.selectAll('g.link-stubs').data(
       nodes.filter(
-        (n) => n.data.duplicateOf || n.data.duplicated || n.data.primaryMarriage
+        (n) =>
+          n.data.duplicateOf || n.data.duplicated || n.data.primaryMarriage,
       ),
-      keyFn
+      keyFn,
     );
     const linkStubNodesEnter = boundLinkStubNodes
       .enter()
@@ -106,7 +107,7 @@ export class KinshipChartRenderer {
       .selectAll('g')
       .data(
         (node) => this.nodeToLinkStubRenderInfos(node),
-        (d: LinkStubRenderInfo) => d.linkType.toString()
+        (d: LinkStubRenderInfo) => d.linkType.toString(),
       );
     boundLinkStubs
       .enter()
@@ -116,7 +117,7 @@ export class KinshipChartRenderer {
           .append('path')
           .attr('class', (d) => this.cssClassForLinkStub(d.linkType))
           .merge(boundLinkStubs.select('path.link-stub'))
-          .attr('d', (d) => points2pathd(d.points))
+          .attr('d', (d) => points2pathd(d.points)),
       )
       .call((g) =>
         g
@@ -130,8 +131,8 @@ export class KinshipChartRenderer {
             (d) =>
               `translate(${last(d.points).x}, ${
                 last(d.points).y + LINK_STUB_CIRCLE_R * d.treeDir
-              })`
-          )
+              })`,
+          ),
       );
     boundLinkStubs.exit().remove();
   }
@@ -164,7 +165,7 @@ export class KinshipChartRenderer {
   }
 
   private nodeToLinkStubRenderInfos(
-    node: HierarchyPointNode<TreeNode>
+    node: HierarchyPointNode<TreeNode>,
   ): LinkStubRenderInfo[] {
     return node.data.linkStubs.map((linkType) => {
       const isUpTree = node.y < node.parent!.y;
@@ -213,7 +214,7 @@ export class KinshipChartRenderer {
    * links offset directions, so they don't merge/collide with children links and with each other.
    ***/
   private calcLinkOffsetDirs(
-    node: HierarchyPointNode<TreeNode>
+    node: HierarchyPointNode<TreeNode>,
   ): [Direction, Direction] {
     const childNodes = node.data.childNodes;
     if (childNodes.children.length) {
@@ -221,12 +222,12 @@ export class KinshipChartRenderer {
       const indiParentLinkAnchorX = this.linkAnchorPoints(
         node,
         LinkType.IndiParents,
-        true
+        true,
       )[0].x;
       const spouseParentLinkAnchorX = this.linkAnchorPoints(
         node,
         LinkType.SpouseParents,
-        true
+        true,
       )[0].x;
       const childrenLinksX = {
         min: this.findMinXOfChildNodesAnchors(node, childNodes.children),
@@ -250,11 +251,11 @@ export class KinshipChartRenderer {
       const indiParentLinkAnchorX = this.linkAnchorPoints(
         node,
         LinkType.IndiParents,
-        true
+        true,
       )[0].x;
       const spouseLinksMinX = this.findMinXOfChildNodesAnchors(
         node,
-        childNodes.spouseSiblings.concat(childNodes.spouseParents)
+        childNodes.spouseSiblings.concat(childNodes.spouseParents),
       );
       if (spouseLinksMinX < indiParentLinkAnchorX) {
         return [-1, 1];
@@ -265,14 +266,14 @@ export class KinshipChartRenderer {
 
   private findMinXOfChildNodesAnchors(
     parentNode: HierarchyPointNode<TreeNode>,
-    childNodes: TreeNode[]
+    childNodes: TreeNode[],
   ): number {
     return this.findExtremeXOfChildNodesAnchors(parentNode, childNodes, true);
   }
 
   private findMaxXOfChildNodesAnchors(
     parentNode: HierarchyPointNode<TreeNode>,
-    childNodes: TreeNode[]
+    childNodes: TreeNode[],
   ): number {
     return this.findExtremeXOfChildNodesAnchors(parentNode, childNodes, false);
   }
@@ -280,7 +281,7 @@ export class KinshipChartRenderer {
   private findExtremeXOfChildNodesAnchors(
     parentNode: HierarchyPointNode<TreeNode>,
     childNodes: TreeNode[],
-    isMin: boolean
+    isMin: boolean,
   ): number {
     const extremeFindingFunction = isMin ? min : max;
     const dir = isMin ? -1 : 1;
@@ -288,7 +289,7 @@ export class KinshipChartRenderer {
     return (
       extremeFindingFunction(
         parentNode.children!.filter((n) => childNodesSet.has(n.data)),
-        (n) => n.x + (dir * n.data.width!) / 2
+        (n) => n.x + (dir * n.data.width!) / 2,
       )! +
       dir * SIBLING_LINK_STARTER_LENGTH
     );
@@ -297,14 +298,14 @@ export class KinshipChartRenderer {
   private linkPoints(
     from: HierarchyPointNode<TreeNode>,
     to: HierarchyPointNode<TreeNode>,
-    type: LinkType
+    type: LinkType,
   ): Vec2[] {
     const isUpTree = from.y > to.y;
     const pointsFrom = this.linkAnchorPoints(from, type, isUpTree);
     const pointsTo = this.linkAnchorPoints(
       to,
       otherSideLinkType(type),
-      !isUpTree
+      !isUpTree,
     ).reverse();
     const y = this.getLinkY(from, type);
     return [
@@ -316,10 +317,10 @@ export class KinshipChartRenderer {
   }
 
   private additionalMarriageLinkPoints(
-    node: HierarchyPointNode<BaseTreeNode>
+    node: HierarchyPointNode<BaseTreeNode>,
   ): Vec2[] {
     const nodeIndex = node.parent!.children!.findIndex(
-      (n) => n.data.id === node.data.id
+      (n) => n.data.id === node.data.id,
     );
     const prevSiblingNode = node.parent!.children![nodeIndex - 1];
     const y = this.indiMidY(node);
@@ -332,7 +333,7 @@ export class KinshipChartRenderer {
   private linkAnchorPoints(
     node: HierarchyPointNode<BaseTreeNode>,
     type: LinkType,
-    top: boolean
+    top: boolean,
   ): Vec2[] {
     const [x, y] = [node.x, node.y];
     const [w, h] = [node.data.width!, node.data.height!];
@@ -390,7 +391,7 @@ export class KinshipChartRenderer {
   }
 
   private renderRootDummyAdditionalMarriageLinkStub(
-    root: HierarchyPointNode<BaseTreeNode>
+    root: HierarchyPointNode<BaseTreeNode>,
   ) {
     const svgg = this.util.getSvgForRendering().select('g');
     const y = this.indiMidY(root);
@@ -404,7 +405,7 @@ export class KinshipChartRenderer {
         g
           .append('path')
           .attr('d', `M 0 ${y} L ${x} ${y}`)
-          .attr('class', 'link additional-marriage')
+          .attr('class', 'link additional-marriage'),
       )
       .call((g) =>
         g
@@ -412,7 +413,7 @@ export class KinshipChartRenderer {
           .attr('transform', `translate(${x + r}, ${y})`)
           .attr('r', r)
           .style('stroke', 'black')
-          .style('fill', 'black')
+          .style('fill', 'black'),
       );
   }
 }

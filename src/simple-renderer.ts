@@ -53,7 +53,7 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
     const width = Math.max(
       getLength(getName(indi)) + 8,
       getLength(years),
-      MIN_WIDTH
+      MIN_WIDTH,
     );
     const height = years ? MIN_HEIGHT + 14 : MIN_HEIGHT;
     return [width, height];
@@ -68,7 +68,7 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
       .attr('transform', (node) =>
         this.options.horizontal
           ? `translate(0, ${node.data.indi!.height})`
-          : `translate(${node.data.indi!.width}, 0)`
+          : `translate(${node.data.indi!.width}, 0)`,
       );
     this.renderIndi(spouseSelection, (node) => node.spouse!);
   }
@@ -101,14 +101,14 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
 
   private renderIndi(
     selection: TreeNodeSelection,
-    indiFunc: (node: TreeNode) => TreeEntry
+    indiFunc: (node: TreeNode) => TreeEntry,
   ): void {
     // Optionally add a link.
     const group = this.options.indiHrefFunc
       ? selection
           .append('a')
           .attr('href', (node) =>
-            this.options.indiHrefFunc!(indiFunc(node.data).id)
+            this.options.indiHrefFunc!(indiFunc(node.data).id),
           )
       : selection;
 
@@ -125,10 +125,10 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'name')
       .attr(
         'transform',
-        (node) => `translate(${indiFunc(node.data).width! / 2}, 17)`
+        (node) => `translate(${indiFunc(node.data).width! / 2}, 17)`,
       )
       .text((node) =>
-        getName(this.options.data.getIndi(indiFunc(node.data).id)!)
+        getName(this.options.data.getIndi(indiFunc(node.data).id)!),
       );
     group
       .append('text')
@@ -136,10 +136,10 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
       .attr('class', 'details')
       .attr(
         'transform',
-        (node) => `translate(${indiFunc(node.data).width! / 2}, 33)`
+        (node) => `translate(${indiFunc(node.data).width! / 2}, 33)`,
       )
       .text((node) =>
-        getYears(this.options.data.getIndi(indiFunc(node.data).id)!)
+        getYears(this.options.data.getIndi(indiFunc(node.data).id)!),
       );
   }
 }

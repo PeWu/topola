@@ -63,7 +63,7 @@ export interface SimpleChartOptions {
 function createChartOptions(
   chartOptions: SimpleChartOptions,
   renderOptions: RenderOptions,
-  options: { initialRender: boolean }
+  options: { initialRender: boolean },
 ): ChartOptions {
   const data = new JsonDataProvider(chartOptions.json);
   const indiHrefFunc = chartOptions.indiUrl
@@ -143,14 +143,14 @@ class SimpleChartHandle implements ChartHandle {
   expanderCallback(
     id: string,
     direction: ExpanderDirection,
-    renderOptions: RenderOptions
+    renderOptions: RenderOptions,
   ) {
     const set =
       direction === ExpanderDirection.FAMILY
         ? this.collapsedFamily
         : direction === ExpanderDirection.INDI
-        ? this.collapsedIndi
-        : this.collapsedSpouse;
+          ? this.collapsedIndi
+          : this.collapsedSpouse;
     if (set.has(id)) {
       set.delete(id);
     } else {

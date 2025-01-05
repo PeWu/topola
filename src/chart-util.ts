@@ -70,7 +70,7 @@ export function linkId(node: HierarchyPointNode<TreeNode>) {
 }
 
 export function getChartInfo(
-  nodes: Array<HierarchyPointNode<TreeNode>>
+  nodes: Array<HierarchyPointNode<TreeNode>>,
 ): ChartSizeInfo {
   // Calculate chart boundaries.
   const x0 = min(nodes, (d) => d.x - d.data.width! / 2)! - MARGIN;
@@ -81,7 +81,7 @@ export function getChartInfo(
 }
 
 export function getChartInfoWithoutMargin(
-  nodes: Array<HierarchyPointNode<TreeNode>>
+  nodes: Array<HierarchyPointNode<TreeNode>>,
 ): ChartSizeInfo {
   // Calculate chart boundaries.
   const x0 = min(nodes, (d) => d.x - d.data.width! / 2)!;
@@ -98,7 +98,7 @@ export class ChartUtil {
   /** Creates a path from parent to the child node (horizontal layout). */
   private linkHorizontal(
     s: HierarchyPointNode<TreeNode>,
-    d: HierarchyPointNode<TreeNode>
+    d: HierarchyPointNode<TreeNode>,
   ) {
     const sAnchor = this.options.renderer.getFamilyAnchor(s.data);
     const dAnchor =
@@ -117,7 +117,7 @@ export class ChartUtil {
   /** Creates a path from parent to the child node (vertical layout). */
   private linkVertical(
     s: HierarchyPointNode<TreeNode>,
-    d: HierarchyPointNode<TreeNode>
+    d: HierarchyPointNode<TreeNode>,
   ) {
     const sAnchor = this.options.renderer.getFamilyAnchor(s.data);
     const dAnchor =
@@ -135,7 +135,7 @@ export class ChartUtil {
 
   private linkAdditionalMarriage(node: HierarchyPointNode<TreeNode>) {
     const nodeIndex = node.parent!.children!.findIndex(
-      (n) => n.data.id === node.data.id
+      (n) => n.data.id === node.data.id,
     );
     // Assert nodeIndex > 0.
     const siblingNode = node.parent!.children![nodeIndex - 1];
@@ -155,13 +155,13 @@ export class ChartUtil {
       : group;
     transition.attr(
       'transform',
-      `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`
+      `translate(${chartInfo.origin[0]}, ${chartInfo.origin[1]})`,
     );
   }
 
   layOutChart<N extends TreeNode>(
     root: HierarchyNode<N>,
-    layoutOptions: LayoutOptions = {}
+    layoutOptions: LayoutOptions = {},
   ): Array<HierarchyPointNode<N>> {
     // Add styles so that calculating text size is correct.
     const svg = select(this.options.svgSelector);
@@ -252,7 +252,7 @@ export class ChartUtil {
 
   renderNodes(
     nodes: Array<HierarchyPointNode<TreeNode>>,
-    svg: SVGSelection
+    svg: SVGSelection,
   ): Promise<void> {
     const animationPromise = new Promise<void>((resolve) => {
       const boundNodes = svg
@@ -282,7 +282,7 @@ export class ChartUtil {
         (node: HierarchyPointNode<TreeNode>) =>
           `translate(${node.x - node.data.width! / 2}, ${
             node.y - node.data.height! / 2
-          })`
+          })`,
       );
       if (this.options.animate) {
         nodeEnter
@@ -305,7 +305,7 @@ export class ChartUtil {
         (node: HierarchyPointNode<TreeNode>) =>
           `translate(${node.x - node.data.width! / 2}, ${
             node.y - node.data.height! / 2
-          })`
+          })`,
       );
       this.options.renderer.render(nodeEnter, boundNodes);
       if (this.options.animate) {
@@ -325,12 +325,12 @@ export class ChartUtil {
 
   renderLinks(
     nodes: Array<HierarchyPointNode<TreeNode>>,
-    svg: SVGSelection
+    svg: SVGSelection,
   ): Promise<void> {
     const animationPromise = new Promise<void>((resolve) => {
       const link = (
         parent: HierarchyPointNode<TreeNode>,
-        child: HierarchyPointNode<TreeNode>
+        child: HierarchyPointNode<TreeNode>,
       ) => {
         if (child.data.additionalMarriage) {
           return this.linkAdditionalMarriage(child);
@@ -349,7 +349,7 @@ export class ChartUtil {
       };
 
       const links = nodes.filter(
-        (n) => !!n.parent || n.data.additionalMarriage
+        (n) => !!n.parent || n.data.additionalMarriage,
       );
       const boundLinks = svg
         .select('g')
@@ -359,7 +359,7 @@ export class ChartUtil {
         .enter()
         .insert('path', 'g')
         .attr('class', (node) =>
-          node.data.additionalMarriage ? 'link additional-marriage' : 'link'
+          node.data.additionalMarriage ? 'link additional-marriage' : 'link',
         )
         .attr('d', (node) => link(node.parent!, node));
 
@@ -411,9 +411,9 @@ export class ChartUtil {
   renderExpander(
     nodes: TreeNodeSelection,
     stateGetter: (
-      node: HierarchyPointNode<TreeNode>
+      node: HierarchyPointNode<TreeNode>,
     ) => ExpanderState | undefined,
-    clickCallback?: (id: string) => void
+    clickCallback?: (id: string) => void,
   ) {
     nodes = nodes.filter((node) => stateGetter(node) !== undefined);
 
@@ -457,14 +457,13 @@ export class ChartUtil {
     updateTransition.attr('transform', (node: HierarchyPointNode<TreeNode>) => {
       const anchor = this.options.renderer.getFamilyAnchor(node.data);
       return `translate(${anchor[0] - 6}, ${
-        -node.data.height! / 2 +
-        getVSize(node.data, !!this.options.horizontal)
+        -node.data.height! / 2 + getVSize(node.data, !!this.options.horizontal)
       })`;
-  });
+    });
     this.renderExpander(
       merged,
       (node) => node.data.family?.expander,
-      (id) => this.options.expanderCallback?.(id, ExpanderDirection.FAMILY)
+      (id) => this.options.expanderCallback?.(id, ExpanderDirection.FAMILY),
     );
     boundNodes.exit().remove();
   }
@@ -492,7 +491,7 @@ export class ChartUtil {
     this.renderExpander(
       merged,
       (node) => node.data.indi?.expander,
-      (id) => this.options.expanderCallback?.(id, ExpanderDirection.INDI)
+      (id) => this.options.expanderCallback?.(id, ExpanderDirection.INDI),
     );
     boundNodes.exit().remove();
   }
@@ -520,14 +519,14 @@ export class ChartUtil {
     this.renderExpander(
       merged,
       (node) => node.data.spouse?.expander,
-      (id) => this.options.expanderCallback?.(id, ExpanderDirection.SPOUSE)
+      (id) => this.options.expanderCallback?.(id, ExpanderDirection.SPOUSE),
     );
     boundNodes.exit().remove();
   }
 
   renderControls(
     nodes: Array<HierarchyPointNode<TreeNode>>,
-    svg: SVGSelection
+    svg: SVGSelection,
   ): Promise<void> {
     if (!this.options.expanders) {
       return Promise.resolve();
@@ -545,7 +544,7 @@ export class ChartUtil {
       nodeEnter.attr(
         'transform',
         (node: HierarchyPointNode<TreeNode>) =>
-          `translate(${node.x}, ${node.y})`
+          `translate(${node.x}, ${node.y})`,
       );
 
       let transitionsPending =
@@ -570,7 +569,7 @@ export class ChartUtil {
       updateTransition.attr(
         'transform',
         (node: HierarchyPointNode<TreeNode>) =>
-          `translate(${node.x}, ${node.y})`
+          `translate(${node.x}, ${node.y})`,
       );
       if (this.options.animate) {
         nodeEnter

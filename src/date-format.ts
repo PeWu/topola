@@ -91,7 +91,7 @@ function getShortMonth(month: number, locale?: string) {
     return shortMonthCache.get(cacheKey);
   }
   const result = new Intl.DateTimeFormat(locale, { month: 'short' }).format(
-    new Date(2000, month - 1)
+    new Date(2000, month - 1),
   );
   shortMonthCache.set(cacheKey, result);
   return result;
@@ -111,7 +111,7 @@ function formatDateOnly(
   day?: number,
   month?: number,
   year?: number,
-  locale?: string
+  locale?: string,
 ): string {
   if (!day && !month && !year) {
     return '';
@@ -131,7 +131,7 @@ function formatDateOnly(
     year: year ? 'numeric' : undefined,
   };
   return new Intl.DateTimeFormat(locale, format).format(
-    new Date(year ?? 2000, month ? month - 1 : 1, day ?? 1)
+    new Date(year ?? 2000, month ? month - 1 : 1, day ?? 1),
   );
 }
 
@@ -147,7 +147,7 @@ export function formatDate(date: GedcomDate, locale?: string): string {
 /** Formats a DateOrRange object. */
 export function formatDateOrRange(
   dateOrRange: DateOrRange,
-  locale?: string
+  locale?: string,
 ): string {
   if (dateOrRange.date) {
     return formatDate(dateOrRange.date, locale);
@@ -156,8 +156,10 @@ export function formatDateOrRange(
     return '';
   }
   const from =
-    dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from, locale);
-  const to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to, locale);
+    dateOrRange.dateRange.from &&
+    formatDate(dateOrRange.dateRange.from, locale);
+  const to =
+    dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to, locale);
   if (from && to) {
     return `${from} .. ${to}`;
   }

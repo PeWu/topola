@@ -194,7 +194,7 @@ export class JsonDataProvider implements DataProvider<IndiDetails, FamDetails> {
 
   constructor(readonly json: JsonGedcomData) {
     json.indis.forEach((indi) =>
-      this.indis.set(indi.id, new JsonIndiDetails(indi))
+      this.indis.set(indi.id, new JsonIndiDetails(indi)),
     );
     json.fams.forEach((fam) => this.fams.set(fam.id, new JsonFamDetails(fam)));
   }

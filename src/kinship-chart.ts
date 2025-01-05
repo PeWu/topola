@@ -18,11 +18,14 @@ export class KinshipChart implements Chart {
   render(): ChartInfo {
     const hierarchy = HierarchyCreator.createHierarchy(
       this.options.data,
-      new EntryId(this.options.startIndi || null, this.options.startFam || null)
+      new EntryId(
+        this.options.startIndi || null,
+        this.options.startFam || null,
+      ),
     );
     const [upNodes, downNodes] = this.renderer.layOut(
       hierarchy.upRoot,
-      hierarchy.downRoot
+      hierarchy.downRoot,
     );
 
     upNodes.concat(downNodes).forEach((node) => {
@@ -32,7 +35,7 @@ export class KinshipChart implements Chart {
     return this.renderer.render(
       upNodes,
       downNodes,
-      getRootsCount(hierarchy.upRoot, this.options.data)
+      getRootsCount(hierarchy.upRoot, this.options.data),
     );
   }
 
@@ -40,10 +43,10 @@ export class KinshipChart implements Chart {
     const childNodes = this.getChildNodesByType(node);
     const setGenerationNumber = (
       childNodes: Array<HierarchyNode<TreeNode>>,
-      value: number
+      value: number,
     ) =>
       childNodes.forEach(
-        (n) => (n.data.generation = node.data.generation! + value)
+        (n) => (n.data.generation = node.data.generation! + value),
       );
 
     setGenerationNumber(childNodes.indiParents, -1);
@@ -54,14 +57,14 @@ export class KinshipChart implements Chart {
   }
 
   private getChildNodesByType(
-    node: HierarchyNode<TreeNode>
+    node: HierarchyNode<TreeNode>,
   ): HierarchyTreeNodes {
     if (!node || !node.children) return EMPTY_HIERARCHY_TREE_NODES;
     // Maps id to node object for all children of the input node
     const childNodesById = new Map(
       node.children.map(
-        (n) => [n.data.id, n] as [string, HierarchyNode<TreeNode>]
-      )
+        (n) => [n.data.id, n] as [string, HierarchyNode<TreeNode>],
+      ),
     );
     const nodeToHNode = (n: TreeNode) =>
       childNodesById.get(n.id) as HierarchyNode<TreeNode>;

@@ -15,12 +15,12 @@ export const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
 
 export function layOutDescendants(
   options: ChartOptions,
-  layoutOptions: LayoutOptions = {}
+  layoutOptions: LayoutOptions = {},
 ) {
   const descendants = new DescendantChart(options);
   const descendantsRoot = descendants.createHierarchy();
   return removeDummyNode(
-    new ChartUtil(options).layOutChart(descendantsRoot, layoutOptions)
+    new ChartUtil(options).layOutChart(descendantsRoot, layoutOptions),
   );
 }
 

@@ -167,7 +167,7 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
 function createIndi(
   entry: GedcomEntry,
   objects: Map<string, GedcomEntry>,
-  existingIds: Set<string>
+  existingIds: Set<string>,
 ): JsonIndi {
   const id = pointerToId(entry.pointer)!;
   const fams = findTags(entry.tree, 'FAMS')
@@ -325,13 +325,13 @@ export function gedcomToJson(gedcomContents: string): JsonGedcomData {
 export function gedcomEntriesToJson(gedcom: GedcomEntry[]): JsonGedcomData {
   const objects = createMap(findTags(gedcom, 'OBJE'));
   const existingIds = new Set(
-    gedcom.map((entry) => pointerToId(entry.pointer)!).filter((id) => !!id)
+    gedcom.map((entry) => pointerToId(entry.pointer)!).filter((id) => !!id),
   );
   const indis = findTags(gedcom, 'INDI').map((entry) =>
-    createIndi(entry, objects, existingIds)
+    createIndi(entry, objects, existingIds),
   );
   const fams = findTags(gedcom, 'FAM').map((entry) =>
-    createFam(entry, existingIds)
+    createFam(entry, existingIds),
   );
   return { indis, fams };
 }

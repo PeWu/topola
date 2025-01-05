@@ -57,7 +57,7 @@ export class CircleRenderer implements Renderer {
       .attr(
         'transform',
         (node) =>
-          `translate(${node.data.width! / 2}, ${node.data.height! / 2 - 4})`
+          `translate(${node.data.width! / 2}, ${node.data.height! / 2 - 4})`,
       )
       .text((node) => this.getName(node.data.indi));
     enter
@@ -67,7 +67,7 @@ export class CircleRenderer implements Renderer {
       .attr(
         'transform',
         (node) =>
-          `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 14})`
+          `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 14})`,
       )
       .text((node) => this.getName(node.data.spouse));
     enter
@@ -77,7 +77,7 @@ export class CircleRenderer implements Renderer {
       .attr(
         'transform',
         (node) =>
-          `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 4})`
+          `translate(${node.data.width! / 2}, ${node.data.height! / 2 + 4})`,
       )
       .text((node) => this.getName(node.data.indi));
   }

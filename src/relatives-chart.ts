@@ -22,7 +22,10 @@ import {
 
 /** A view of a family that hides one child individual. */
 class FilterChildFam implements Fam {
-  constructor(private fam: Fam, private childId: string) {}
+  constructor(
+    private fam: Fam,
+    private childId: string,
+  ) {}
   getId(): string {
     return this.fam.getId();
   }
@@ -44,7 +47,10 @@ class FilterChildFam implements Fam {
 
 /** Data provider proxy that filters out a specific child individual. */
 class FilterChildData implements DataProvider<Indi, Fam> {
-  constructor(private data: DataProvider<Indi, Fam>, private childId: string) {}
+  constructor(
+    private data: DataProvider<Indi, Fam>,
+    private childId: string,
+  ) {}
   getIndi(id: string): Indi | null {
     return this.data.getIndi(id);
   }
@@ -86,7 +92,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
   layOutAncestorDescendants(
     ancestorsRoot: HierarchyNode<TreeNode>,
-    focusedNode: HierarchyPointNode<TreeNode>
+    focusedNode: HierarchyPointNode<TreeNode>,
   ) {
     const ancestorData = new Map<string, AncestorData>();
 
@@ -103,7 +109,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
           : node.parent.data.indi!.id;
       descendantOptions.data = new FilterChildData(
         descendantOptions.data,
-        child
+        child,
       );
       descendantOptions.baseGeneration =
         (this.options.baseGeneration || 0) - node.depth;
@@ -121,7 +127,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
       const chartInfo = getChartInfoWithoutMargin(descendantNodes);
       const parentData = (node.children || []).map((childNode) =>
-        ancestorData.get(childNode.data.id)
+        ancestorData.get(childNode.data.id),
       );
       const parentHeight = parentData
         .map((data) => data!.height)
@@ -163,12 +169,12 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
       if (node.data.indiParentNodeId && node.children) {
         thisNode.data.indiParentNodeId = node.children!.find(
-          (childNode) => childNode.id === node.data.indiParentNodeId
+          (childNode) => childNode.id === node.data.indiParentNodeId,
         )!.data.id;
       }
       if (node.data.spouseParentNodeId && node.children) {
         thisNode.data.spouseParentNodeId = node.children!.find(
-          (childNode) => childNode.id === node.data.spouseParentNodeId
+          (childNode) => childNode.id === node.data.spouseParentNodeId,
         )!.data.id;
       }
     });
@@ -184,7 +190,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       const spouseParent =
         node.children &&
         node.children.find(
-          (child) => child.id === node.data.spouseParentNodeId
+          (child) => child.id === node.data.spouseParentNodeId,
         );
       const nodeX = thisNode.x;
       const nodeY = thisNode.y;
@@ -333,7 +339,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
 
     const ancestorDescentants = this.layOutAncestorDescendants(
       ancestorsRoot,
-      descendantNodes[0]
+      descendantNodes[0],
     );
 
     const nodes = descendantNodes.concat(ancestorDescentants);
