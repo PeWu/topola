@@ -23,6 +23,7 @@
     "@types/d3-hierarchy": "^2.0.0",
     "@types/d3-selection": "^2.0.0",
     "@types/d3-transition": "^2.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.10.5",
     "browser-sync": "^3.0.3",
     "browserify": "^17.0.1",
