@@ -7878,8 +7878,7 @@ var ChartUtil = /** @class */ (function () {
             : merged;
         updateTransition.attr('transform', function (node) {
             var anchor = _this.options.renderer.getFamilyAnchor(node.data);
-            return "translate(".concat(anchor[0] - 6, ", ").concat(-node.data.height / 2 +
-                (0, composite_renderer_1.getVSize)(node.data, !!_this.options.horizontal), ")");
+            return "translate(".concat(anchor[0] - 6, ", ").concat(-node.data.height / 2 + (0, composite_renderer_1.getVSize)(node.data, !!_this.options.horizontal), ")");
         });
         this.renderExpander(merged, function (node) { var _a; return (_a = node.data.family) === null || _a === void 0 ? void 0 : _a.expander; }, function (id) { var _a, _b; return (_b = (_a = _this.options).expanderCallback) === null || _b === void 0 ? void 0 : _b.call(_a, id, api_1.ExpanderDirection.FAMILY); });
         boundNodes.exit().remove();
@@ -8510,7 +8509,8 @@ function formatDateOrRange(dateOrRange, locale) {
     if (!dateOrRange.dateRange) {
         return '';
     }
-    var from = dateOrRange.dateRange.from && formatDate(dateOrRange.dateRange.from, locale);
+    var from = dateOrRange.dateRange.from &&
+        formatDate(dateOrRange.dateRange.from, locale);
     var to = dateOrRange.dateRange.to && formatDate(dateOrRange.dateRange.to, locale);
     if (from && to) {
         return "".concat(from, " .. ").concat(to);
@@ -10270,7 +10270,9 @@ var KinshipChartRenderer = /** @class */ (function () {
         });
         boundLinkNodes.exit().remove();
         // Render link stubs container "g" element
-        var boundLinkStubNodes = svgg.selectAll('g.link-stubs').data(nodes.filter(function (n) { return n.data.duplicateOf || n.data.duplicated || n.data.primaryMarriage; }), keyFn);
+        var boundLinkStubNodes = svgg.selectAll('g.link-stubs').data(nodes.filter(function (n) {
+            return n.data.duplicateOf || n.data.duplicated || n.data.primaryMarriage;
+        }), keyFn);
         var linkStubNodesEnter = boundLinkStubNodes
             .enter()
             .insert('g', 'g')
