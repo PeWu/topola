@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "build-demo": "browserify src/index.ts -p [ tsify ] -o demo/bundle.js --s topola",
-    "watch": "watchify src/index.ts -p [ tsify ] -o demo/bundle.js --s topola --debug",
+    "build-demo": "esbuild src/index.ts --bundle --outfile=demo/bundle.js --global-name=topola",
+    "watch": "esbuild src/index.ts --bundle --outfile=demo/bundle.js --global-name=topola --watch",
     "server": "browser-sync start --server demo --files demo",
     "start": "concurrently \"npm run watch\" \"npm run server\"",
     "test": "jest",
@@ -26,8 +26,8 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.5",
     "browser-sync": "^3.0.3",
-    "browserify": "^17.0.1",
     "concurrently": "^9.1.2",
+    "esbuild": "^0.24.2",
     "gh-pages": "^6.3.0",
     "jest": "^29.7.0",
     "jsdom": "^25.0.1",
@@ -38,8 +38,7 @@
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "tsify": "^5.0.4",
-    "typescript": "^5.7.2",
-    "watchify": "^4.0.0"
+    "typescript": "^5.7.2"
   },
   "dependencies": {
     "array-flat-polyfill": "^1.0.1",
