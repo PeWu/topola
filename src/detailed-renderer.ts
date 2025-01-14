@@ -413,9 +413,9 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
           )}`,
       )
       .merge(update.select('rect.background'));
-    this.transition(background)
-      .attr('width', (node) => node.indi.width!)
-      .attr('height', (node) => node.indi.height!);
+    const transition = this.transition(background);
+    transition.attr('width', (node) => node.indi.width!);
+    transition.attr('height', (node) => node.indi.height!);
 
     // Clip path.
     const getClipId = (id: string) => `clip-${id}`;
@@ -530,9 +530,9 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .attr('fill-opacity', 0)
       .attr('class', 'border')
       .merge(update.select('rect.border'));
-    this.transition(border)
-      .attr('width', (data) => data.indi.width!)
-      .attr('height', (data) => data.indi.height!);
+    const borderTransition = this.transition(border);
+    borderTransition.attr('width', (data) => data.indi.width!);
+    borderTransition.attr('height', (data) => data.indi.height!);
   }
 
   private renderFamily(enter: TreeNodeSelection, update: TreeNodeSelection) {

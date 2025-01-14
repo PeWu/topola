@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="topola.css"/>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <!-- Run `npm run build-demo` for `bundle.js` to be built. -->
     <script src="bundle.js"></script>
     <script>
-      d3.text('data/family.ged', (gedcom) => {
+      d3.text('data/family.ged').then((gedcom) => {
         var json = topola.gedcomToJson(gedcom);
         topola.createChart({
           json,
@@ -18,7 +18,7 @@
           colors: topola.ChartColors.COLOR_BY_SEX,
         }).render();
       });
-      d3.json('data/data.json', (json) => {
+      d3.json('data/data.json').then((json) => {
         topola.createChart({
           json,
           indiUrl: 'http://kielakowie.pl/tng/getperson.php?tree=tree381&personID=${id}',
@@ -64,7 +64,7 @@
         });
       });
 
-      d3.json('data/tudor.json', (json) => {
+      d3.json('data/tudor.json').then((json) => {
         topola.createChart({
           json,
           svgSelector: '#tudor',
@@ -75,7 +75,7 @@
         });
       });
 
-      d3.text('data/family2.ged', (gedcom) => {
+      d3.text('data/family2.ged').then((gedcom) => {
         var json = topola.gedcomToJson(gedcom);
         topola.createChart({
           json,
