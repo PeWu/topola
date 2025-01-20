@@ -14,6 +14,10 @@ Available chart types:
   [All-in-one report](http://genj.sourceforge.net/wiki/en/reports/graphicaltree) in GenealogyJ
 * Fancy chart, inspired by https://imgur.com/a/T02Kc7X
 
+If you find this project useful, consider buying me a coffee.
+
+[![buy me a coffee](https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png)](https://www.buymeacoffee.com/pewu)
+
 ## Examples
 
 Open the StackBlitz examples to play around with the code.
