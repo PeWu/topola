@@ -19,6 +19,16 @@ const MONTHS_EN: Map<number, string> = new Map([
 /** Translations of the GEDCOM date qualifiers. */
 const QUALIFIERS_I18N: Map<string, Map<string, string>> = new Map([
   [
+    'bg',
+    new Map([
+      ['cal', 'прибл.'],
+      ['abt', 'ок.'],
+      ['est', 'оц.'],
+      ['before', 'преди'],
+      ['after', 'след'],
+    ]),
+  ],
+  [
     'cs',
     new Map([
       ['cal', 'vypočt.'],
