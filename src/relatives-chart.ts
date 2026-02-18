@@ -102,7 +102,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       }
       const descendantOptions = { ...this.options };
       descendantOptions.startFam = node.data.family!.id;
-      descendantOptions.startIndi = undefined;
+      delete descendantOptions.startIndi;
       const child =
         node.id === node.parent.data.spouseParentNodeId
           ? node.parent.data.spouse!.id
@@ -147,15 +147,15 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       if (!node.parent) {
         return;
       }
-      const data = ancestorData.get(node.data.id);
+      const data = ancestorData.get(node.data.id)!;
       const parentData = ancestorData.get(node.parent.data.id);
 
-      data!.left =
+      data.left =
         parentData && !parentData.middle
-          ? parentData.left
+          ? !!parentData.left
           : node.parent.data.indiParentNodeId === node.id;
-      data!.middle =
-        (!parentData || parentData.middle) &&
+      data.middle =
+        (!parentData || !!parentData.middle) &&
         node.parent.children!.length === 1;
     });
 

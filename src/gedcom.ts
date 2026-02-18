@@ -5,6 +5,7 @@ import { GedcomEntry, parse as parseGedcom } from 'parse-gedcom';
 import {
   Date,
   DateOrRange,
+  DateRange,
   JsonEvent,
   JsonFam,
   JsonGedcomData,
@@ -83,7 +84,7 @@ function parseDate(parts: string[]): Date | undefined {
   if (parts.length) {
     const lastPart = parts[parts.length - 1].toLowerCase();
     if (MONTHS.has(lastPart)) {
-      result.month = MONTHS.get(lastPart);
+      result.month = MONTHS.get(lastPart)!;
       parts = parts.slice(0, parts.length - 1);
     }
   }
@@ -106,10 +107,20 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
     const i = parts.findIndex((x) => x.toLowerCase() === 'and');
     const from = parseDate(parts.slice(1, i));
     const to = parseDate(parts.slice(i + 1));
-    return { dateRange: { from, to } };
+    const dateRange: DateRange = {};
+    if (from) {
+      dateRange.from = from;
+    }
+    if (to) {
+      dateRange.to = to;
+    }
+    return { dateRange };
   }
   if (firstPart.startsWith('bef') || firstPart.startsWith('aft')) {
     const date = parseDate(parts.slice(1));
+    if (!date) {
+      return undefined;
+    }
     if (firstPart.startsWith('bef')) {
       return { dateRange: { to: date } };
     }
@@ -153,8 +164,13 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
       result.place = place;
     }
     result.confirmed = true;
-    result.type = typeTag ? typeTag!.data : undefined;
-    result.notes = createNotes(findTag(entry.tree, 'NOTE'));
+    if (typeTag) {
+      result.type = typeTag.data;
+    }
+    const notes = createNotes(findTag(entry.tree, 'NOTE'));
+    if (notes) {
+      result.notes = notes;
+    }
     return result;
   }
   if (entry.data && entry.data.toLowerCase() === 'y') {
@@ -267,7 +283,10 @@ function createIndi(
   }
 
   // Notes.
-  indi.notes = createNotes(findTag(entry.tree, 'NOTE'));
+  const notes = createNotes(findTag(entry.tree, 'NOTE'));
+  if (notes) {
+    indi.notes = notes;
+  }
 
   // Events
   indi.events = findTags(entry.tree, 'EVEN')

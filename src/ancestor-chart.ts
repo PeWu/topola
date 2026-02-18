@@ -21,7 +21,7 @@ export function getAncestorsTree(options: ChartOptions) {
   // start with the family instead.
   if (startIndiFamilies.length) {
     ancestorChartOptions.startFam = startIndiFamilies[0];
-    ancestorChartOptions.startIndi = undefined;
+    delete ancestorChartOptions.startIndi;
 
     const fam = options.data.getFam(startIndiFamilies[0])!;
     if (fam.getMother() === options.startIndi) {
@@ -39,7 +39,7 @@ export function getAncestorsTree(options: ChartOptions) {
     ancestorsRoot.children.length > 1
   ) {
     ancestorsRoot.children.pop();
-    ancestorsRoot.data.spouseParentNodeId = undefined;
+    delete ancestorsRoot.data.spouseParentNodeId;
   }
   return ancestorsRoot;
 }
@@ -70,11 +70,14 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
           family: { id: famc },
         });
       }
-      parents.push({
+      const parent: TreeNode = {
         id: this.options.startIndi,
         indi: { id: this.options.startIndi },
-        indiParentNodeId: id,
-      });
+      };
+      if (id) {
+        parent.indiParentNodeId = id;
+      }
+      parents.push(parent);
     } else {
       stack.push({
         id: idGenerator.getId(this.options.startFam!),

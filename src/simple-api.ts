@@ -78,29 +78,57 @@ function createChartOptions(
     renderOptions.startIndi = chartOptions.json.indis[0].id;
   }
   const animate = !options.initialRender && chartOptions.animate;
-  const renderer = new chartOptions.renderer({
-    data,
-    indiHrefFunc,
-    famHrefFunc,
-    indiCallback: chartOptions.indiCallback,
-    famCallback: chartOptions.famCallback,
-    horizontal: chartOptions.horizontal,
-    colors: chartOptions.colors,
-    animate,
-    locale: chartOptions.locale,
-  });
+  const rendererOptions: RendererOptions<IndiDetails, FamDetails> = { data };
+  if (indiHrefFunc) {
+    rendererOptions.indiHrefFunc = indiHrefFunc;
+  }
+  if (famHrefFunc) {
+    rendererOptions.famHrefFunc = famHrefFunc;
+  }
+  if (chartOptions.indiCallback) {
+    rendererOptions.indiCallback = chartOptions.indiCallback;
+  }
+  if (chartOptions.famCallback) {
+    rendererOptions.famCallback = chartOptions.famCallback;
+  }
+  if (chartOptions.horizontal !== undefined) {
+    rendererOptions.horizontal = chartOptions.horizontal;
+  }
+  if (chartOptions.colors) {
+    rendererOptions.colors = chartOptions.colors;
+  }
+  if (animate !== undefined) {
+    rendererOptions.animate = animate;
+  }
+  if (chartOptions.locale) {
+    rendererOptions.locale = chartOptions.locale;
+  }
+  const renderer = new chartOptions.renderer(rendererOptions);
 
-  return {
+  const resultChartOptions: ChartOptions = {
     data,
     renderer,
-    startIndi: renderOptions.startIndi,
-    startFam: renderOptions.startFam,
     svgSelector: chartOptions.svgSelector || DEFAULT_SVG_SELECTOR,
-    horizontal: chartOptions.horizontal,
-    baseGeneration: renderOptions.baseGeneration,
-    animate,
-    expanders: chartOptions.expanders,
   };
+  if (renderOptions.startIndi) {
+    resultChartOptions.startIndi = renderOptions.startIndi;
+  }
+  if (renderOptions.startFam) {
+    resultChartOptions.startFam = renderOptions.startFam;
+  }
+  if (chartOptions.horizontal !== undefined) {
+    resultChartOptions.horizontal = chartOptions.horizontal;
+  }
+  if (renderOptions.baseGeneration !== undefined) {
+    resultChartOptions.baseGeneration = renderOptions.baseGeneration;
+  }
+  if (animate !== undefined) {
+    resultChartOptions.animate = animate;
+  }
+  if (chartOptions.expanders !== undefined) {
+    resultChartOptions.expanders = chartOptions.expanders;
+  }
+  return resultChartOptions;
 }
 
 export interface ChartHandle {

@@ -45,17 +45,17 @@ export abstract class CompositeRenderer {
     nodes.forEach((node) => {
       if (this.options.horizontal) {
         if (node.data.indi) {
-          node.data.indi.width = indiVSizePerDepth.get(node.depth);
+          node.data.indi.width = indiVSizePerDepth.get(node.depth)!;
         }
         if (node.data.spouse) {
-          node.data.spouse.width = indiVSizePerDepth.get(node.depth);
+          node.data.spouse.width = indiVSizePerDepth.get(node.depth)!;
         }
       } else {
         if (node.data.indi) {
-          node.data.indi.height = indiVSizePerDepth.get(node.depth);
+          node.data.indi.height = indiVSizePerDepth.get(node.depth)!;
         }
         if (node.data.spouse) {
-          node.data.spouse.height = indiVSizePerDepth.get(node.depth);
+          node.data.spouse.height = indiVSizePerDepth.get(node.depth)!;
         }
       }
       const vSize = getVSize(node.data, !!this.options.horizontal);

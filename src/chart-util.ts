@@ -193,7 +193,7 @@ export class ChartUtil {
 
     // Set sizes of whole nodes.
     root.each((node) => {
-      const vSize = vSizePerDepth.get(node.depth);
+      const vSize = vSizePerDepth.get(node.depth)!;
       if (this.options.horizontal) {
         node.data.width = vSize;
       } else {
