@@ -251,10 +251,11 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     return `
 .detailed text {
   font-family: verdana, arial, sans-serif;
-  font-size: 12px;
+  fill: black;
 }
 
 .detailed .name {
+  font-size: 12px;
   font-weight: bold;
 }
 
