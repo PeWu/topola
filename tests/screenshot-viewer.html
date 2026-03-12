@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../demo/topola.css"/>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="../demo/bundle.js"></script>
+  </head>
+  <body>
+    <svg class="graph" id="chart"/>
+    <script>
+      async function renderChart(options) {
+        const {dataUrl, isGedcom, chartOptions, renderOptions} = options;
+        let json;
+        if (isGedcom) {
+          const gedcom = await d3.text(dataUrl);
+          json = topola.gedcomToJson(gedcom);
+        } else {
+          json = await d3.json(dataUrl);
+        }
+        
+        const chart = topola.createChart({
+          json,
+          svgSelector: '#chart',
+          ...chartOptions
+        });
+        chart.render(renderOptions);
+      }
+      
+      // Control functions for Playwright
+      window.renderChart = renderChart;
+    </script>
+  </body>
+</html>
