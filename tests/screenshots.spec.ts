@@ -136,13 +136,13 @@ test.describe('Topola Screenshot Tests', () => {
         const colorsMap = {
           COLOR_BY_SEX: topola.ChartColors.COLOR_BY_SEX,
         };
-        const colors = opts.colors ? colorsMap[opts.colors] : undefined;
+        const colors = opts.colors ? colorsMap[opts.colors] : topola.ChartColors.COLOR_BY_GENERATION;
 
         const chartOptions: Partial<SimpleChartOptions> = {
           chartType,
           renderer,
           colors,
-          horizontal: opts.horizontal,
+          horizontal: !!opts.horizontal,
         };
         const renderChart = (window as any).renderChart;
         await renderChart({

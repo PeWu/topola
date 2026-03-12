@@ -1,6 +1,7 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
   testEnvironment: "node",
+  testPathIgnorePatterns: ["/node_modules/", "/tests/screenshots.spec.ts"],
   transform: {
     "^.+.tsx?$": ["ts-jest", {}],
   },
