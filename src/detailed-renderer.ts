@@ -250,7 +250,7 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   getCss() {
     return `
 .detailed text {
-  font-family: verdana, arial, sans-serif;
+  font-family: roboto, verdana, arial, sans-serif;
   fill: black;
 }
 

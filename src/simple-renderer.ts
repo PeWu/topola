@@ -76,7 +76,8 @@ export class SimpleRenderer extends CompositeRenderer implements Renderer {
   getCss() {
     return `
 .simple text {
-  font: 12px sans-serif;
+  font-family: roboto, verdana, arial, sans-serif;
+  font-size: 12px;
 }
 
 .simple .name {
