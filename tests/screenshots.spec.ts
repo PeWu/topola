@@ -9,7 +9,7 @@ interface Scenario {
   chartOptions: {
     chartType: 'RelativesChart' | 'HourglassChart' | 'DescendantChart' | 'FancyChart' | 'AncestorChart' | 'KinshipChart';
     renderer: 'DetailedRenderer' | 'SimpleRenderer' | 'CircleRenderer';
-    colors?: 'COLOR_BY_SEX';
+    colors?: 'COLOR_BY_SEX' | 'COLOR_BY_GENERATION' | 'NO_COLOR';
     horizontal?: boolean;
   };
   renderOptions?: {
@@ -36,6 +36,7 @@ const scenarios: Scenario[] = [
     chartOptions: {
       chartType: 'HourglassChart',
       renderer: 'DetailedRenderer',
+      colors: 'COLOR_BY_GENERATION',
     },
     renderOptions: {
       startFam: 'F3047',
@@ -49,6 +50,7 @@ const scenarios: Scenario[] = [
       chartType: 'HourglassChart',
       renderer: 'DetailedRenderer',
       horizontal: true,
+      colors: 'NO_COLOR',
     },
     renderOptions: {
       startIndi: 'I46464',
@@ -135,8 +137,10 @@ test.describe('Topola Screenshot Tests', () => {
 
         const colorsMap = {
           COLOR_BY_SEX: topola.ChartColors.COLOR_BY_SEX,
+          COLOR_BY_GENERATION: topola.ChartColors.COLOR_BY_GENERATION,
+          NO_COLOR: topola.ChartColors.NO_COLOR,
         };
-        const colors = opts.colors ? colorsMap[opts.colors] : topola.ChartColors.COLOR_BY_GENERATION;
+        const colors = colorsMap[opts.colors!] ?? topola.ChartColors.COLOR_BY_GENERATION;
 
         const chartOptions: Partial<SimpleChartOptions> = {
           chartType,
@@ -168,6 +172,7 @@ test.describe('Topola Screenshot Tests', () => {
       await expect(chart).toBeVisible();
       await expect(chart).toHaveScreenshot(`${scenario.name}.png`, {
         maxDiffPixelRatio: 0.01,
+        threshold: 0,
       });
     });
   }

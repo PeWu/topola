@@ -94,7 +94,7 @@ function createChartOptions(
   if (chartOptions.horizontal !== undefined) {
     rendererOptions.horizontal = chartOptions.horizontal;
   }
-  if (chartOptions.colors) {
+  if (chartOptions.colors !== undefined) {
     rendererOptions.colors = chartOptions.colors;
   }
   if (animate !== undefined) {
