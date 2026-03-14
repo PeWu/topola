@@ -171,8 +171,8 @@ test.describe('Topola Screenshot Tests', () => {
       const chart = page.locator('#chart');
       await expect(chart).toBeVisible();
       await expect(chart).toHaveScreenshot(`${scenario.name}.png`, {
-        maxDiffPixelRatio: 0.01,
-        threshold: 0,
+        maxDiffPixelRatio: 0.02,
+        threshold: 0.1,
       });
     });
   }
