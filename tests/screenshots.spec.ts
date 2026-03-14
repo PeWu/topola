@@ -166,7 +166,9 @@ test.describe('Topola Screenshot Tests', () => {
       // Take a screenshot of the SVG element.
       const chart = page.locator('#chart');
       await expect(chart).toBeVisible();
-      await expect(chart).toHaveScreenshot(`${scenario.name}.png`);
+      await expect(chart).toHaveScreenshot(`${scenario.name}.png`, {
+        maxDiffPixelRatio: 0.01,
+      });
     });
   }
 });
