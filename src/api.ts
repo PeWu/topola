@@ -102,14 +102,24 @@ export interface Renderer {
   getSpouseAnchor(node: TreeNode): [number, number];
 }
 
+/** Information about modifier keys. */
+export interface ModifiersInfo {
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
 export interface IndiInfo {
   id: string;
   generation: number;
+  modifiers: ModifiersInfo;
 }
 
 export interface FamInfo {
   id: string;
   generation: number;
+  modifiers: ModifiersInfo;
 }
 
 export enum ChartColors {

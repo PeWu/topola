@@ -398,6 +398,12 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         this.options.indiCallback!({
           id: data.indi.id,
           generation: data.generation,
+          modifiers: {
+            shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
+            altKey: event.altKey,
+            metaKey: event.metaKey,
+          },
         }),
       );
     }
@@ -549,6 +555,12 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         this.options.famCallback!({
           id: node.data.family!.id,
           generation: node.data.generation!,
+          modifiers: {
+            shiftKey: event.shiftKey,
+            ctrlKey: event.ctrlKey,
+            altKey: event.altKey,
+            metaKey: event.metaKey,
+          },
         }),
       );
     }
