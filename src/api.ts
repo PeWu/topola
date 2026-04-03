@@ -113,13 +113,13 @@ export interface ModifiersInfo {
 export interface IndiInfo {
   id: string;
   generation: number;
-  modifiers: ModifiersInfo;
+  modifiers?: ModifiersInfo;
 }
 
 export interface FamInfo {
   id: string;
   generation: number;
-  modifiers: ModifiersInfo;
+  modifiers?: ModifiersInfo;
 }
 
 export enum ChartColors {
