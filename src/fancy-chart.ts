@@ -53,7 +53,12 @@ function branch(x1: number, y1: number, x2: number, y2: number): string {
       ${x1 - 10}       ${y1}`;
 }
 
-/** Renders a fancy descendants tree chart. */
+/** Renders a fancy descendants tree chart.
+ *
+ * It draws stylized leaves (colored circles behind individuals), organic branch paths,
+ * and a decorative tree trunk at the base of the tree.
+ * The layout uses D3 data binding to allow smooth updates and re-rendering.
+ */
 export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
   readonly util: ChartUtil;
 
@@ -90,47 +95,74 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
               ${sx}, ${sy - 2}`;
   }
 
+  /**
+   * Renders the two-tone background blocks (cyan "sky" above, green "grass" below).
+   * Keeps them at the back of the SVG container by inserting them before any other elements.
+   */
   renderBackground(
     chartInfo: ChartSizeInfo,
     svg: Selection<BaseType, {}, BaseType, {}>,
   ) {
-    svg
+    const rectsData = [
+      {
+        y: -chartInfo.origin[1],
+        height: chartInfo.origin[1],
+        fill: '#cff',
+      },
+      {
+        y: 0,
+        height: chartInfo.size[1] - chartInfo.origin[1],
+        fill: '#494',
+      },
+    ];
+
+    const bounds = svg
       .select('g')
-      .append('rect')
+      .selectAll('rect.fancy-bg')
+      .data(rectsData);
+
+    bounds
+      .enter()
+      .insert('rect', function () {
+        return (this as any).firstChild;
+      })
+      .attr('class', 'fancy-bg')
+      .merge(bounds as any)
       .attr('x', -chartInfo.origin[0])
-      .attr('y', -chartInfo.origin[1])
+      .attr('y', (d) => d.y)
       .attr('width', chartInfo.size[0])
-      .attr('height', chartInfo.origin[1])
-      .attr('fill', '#cff');
-    svg
-      .select('g')
-      .append('rect')
-      .attr('x', -chartInfo.origin[0])
-      .attr('y', 0)
-      .attr('width', chartInfo.size[0])
-      .attr('height', chartInfo.size[1] - chartInfo.origin[1])
-      .attr('fill', '#494');
+      .attr('height', (d) => d.height)
+      .attr('fill', (d) => d.fill);
+
+    bounds.exit().remove();
   }
 
+  /**
+   * Renders stylized circular green backdrops ("leaves") behind all descendant family tree nodes.
+   * A radial gradient is created (and reused) to give the outer ring of nodes a soft glowing edge.
+   */
   renderLeaves(
     nodes: Array<HierarchyPointNode<TreeNode>>,
     svg: Selection<BaseType, {}, BaseType, {}>,
   ) {
-    const gradient = svg
-      .select('g')
-      .append('radialGradient')
-      .attr('id', 'gradient');
-    gradient.append('stop').attr('offset', '0%').attr('stop-color', '#8f8');
-    gradient
-      .append('stop')
-      .attr('offset', '80%')
-      .attr('stop-color', '#8f8')
-      .attr('stop-opacity', 0.5);
-    gradient
-      .append('stop')
-      .attr('offset', '100%')
-      .attr('stop-color', '#8f8')
-      .attr('stop-opacity', 0);
+    let gradient = svg.select('g').select('radialGradient#gradient');
+    if (gradient.empty()) {
+      gradient = svg
+        .select('g')
+        .append('radialGradient')
+        .attr('id', 'gradient');
+      gradient.append('stop').attr('offset', '0%').attr('stop-color', '#8f8');
+      gradient
+        .append('stop')
+        .attr('offset', '80%')
+        .attr('stop-color', '#8f8')
+        .attr('stop-opacity', 0.5);
+      gradient
+        .append('stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#8f8')
+        .attr('stop-opacity', 0);
+    }
     const backgroundNodes = nodes.filter(
       (n) => n.parent && n.parent.id !== DUMMY_ROOT_NODE_ID,
     );
@@ -142,17 +174,15 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     {
       const boundNodes = svg
         .select('g')
-        .selectAll('g.background')
+        .selectAll('g.background-node')
         .data(backgroundNodes, (d: HierarchyPointNode<Node>) => d.id!);
-      const enter = boundNodes.enter().append('g' as string);
+      const enter: Selection<BaseType, HierarchyPointNode<TreeNode>, BaseType, {}> = boundNodes.enter().append('g').attr('class', 'background-node');
       enter
         .merge(boundNodes)
-        .attr('class', 'background')
         .attr(
           'transform',
           (node) =>
-            `translate(${node.x - node.data.width! / 2}, ${
-              node.y - node.data.height! / 2
+            `translate(${node.x - node.data.width! / 2}, ${node.y - node.data.height! / 2
             })`,
         );
 
@@ -164,21 +194,21 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .attr('cx', (node) => node.data.width! / 2)
         .attr('cy', (node) => node.data.height! / 2)
         .style('fill', '#493');
+
+      boundNodes.exit().remove();
     }
     {
       const boundNodes = svg
         .select('g')
-        .selectAll('g.background2')
+        .selectAll('g.background2-node')
         .data(backgroundNodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
-      const enter = boundNodes.enter().append('g' as string);
+      const enter: Selection<BaseType, HierarchyPointNode<TreeNode>, BaseType, {}> = boundNodes.enter().append('g').attr('class', 'background2-node');
       enter
         .merge(boundNodes)
-        .attr('class', 'background2')
         .attr(
           'transform',
           (node) =>
-            `translate(${node.x - node.data.width! / 2}, ${
-              node.y - node.data.height! / 2
+            `translate(${node.x - node.data.width! / 2}, ${node.y - node.data.height! / 2
             })`,
         );
 
@@ -190,9 +220,15 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .attr('cx', (node) => node.data.width! / 2)
         .attr('cy', (node) => node.data.height! / 2)
         .style('fill', 'url(#gradient)');
+
+      boundNodes.exit().remove();
     }
   }
 
+  /**
+   * Renders the connection paths (branches) between family nodes.
+   * Uses organic Bezier curves styled as tree branches rather than standard block lines.
+   */
   renderLinks(
     nodes: Array<HierarchyPointNode<TreeNode>>,
     svg: Selection<BaseType, {}, BaseType, {}>,
@@ -208,18 +244,28 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     };
 
     const links = nodes.filter((n) => !!n.parent);
-    svg
+    const boundLinks = svg
       .select('g')
       .selectAll('path.branch')
-      .data(links, linkId)
+      .data(links, linkId);
+
+    const enter = boundLinks
       .enter()
       .append('path')
       .attr('class', (node) =>
         node.data.additionalMarriage ? 'branch additional-marriage' : 'branch',
-      )
+      );
+
+    enter
+      .merge(boundLinks as any)
       .attr('d', (node) => link(node.parent!, node));
+
+    boundLinks.exit().remove();
   }
 
+  /**
+   * Renders a decorative tree trunk at the base of the root node.
+   */
   renderTreeTrunk(
     nodes: Array<HierarchyPointNode<TreeNode>>,
     svg: Selection<BaseType, {}, BaseType, {}>,
@@ -227,14 +273,17 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     const trunkNodes = nodes.filter(
       (n) => !n.parent || n.parent.id === DUMMY_ROOT_NODE_ID,
     );
-    svg
+    const boundTrunks = svg
       .select('g')
       .selectAll('g.trunk')
-      .data(trunkNodes, (d: HierarchyPointNode<TreeNode>) => d.id!)
+      .data(trunkNodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
+
+    const enter = boundTrunks
       .enter()
       .append('g')
-      .attr('class', 'trunk')
-      .attr('transform', (node) => `translate(${node.x}, ${node.y})`)
+      .attr('class', 'trunk');
+
+    enter
       .append('path')
       .attr(
         'd',
@@ -246,8 +295,17 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
           C -10 90 -10 60 -10 40
           L -10 20`,
       );
+
+    enter
+      .merge(boundTrunks as any)
+      .attr('transform', (node) => `translate(${node.x}, ${node.y})`);
+
+    boundTrunks.exit().remove();
   }
 
+  /**
+   * Lays out, scales, and draws the fancy descendant chart.
+   */
   render(): ChartInfo {
     const nodes = layOutDescendants(this.options, {
       flipVertically: true,
@@ -260,11 +318,16 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
     info.size[1] += 250;
 
     const svg = this.util.getSvgForRendering();
-    svg.append('style').text(`
-      .branch, .trunk {
-        fill: #632;
-        stroke: #632;
-      }`);
+    if (svg.select('style.fancy-style').empty()) {
+      svg
+        .append('style')
+        .attr('class', 'fancy-style')
+        .text(`
+          .branch, .trunk {
+            fill: #632;
+            stroke: #632;
+          }`);
+    }
 
     this.renderBackground(info, svg);
     this.renderLeaves(nodes, svg);
