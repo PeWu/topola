@@ -168,14 +168,20 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
       });
 
       if (node.data.indiParentNodeId && node.children) {
-        thisNode.data.indiParentNodeId = node.children!.find(
+        const indiParentNode = node.children.find(
           (childNode) => childNode.id === node.data.indiParentNodeId,
-        )!.data.id;
+        );
+        if (indiParentNode) {
+          thisNode.data.indiParentNodeId = indiParentNode.data.id;
+        }
       }
       if (node.data.spouseParentNodeId && node.children) {
-        thisNode.data.spouseParentNodeId = node.children!.find(
+        const spouseParentNode = node.children.find(
           (childNode) => childNode.id === node.data.spouseParentNodeId,
-        )!.data.id;
+        );
+        if (spouseParentNode) {
+          thisNode.data.spouseParentNodeId = spouseParentNode.data.id;
+        }
       }
     });
 
