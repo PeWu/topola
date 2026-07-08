@@ -116,10 +116,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       },
     ];
 
-    const bounds = svg
-      .select('g')
-      .selectAll('rect.fancy-bg')
-      .data(rectsData);
+    const bounds = svg.select('g').selectAll('rect.fancy-bg').data(rectsData);
 
     bounds
       .enter()
@@ -176,13 +173,19 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .select('g')
         .selectAll('g.background-node')
         .data(backgroundNodes, (d: HierarchyPointNode<Node>) => d.id!);
-      const enter: Selection<BaseType, HierarchyPointNode<TreeNode>, BaseType, {}> = boundNodes.enter().append('g').attr('class', 'background-node');
+      const enter: Selection<
+        BaseType,
+        HierarchyPointNode<TreeNode>,
+        BaseType,
+        {}
+      > = boundNodes.enter().append('g').attr('class', 'background-node');
       enter
         .merge(boundNodes)
         .attr(
           'transform',
           (node) =>
-            `translate(${node.x - node.data.width! / 2}, ${node.y - node.data.height! / 2
+            `translate(${node.x - node.data.width! / 2}, ${
+              node.y - node.data.height! / 2
             })`,
         );
 
@@ -202,13 +205,19 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
         .select('g')
         .selectAll('g.background2-node')
         .data(backgroundNodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
-      const enter: Selection<BaseType, HierarchyPointNode<TreeNode>, BaseType, {}> = boundNodes.enter().append('g').attr('class', 'background2-node');
+      const enter: Selection<
+        BaseType,
+        HierarchyPointNode<TreeNode>,
+        BaseType,
+        {}
+      > = boundNodes.enter().append('g').attr('class', 'background2-node');
       enter
         .merge(boundNodes)
         .attr(
           'transform',
           (node) =>
-            `translate(${node.x - node.data.width! / 2}, ${node.y - node.data.height! / 2
+            `translate(${node.x - node.data.width! / 2}, ${
+              node.y - node.data.height! / 2
             })`,
         );
 
@@ -278,23 +287,18 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
       .selectAll('g.trunk')
       .data(trunkNodes, (d: HierarchyPointNode<TreeNode>) => d.id!);
 
-    const enter = boundTrunks
-      .enter()
-      .append('g')
-      .attr('class', 'trunk');
+    const enter = boundTrunks.enter().append('g').attr('class', 'trunk');
 
-    enter
-      .append('path')
-      .attr(
-        'd',
-        `
+    enter.append('path').attr(
+      'd',
+      `
           M 10 20
           L 10 40
           C 10 60 10 90 40 90
           L -40 90
           C -10 90 -10 60 -10 40
           L -10 20`,
-      );
+    );
 
     enter
       .merge(boundTrunks as any)
@@ -319,10 +323,7 @@ export class FancyChart<IndiT extends Indi, FamT extends Fam> implements Chart {
 
     const svg = this.util.getSvgForRendering();
     if (svg.select('style.fancy-style').empty()) {
-      svg
-        .append('style')
-        .attr('class', 'fancy-style')
-        .text(`
+      svg.append('style').attr('class', 'fancy-style').text(`
           .branch, .trunk {
             fill: #632;
             stroke: #632;
