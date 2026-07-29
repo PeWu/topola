@@ -243,7 +243,9 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
           parentData.width! / 2 -
           (parentData.indi
             ? parentData.indi.width!
-            : parentData.spouse!.width!);
+            : parentData.spouse
+              ? parentData.spouse.width!
+              : 0);
         if (data.middle) {
           parentNode.x = 0;
         } else if (!nodeData || nodeData.middle) {
@@ -301,7 +303,9 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
           parentData.width! / 2 -
           (parentData.indi
             ? parentData.indi.width!
-            : parentData.spouse!.width!);
+            : parentData.spouse
+              ? parentData.spouse.width!
+              : 0);
         if (data.middle) {
           parentNode.x = 0;
         } else if (!nodeData || nodeData.middle) {
@@ -330,6 +334,7 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
     // Don't use common id generator because these nodes will not be drawn.
     const ancestorOptions = Object.assign({}, this.options, {
       idGenerator: undefined,
+      retainParentlessFamilies: true,
     });
     const ancestorsRoot = getAncestorsTree(ancestorOptions);
 
