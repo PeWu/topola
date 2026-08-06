@@ -1,4 +1,4 @@
-import { HierarchyNode, HierarchyPointNode, stratify } from 'd3-hierarchy';
+import { HierarchyNode, HierarchyPointNode, stratify } from "d3-hierarchy";
 import {
   Chart,
   ChartInfo,
@@ -7,11 +7,11 @@ import {
   Fam,
   Indi,
   TreeNode,
-} from './api';
-import { ChartUtil, getChartInfo, LayoutOptions } from './chart-util';
-import { IdGenerator } from './id-generator';
+} from "./api";
+import { ChartUtil, getChartInfo, LayoutOptions } from "./chart-util";
+import { IdGenerator } from "./id-generator";
 
-export const DUMMY_ROOT_NODE_ID = 'DUMMY_ROOT_NODE';
+export const DUMMY_ROOT_NODE_ID = "DUMMY_ROOT_NODE";
 
 export function layOutDescendants(
   options: ChartOptions,
@@ -57,9 +57,10 @@ function getSpouse(indiId: string, fam: Fam): string | null {
 }
 
 /** Renders a descendants chart. */
-export class DescendantChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart
-{
+export class DescendantChart<
+  IndiT extends Indi,
+  FamT extends Fam,
+> implements Chart {
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
@@ -144,6 +145,12 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
 
     parents.push(...nodes);
 
+    // Track real family IDs already added to prevent exponential blowup from
+    // pedigree collapse (consanguineous marriages) in descendant trees.
+    const addedFamilies = new Set<string>(
+      nodes.filter((n) => n.family).map((n) => n.family!.id),
+    );
+
     const stack: TreeNode[] = [];
     nodes.forEach((node) => {
       if (node.family) {
@@ -166,8 +173,14 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
           childNodes.forEach((node) => {
             node.parentId = entry.id;
             if (node.family) {
+              const alreadyAdded = addedFamilies.has(node.family.id);
               node.id = `${idGenerator.getId(node.family.id)}`;
-              stack.push(node);
+              if (alreadyAdded) {
+                node.family.expander = ExpanderState.PLUS;
+              } else {
+                addedFamilies.add(node.family.id);
+                stack.push(node);
+              }
             }
           });
           parents.push(...childNodes);

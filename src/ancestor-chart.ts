@@ -6,10 +6,10 @@ import {
   Fam,
   Indi,
   TreeNode,
-} from './api';
-import { ChartUtil, getChartInfo } from './chart-util';
-import { HierarchyNode, stratify } from 'd3-hierarchy';
-import { IdGenerator } from './id-generator';
+} from "./api";
+import { ChartUtil, getChartInfo } from "./chart-util";
+import { HierarchyNode, stratify } from "d3-hierarchy";
+import { IdGenerator } from "./id-generator";
 
 export function getAncestorsTree(options: ChartOptions) {
   const ancestorChartOptions = { ...options };
@@ -45,9 +45,10 @@ export function getAncestorsTree(options: ChartOptions) {
 }
 
 /** Renders an ancestors chart. */
-export class AncestorChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart
-{
+export class AncestorChart<
+  IndiT extends Indi,
+  FamT extends Fam,
+> implements Chart {
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
@@ -85,12 +86,23 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
       });
     }
 
+    // Track real family IDs already added to the hierarchy. Without this,
+    // pedigree collapse (endogamy) causes the same ancestral family to be
+    // visited exponentially — each duplicate visit re-queues its parents,
+    // producing O(2^n) iterations and a tree too large to render.
+    const addedFamilies = new Set<string>();
+
     while (stack.length) {
       const entry = stack.pop()!;
       const fam = this.options.data.getFam(entry.family!.id);
       if (!fam) {
         continue;
       }
+      // If this family has already been added via another ancestral path,
+      // show a PLUS expander rather than re-traversing its parents.
+      const alreadyAdded = addedFamilies.has(entry.family!.id);
+      addedFamilies.add(entry.family!.id);
+
       const [father, mother] =
         entry.family!.id === this.options.startFam &&
         this.options.swapStartSpouses
@@ -104,7 +116,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         const indi = this.options.data.getIndi(mother)!;
         const famc = indi.getFamilyAsChild();
         if (famc) {
-          if (this.options.collapsedSpouse?.has(entry.id)) {
+          if (alreadyAdded || this.options.collapsedSpouse?.has(entry.id)) {
             entry.spouse.expander = ExpanderState.PLUS;
           } else {
             const id = idGenerator.getId(famc);
@@ -123,7 +135,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         const indi = this.options.data.getIndi(father)!;
         const famc = indi.getFamilyAsChild();
         if (famc) {
-          if (this.options.collapsedIndi?.has(entry.id)) {
+          if (alreadyAdded || this.options.collapsedIndi?.has(entry.id)) {
             entry.indi.expander = ExpanderState.PLUS;
           } else {
             const id = idGenerator.getId(famc);
