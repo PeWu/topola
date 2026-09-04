@@ -26,7 +26,7 @@
     "@types/d3-selection": "^3.0.11",
     "@types/d3-transition": "^3.0.9",
     "@types/jest": "^29.5.14",
-    "@types/node": "^25.8.0",
+    "@types/node": "^26.1.2",
     "browser-sync": "^3.0.3",
     "concurrently": "^10.0.0",
     "esbuild": "^0.28.0",
