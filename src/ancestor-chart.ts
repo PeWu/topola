@@ -97,6 +97,17 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
           ? [fam.getMother(), fam.getFather()]
           : [fam.getFather(), fam.getMother()];
       if (!father && !mother) {
+        // A family with no parents has no ancestors to climb to. Normally it
+        // is pruned. When retainParentlessFamilies is set and the family has
+        // more than one child, keep it as a leaf so a sibling remains once the
+        // lineage child is filtered out, letting RelativesChart render the
+        // children as siblings.
+        if (
+          this.options.retainParentlessFamilies &&
+          fam.getChildren().length > 1
+        ) {
+          parents.push(entry);
+        }
         continue;
       }
       if (mother) {

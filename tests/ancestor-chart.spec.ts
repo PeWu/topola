@@ -62,4 +62,55 @@ describe('Ancestor chart', () => {
     });
     chart.render();
   });
+
+  it('prunes a parentless family by default', () => {
+    const json: JsonGedcomData = {
+      fams: [{id: 'F1', children: ['I1', 'I2']}],
+      indis: [{id: 'I1', famc: 'F1'}, {id: 'I2', famc: 'F1'}],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new AncestorChart({
+      data,
+      startIndi: 'I1',
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+    });
+    chart.render();
+    expect(document.querySelectorAll('g.node').length).toEqual(1);
+  });
+
+  it('retains a parentless family with siblings when requested', () => {
+    const json: JsonGedcomData = {
+      fams: [{id: 'F1', children: ['I1', 'I2']}],
+      indis: [{id: 'I1', famc: 'F1'}, {id: 'I2', famc: 'F1'}],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new AncestorChart({
+      data,
+      startIndi: 'I1',
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+      retainParentlessFamilies: true,
+    });
+    chart.render();
+    // The start individual plus the retained (parentless) family node.
+    expect(document.querySelectorAll('g.node').length).toEqual(2);
+  });
+
+  it('still prunes a retained parentless family with a single child', () => {
+    const json: JsonGedcomData = {
+      fams: [{id: 'F1', children: ['I1']}],
+      indis: [{id: 'I1', famc: 'F1'}],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new AncestorChart({
+      data,
+      startIndi: 'I1',
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+      retainParentlessFamilies: true,
+    });
+    chart.render();
+    expect(document.querySelectorAll('g.node').length).toEqual(1);
+  });
 });

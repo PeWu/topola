@@ -96,4 +96,47 @@ describe('Relatives chart', () => {
     chart.render();
     expect(document.querySelectorAll('g.node').length).toEqual(4);
   });
+
+  it('shows siblings when their shared family has no parents', () => {
+    const json: JsonGedcomData = {
+      fams: [{ id: 'F1', children: ['I1', 'I2'] }],
+      indis: [{ id: 'I1', famc: 'F1' }, { id: 'I2', famc: 'F1' }],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new RelativesChart({
+      data,
+      startIndi: 'I1',
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+    });
+    chart.render();
+    // Start individual, the parentless shared family, and sibling I2.
+    expect(document.querySelectorAll('g.node').length).toEqual(3);
+  });
+
+  it('shows a parent-level sibling from a descendant start', () => {
+    // Starting from I3, climbing through I1's parentless family F1 still
+    // surfaces I1's sibling I2.
+    const json: JsonGedcomData = {
+      fams: [
+        { id: 'F1', children: ['I1', 'I2'] },
+        { id: 'F2', husb: 'I1', children: ['I3'] },
+      ],
+      indis: [
+        { id: 'I1', famc: 'F1', fams: ['F2'] },
+        { id: 'I2', famc: 'F1' },
+        { id: 'I3', famc: 'F2' },
+      ],
+    };
+    const data = new JsonDataProvider(json);
+    const chart = new RelativesChart({
+      data,
+      startIndi: 'I3',
+      renderer: new FakeRenderer(),
+      svgSelector: 'svg',
+    });
+    chart.render();
+    // I3, I1, the parentless family F1, and sibling I2.
+    expect(document.querySelectorAll('g.node').length).toEqual(4);
+  });
 });

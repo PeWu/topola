@@ -169,6 +169,12 @@ export interface ChartOptions {
   startFam?: string;
   // When starting with a family, make spouses swap places.
   swapStartSpouses?: boolean;
+  // Keep a family that has no parents (no husband and no wife) as a leaf node
+  // in the ancestor hierarchy instead of pruning it. This lets charts that
+  // render siblings (RelativesChart) show the children of a parentless family
+  // as siblings of one another. Only honored when the family has more than one
+  // child. Off by default; other charts are unaffected.
+  retainParentlessFamilies?: boolean;
   horizontal?: boolean;
   // Generation number of the startIndi or startFam. Used when rendering.
   baseGeneration?: number;
