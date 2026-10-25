@@ -306,47 +306,47 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   fill: #ffffdd;
 }
 
-.generation-11 .detailed rect.bygeneration, .generation1 .detailed rect.bygeneration {
+.generation-color1 .detailed rect.bygeneration {
   fill: #edffdb;
 }
 
-.generation-10 .detailed rect.bygeneration, .generation2 .detailed rect.bygeneration {
+.generation-color2 .detailed rect.bygeneration {
   fill: #dbffdb;
 }
 
-.generation-9 .detailed rect.bygeneration, .generation3 .detailed rect.bygeneration {
+.generation-color3 .detailed rect.bygeneration {
   fill: #dbffed;
 }
 
-.generation-8 .detailed rect.bygeneration, .generation4 .detailed rect.bygeneration {
+.generation-color4 .detailed rect.bygeneration {
   fill: #dbffff;
 }
 
-.generation-7 .detailed rect.bygeneration, .generation5 .detailed rect.bygeneration {
+.generation-color5 .detailed rect.bygeneration {
   fill: #dbedff;
 }
 
-.generation-6 .detailed rect.bygeneration, .generation6 .detailed rect.bygeneration {
+.generation-color6 .detailed rect.bygeneration {
   fill: #dbdbff;
 }
 
-.generation-5 .detailed rect.bygeneration, .generation7 .detailed rect.bygeneration {
+.generation-color7 .detailed rect.bygeneration {
   fill: #eddbff;
 }
 
-.generation-4 .detailed rect.bygeneration, .generation8 .detailed rect.bygeneration {
+.generation-color8 .detailed rect.bygeneration {
   fill: #ffdbff;
 }
 
-.generation-3 .detailed rect.bygeneration, .generation9 .detailed rect.bygeneration {
+.generation-color9 .detailed rect.bygeneration {
   fill: #ffdbed;
 }
 
-.generation-2 .detailed rect.bygeneration, .generation10 .detailed rect.bygeneration {
+.generation-color10 .detailed rect.bygeneration {
   fill: #ffdbdb;
 }
 
-.generation-1 .detailed rect.bygeneration, .generation11 .detailed rect.bygeneration {
+.generation-color11 .detailed rect.bygeneration {
   fill: #ffeddb;
 }`;
   }

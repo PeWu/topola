@@ -10,6 +10,20 @@ import {
 
 type SVGSelection = Selection<BaseType, {}, BaseType, {}>;
 
+/** Number of colors in the color-by-generation palette. */
+export const GENERATION_COLOR_COUNT = 12;
+
+/**
+ * Returns the color-by-generation palette index for a generation. The palette
+ * repeats, so distant generations keep cycling through the colors.
+ */
+export function generationColorIndex(generation: number): number {
+  return (
+    ((generation % GENERATION_COLOR_COUNT) + GENERATION_COLOR_COUNT) %
+    GENERATION_COLOR_COUNT
+  );
+}
+
 /** Renders individual and family node boxes using the configured Renderer. */
 export class NodeRenderer {
   constructor(private readonly options: ChartOptions) {}
@@ -36,7 +50,13 @@ export class NodeRenderer {
 
       nodeEnter
         .merge(boundNodes)
-        .attr('class', (node) => `node generation${node.data.generation}`);
+        .attr(
+          'class',
+          (node) =>
+            `node generation${node.data.generation} generation-color${generationColorIndex(
+              node.data.generation ?? 0,
+            )}`,
+        );
       nodeEnter.attr(
         'transform',
         (node: HierarchyPointNode<TreeNode>) =>
