@@ -317,6 +317,7 @@ function createIndi(
   ]);
   if (confidence !== undefined) {
     indi.confidence = confidence;
+    indi.parentLinkConfidence = confidence;
   }
 
   // Notes.

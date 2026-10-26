@@ -6,8 +6,8 @@ const UNLIMITED = 4;
 /**
  * Propagates relationship uncertainty outward from a start individual.
  *
- * An individual's confidence (see JsonIndi.confidence) also rates their link
- * to their parents. Everyone reached from the start individual only through a
+ * Each individual's link to their parents is rated by parentLinkConfidence
+ * (falling back to confidence). Everyone reached from the start individual only through a
  * weak link inherits that link's rating: if the start individual's father is
  * only rated QUAY 2, the father's parents, all their ancestors and the
  * father's siblings are rated at most 2. When there are several ways to reach
@@ -30,7 +30,8 @@ export function propagateConfidence(
   };
   data.indis.forEach((indi) => {
     if (indi.famc) {
-      addEdge(`i:${indi.id}`, `f:${indi.famc}`, indi.confidence ?? UNLIMITED);
+      const weight = indi.parentLinkConfidence ?? indi.confidence ?? UNLIMITED;
+      addEdge(`i:${indi.id}`, `f:${indi.famc}`, weight);
     }
     (indi.fams || []).forEach((fam) =>
       addEdge(`i:${indi.id}`, `f:${fam}`, UNLIMITED),

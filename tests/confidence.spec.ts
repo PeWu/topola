@@ -45,7 +45,9 @@ describe('QUAY confidence', () => {
 
     it('rates individuals by their own and birth citations', () => {
       expect(john.confidence).toEqual(3);
+      expect(john.parentLinkConfidence).toEqual(3);
       expect(jane.confidence).toBeUndefined();
+      expect(jane.parentLinkConfidence).toBeUndefined();
     });
   });
 
@@ -99,6 +101,20 @@ describe('QUAY confidence', () => {
         I6: 3,
         I7: 3,
       });
+    });
+
+    it('rates parent links by parentLinkConfidence and keeps it', () => {
+      const linked: JsonGedcomData = {
+        indis: [
+          { id: 'A', famc: 'F', confidence: 3, parentLinkConfidence: 1 },
+          { id: 'B', fams: ['F'], confidence: 3, parentLinkConfidence: 3 },
+        ],
+        fams: [{ id: 'F', husb: 'B', children: ['A'] }],
+      };
+      const result = propagateConfidence(linked, 'A').indis;
+      expect(result[0].confidence).toEqual(3);
+      expect(result[1].confidence).toEqual(1);
+      expect(result[1].parentLinkConfidence).toEqual(3);
     });
 
     it('does not modify the input', () => {

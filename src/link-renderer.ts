@@ -2,6 +2,7 @@ import { BaseType, Selection } from 'd3-selection';
 import { HierarchyPointNode } from 'd3-hierarchy';
 import 'd3-transition';
 import { ChartOptions, Renderer, TreeNode } from './api';
+import { IndiDetails } from './data';
 import { V_SPACING } from './chart-layout';
 import {
   createTransitionTracker,
@@ -85,9 +86,42 @@ export function linkAdditionalMarriage(
           L ${dx}, ${dy}`;
 }
 
+/**
+ * Returns the id of the individual whose link to their parents is drawn by
+ * the link to the given node, if it is a parent-child link.
+ */
+function linkChildId(node: HierarchyPointNode<TreeNode>): string | undefined {
+  if (!node.parent || node.data.additionalMarriage) {
+    return undefined;
+  }
+  const [child, parent] =
+    node.data.generation! > node.parent.data.generation!
+      ? [node, node.parent]
+      : [node.parent, node];
+  return parent.id === child.data.spouseParentNodeId
+    ? child.data.spouse?.id
+    : child.data.indi?.id;
+}
+
 /** Renders connecting link paths between nodes. */
 export class LinkRenderer {
   constructor(private readonly options: ChartOptions) {}
+
+  /** CSS classes of a link, including the child's parent-link confidence. */
+  private linkClass(node: HierarchyPointNode<TreeNode>): string {
+    if (node.data.additionalMarriage) {
+      return 'link additional-marriage';
+    }
+    const childId = linkChildId(node);
+    const child =
+      childId !== undefined
+        ? (this.options.data.getIndi(childId) as IndiDetails | null)
+        : null;
+    const confidence = child?.getParentLinkConfidence?.();
+    return confidence === null || confidence === undefined
+      ? 'link'
+      : `link confidence${confidence}`;
+  }
 
   renderLinks(
     nodes: Array<HierarchyPointNode<TreeNode>>,
@@ -124,10 +158,9 @@ export class LinkRenderer {
       const path = boundLinks
         .enter()
         .insert('path', 'g')
-        .attr('class', (node) =>
-          node.data.additionalMarriage ? 'link additional-marriage' : 'link',
-        )
+        .attr('class', (node) => this.linkClass(node))
         .attr('d', (node) => link(node.parent!, node));
+      boundLinks.attr('class', (node) => this.linkClass(node));
 
       const totalItems =
         boundLinks.exit().size() + boundLinks.size() + path.size();

@@ -60,6 +60,12 @@ export interface JsonIndi {
    * christening or baptism. Undefined if no citation has a QUAY value.
    */
   confidence?: number;
+  /**
+   * Certainty (QUAY 0-3) of the link between the individual and their
+   * parents. Taken from the same citations as `confidence`, but unlike it,
+   * not changed by propagateConfidence().
+   */
+  parentLinkConfidence?: number;
 }
 
 /** Json representation of a family. */
@@ -99,6 +105,8 @@ export interface IndiDetails extends Indi {
   showSex(): boolean;
   /** QUAY-based certainty (0-3) of the individual, if known. */
   getConfidence?(): number | null;
+  /** QUAY-based certainty (0-3) of the link to the parents, if known. */
+  getParentLinkConfidence?(): number | null;
   /** QUAY-based certainty (0-3) of the birth event, if known. */
   getBirthConfidence?(): number | null;
   /** QUAY-based certainty (0-3) of the death event, if known. */
@@ -183,6 +191,9 @@ class JsonIndiDetails implements IndiDetails {
   }
   getConfidence() {
     return this.json.confidence ?? null;
+  }
+  getParentLinkConfidence() {
+    return this.json.parentLinkConfidence ?? null;
   }
   getBirthConfidence() {
     return this.json.birth?.confidence ?? null;

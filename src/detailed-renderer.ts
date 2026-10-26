@@ -382,6 +382,30 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   stroke-dasharray: 1 3;
 }
 
+.detailed rect.family.confidence2 {
+  stroke-dasharray: 8 4;
+}
+
+.detailed rect.family.confidence1 {
+  stroke-dasharray: 3 3;
+}
+
+.detailed rect.family.confidence0 {
+  stroke-dasharray: 1 3;
+}
+
+.link.confidence2 {
+  stroke-dasharray: 8 4;
+}
+
+.link.confidence1 {
+  stroke-dasharray: 3 3;
+}
+
+.link.confidence0 {
+  stroke-dasharray: 2 4;
+}
+
 .detailed rect.underlay {
   fill: #ffffff;
 }
@@ -642,7 +666,15 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
         return 0 < detail.length;
       })
       .append('rect')
-      .attr('class', this.getColoringClass())
+      .attr(
+        'class',
+        (node) =>
+          `family ${this.getColoringClass()} ${this.getConfidenceClass(
+            this.options.data
+              .getFam(node.data.family!.id)
+              ?.getMarriageConfidence?.(),
+          )}`,
+      )
       .attr('rx', 5)
       .attr('ry', 5)
       .attr('width', (node) => node.data.family!.width!)
