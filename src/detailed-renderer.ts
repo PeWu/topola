@@ -53,6 +53,16 @@ interface DetailsLine {
   text: string;
 }
 
+/**
+ * Returns ' ?' for facts whose best source citation is questionable or
+ * unreliable (QUAY 0 or 1).
+ */
+function uncertainSuffix(confidence: number | null | undefined): string {
+  return confidence !== null && confidence !== undefined && confidence <= 1
+    ? ' ?'
+    : '';
+}
+
 interface OffsetIndi {
   indi: TreeEntry;
   generation: number;
@@ -80,16 +90,25 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     }
   }
 
+  /** Returns the CSS class for a QUAY-based confidence value, if any. */
+  private getConfidenceClass(confidence: number | null | undefined) {
+    return confidence === null || confidence === undefined
+      ? ''
+      : `confidence${confidence}`;
+  }
+
   /** Extracts lines of details for a person. */
   private getIndiDetails(indi: IndiDetails): DetailsLine[] {
     const detailsList: DetailsLine[] = [];
     const birthDate =
       indi.getBirthDate() &&
-      formatDateOrRange(indi.getBirthDate()!, this.options.locale);
+      formatDateOrRange(indi.getBirthDate()!, this.options.locale) +
+        uncertainSuffix(indi.getBirthConfidence?.());
     const birthPlace = indi.getBirthPlace();
     const deathDate =
       indi.getDeathDate() &&
-      formatDateOrRange(indi.getDeathDate()!, this.options.locale);
+      formatDateOrRange(indi.getDeathDate()!, this.options.locale) +
+        uncertainSuffix(indi.getDeathConfidence?.());
     const deathPlace = indi.getDeathPlace();
     if (birthDate) {
       detailsList.push({ symbol: '', text: birthDate });
@@ -120,7 +139,8 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     const detailsList: DetailsLine[] = [];
     const marriageDate =
       fam.getMarriageDate() &&
-      formatDateOrRange(fam.getMarriageDate()!, this.options.locale);
+      formatDateOrRange(fam.getMarriageDate()!, this.options.locale) +
+        uncertainSuffix(fam.getMarriageConfidence?.());
     const marriagePlace = fam.getMarriagePlace();
     if (marriageDate) {
       detailsList.push({ symbol: '', text: marriageDate });
@@ -348,6 +368,26 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
 
 .generation-color11 .detailed rect.bygeneration {
   fill: #ffeddb;
+}
+
+.detailed rect.border.confidence2 {
+  stroke-dasharray: 8 4;
+}
+
+.detailed rect.border.confidence1 {
+  stroke-dasharray: 3 3;
+}
+
+.detailed rect.border.confidence0 {
+  stroke-dasharray: 1 3;
+}
+
+.detailed rect.background.confidence1 {
+  fill-opacity: 0.6;
+}
+
+.detailed rect.background.confidence0 {
+  fill-opacity: 0.35;
 }`;
   }
 
@@ -408,18 +448,20 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       );
     }
     // Background.
+    const getConfidence = (data: OffsetIndi) =>
+      this.options.data.getIndi(data.indi.id)?.getConfidence?.();
     const background = enter
       .append('rect')
       .attr('rx', 5)
       .attr('stroke-width', 0)
+      .merge(update.select('rect.background'))
       .attr(
         'class',
         (node) =>
           `background ${this.getColoringClass()} ${this.getSexClass(
             node.indi.id,
-          )}`,
-      )
-      .merge(update.select('rect.background'));
+          )} ${this.getConfidenceClass(getConfidence(node))}`,
+      );
     const transition = this.transition(background);
     transition.attr('width', (node) => node.indi.width!);
     transition.attr('height', (node) => node.indi.height!);
@@ -535,8 +577,11 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       .append('rect')
       .attr('rx', 5)
       .attr('fill-opacity', 0)
-      .attr('class', 'border')
-      .merge(update.select('rect.border'));
+      .merge(update.select('rect.border'))
+      .attr(
+        'class',
+        (data) => `border ${this.getConfidenceClass(getConfidence(data))}`,
+      );
     const borderTransition = this.transition(border);
     borderTransition.attr('width', (data) => data.indi.width!);
     borderTransition.attr('height', (data) => data.indi.height!);
