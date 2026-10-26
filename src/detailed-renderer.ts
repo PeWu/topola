@@ -382,6 +382,10 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
   stroke-dasharray: 1 3;
 }
 
+.detailed rect.underlay {
+  fill: #ffffff;
+}
+
 .detailed rect.background.confidence1 {
   fill-opacity: 0.6;
 }
@@ -450,6 +454,17 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     // Background.
     const getConfidence = (data: OffsetIndi) =>
       this.options.data.getIndi(data.indi.id)?.getConfidence?.();
+    // Opaque base, so links behind faded (low confidence) boxes stay hidden.
+    const underlay = enter
+      .append('rect')
+      .attr('rx', 5)
+      .attr('stroke-width', 0)
+      .attr('class', 'underlay')
+      .merge(update.select('rect.underlay'));
+    const underlayTransition = this.transition(underlay);
+    underlayTransition.attr('width', (node) => node.indi.width!);
+    underlayTransition.attr('height', (node) => node.indi.height!);
+
     const background = enter
       .append('rect')
       .attr('rx', 5)
