@@ -139,9 +139,18 @@ export function getDate(gedcomDate: string): DateOrRange | undefined {
 function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
   if (!notesTag || notesTag.tag !== 'NOTE') return undefined;
 
-  return findTags(notesTag.tree, 'CONT')
-    .filter((x) => x.data)
-    .reduce((a, i) => a.concat(i.data), [notesTag.data]);
+  const lines: string[] = [notesTag.data];
+  for (const entry of notesTag.tree) {
+    if (!entry.data) {
+      continue;
+    }
+    if (entry.tag === 'CONC') {
+      lines[lines.length - 1] += entry.data;
+    } else if (entry.tag === 'CONT') {
+      lines.push(entry.data);
+    }
+  }
+  return lines;
 }
 
 /**

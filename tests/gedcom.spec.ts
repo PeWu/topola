@@ -135,7 +135,7 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].notes![0]).toBe('Hello');
     });
 
-    it('should parse single note', () => {
+    it('should parse note with CONT continuation', () => {
       let gedcom = `
       0 @I1@ INDI
       1 NOTE Hello
@@ -146,6 +146,32 @@ describe('GEDCOM parser', () => {
       expect(sut.indis[0].notes!.length).toBe(2);
       expect(sut.indis[0].notes![0]).toBe('Hello');
       expect(sut.indis[0].notes![1]).toBe('World');
+    });
+
+    it('should parse note with CONC continuation', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NOTE Hello wor
+      2 CONC ld
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].notes!.length).toBe(1);
+      expect(sut.indis[0].notes![0]).toBe('Hello world');
+    });
+
+    it('should parse note with CONC and CONT continuations', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NOTE line1part1
+      2 CONC line1part2
+      2 CONT line2
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].notes!.length).toBe(2);
+      expect(sut.indis[0].notes![0]).toBe('line1part1line1part2');
+      expect(sut.indis[0].notes![1]).toBe('line2');
     });
   });
 
