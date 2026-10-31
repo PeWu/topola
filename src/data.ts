@@ -24,6 +24,11 @@ export interface JsonEvent extends DateOrRange {
   place?: string;
   confirmed?: boolean;
   notes?: string[];
+  /**
+   * Certainty of the event: the highest GEDCOM QUAY value (0-3) among its
+   * source citations. Undefined if no citation has a QUAY value.
+   */
+  confidence?: number;
 }
 
 export interface JsonImage {
@@ -49,6 +54,18 @@ export interface JsonIndi {
   events?: JsonEvent[];
   hideId?: boolean;
   hideSex?: boolean;
+  /**
+   * Certainty of the individual and their parentage: the highest GEDCOM QUAY
+   * value (0-3) among citations on the individual record and on their birth,
+   * christening or baptism. Undefined if no citation has a QUAY value.
+   */
+  confidence?: number;
+  /**
+   * Certainty (QUAY 0-3) of the link between the individual and their
+   * parents. Taken from the same citations as `confidence`, but unlike it,
+   * not changed by propagateConfidence().
+   */
+  parentLinkConfidence?: number;
 }
 
 /** Json representation of a family. */
@@ -86,12 +103,22 @@ export interface IndiDetails extends Indi {
   getEvents(): JsonEvent[] | null;
   showId(): boolean;
   showSex(): boolean;
+  /** QUAY-based certainty (0-3) of the individual, if known. */
+  getConfidence?(): number | null;
+  /** QUAY-based certainty (0-3) of the link to the parents, if known. */
+  getParentLinkConfidence?(): number | null;
+  /** QUAY-based certainty (0-3) of the birth event, if known. */
+  getBirthConfidence?(): number | null;
+  /** QUAY-based certainty (0-3) of the death event, if known. */
+  getDeathConfidence?(): number | null;
 }
 
 /** Details of a family record. */
 export interface FamDetails extends Fam {
   getMarriageDate(): DateOrRange | null;
   getMarriagePlace(): string | null;
+  /** QUAY-based certainty (0-3) of the marriage event, if known. */
+  getMarriageConfidence?(): number | null;
 }
 
 /** Details of an individual based on Json input. */
@@ -162,6 +189,18 @@ class JsonIndiDetails implements IndiDetails {
   showSex() {
     return !this.json.hideSex;
   }
+  getConfidence() {
+    return this.json.confidence ?? null;
+  }
+  getParentLinkConfidence() {
+    return this.json.parentLinkConfidence ?? null;
+  }
+  getBirthConfidence() {
+    return this.json.birth?.confidence ?? null;
+  }
+  getDeathConfidence() {
+    return this.json.death?.confidence ?? null;
+  }
 }
 
 /** Details of a family based on Json input. */
@@ -184,6 +223,9 @@ class JsonFamDetails implements FamDetails {
   }
   getMarriagePlace() {
     return (this.json.marriage && this.json.marriage.place) || null;
+  }
+  getMarriageConfidence() {
+    return this.json.marriage?.confidence ?? null;
   }
 }
 

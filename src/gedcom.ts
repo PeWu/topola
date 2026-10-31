@@ -145,6 +145,29 @@ function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
 }
 
 /**
+ * Returns the highest QUAY value (0-3) among the source citations directly
+ * under the given entries, or undefined if no citation has a QUAY value.
+ */
+export function bestCitationQuality(
+  entries: Array<GedcomEntry | undefined>,
+): number | undefined {
+  let best: number | undefined = undefined;
+  entries.forEach((entry) => {
+    if (!entry) {
+      return;
+    }
+    findTags(entry.tree, 'SOUR').forEach((sour) => {
+      const quay = findTag(sour.tree, 'QUAY');
+      const value = quay ? parseInt(quay.data, 10) : NaN;
+      if (value >= 0 && value <= 3 && (best === undefined || value > best)) {
+        best = value;
+      }
+    });
+  });
+  return best;
+}
+
+/**
  * Creates a JsonEvent object from a GEDCOM entry.
  * Used for BIRT, DEAT and MARR tags.
  */
@@ -155,11 +178,13 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
   const typeTag = findTag(entry.tree, 'TYPE');
   const dateTag = findTag(entry.tree, 'DATE');
   const placeTag = findTag(entry.tree, 'PLAC');
+  const confidence = bestCitationQuality([entry]);
 
   const date = dateTag && dateTag.data && getDate(dateTag.data);
   const place = placeTag && placeTag.data;
+  let result: JsonEvent | undefined = undefined;
   if (date || place) {
-    const result: JsonEvent = date || {};
+    result = date || {};
     if (place) {
       result.place = place;
     }
@@ -171,12 +196,13 @@ function createEvent(entry: GedcomEntry | undefined): JsonEvent | undefined {
     if (notes) {
       result.notes = notes;
     }
-    return result;
+  } else if (entry.data && entry.data.toLowerCase() === 'y') {
+    result = { confirmed: true };
   }
-  if (entry.data && entry.data.toLowerCase() === 'y') {
-    return { confirmed: true };
+  if (result && confidence !== undefined) {
+    result.confidence = confidence;
   }
-  return undefined;
+  return result;
 }
 
 /** Creates a JsonIndi object from an INDI entry in GEDCOM. */
@@ -280,6 +306,18 @@ function createIndi(
   const death = createEvent(findTag(entry.tree, 'DEAT'));
   if (death) {
     indi.death = death;
+  }
+
+  // Certainty of the individual and their parentage.
+  const confidence = bestCitationQuality([
+    entry,
+    findTag(entry.tree, 'BIRT'),
+    findTag(entry.tree, 'CHR'),
+    findTag(entry.tree, 'BAPM'),
+  ]);
+  if (confidence !== undefined) {
+    indi.confidence = confidence;
+    indi.parentLinkConfidence = confidence;
   }
 
   // Notes.

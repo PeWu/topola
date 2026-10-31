@@ -4,6 +4,7 @@ export * from './api';
 export * from './chart-util';
 export * from './circle-renderer';
 export * from './composite-renderer';
+export * from './confidence';
 export * from './data';
 export * from './date-format';
 export * from './fancy-chart';
