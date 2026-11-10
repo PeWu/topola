@@ -153,6 +153,18 @@ function createNotes(notesTag: GedcomEntry | undefined): string[] | undefined {
   return lines;
 }
 
+/** Returns the distinct, non-empty values of the given entries. */
+function getDistinctValues(entries: GedcomEntry[]): string[] {
+  const values: string[] = [];
+  entries.forEach((entry) => {
+    const value = entry.data?.trim();
+    if (value && !values.includes(value)) {
+      values.push(value);
+    }
+  });
+  return values;
+}
+
 /**
  * Returns the highest QUAY value (0-3) among the source citations directly
  * under the given entries, or undefined if no citation has a QUAY value.
@@ -333,6 +345,16 @@ function createIndi(
   const notes = createNotes(findTag(entry.tree, 'NOTE'));
   if (notes) {
     indi.notes = notes;
+  }
+
+  // Occupations and titles.
+  const occupations = getDistinctValues(findTags(entry.tree, 'OCCU'));
+  if (occupations.length) {
+    indi.occupations = occupations;
+  }
+  const titles = getDistinctValues(findTags(entry.tree, 'TITL'));
+  if (titles.length) {
+    indi.titles = titles;
   }
 
   // Events

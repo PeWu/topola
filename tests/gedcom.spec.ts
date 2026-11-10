@@ -238,6 +238,71 @@ describe('GEDCOM parser', () => {
     });
   });
 
+  describe('Occupations', () => {
+    it('should parse occupations', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 OCCU Farmer
+      2 DATE 1901
+      1 OCCU Mayor
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].occupations).toEqual(['Farmer', 'Mayor']);
+    });
+
+    it('should skip empty and duplicate occupations', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 OCCU Farmer
+      1 OCCU
+      2 DATE 1906
+      1 OCCU Farmer
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].occupations).toEqual(['Farmer']);
+    });
+
+    it('should not set occupations when there are none', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 NAME John /Doe/
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].occupations).toBeUndefined();
+    });
+  });
+
+  describe('Titles', () => {
+    it('should parse titles separately from occupations', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 TITL Count of Monte Cristo
+      1 OCCU Sailor
+      1 TITL Baron
+      1 TITL Baron
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].titles).toEqual(['Count of Monte Cristo', 'Baron']);
+      expect(sut.indis[0].occupations).toEqual(['Sailor']);
+    });
+
+    it('should not use image titles', () => {
+      let gedcom = `
+      0 @I1@ INDI
+      1 OBJE
+      2 FILE http://example.com/image.jpg
+      2 TITL Portrait
+      `;
+
+      let sut = gedcomToJson(gedcom);
+      expect(sut.indis[0].titles).toBeUndefined();
+    });
+  });
+
   describe('Images', () => {
     it('should parse multiple image objects', () => {
       let gedcom = `
