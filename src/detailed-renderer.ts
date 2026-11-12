@@ -43,6 +43,11 @@ export function getLength(text: string, textClass: string): number {
   return length;
 }
 
+/** Symbol shown in front of occupations (pick, U+26CF). */
+const OCCUPATION_SYMBOL = '\u26CF';
+/** Symbol shown in front of titles (white chess queen, U+2655). */
+const TITLE_SYMBOL = '\u2655';
+
 const SEX_SYMBOLS: Map<string, string> = new Map([
   ['F', '\u2640'],
   ['M', '\u2642'],
@@ -130,6 +135,16 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
       detailsList[listIndex].symbol = '+';
     } else if (indi.isConfirmedDeath()) {
       detailsList.push({ symbol: '+', text: '' });
+    }
+    if (indi.showOccupations?.()) {
+      (indi.getOccupations?.() || []).forEach((occupation) =>
+        detailsList.push({ symbol: OCCUPATION_SYMBOL, text: occupation }),
+      );
+    }
+    if (indi.showTitles?.()) {
+      (indi.getTitles?.() || []).forEach((title) =>
+        detailsList.push({ symbol: TITLE_SYMBOL, text: title }),
+      );
     }
     return detailsList;
   }
