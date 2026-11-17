@@ -136,12 +136,12 @@ export class DetailedRenderer extends CompositeRenderer implements Renderer {
     } else if (indi.isConfirmedDeath()) {
       detailsList.push({ symbol: '+', text: '' });
     }
-    if (indi.showOccupations?.()) {
+    if (this.options.showOccupations) {
       (indi.getOccupations?.() || []).forEach((occupation) =>
         detailsList.push({ symbol: OCCUPATION_SYMBOL, text: occupation }),
       );
     }
-    if (indi.showTitles?.()) {
+    if (this.options.showTitles) {
       (indi.getTitles?.() || []).forEach((title) =>
         detailsList.push({ symbol: TITLE_SYMBOL, text: title }),
       );

@@ -58,6 +58,10 @@ export interface SimpleChartOptions {
   locale?: string;
   // [Beta] Show [+]/[-] controls that expand/collapse parts of the chart.
   expanders?: boolean;
+  // Show occupations (GEDCOM OCCU) in the chart. Defaults to false.
+  showOccupations?: boolean;
+  // Show titles (GEDCOM TITL) in the chart. Defaults to false.
+  showTitles?: boolean;
 }
 
 function createChartOptions(
@@ -102,6 +106,12 @@ function createChartOptions(
   }
   if (chartOptions.locale) {
     rendererOptions.locale = chartOptions.locale;
+  }
+  if (chartOptions.showOccupations !== undefined) {
+    rendererOptions.showOccupations = chartOptions.showOccupations;
+  }
+  if (chartOptions.showTitles !== undefined) {
+    rendererOptions.showTitles = chartOptions.showTitles;
   }
   const renderer = new chartOptions.renderer(rendererOptions);
 

@@ -141,6 +141,10 @@ export interface RendererOptions<IndiT extends Indi, FamT extends Fam> {
   // Animate showing and transforming charts.
   animate?: boolean;
   locale?: string;
+  // Show occupations (GEDCOM OCCU) in the chart. Defaults to false.
+  showOccupations?: boolean;
+  // Show titles (GEDCOM TITL) in the chart. Defaults to false.
+  showTitles?: boolean;
 }
 
 export interface ChartInfo {

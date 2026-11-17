@@ -68,18 +68,8 @@ export interface JsonIndi {
   parentLinkConfidence?: number;
   /** Occupations of the individual (GEDCOM OCCU), in order of appearance. */
   occupations?: string[];
-  /**
-   * Whether to show occupations in the chart. Occupations are hidden by
-   * default so that existing charts keep their size.
-   */
-  showOccupations?: boolean;
   /** Titles of the individual (GEDCOM TITL), in order of appearance. */
   titles?: string[];
-  /**
-   * Whether to show titles in the chart. Titles are hidden by default so
-   * that existing charts keep their size.
-   */
-  showTitles?: boolean;
 }
 
 /** Json representation of a family. */
@@ -127,12 +117,8 @@ export interface IndiDetails extends Indi {
   getDeathConfidence?(): number | null;
   /** Occupations of the individual, if known. */
   getOccupations?(): string[] | null;
-  /** Whether occupations should be shown in the chart. */
-  showOccupations?(): boolean;
   /** Titles of the individual (e.g. nobility titles), if known. */
   getTitles?(): string[] | null;
-  /** Whether titles should be shown in the chart. */
-  showTitles?(): boolean;
 }
 
 /** Details of a family record. */
@@ -214,14 +200,8 @@ class JsonIndiDetails implements IndiDetails {
   getOccupations() {
     return this.json.occupations || null;
   }
-  showOccupations() {
-    return !!this.json.showOccupations;
-  }
   getTitles() {
     return this.json.titles || null;
-  }
-  showTitles() {
-    return !!this.json.showTitles;
   }
   getConfidence() {
     return this.json.confidence ?? null;
