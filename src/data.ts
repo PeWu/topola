@@ -66,6 +66,10 @@ export interface JsonIndi {
    * not changed by propagateConfidence().
    */
   parentLinkConfidence?: number;
+  /** Occupations of the individual (GEDCOM OCCU), in order of appearance. */
+  occupations?: string[];
+  /** Titles of the individual (GEDCOM TITL), in order of appearance. */
+  titles?: string[];
 }
 
 /** Json representation of a family. */
@@ -111,6 +115,10 @@ export interface IndiDetails extends Indi {
   getBirthConfidence?(): number | null;
   /** QUAY-based certainty (0-3) of the death event, if known. */
   getDeathConfidence?(): number | null;
+  /** Occupations of the individual, if known. */
+  getOccupations?(): string[] | null;
+  /** Titles of the individual (e.g. nobility titles), if known. */
+  getTitles?(): string[] | null;
 }
 
 /** Details of a family record. */
@@ -188,6 +196,12 @@ class JsonIndiDetails implements IndiDetails {
   }
   showSex() {
     return !this.json.hideSex;
+  }
+  getOccupations() {
+    return this.json.occupations || null;
+  }
+  getTitles() {
+    return this.json.titles || null;
   }
   getConfidence() {
     return this.json.confidence ?? null;
