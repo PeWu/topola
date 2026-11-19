@@ -2,9 +2,9 @@ name: Screenshot Tests
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, v4, v3 ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, v4, v3 ]
 
 jobs:
   test:

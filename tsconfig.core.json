@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.core.tsbuildinfo"
+  },
+  "include": ["src/core/**/*.ts"],
+  "references": []
+}

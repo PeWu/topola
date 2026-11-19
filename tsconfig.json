@@ -1,14 +1,14 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "noImplicitAny": true,
-    "target": "ES5",
-    "lib": ["ES6", "DOM", "ESNext.Array"],
-    "outDir": "./dist",
-    "declaration": true,
-    "strictNullChecks": true,
-    "exactOptionalPropertyTypes": true
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.root.tsbuildinfo"
   },
-  "include": [
-    "src/**/*"
+  "files": ["src/index.ts"],
+  "references": [
+    { "path": "./tsconfig.core.json" },
+    { "path": "./tsconfig.toolkit.json" },
+    { "path": "./tsconfig.model.json" },
+    { "path": "./tsconfig.presets.json" },
+    { "path": "./tsconfig.gedcom.json" }
   ]
 }

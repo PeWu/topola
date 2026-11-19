@@ -1,5 +1,5 @@
 html {
-  font-family: Montserrat, verdana;
+  font-family: Montserrat, verdana, sans-serif;
 }
 
 svg {
@@ -12,10 +12,6 @@ svg {
 
 body {
   background: #ccc;
-}
-
-.node {
-  cursor: pointer;
 }
 
 #fileUploadLink {

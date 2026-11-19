@@ -24,31 +24,57 @@
         text-rendering: geometricPrecision;
       }
     </style>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="../demo/bundle.js"></script>
   </head>
   <body>
-    <svg class="graph" id="chart"/>
+    <svg class="graph" id="chart"></svg>
     <script>
-      async function renderChart(options) {
-        const {dataUrl, isGedcom, chartOptions, renderOptions} = options;
-        let json;
-        if (isGedcom) {
-          const gedcom = await d3.text(dataUrl);
-          json = topola.gedcomToJson(gedcom);
+      async function renderChart(scenario) {
+        const svgEl = document.getElementById('chart');
+        svgEl.innerHTML = '';
+
+        const res = await fetch(scenario.dataUrl);
+        const model = scenario.isGedcom
+          ? topola.gedcomToModel(await res.text())
+          : await res.json();
+
+        const graph = topola.createModelGraph(model);
+        const startIndi = scenario.startIndi || model.indis[0].id;
+
+        let config;
+        if (scenario.preset === 'fancy') {
+          config = topola.createFancyConfig({ model: graph });
         } else {
-          json = await d3.json(dataUrl);
+          const nodePlugin =
+            scenario.preset === 'simple'
+              ? topola.createSimpleNodePlugin({ model: graph })
+              : scenario.preset === 'circle'
+                ? topola.createCircleNodePlugin({ model: graph })
+                : topola.createDetailedNodePlugin({ model: graph, locale: 'en' });
+
+          const schemes = [];
+          if (scenario.scheme === 'sex') {
+            schemes.push(topola.sexScheme(graph));
+          } else if (scenario.scheme === 'generation') {
+            schemes.push(topola.generationScheme());
+          }
+
+          config = {
+            graph,
+            chart: scenario.chart,
+            direction: scenario.direction || 'down',
+            maxAncestorGenerations: scenario.maxAncestorGenerations,
+            maxDescendantGenerations: scenario.maxDescendantGenerations,
+            nodePlugin,
+            schemes,
+            theme: scenario.colorTarget ? { colorTarget: scenario.colorTarget } : undefined,
+          };
         }
-        
-        const chart = topola.createChart({
-          json,
-          svgSelector: '#chart',
-          ...chartOptions
-        });
-        chart.render(renderOptions);
+
+        const chart = topola.createChart({ svg: '#chart', config });
+        chart.update({ startIndi });
       }
-      
-      // Control functions for Playwright
+
       window.renderChart = renderChart;
     </script>
   </body>

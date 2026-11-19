@@ -1,50 +1,74 @@
 {
   "name": "topola",
-  "version": "3.11.1",
+  "version": "4.0.0-rc.1",
   "description": "Topola – online genealogy visualization",
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "default": "./dist/core/index.js"
+    },
+    "./toolkit": {
+      "types": "./dist/toolkit/index.d.ts",
+      "default": "./dist/toolkit/index.js"
+    },
+    "./model": {
+      "types": "./dist/model/index.d.ts",
+      "default": "./dist/model/index.js"
+    },
+    "./presets": {
+      "types": "./dist/presets/index.d.ts",
+      "default": "./dist/presets/index.js"
+    },
+    "./gedcom": {
+      "types": "./dist/gedcom/index.d.ts",
+      "default": "./dist/gedcom/index.js"
+    }
+  },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b tsconfig.json",
     "build-demo": "esbuild src/index.ts --bundle --outfile=demo/bundle.js --global-name=topola",
     "watch": "esbuild src/index.ts --bundle --outfile=demo/bundle.js --global-name=topola --watch",
     "server": "browser-sync start --server demo --files demo",
     "start": "concurrently \"npm run watch\" \"npm run server\"",
-    "test": "jest",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.tests.json",
     "test:screenshots": "playwright test",
-    "watch-test": "jest --watch",
+    "watch-test": "vitest",
     "predeploy": "npm run build-demo",
     "deploy": "gh-pages -d demo",
-    "prettier": "prettier --single-quote --write src/**/*.ts && prettier --single-quote --write src/*.ts"
+    "prettier": "prettier --single-quote --write \"src/**/*.ts\""
   },
   "author": "Przemek Wiech",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "1.58.2",
     "@types/d3-array": "^3.2.1",
     "@types/d3-hierarchy": "^3.1.7",
     "@types/d3-selection": "^3.0.11",
     "@types/d3-transition": "^3.0.9",
-    "@types/jest": "^29.5.14",
     "@types/node": "^26.1.2",
     "browser-sync": "^3.0.3",
     "concurrently": "^10.0.0",
     "esbuild": "^0.28.0",
     "gh-pages": "^6.3.0",
-    "jest": "^29.7.0",
     "jsdom": "^25.0.1",
-    "jsdom-global": "^3.0.2",
     "nodemon": "^3.1.9",
-    "playwright": "^1.58.2",
+    "playwright": "1.58.2",
     "prettier": "^3.4.2",
-    "ts-jest": "^29.2.5",
-    "ts-loader": "^9.5.1",
-    "ts-node": "^10.9.2",
-    "tsify": "^5.0.4",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
-    "array-flat-polyfill": "^1.0.1",
     "d3-array": "^3.2.4",
     "d3-flextree": "^2.1.1",
     "d3-hierarchy": "^3.1.2",

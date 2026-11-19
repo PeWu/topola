@@ -1469,7 +1469,7 @@
       "husb": "I218",
       "id": "F163",
       "marriage": {
-        "place": "N\u00f4tre Dame Cathedral, Paris"
+        "place": "Nôtre Dame Cathedral, Paris"
       },
       "wife": "I248"
     },
@@ -1666,7 +1666,11 @@
       "id": "I1",
       "lastName": "Tudor",
       "sex": "M",
-      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Enrique_VII_de_Inglaterra%2C_por_un_artista_an%C3%B3nimo.jpg"
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Enrique_VII_de_Inglaterra%2C_por_un_artista_an%C3%B3nimo.jpg"
+        }
+      ]
     },
     {
       "birth": {
@@ -1747,7 +1751,11 @@
       "id": "I4",
       "lastName": "Beaufort",
       "sex": "F",
-      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Lady_Margaret_Beaufort_from_NPG.jpg"
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/Lady_Margaret_Beaufort_from_NPG.jpg"
+        }
+      ]
     },
     {
       "fams": [
@@ -1891,7 +1899,7 @@
           "month": 12,
           "year": 1485
         },
-        "place": "Alcal\u00e1 de Henares"
+        "place": "Alcalá de Henares"
       },
       "death": {
         "confirmed": true,
@@ -1949,7 +1957,11 @@
       "id": "I17",
       "lastName": "Cleves",
       "sex": "F",
-      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/AnneCleves.jpg/800px-AnneCleves.jpg"
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/AnneCleves.jpg/800px-AnneCleves.jpg"
+        }
+      ]
     },
     {
       "death": {

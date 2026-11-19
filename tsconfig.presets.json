@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.cache/tsconfig.presets.tsbuildinfo"
+  },
+  "include": ["src/presets/**/*.ts"],
+  "references": [
+    { "path": "./tsconfig.core.json" },
+    { "path": "./tsconfig.toolkit.json" },
+    { "path": "./tsconfig.model.json" }
+  ]
+}
