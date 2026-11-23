@@ -1,6 +1,6 @@
 {
   "name": "topola",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0-rc.2",
   "description": "Topola – online genealogy visualization",
   "type": "module",
   "main": "dist/index.js",
