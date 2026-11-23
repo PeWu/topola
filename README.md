@@ -52,3 +52,16 @@ npm start
 
 The aim of this project is to create a feature-rich library for creating interactive genealogy
 visualizations for the Web.
+
+## Generation limits
+
+For ancestor, descendant, hourglass and relatives charts, set
+`maxAncestorGenerations` and `maxDescendantGenerations` in the chart options
+(or `SimpleChartOptions`). Each is a nonnegative integer counting generations
+above or below the selected root, excluding the root itself. For example, `2`
+shows parents and grandparents, or children and grandchildren. `0` shows only
+the root in that direction; omitting an option leaves that direction unlimited.
+Spouses and additional marriages do not consume a generation. In relatives
+charts, descendant limits are measured relative to the selected root, including
+when drawing descendants of ancestors. Fancy and kinship charts do not use
+these options.
