@@ -51,6 +51,10 @@ export interface PersonRecord {
   hideSex?: boolean | undefined;
   confidence?: number | undefined;
   parentLinkConfidence?: number | undefined;
+  /** Occupations of the individual (GEDCOM OCCU), in order of appearance. */
+  occupations?: string[] | undefined;
+  /** Titles of the individual (GEDCOM TITL), in order of appearance. */
+  titles?: string[] | undefined;
   extras?: Record<string, unknown> | undefined;
 }
 

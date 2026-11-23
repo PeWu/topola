@@ -577,5 +577,39 @@ describe('GEDCOM parser (topola/gedcom)', () => {
         ]),
       ).toBe(2);
     });
+
+    it('parses distinct non-empty occupations and titles without mixing in OBJE titles', () => {
+      const model = gedcomToModel(
+        [
+          '0 @I1@ INDI',
+          '1 NAME John /Doe/',
+          '1 OCCU Farmer',
+          '2 DATE 1901',
+          '1 OCCU',
+          '2 DATE 1906',
+          '1 OCCU Mayor',
+          '1 OCCU Farmer',
+          '1 TITL Count of Monte Cristo',
+          '1 TITL Baron',
+          '1 TITL Baron',
+          '1 OBJE',
+          '2 FILE http://example.com/image.jpg',
+          '2 TITL Portrait',
+          '0 @I2@ INDI',
+          '1 NAME Plain /Person/',
+          '1 OBJE',
+          '2 FILE http://example.com/other.jpg',
+          '2 TITL Portrait Only',
+        ].join('\n'),
+      );
+
+      expect(model.indis[0]?.occupations).toEqual(['Farmer', 'Mayor']);
+      expect(model.indis[0]?.titles).toEqual([
+        'Count of Monte Cristo',
+        'Baron',
+      ]);
+      expect(model.indis[1]?.occupations).toBeUndefined();
+      expect(model.indis[1]?.titles).toBeUndefined();
+    });
   });
 });

@@ -419,6 +419,21 @@ function createIndi(
   const notes = createNotes(entry.tree, shared);
   if (notes) indi.notes = notes;
 
+  // Occupations and titles (distinct, non-empty level-1 values in order of appearance).
+  const occupations = unique(
+    findTags(entry.tree, 'OCCU')
+      .map((e) => valueOf(e))
+      .filter((v): v is string => Boolean(v)),
+  );
+  if (occupations.length > 0) indi.occupations = occupations;
+
+  const titles = unique(
+    findTags(entry.tree, 'TITL')
+      .map((e) => valueOf(e))
+      .filter((v): v is string => Boolean(v)),
+  );
+  if (titles.length > 0) indi.titles = titles;
+
   // Filter out undefined EVEN entries cleanly (fixes V3 `x !== null` bug!)
   indi.events = findTags(entry.tree, 'EVEN')
     .map((even) => createEvent(even, shared))

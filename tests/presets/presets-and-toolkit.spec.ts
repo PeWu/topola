@@ -530,4 +530,89 @@ describe('Presets (Simple, Detailed) and Toolkit (TextBox, CoupleAssembler)', ()
     c1.dispose();
     c2.dispose();
   });
+
+  it('Detailed hides occupations and titles by default and renders them when showOccupations/showTitles are set', () => {
+    const measurer = createFixedTextMeasurer(7);
+    const indi = {
+      id: 'I1',
+      firstName: 'John',
+      lastName: 'Doe',
+      hideId: true,
+      hideSex: true,
+      birth: { date: { year: 1900 } },
+      occupations: ['Farmer', 'Mayor'],
+      titles: ['Baron'],
+    };
+
+    const layoutHeight = (
+      person: ModelData['indis'][number],
+      opts: { showOccupations?: boolean; showTitles?: boolean } = {},
+    ): number => {
+      const m: ModelData = { indis: [person], fams: [] };
+      const g = createModelGraph(m);
+      const res = computeLayout(
+        { startIndi: 'I1' },
+        {
+          graph: g,
+          chart: 'hourglass',
+          nodePlugin: createDetailedNodePlugin({ model: g, ...opts }),
+          textMeasurer: measurer,
+        },
+      );
+      return res.nodes[0]!.bounds.height;
+    };
+
+    const baseHeight = layoutHeight(indi);
+    const withoutOccuTitle = layoutHeight({
+      id: 'I1',
+      firstName: 'John',
+      lastName: 'Doe',
+      hideId: true,
+      hideSex: true,
+      birth: { date: { year: 1900 } },
+    });
+    expect(baseHeight).toBe(withoutOccuTitle);
+
+    const lineHeight =
+      layoutHeight({ ...indi, death: { date: { year: 1980 } } }) - baseHeight;
+    expect(lineHeight).toBeGreaterThan(0);
+
+    expect(layoutHeight(indi, { showOccupations: true })).toBe(
+      baseHeight + 2 * lineHeight,
+    );
+    expect(layoutHeight(indi, { showTitles: true })).toBe(
+      baseHeight + lineHeight,
+    );
+    expect(
+      layoutHeight(indi, { showOccupations: true, showTitles: true }),
+    ).toBe(baseHeight + 3 * lineHeight);
+
+    const renderText = (
+      opts: { showOccupations?: boolean; showTitles?: boolean } = {},
+    ): string => {
+      document.body.innerHTML = '<svg id="occ"></svg>';
+      const g = createModelGraph({ indis: [indi], fams: [] });
+      const chart = createChart({
+        svg: '#occ',
+        config: {
+          graph: g,
+          chart: 'hourglass',
+          nodePlugin: createDetailedNodePlugin({ model: g, ...opts }),
+          textMeasurer: measurer,
+        },
+      });
+      chart.update({ startIndi: 'I1' });
+      const text = document.querySelector('#occ')?.textContent ?? '';
+      chart.dispose();
+      return text;
+    };
+
+    expect(renderText()).not.toContain('Farmer');
+    expect(renderText()).not.toContain('Baron');
+    expect(renderText({ showOccupations: true })).toContain('\u26CF');
+    expect(renderText({ showOccupations: true })).toContain('Farmer');
+    expect(renderText({ showOccupations: true })).not.toContain('Baron');
+    expect(renderText({ showTitles: true })).toContain('\u2655');
+    expect(renderText({ showTitles: true })).toContain('Baron');
+  });
 });

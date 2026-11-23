@@ -20,6 +20,11 @@ import {
   type TextBoxTheme,
 } from '../toolkit/index.js';
 
+/** Symbol shown in front of occupations (pick, U+26CF). */
+const OCCUPATION_SYMBOL = '\u26CF';
+/** Symbol shown in front of titles (white chess queen, U+2655). */
+const TITLE_SYMBOL = '\u2655';
+
 const SEX_SYMBOLS: Readonly<Record<string, string>> = {
   F: '\u2640',
   M: '\u2642',
@@ -42,6 +47,10 @@ export interface DetailedNodePluginOptions {
   locale?: string | undefined;
   hideId?: HidePersonBadgePredicate | undefined;
   hideSex?: HidePersonBadgePredicate | undefined;
+  /** Show occupations (GEDCOM OCCU) in person boxes. Defaults to false. */
+  showOccupations?: boolean | undefined;
+  /** Show titles (GEDCOM TITL) in person boxes. Defaults to false. */
+  showTitles?: boolean | undefined;
   personContent?: ContentFunction<DetailedPersonContext> | undefined;
   familyContent?: ContentFunction<DetailedFamilyContext> | undefined;
   namespace?: string | undefined;
@@ -129,6 +138,8 @@ export function detailedPersonContent(
     locale?: string | undefined;
     hideId?: HidePersonBadgePredicate | undefined;
     hideSex?: HidePersonBadgePredicate | undefined;
+    showOccupations?: boolean | undefined;
+    showTitles?: boolean | undefined;
   },
 ): BoxContent {
   const { person, personId } = ctx;
@@ -184,6 +195,30 @@ export function detailedPersonContent(
     if (firstDeath) firstDeath.symbol = '+';
   } else if (person?.death?.confirmed) {
     symbolLines.push({ role: 'details', symbol: '+', text: '' });
+  }
+
+  // Occupations and titles (opt-in via showOccupations / showTitles)
+  if (options?.showOccupations && person?.occupations) {
+    for (const occupation of person.occupations) {
+      if (occupation) {
+        symbolLines.push({
+          role: 'details',
+          symbol: OCCUPATION_SYMBOL,
+          text: occupation,
+        });
+      }
+    }
+  }
+  if (options?.showTitles && person?.titles) {
+    for (const title of person.titles) {
+      if (title) {
+        symbolLines.push({
+          role: 'details',
+          symbol: TITLE_SYMBOL,
+          text: title,
+        });
+      }
+    }
   }
 
   // Bottom-corner badges (id + sex)
@@ -280,6 +315,8 @@ export function createDetailedNodePlugin(
         locale: options.locale,
         hideId: options.hideId,
         hideSex: options.hideSex,
+        showOccupations: options.showOccupations,
+        showTitles: options.showTitles,
       }));
 
   const familyFn: ContentFunction<DetailedFamilyContext> =
