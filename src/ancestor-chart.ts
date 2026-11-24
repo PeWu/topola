@@ -70,21 +70,18 @@ export class AncestorChart<
     if (this.options.startIndi) {
       const indi = this.options.data.getIndi(this.options.startIndi)!;
       const famc = indi.getFamilyAsChild();
-      const id = famc ? idGenerator.getId(famc) : undefined;
+      const parent: TreeNode = {
+        id: this.options.startIndi,
+        indi: { id: this.options.startIndi },
+      };
       if (famc && limit !== 0) {
+        parent.indiParentNodeId = idGenerator.getId(famc);
         depths.set(famc, 1);
         stack.push({
           id: famc,
           parentId: this.options.startIndi,
           family: { id: famc },
         });
-      }
-      const parent: TreeNode = {
-        id: this.options.startIndi,
-        indi: { id: this.options.startIndi },
-      };
-      if (id && limit !== 0) {
-        parent.indiParentNodeId = id;
       }
       parents.push(parent);
     } else {

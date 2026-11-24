@@ -3,6 +3,7 @@ import * as jsdomGlobal from 'jsdom-global';
 import { AncestorChart } from '../src/ancestor-chart';
 import { DescendantChart } from '../src/descendant-chart';
 import { JsonDataProvider, JsonGedcomData } from '../src/data';
+import { IdGenerator } from '../src/id-generator';
 import { FakeRenderer } from './fake_renderer';
 
 (jsdomGlobal as any)();
@@ -41,6 +42,17 @@ describe('generation limits', () => {
       );
     },
   );
+  test('a zero ancestor limit leaves the omitted family ID available', () => {
+    const idGenerator = new IdGenerator();
+    new AncestorChart({
+      ...options,
+      startIndi: 'I4',
+      maxAncestorGenerations: 0,
+      idGenerator,
+    }).createHierarchy();
+
+    expect(idGenerator.getId('F3')).toBe('F3');
+  });
   test.each([0, 1, 2, undefined])(
     'limits descendants to %s generations',
     (limit) => {

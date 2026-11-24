@@ -63,5 +63,6 @@ shows parents and grandparents, or children and grandchildren. `0` shows only
 the root in that direction; omitting an option leaves that direction unlimited.
 Spouses and additional marriages do not consume a generation. In relatives
 charts, descendant limits are measured relative to the selected root, including
-when drawing descendants of ancestors. Fancy and kinship charts do not use
-these options.
+when drawing descendants of ancestors. Fancy charts apply and validate
+`maxDescendantGenerations` and ignore `maxAncestorGenerations`. Kinship charts
+ignore both options.
