@@ -57,9 +57,10 @@ function getSpouse(indiId: string, fam: Fam): string | null {
 }
 
 /** Renders a descendants chart. */
-export class DescendantChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart
-{
+export class DescendantChart<
+  IndiT extends Indi,
+  FamT extends Fam,
+> implements Chart {
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
@@ -120,6 +121,13 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
 
   /** Creates a d3 hierarchy from the input data. */
   createHierarchy(): HierarchyNode<TreeNode> {
+    const limit = this.options.maxDescendantGenerations;
+    if (limit !== undefined && (!Number.isInteger(limit) || limit < 0)) {
+      throw new RangeError(
+        'maxDescendantGenerations must be a nonnegative integer',
+      );
+    }
+    const depths = new Map<string, number>();
     const parents: TreeNode[] = [];
 
     const nodes = this.options.startIndi
@@ -154,8 +162,10 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
       const entry = stack.pop()!;
       const fam = this.options.data.getFam(entry.family!.id)!;
       const children = fam.getChildren();
-      const collapsed = this.options.collapsedFamily?.has(entry.id);
-      if (children.length) {
+      const depth = depths.get(entry.id) || 0;
+      const collapsed =
+        depth === limit || this.options.collapsedFamily?.has(entry.id);
+      if (children.length && depth !== limit) {
         entry.family!.expander = collapsed
           ? ExpanderState.PLUS
           : ExpanderState.MINUS;
@@ -167,6 +177,7 @@ export class DescendantChart<IndiT extends Indi, FamT extends Fam>
             node.parentId = entry.id;
             if (node.family) {
               node.id = `${idGenerator.getId(node.family.id)}`;
+              depths.set(node.id, depth + 1);
               stack.push(node);
             }
           });

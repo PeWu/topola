@@ -38,6 +38,10 @@ export interface RenderOptions {
 
 /** Options when initializing a chart. */
 export interface SimpleChartOptions {
+  // Maximum generations above/below the root, excluding the root.
+  // Nonnegative integers; omitted means unlimited.
+  maxAncestorGenerations?: number;
+  maxDescendantGenerations?: number;
   // Data to be rendered.
   json: JsonGedcomData;
   indiUrl?: string;
@@ -137,6 +141,14 @@ function createChartOptions(
   }
   if (chartOptions.expanders !== undefined) {
     resultChartOptions.expanders = chartOptions.expanders;
+  }
+  if (chartOptions.maxAncestorGenerations !== undefined) {
+    resultChartOptions.maxAncestorGenerations =
+      chartOptions.maxAncestorGenerations;
+  }
+  if (chartOptions.maxDescendantGenerations !== undefined) {
+    resultChartOptions.maxDescendantGenerations =
+      chartOptions.maxDescendantGenerations;
   }
   return resultChartOptions;
 }

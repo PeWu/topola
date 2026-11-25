@@ -78,9 +78,10 @@ interface AncestorData {
 }
 
 /** Chart layout showing all relatives of a person. */
-export class RelativesChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart
-{
+export class RelativesChart<
+  IndiT extends Indi,
+  FamT extends Fam,
+> implements Chart {
   readonly util: ChartUtil;
   readonly options: ChartOptions;
 
@@ -111,6 +112,10 @@ export class RelativesChart<IndiT extends Indi, FamT extends Fam>
         descendantOptions.data,
         child,
       );
+      // This subtree starts node.depth generations above the selected root.
+      if (descendantOptions.maxDescendantGenerations !== undefined) {
+        descendantOptions.maxDescendantGenerations += node.depth;
+      }
       descendantOptions.baseGeneration =
         (this.options.baseGeneration || 0) - node.depth;
 

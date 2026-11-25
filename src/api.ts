@@ -161,6 +161,10 @@ export interface Chart {
 }
 
 export interface ChartOptions {
+  // Maximum generations above/below the root, excluding the root.
+  // Nonnegative integers; omitted means unlimited.
+  maxAncestorGenerations?: number;
+  maxDescendantGenerations?: number;
   // Input data.
   data: DataProvider<Indi, Fam>;
   // Renderer for individual data.

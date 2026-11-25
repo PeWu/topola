@@ -45,9 +45,10 @@ export function getAncestorsTree(options: ChartOptions) {
 }
 
 /** Renders an ancestors chart. */
-export class AncestorChart<IndiT extends Indi, FamT extends Fam>
-  implements Chart
-{
+export class AncestorChart<
+  IndiT extends Indi,
+  FamT extends Fam,
+> implements Chart {
   readonly util: ChartUtil;
 
   constructor(readonly options: ChartOptions) {
@@ -56,26 +57,31 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
 
   /** Creates a d3 hierarchy from the input data. */
   createHierarchy(): HierarchyNode<TreeNode> {
+    const limit = this.options.maxAncestorGenerations;
+    if (limit !== undefined && (!Number.isInteger(limit) || limit < 0)) {
+      throw new RangeError(
+        'maxAncestorGenerations must be a nonnegative integer',
+      );
+    }
+    const depths = new Map<string, number>();
     const parents: TreeNode[] = [];
     const stack: TreeNode[] = [];
     const idGenerator = this.options.idGenerator || new IdGenerator();
     if (this.options.startIndi) {
       const indi = this.options.data.getIndi(this.options.startIndi)!;
       const famc = indi.getFamilyAsChild();
-      const id = famc ? idGenerator.getId(famc) : undefined;
-      if (famc) {
+      const parent: TreeNode = {
+        id: this.options.startIndi,
+        indi: { id: this.options.startIndi },
+      };
+      if (famc && limit !== 0) {
+        parent.indiParentNodeId = idGenerator.getId(famc);
+        depths.set(famc, 1);
         stack.push({
           id: famc,
           parentId: this.options.startIndi,
           family: { id: famc },
         });
-      }
-      const parent: TreeNode = {
-        id: this.options.startIndi,
-        indi: { id: this.options.startIndi },
-      };
-      if (id) {
-        parent.indiParentNodeId = id;
       }
       parents.push(parent);
     } else {
@@ -87,6 +93,7 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
 
     while (stack.length) {
       const entry = stack.pop()!;
+      const depth = depths.get(entry.id) || 0;
       const fam = this.options.data.getFam(entry.family!.id);
       if (!fam) {
         continue;
@@ -114,13 +121,14 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         entry.spouse = { id: mother };
         const indi = this.options.data.getIndi(mother)!;
         const famc = indi.getFamilyAsChild();
-        if (famc) {
+        if (famc && depth !== limit) {
           if (this.options.collapsedSpouse?.has(entry.id)) {
             entry.spouse.expander = ExpanderState.PLUS;
           } else {
             const id = idGenerator.getId(famc);
             entry.spouseParentNodeId = id;
             entry.spouse.expander = ExpanderState.MINUS;
+            depths.set(id, depth + 1);
             stack.push({
               id,
               parentId: entry.id,
@@ -133,13 +141,14 @@ export class AncestorChart<IndiT extends Indi, FamT extends Fam>
         entry.indi = { id: father };
         const indi = this.options.data.getIndi(father)!;
         const famc = indi.getFamilyAsChild();
-        if (famc) {
+        if (famc && depth !== limit) {
           if (this.options.collapsedIndi?.has(entry.id)) {
             entry.indi.expander = ExpanderState.PLUS;
           } else {
             const id = idGenerator.getId(famc);
             entry.indiParentNodeId = id;
             entry.indi.expander = ExpanderState.MINUS;
+            depths.set(id, depth + 1);
             stack.push({
               id,
               parentId: entry.id,
