@@ -97,7 +97,7 @@ Data that is wrong is drawn as far as it goes and reported, not thrown. Nothing 
 | `DUPLICATE_LINK` | data | A link is listed twice, or one person is both partners of a family. It counts once. |
 | `UNKNOWN_LINE_ROLE` | layout | A text box has a line whose role the theme does not define. It is drawn with default typography. |
 
-A `relatives` chart draws the descendants of every ancestor couple without a generation limit, and a relative once for every couple they descend from. For data in which the same ancestors are reached along many lines (a complete pedigree of a closed community) it can grow to hundreds of thousands of nodes; limit `maxAncestorGenerations` for such data. A single branch of about two thousand generations or more exceeds the call stack of the tidy-tree library (`RangeError`).
+A `relatives` chart draws the descendants of every ancestor couple (up to `maxDescendantGenerations` below the start person, or unlimited when omitted), and a relative once for every couple they descend from. For data in which the same ancestors are reached along many lines (a complete pedigree of a closed community) it can grow to hundreds of thousands of nodes; limit `maxAncestorGenerations` (and `maxDescendantGenerations`) for such data. A single branch of about two thousand generations or more exceeds the call stack of the tidy-tree library (`RangeError`).
 
 ## Writing a Look
 
