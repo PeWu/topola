@@ -1,0 +1,16 @@
+{
+  "name": "topola-example-moredata",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "topola": "^4.0.0-rc.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vite": "^6.2.0"
+  }
+}
