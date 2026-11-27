@@ -425,7 +425,11 @@ export function buildRelativesStage1(
       graph: filteredGraph,
       rootSpec: { kind: 'customRoots', roots: seeds },
       baseGeneration: blockGen,
-      maxGenerations: undefined,
+      // This subtree starts meta.depth generations above the selected root.
+      maxGenerations:
+        maxDescendantGenerations !== undefined
+          ? maxDescendantGenerations + meta.depth
+          : undefined,
       collapsed,
       idGenerator: chartIdGen,
       rowPrefix: blockPrefix,

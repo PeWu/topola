@@ -5,6 +5,8 @@ import {
   computeLayout,
   createFixedTextMeasurer,
 } from '../../src/core/index.js';
+import { IdGenerator } from '../../src/core/id-generator.js';
+import { buildAncestorTree } from '../../src/core/tree-builder.js';
 import {
   createModelGraph,
   type ModelData,
@@ -342,5 +344,104 @@ describe('Hourglass layout (Stage 1-3) & V3 Oracle Parity', () => {
         }
       }
     }
+  });
+
+  it('enforces ancestor and descendant generation limits without mutating IdGenerator at limit 0 or counting extra marriages', () => {
+    const chain: ModelData = {
+      indis: [
+        { id: 'I1', fams: ['F1'] },
+        { id: 'I2', famc: 'F1', fams: ['F2', 'F4'] },
+        { id: 'I3', famc: 'F2', fams: ['F3'] },
+        { id: 'I4', famc: 'F3' },
+        { id: 'I5', fams: ['F4'] },
+      ],
+      fams: [
+        { id: 'F1', husb: 'I1', children: ['I2'] },
+        { id: 'F2', husb: 'I2', children: ['I3'] },
+        { id: 'F3', husb: 'I3', children: ['I4'] },
+        { id: 'F4', husb: 'I2', wife: 'I5' },
+      ],
+    };
+    const graph = createModelGraph(chain);
+    const plugin = createSimpleNodePlugin({ model: graph });
+    const measurer = createFixedTextMeasurer();
+
+    // Ancestor limits: 0, 1, 2, 3, undefined
+    for (const limit of [0, 1, 2, 3, undefined]) {
+      const res = computeLayout(
+        { startIndi: 'I4' },
+        {
+          graph,
+          chart: 'hourglass',
+          maxDescendantGenerations: 0,
+          ...(limit === undefined ? {} : { maxAncestorGenerations: limit }),
+          nodePlugin: plugin,
+          textMeasurer: measurer,
+        },
+      );
+      expect(res.nodes.map((n) => n.indiId)).toEqual(
+        ['I4', 'I3', 'I2', 'I1'].slice(0, limit === undefined ? 4 : limit + 1),
+      );
+    }
+
+    // A zero ancestor limit leaves the omitted parent family ID unused in IdGenerator
+    const idGenerator = new IdGenerator();
+    buildAncestorTree({
+      graph,
+      rootSpec: { kind: 'person', personId: 'I4' },
+      baseGeneration: 0,
+      maxGenerations: 0,
+      idGenerator,
+      rowPrefix: 'test',
+      problems: [],
+    });
+    expect(idGenerator.getId('F3')).toBe('F3');
+
+    // Family ancestor root counts as generation 0
+    const famRoot = buildAncestorTree({
+      graph,
+      rootSpec: { kind: 'family', familyId: 'F3' },
+      baseGeneration: 0,
+      maxGenerations: 0,
+      idGenerator: new IdGenerator(),
+      rowPrefix: 'test',
+      problems: [],
+    });
+    expect(famRoot.nodes.map((n) => n.indiId)).toEqual(['I3']);
+
+    // Descendant limits: 0, 1, 2, undefined
+    for (const limit of [0, 1, 2, undefined]) {
+      const res = computeLayout(
+        { startIndi: 'I1' },
+        {
+          graph,
+          chart: 'hourglass',
+          maxAncestorGenerations: 0,
+          ...(limit === undefined ? {} : { maxDescendantGenerations: limit }),
+          nodePlugin: plugin,
+          textMeasurer: measurer,
+        },
+      );
+      const ids = res.nodes.map((n) => n.indiId);
+      expect(ids.includes('I2')).toBe(limit !== 0);
+      expect(ids.includes('I3')).toBe(limit === undefined || limit >= 2);
+      expect(ids.includes('I4')).toBe(limit === undefined);
+    }
+
+    // Multiple root marriages do not consume a generation
+    const multiMarriage = computeLayout(
+      { startIndi: 'I2' },
+      {
+        graph,
+        chart: 'hourglass',
+        maxAncestorGenerations: 0,
+        maxDescendantGenerations: 1,
+        nodePlugin: plugin,
+        textMeasurer: measurer,
+      },
+    );
+    expect(multiMarriage.nodes.some((n) => n.indiId === 'I3')).toBe(true);
+    expect(multiMarriage.nodes.some((n) => n.indiId === 'I4')).toBe(false);
+    expect(multiMarriage.nodes.some((n) => n.spouseId === 'I5')).toBe(true);
   });
 });

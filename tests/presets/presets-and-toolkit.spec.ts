@@ -509,6 +509,16 @@ describe('Presets (Simple, Detailed) and Toolkit (TextBox, CoupleAssembler)', ()
     expect(fancyCfg1.direction).toBe('up');
     expect(fancyCfg1.maxAncestorGenerations).toBe(0);
 
+    const fancyLimited = computeLayout(
+      { startIndi: 'I1' },
+      createFancyConfig({
+        model: graph,
+        maxDescendantGenerations: 0,
+        textMeasurer: measurer,
+      }),
+    );
+    expect(fancyLimited.nodes.map((n) => n.indiId)).toEqual(['I1']);
+
     const c1 = createChart({ svg: '#fancy1', config: fancyCfg1 });
     const c2 = createChart({
       svg: '#fancy2',

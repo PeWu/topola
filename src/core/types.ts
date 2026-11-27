@@ -476,12 +476,10 @@ export interface ChartConfig<TTheme extends CoreTheme = CoreTheme> {
    * of the start person, `relatives` also the descendants of every ancestor
    * (siblings, cousins).
    *
-   * A `relatives` chart has no limit on these descendants
-   * (`maxDescendantGenerations` is for those of the start person), and it
-   * draws a relative once for every ancestor couple they descend from. In
-   * data where the same ancestors are reached along many lines it can grow
-   * to hundreds of thousands of nodes; limit `maxAncestorGenerations` for
-   * such data.
+   * A `relatives` chart draws a relative once for every ancestor couple they
+   * descend from. In data where the same ancestors are reached along many
+   * lines it can grow to hundreds of thousands of nodes; limit
+   * `maxAncestorGenerations` (and `maxDescendantGenerations`) for such data.
    */
   chart: 'hourglass' | 'relatives';
   /** Where the descendants are, seen from the start person. Default `down`. */
@@ -492,8 +490,12 @@ export interface ChartConfig<TTheme extends CoreTheme = CoreTheme> {
    */
   maxAncestorGenerations?: number | undefined;
   /**
-   * How many generations of descendants of the start person are shown; 0
-   * for none. Default: all.
+   * How many generations of descendants below the start person are shown; 0
+   * for none. Default: all. In a `relatives` chart this limit is also
+   * measured relative to the start person for descendants of ancestors
+   * (e.g. `0` includes siblings and cousins at the start person's generation
+   * and omits nephews and further descendants). No expander is drawn where
+   * the limit cuts the chart off.
    */
   maxDescendantGenerations?: number | undefined;
   /**

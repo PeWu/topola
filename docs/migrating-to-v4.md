@@ -127,7 +127,7 @@ Key differences visible in the example:
 | `HourglassChart` | `chart: 'hourglass'` | Default shows both ancestors and descendants |
 | `AncestorChart` | `chart: 'hourglass', maxDescendantGenerations: 0` | Same engine, descendants disabled |
 | `DescendantChart` | `chart: 'hourglass', maxAncestorGenerations: 0` | Same engine, ancestors disabled |
-| `RelativesChart` | `chart: 'relatives'` | Supports `maxAncestorGenerations` |
+| `RelativesChart` | `chart: 'relatives'` | Supports `maxAncestorGenerations` and `maxDescendantGenerations` |
 | `FancyChart` + `CircleRenderer` | `createFancyConfig({ model: graph })` | Imported from `topola/presets`; returns a full `ChartConfig` |
 | `KinshipChart` | *(removed)* | Not included in v4 |
 | `DetailedRenderer` | `createDetailedNodePlugin({ model: graph, ... })` | Imported from `topola/presets` |

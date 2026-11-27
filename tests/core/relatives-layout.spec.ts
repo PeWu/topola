@@ -386,4 +386,123 @@ describe('All Relatives staircase layout & Issue #30 remarried ancestors', () =>
       }
     }
   });
+
+  it('limits relatives descendants relative to the selected root across ancestor subtrees', () => {
+    const measurer = createFixedTextMeasurer();
+    const relatives: ModelData = {
+      indis: [
+        { id: 'root', famc: 'parents', fams: ['rootFamily'] },
+        { id: 'child', famc: 'rootFamily', fams: ['childFamily'] },
+        { id: 'grandchild', famc: 'childFamily' },
+        { id: 'parent', famc: 'grandparents', fams: ['parents', 'parentExtra'] },
+        { id: 'grandparent', fams: ['grandparents'] },
+        { id: 'aunt', famc: 'grandparents', fams: ['auntFamily'] },
+        { id: 'cousin', famc: 'auntFamily', fams: ['cousinFamily'] },
+        { id: 'cousinChild', famc: 'cousinFamily', fams: ['cousinChildFamily'] },
+        { id: 'cousinGrandchild', famc: 'cousinChildFamily' },
+        { id: 'sibling', famc: 'parents', fams: ['siblingFamily'] },
+        { id: 'nephew', famc: 'siblingFamily', fams: ['nephewFamily'] },
+        { id: 'grandnephew', famc: 'nephewFamily' },
+        { id: 'halfSibling', famc: 'parentExtra', fams: ['halfSiblingFamily'] },
+        { id: 'halfNephew', famc: 'halfSiblingFamily', fams: ['halfNephewFamily'] },
+        { id: 'halfGrandnephew', famc: 'halfNephewFamily' },
+      ],
+      fams: [
+        { id: 'rootFamily', husb: 'root', children: ['child'] },
+        { id: 'childFamily', husb: 'child', children: ['grandchild'] },
+        { id: 'grandparents', husb: 'grandparent', children: ['parent', 'aunt'] },
+        { id: 'auntFamily', wife: 'aunt', children: ['cousin'] },
+        { id: 'cousinFamily', husb: 'cousin', children: ['cousinChild'] },
+        { id: 'cousinChildFamily', husb: 'cousinChild', children: ['cousinGrandchild'] },
+        { id: 'parents', husb: 'parent', children: ['root', 'sibling'] },
+        { id: 'siblingFamily', husb: 'sibling', children: ['nephew'] },
+        { id: 'nephewFamily', husb: 'nephew', children: ['grandnephew'] },
+        { id: 'parentExtra', husb: 'parent', children: ['halfSibling'] },
+        { id: 'halfSiblingFamily', husb: 'halfSibling', children: ['halfNephew'] },
+        { id: 'halfNephewFamily', husb: 'halfNephew', children: ['halfGrandnephew'] },
+      ],
+    };
+    const graph = createModelGraph(relatives);
+    const plugin = createSimpleNodePlugin({ model: graph });
+
+    const run = (
+      maxDescendantGenerations?: number,
+      maxAncestorGenerations?: number,
+      baseGeneration?: number,
+    ) => {
+      const res = computeLayout(
+        { startIndi: 'root', baseGeneration },
+        {
+          graph,
+          chart: 'relatives',
+          maxDescendantGenerations,
+          maxAncestorGenerations,
+          nodePlugin: plugin,
+          textMeasurer: measurer,
+        },
+      );
+      assertNoNodeOverlaps(res.nodes);
+      return res;
+    };
+
+    // limit = 0: stops at root's generation across focus, parents, remarried parents, and grandparents
+    const lim0 = run(0);
+    const ids0 = lim0.nodes.flatMap((n) => [n.indiId, n.spouseId]);
+    expect(ids0).toContain('root');
+    expect(ids0).toContain('parent');
+    expect(ids0).toContain('grandparent');
+    expect(ids0).toContain('aunt');
+    expect(ids0).toContain('sibling');
+    expect(ids0).toContain('halfSibling');
+    expect(ids0).toContain('cousin');
+    expect(ids0).not.toContain('child');
+    expect(ids0).not.toContain('nephew');
+    expect(ids0).not.toContain('halfNephew');
+    expect(ids0).not.toContain('cousinChild');
+    expect(Math.max(...lim0.nodes.map((n) => n.generation))).toBe(0);
+    // Boundary expanders are suppressed at generation 0
+    for (const n of lim0.nodes.filter((node) => node.generation === 0)) {
+      expect(n.expanders.children).toBeUndefined();
+    }
+
+    // limit = 1: includes +1 generation (child, nephew, halfNephew, cousinChild) and excludes +2
+    const lim1 = run(1);
+    const ids1 = lim1.nodes.flatMap((n) => [n.indiId, n.spouseId]);
+    expect(ids1).toContain('child');
+    expect(ids1).toContain('nephew');
+    expect(ids1).toContain('halfNephew');
+    expect(ids1).toContain('cousinChild');
+    expect(ids1).not.toContain('grandchild');
+    expect(ids1).not.toContain('grandnephew');
+    expect(ids1).not.toContain('halfGrandnephew');
+    expect(ids1).not.toContain('cousinGrandchild');
+    expect(Math.max(...lim1.nodes.map((n) => n.generation))).toBe(1);
+    for (const n of lim1.nodes.filter((node) => node.generation === 1)) {
+      expect(n.expanders.children).toBeUndefined();
+    }
+
+    // Omitted limit keeps the full chart
+    const unlimited = run(undefined);
+    const idsAll = unlimited.nodes.flatMap((n) => [n.indiId, n.spouseId]);
+    expect(idsAll).toContain('grandchild');
+    expect(idsAll).toContain('grandnephew');
+    expect(idsAll).toContain('halfGrandnephew');
+    expect(idsAll).toContain('cousinGrandchild');
+
+    // Combined ancestor and descendant limits + non-zero baseGeneration
+    const combined = run(0, 1, 5);
+    const combinedIds = combined.nodes.flatMap((n) => [n.indiId, n.spouseId]);
+    expect(combinedIds).toContain('parent');
+    expect(combinedIds).toContain('sibling');
+    expect(combinedIds).toContain('halfSibling');
+    expect(combinedIds).not.toContain('grandparent');
+    expect(combinedIds).not.toContain('aunt');
+    expect(combinedIds).not.toContain('nephew');
+    expect(Math.min(...combined.nodes.map((n) => n.generation))).toBe(4);
+    expect(Math.max(...combined.nodes.map((n) => n.generation))).toBe(5);
+
+    // Negative and fractional limits normalize consistently across ancestor blocks
+    expect(run(-1).nodes.map((n) => n.id)).toEqual(lim0.nodes.map((n) => n.id));
+    expect(run(1.9).nodes.map((n) => n.id)).toEqual(lim1.nodes.map((n) => n.id));
+  });
 });
